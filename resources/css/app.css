@@ -1,0 +1,234 @@
+@import 'tailwindcss';
+@config '../../tailwind.config.js';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/* ==========================================================================
+   Hartverwarmers Design System - CSS Custom Properties
+   ========================================================================== */
+
+:root {
+  /* Colors - Primary */
+  --color-primary: #E84C4F;
+  --color-primary-hover: #D43E41;
+
+  /* Colors - Text */
+  --color-text-primary: #1F1F1F;
+  --color-text-secondary: #6F6F6F;
+
+  /* Colors - Backgrounds */
+  --color-bg-white: #FFFFFF;
+  --color-bg-subtle: #F5F6F7;
+
+  /* Colors - Borders */
+  --color-border-light: #E8E8E8;
+
+  /* Colors - Accents (illustrative use only) */
+  --color-accent-blue: #4CB7C5;
+  --color-accent-yellow: #F4C44E;
+  --color-accent-purple: #B57BB3;
+
+  /* Typography - Fonts */
+  --font-heading: 'Roboto Slab', Georgia, serif;
+  --font-body: 'Fira Sans', system-ui, sans-serif;
+
+  /* Typography - Sizes */
+  --text-h1: 2.5rem;
+  --text-h2: 2rem;
+  --text-h3: 1.5rem;
+  --text-h4: 1.25rem;
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-tiny: 0.75rem;
+
+  /* Typography - Weights */
+  --font-weight-light: 200;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* Typography - Line Heights */
+  --leading-tight: 1.25;
+  --leading-normal: 1.6;
+  --leading-loose: 1.8;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+
+  /* Effects */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --transition-fast: 0.2s ease;
+}
+
+/* ==========================================================================
+   Base Layer - Typography & Focus States
+   ========================================================================== */
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--leading-normal);
+    color: var(--color-text-primary);
+  }
+
+  /* Headings h1-h3: Roboto Slab Black (900) */
+  h1, h2, h3 {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-black);
+    line-height: var(--leading-tight);
+    color: var(--color-text-primary);
+  }
+
+  /* Headings h4-h6: Roboto Slab Bold (700) - per guidelines */
+  h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-tight);
+  }
+
+  h1 {
+    font-size: var(--text-h1);
+  }
+
+  h2 {
+    font-size: var(--text-h2);
+  }
+
+  h3 {
+    font-size: var(--text-h3);
+  }
+
+  h4 {
+    font-size: var(--text-h4);
+  }
+
+  /* Focus states for keyboard accessibility */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+/* ==========================================================================
+   Component Layer - Reusable Components
+   ========================================================================== */
+
+@layer components {
+  /* Text CTA style (per brand guidelines - text + arrow, not filled buttons) */
+  .cta-link {
+    @apply inline-flex items-center gap-1 text-primary font-semibold transition-all;
+  }
+
+  .cta-link:hover {
+    @apply gap-2;
+  }
+
+  .cta-link::after {
+    content: '\2192';
+    @apply transition-transform;
+  }
+
+  .cta-link:hover::after {
+    @apply translate-x-1;
+  }
+
+  /* Intro block styling - per guidelines max-width 800px */
+  .intro-block {
+    @apply text-center mx-auto py-16 px-6;
+    max-width: 800px;
+  }
+
+  .intro-block h1 {
+    @apply mb-6;
+  }
+
+  .intro-block p {
+    @apply text-lg text-base-content/70;
+    font-weight: var(--font-weight-light);
+  }
+
+  /* Typography utility classes */
+  .text-light {
+    font-weight: var(--font-weight-light);
+  }
+
+  .text-meta {
+    font-weight: var(--font-weight-light);
+    color: var(--color-text-secondary);
+  }
+
+  .ui-label {
+    font-family: var(--font-body);
+    font-weight: var(--font-weight-regular);
+  }
+
+  .ui-button {
+    font-family: var(--font-body);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* Content card (alternative to DaisyUI card) */
+  .content-card {
+    background: var(--color-bg-white);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .content-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .card-image img {
+    width: 100%;
+    aspect-ratio: 16/10;
+    object-fit: cover;
+  }
+
+  .card-content {
+    padding: var(--space-lg);
+  }
+
+  .card-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-h4);
+    margin-bottom: var(--space-sm);
+  }
+
+  .card-description {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-md);
+  }
+}
+
+/* ==========================================================================
+   Responsive Typography
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --text-h1: 2rem;
+    --text-h2: 1.5rem;
+  }
+}
