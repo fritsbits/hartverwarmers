@@ -10,7 +10,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        heading: ['Roboto Slab', 'Georgia', 'serif'],
+        heading: ['Alan Sans', 'system-ui', 'sans-serif'],
         body: ['Fira Sans', 'system-ui', 'sans-serif'],
       },
       colors: {
@@ -30,13 +30,13 @@ export default {
       },
       // Custom font sizes per design guidelines
       fontSize: {
-        'h1': ['2.5rem', { lineHeight: '1.25' }],    // 40px
-        'h2': ['2rem', { lineHeight: '1.25' }],      // 32px
-        'h3': ['1.5rem', { lineHeight: '1.25' }],    // 24px
-        'h4': ['1.25rem', { lineHeight: '1.25' }],   // 20px
-        'body': ['1rem', { lineHeight: '1.6' }],     // 16px
-        'small': ['0.875rem', { lineHeight: '1.6' }], // 14px
-        'tiny': ['0.75rem', { lineHeight: '1.6' }],  // 12px
+        'h1': ['3.5rem', { lineHeight: '1.25' }],     // 56px
+        'h2': ['2.75rem', { lineHeight: '1.25' }],    // 44px
+        'h3': ['2rem', { lineHeight: '1.25' }],       // 32px
+        'h4': ['1.75rem', { lineHeight: '1.25' }],    // 28px
+        'body': ['1.25rem', { lineHeight: '1.6' }],   // 20px
+        'small': ['1.125rem', { lineHeight: '1.6' }], // 18px
+        'tiny': ['1rem', { lineHeight: '1.6' }],      // 16px
       },
       // Custom max-widths
       maxWidth: {
@@ -68,7 +68,7 @@ export default {
           'accent-content': '#1F1F1F',
           'neutral': '#1F1F1F',
           'neutral-content': '#ffffff',
-          'base-100': '#ffffff',
+          'base-100': '#F9FBFA',
           'base-200': '#F5F6F7',
           'base-300': '#E8E8E8',
           'base-content': '#1F1F1F',

@@ -1,5 +1,5 @@
 <x-layout :title="$activity->title">
-    <article class="max-w-4xl mx-auto px-6 py-12">
+    <article class="max-w-6txl mx-auto px-6 py-12">
         <!-- Breadcrumb -->
         <nav class="text-sm breadcrumbs mb-6">
             <ul>
@@ -13,13 +13,32 @@
         <header class="mb-8">
             <h1 class="text-3xl mb-4">{{ $activity->title }}</h1>
 
-            @if($activity->interests->isNotEmpty())
-                <div class="flex flex-wrap gap-2">
-                    @foreach($activity->interests as $interest)
-                        <span class="badge badge-outline">{{ $interest->name }}</span>
+            <div class="flex flex-wrap gap-2">
+                {{-- Interests --}}
+                @foreach($activity->interests as $interest)
+                    <span class="badge badge-outline">{{ $interest->name }}</span>
+                @endforeach
+
+                {{-- Sense of Home Dimensions --}}
+                @if($activity->dimensions)
+                    @foreach($activity->dimensions as $dimensionValue)
+                        @php $dimension = \App\Enums\ActivityDimension::tryFrom($dimensionValue); @endphp
+                        @if($dimension)
+                            <span class="badge badge-primary">{{ $dimension->title() }}</span>
+                        @endif
                     @endforeach
-                </div>
-            @endif
+                @endif
+
+                {{-- Zorgprofielen (Guidances) --}}
+                @if($activity->guidances)
+                    @foreach($activity->guidances as $guidanceValue)
+                        @php $guidance = \App\Enums\Guidance::tryFrom($guidanceValue); @endphp
+                        @if($guidance)
+                            <span class="badge badge-secondary" title="{{ $guidance->description() }}">{{ $guidance->title() }}</span>
+                        @endif
+                    @endforeach
+                @endif
+            </div>
         </header>
 
         <!-- Actions -->

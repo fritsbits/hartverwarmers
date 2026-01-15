@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActivityDimension;
+use App\Enums\Guidance;
 use App\Models\Activity;
 use App\Models\Interest;
 use Illuminate\Http\Request;
@@ -31,6 +33,16 @@ class ActivityController extends Controller
             });
         }
 
+        // Filter by dimension (Sense of Home)
+        if ($request->filled('dimension')) {
+            $query->whereJsonContains('dimensions', $request->dimension);
+        }
+
+        // Filter by guidance (zorgprofiel)
+        if ($request->filled('guidance')) {
+            $query->whereJsonContains('guidances', $request->guidance);
+        }
+
         $activities = $query->latest()->paginate(12);
 
         $domains = Interest::domains()->orderBy('name')->get();
@@ -39,6 +51,10 @@ class ActivityController extends Controller
             'activities' => $activities,
             'domains' => $domains,
             'selectedInterest' => $request->interest,
+            'selectedDimension' => $request->dimension,
+            'selectedGuidance' => $request->guidance,
+            'dimensions' => ActivityDimension::cases(),
+            'guidances' => Guidance::cases(),
         ]);
     }
 

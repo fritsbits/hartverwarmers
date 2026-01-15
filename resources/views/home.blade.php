@@ -1,29 +1,21 @@
 <x-layout title="Ontdek activiteiten">
-    <!-- Hero Section - per guidelines: geen CTA in introblok -->
-    <section class="intro-block">
-        <h1>Ontdek deugddoende activiteiten voor ouderen</h1>
-        <p>
-            Spaar tijd uit met honderden activiteiten en printbare bestanden
-            ingezonden door onze bruisende gemeenschap van activiteitenbegeleiders.
-        </p>
-    </section>
+    <section class="text-center">
+        <div class="py-16 max-w-200 mx-auto">
+            <h1 class="mb-4">Deel deugddoende activiteiten</h1>
+            <p class="text-base-content/70 text-xl font-light">Spaar tijd uit met honderden activiteiten en printbare bestanden ingezonden door activiteitenbegeleiders in de ouderenzorg.</p>
+        </div>
 
-    <!-- CTA buiten intro-block -->
-    <div class="text-center pb-8">
-        <a href="{{ route('activities.index') }}" class="cta-link text-lg">
-            Bekijk alle activiteiten
-        </a>
-    </div>
 
     <!-- Featured Activities -->
     @if($activities->isNotEmpty())
-        <section class="max-w-6xl mx-auto px-6 py-12">
-            <h2 class="text-2xl mb-8">Recente activiteiten</h2>
+        <section class="bg-white">
+            <div class="max-w-6xl mx-auto px-6 py-12">   
+                <h2 class="text-2xl mb-8 text-center">Recente activiteiten</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($activities as $activity)
-                    <x-activity-card :activity="$activity" />
-                @endforeach
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($activities as $activity)
+                        <x-activity-card :activity="$activity" />
+                    @endforeach
             </div>
 
             <div class="text-center mt-12">
@@ -31,13 +23,14 @@
                     Bekijk alle activiteiten
                 </a>
             </div>
+            </div>
         </section>
     @endif
 
     <!-- Value Proposition -->
     <section class="bg-base-200 py-16">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <h2 class="text-2xl mb-6">Waarom Hartverwarmers?</h2>
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h2 class="mb-6">Waarom Hartverwarmers?</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
                 <div>
                     <div class="text-primary text-4xl mb-4">

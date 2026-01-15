@@ -19,7 +19,7 @@ Route::get('/activiteiten/{activity}/print', [ActivityController::class, 'print'
 
 // Themes
 Route::get('/themas', [ThemeController::class, 'index'])->name('themes.index');
-Route::get('/themas/{theme}', [ThemeController::class, 'show'])->name('themes.show');
+Route::get('/themas/{theme}', fn() => redirect()->route('themes.index'));
 
 // Authors
 Route::get('/bijdragers', [AuthorController::class, 'index'])->name('authors.index');

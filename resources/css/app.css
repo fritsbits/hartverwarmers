@@ -32,7 +32,7 @@
   --color-accent-purple: #B57BB3;
 
   /* Typography - Fonts */
-  --font-heading: 'Roboto Slab', Georgia, serif;
+  --font-heading: 'Alan Sans', system-ui, sans-serif;
   --font-body: 'Fira Sans', system-ui, sans-serif;
 
   /* Typography - Sizes */
@@ -87,7 +87,7 @@
     color: var(--color-text-primary);
   }
 
-  /* Headings h1-h3: Roboto Slab Black (900) */
+  /* Headings h1-h3: Alan Sans Black (900) */
   h1, h2, h3 {
     font-family: var(--font-heading);
     font-weight: var(--font-weight-black);
@@ -95,7 +95,7 @@
     color: var(--color-text-primary);
   }
 
-  /* Headings h4-h6: Roboto Slab Bold (700) - per guidelines */
+  /* Headings h4-h6: Alan Sans Bold (700) */
   h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: var(--font-weight-bold);
