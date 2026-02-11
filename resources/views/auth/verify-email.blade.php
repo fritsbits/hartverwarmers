@@ -1,29 +1,29 @@
 <x-guest-layout>
-    <h1 class="text-2xl font-bold mb-6 text-center">E-mail verifiëren</h1>
+    <flux:heading size="xl" class="text-center mb-6">E-mail verifieren</flux:heading>
 
-    <div class="mb-4 text-sm text-base-content/70">
-        Bedankt voor je registratie! Klik op de link die we naar je e-mailadres hebben gestuurd om je account te verifiëren. Als je de e-mail niet hebt ontvangen, kunnen we een nieuwe sturen.
-    </div>
+    <flux:text class="mb-4 text-[var(--color-text-secondary)]">
+        Bedankt voor je registratie! Klik op de link die we naar je e-mailadres hebben gestuurd om je account te verifieren. Als je de e-mail niet hebt ontvangen, kunnen we een nieuwe sturen.
+    </flux:text>
 
     @if (session('status') == 'verification-link-sent')
-        <div class="alert alert-success mb-4">
+        <flux:callout variant="success" class="mb-4">
             Er is een nieuwe verificatie link naar je e-mailadres gestuurd.
-        </div>
+        </flux:callout>
     @endif
 
     <div class="mt-4 flex items-center justify-between">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
-            <x-primary-button>
+            <flux:button type="submit" variant="primary">
                 Verstuur opnieuw
-            </x-primary-button>
+            </flux:button>
         </form>
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="btn btn-ghost btn-sm">
+            <flux:button type="submit" variant="ghost">
                 Uitloggen
-            </button>
+            </flux:button>
         </form>
     </div>
 </x-guest-layout>

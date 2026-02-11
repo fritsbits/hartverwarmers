@@ -1,45 +1,45 @@
 <x-guest-layout>
-    <h1 class="text-2xl font-bold mb-6 text-center">Registreren</h1>
+    <flux:heading size="xl" class="text-center mb-6">Registreren</flux:heading>
 
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
 
         <!-- Name -->
-        <div class="form-control">
-            <x-input-label for="name" :value="__('Naam')" />
-            <x-text-input id="name" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+        <flux:field>
+            <flux:label for="name">Naam</flux:label>
+            <flux:input id="name" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" />
-        </div>
+        </flux:field>
 
         <!-- Email Address -->
-        <div class="form-control mt-4">
-            <x-input-label for="email" :value="__('E-mailadres')" />
-            <x-text-input id="email" type="email" name="email" :value="old('email')" required autocomplete="username" />
+        <flux:field>
+            <flux:label for="email">E-mailadres</flux:label>
+            <flux:input id="email" type="email" name="email" :value="old('email')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" />
-        </div>
+        </flux:field>
 
         <!-- Password -->
-        <div class="form-control mt-4">
-            <x-input-label for="password" :value="__('Wachtwoord')" />
-            <x-text-input id="password" type="password" name="password" required autocomplete="new-password" />
+        <flux:field>
+            <flux:label for="password">Wachtwoord</flux:label>
+            <flux:input id="password" type="password" name="password" required autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password')" />
-        </div>
+        </flux:field>
 
         <!-- Confirm Password -->
-        <div class="form-control mt-4">
-            <x-input-label for="password_confirmation" :value="__('Bevestig wachtwoord')" />
-            <x-text-input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" />
+        <flux:field>
+            <flux:label for="password_confirmation">Bevestig wachtwoord</flux:label>
+            <flux:input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password_confirmation')" />
-        </div>
+        </flux:field>
 
-        <div class="flex items-center justify-between mt-6">
-            <a class="link link-hover text-sm" href="{{ route('login') }}">
+        <div class="flex items-center justify-between pt-2">
+            <flux:link href="{{ route('login') }}" variant="subtle">
                 Al geregistreerd?
-            </a>
+            </flux:link>
 
-            <x-primary-button>
+            <flux:button type="submit" variant="primary">
                 Registreren
-            </x-primary-button>
+            </flux:button>
         </div>
     </form>
 </x-guest-layout>

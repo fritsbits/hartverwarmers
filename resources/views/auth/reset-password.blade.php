@@ -1,37 +1,37 @@
 <x-guest-layout>
-    <h1 class="text-2xl font-bold mb-6 text-center">Wachtwoord resetten</h1>
+    <flux:heading size="xl" class="text-center mb-6">Wachtwoord resetten</flux:heading>
 
-    <form method="POST" action="{{ route('password.store') }}">
+    <form method="POST" action="{{ route('password.store') }}" class="space-y-4">
         @csrf
 
         <!-- Password Reset Token -->
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
         <!-- Email Address -->
-        <div class="form-control">
-            <x-input-label for="email" :value="__('E-mailadres')" />
-            <x-text-input id="email" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
+        <flux:field>
+            <flux:label for="email">E-mailadres</flux:label>
+            <flux:input id="email" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" />
-        </div>
+        </flux:field>
 
         <!-- Password -->
-        <div class="form-control mt-4">
-            <x-input-label for="password" :value="__('Nieuw wachtwoord')" />
-            <x-text-input id="password" type="password" name="password" required autocomplete="new-password" />
+        <flux:field>
+            <flux:label for="password">Nieuw wachtwoord</flux:label>
+            <flux:input id="password" type="password" name="password" required autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password')" />
-        </div>
+        </flux:field>
 
         <!-- Confirm Password -->
-        <div class="form-control mt-4">
-            <x-input-label for="password_confirmation" :value="__('Bevestig wachtwoord')" />
-            <x-text-input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" />
+        <flux:field>
+            <flux:label for="password_confirmation">Bevestig wachtwoord</flux:label>
+            <flux:input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" />
             <x-input-error :messages="$errors->get('password_confirmation')" />
-        </div>
+        </flux:field>
 
-        <div class="flex items-center justify-end mt-6">
-            <x-primary-button>
+        <div class="flex items-center justify-end pt-2">
+            <flux:button type="submit" variant="primary">
                 Wachtwoord resetten
-            </x-primary-button>
+            </flux:button>
         </div>
     </form>
 </x-guest-layout>

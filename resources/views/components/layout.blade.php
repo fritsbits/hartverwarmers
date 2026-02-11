@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl" data-theme="hartverwarmers">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +9,13 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@700&family=Fira+Sans:wght@200;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@200;400;600&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @fluxAppearance
 </head>
-<body class="min-h-screen bg-base-200">
+<body class="font-body antialiased min-h-screen bg-[var(--color-bg-subtle)]">
     <!-- Navigation -->
     <x-nav />
 
@@ -23,12 +25,14 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer footer-center p-10 bg-base-200 text-base-content mt-16">
-        <aside>
+    <footer class="text-center p-10 bg-[var(--color-bg-subtle)] mt-16">
+        <div>
             <p class="font-semibold text-lg">hartverwarmers</p>
-            <p>Deugddoende activiteiten voor ouderen</p>
-            <p class="text-sm text-base-content/60">© {{ date('Y') }} Hartverwarmers. Alle rechten voorbehouden.</p>
-        </aside>
+            <p class="text-[var(--color-text-secondary)]">Deugddoende activiteiten voor ouderen</p>
+            <p class="text-sm text-[var(--color-text-secondary)] mt-2">© {{ date('Y') }} Hartverwarmers. Alle rechten voorbehouden.</p>
+        </div>
     </footer>
+
+    @fluxScripts
 </body>
 </html>

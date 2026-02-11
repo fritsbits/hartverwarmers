@@ -1,31 +1,31 @@
 <x-guest-layout>
-    <h1 class="text-2xl font-bold mb-6 text-center">Wachtwoord vergeten</h1>
+    <flux:heading size="xl" class="text-center mb-6">Wachtwoord vergeten</flux:heading>
 
-    <div class="mb-4 text-sm text-base-content/70">
+    <flux:text class="mb-4 text-[var(--color-text-secondary)]">
         Geen probleem. Vul je e-mailadres in en we sturen je een link om je wachtwoord te resetten.
-    </div>
+    </flux:text>
 
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('password.email') }}">
+    <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
         @csrf
 
         <!-- Email Address -->
-        <div class="form-control">
-            <x-input-label for="email" :value="__('E-mailadres')" />
-            <x-text-input id="email" type="email" name="email" :value="old('email')" required autofocus />
+        <flux:field>
+            <flux:label for="email">E-mailadres</flux:label>
+            <flux:input id="email" type="email" name="email" :value="old('email')" required autofocus />
             <x-input-error :messages="$errors->get('email')" />
-        </div>
+        </flux:field>
 
-        <div class="flex items-center justify-between mt-6">
-            <a class="link link-hover text-sm" href="{{ route('login') }}">
+        <div class="flex items-center justify-between pt-2">
+            <flux:link href="{{ route('login') }}" variant="subtle">
                 Terug naar inloggen
-            </a>
+            </flux:link>
 
-            <x-primary-button>
+            <flux:button type="submit" variant="primary">
                 Verstuur reset link
-            </x-primary-button>
+            </flux:button>
         </div>
     </form>
 </x-guest-layout>

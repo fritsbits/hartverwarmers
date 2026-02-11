@@ -1,13 +1,11 @@
 <x-layout :title="$activity->title">
     <article class="max-w-6txl mx-auto px-6 py-12">
         <!-- Breadcrumb -->
-        <nav class="text-sm breadcrumbs mb-6">
-            <ul>
-                <li><a href="{{ route('home') }}">Home</a></li>
-                <li><a href="{{ route('activities.index') }}">Activiteiten</a></li>
-                <li>{{ $activity->title }}</li>
-            </ul>
-        </nav>
+        <flux:breadcrumbs class="mb-6">
+            <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item href="{{ route('activities.index') }}">Activiteiten</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item>{{ $activity->title }}</flux:breadcrumbs.item>
+        </flux:breadcrumbs>
 
         <!-- Title -->
         <header class="mb-8">
@@ -16,7 +14,7 @@
             <div class="flex flex-wrap gap-2">
                 {{-- Interests --}}
                 @foreach($activity->interests as $interest)
-                    <span class="badge badge-outline">{{ $interest->name }}</span>
+                    <flux:badge variant="outline">{{ $interest->name }}</flux:badge>
                 @endforeach
 
                 {{-- Sense of Home Dimensions --}}
@@ -24,7 +22,7 @@
                     @foreach($activity->dimensions as $dimensionValue)
                         @php $dimension = \App\Enums\ActivityDimension::tryFrom($dimensionValue); @endphp
                         @if($dimension)
-                            <span class="badge badge-primary">{{ $dimension->title() }}</span>
+                            <flux:badge color="red">{{ $dimension->title() }}</flux:badge>
                         @endif
                     @endforeach
                 @endif
@@ -34,7 +32,7 @@
                     @foreach($activity->guidances as $guidanceValue)
                         @php $guidance = \App\Enums\Guidance::tryFrom($guidanceValue); @endphp
                         @if($guidance)
-                            <span class="badge badge-secondary" title="{{ $guidance->description() }}">{{ $guidance->title() }}</span>
+                            <flux:badge color="cyan" title="{{ $guidance->description() }}">{{ $guidance->title() }}</flux:badge>
                         @endif
                     @endforeach
                 @endif
@@ -43,22 +41,16 @@
 
         <!-- Actions -->
         <div class="flex gap-4 mb-8">
-            <a href="{{ route('activities.print', $activity) }}" target="_blank" class="btn btn-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
+            <flux:button variant="primary" href="{{ route('activities.print', $activity) }}" target="_blank" icon="printer">
                 Print
-            </a>
+            </flux:button>
             @auth
                 <form action="{{ route('activities.bookmark', $activity) }}" method="POST">
                     @csrf
                     @php $isBookmarked = auth()->user()->hasBookmarked($activity); @endphp
-                    <button type="submit" class="btn {{ $isBookmarked ? 'btn-primary' : 'btn-outline' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="{{ $isBookmarked ? 'currentColor' : 'none' }}" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                        </svg>
+                    <flux:button type="submit" :variant="$isBookmarked ? 'primary' : 'ghost'" icon="bookmark">
                         {{ $isBookmarked ? 'Gebookmarkt' : 'Bookmark' }}
-                    </button>
+                    </flux:button>
                 </form>
             @endauth
         </div>
@@ -70,78 +62,75 @@
 
         <!-- Fiche Details -->
         @if($activity->fiche)
-            <div class="mt-12 bg-base-200 rounded-lg p-6">
-                <h2 class="text-xl mb-4">Praktische info</h2>
+            <flux:card class="mt-12">
+                <flux:heading size="lg" class="mb-4">Praktische info</flux:heading>
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     @if($activity->fiche['duration'] ?? null)
                         <div>
-                            <span class="text-base-content/60 text-sm">Duur</span>
+                            <flux:text class="text-sm text-[var(--color-text-secondary)]">Duur</flux:text>
                             <p class="font-medium">{{ $activity->fiche['duration'] }}</p>
                         </div>
                     @endif
 
                     @if($activity->fiche['group_size'] ?? null)
                         <div>
-                            <span class="text-base-content/60 text-sm">Groepsgrootte</span>
+                            <flux:text class="text-sm text-[var(--color-text-secondary)]">Groepsgrootte</flux:text>
                             <p class="font-medium">{{ $activity->fiche['group_size'] }}</p>
                         </div>
                     @endif
 
                     @if($activity->fiche['materials'] ?? null)
                         <div class="col-span-2">
-                            <span class="text-base-content/60 text-sm">Materiaal</span>
+                            <flux:text class="text-sm text-[var(--color-text-secondary)]">Materiaal</flux:text>
                             <p class="font-medium">{{ $activity->fiche['materials'] }}</p>
                         </div>
                     @endif
                 </div>
-            </div>
+            </flux:card>
         @endif
 
         <!-- Comments Section -->
-        <section class="mt-12 border-t pt-8">
-            <h2 class="text-xl mb-6">Reacties ({{ $activity->comments->count() }})</h2>
+        <section class="mt-12 border-t border-[var(--color-border-light)] pt-8">
+            <flux:heading size="lg" class="mb-6">Reacties ({{ $activity->comments->count() }})</flux:heading>
 
             @auth
                 <form action="{{ route('activities.comment', $activity) }}" method="POST" class="mb-8">
                     @csrf
-                    <textarea
+                    <flux:textarea
                         name="comment"
-                        class="textarea textarea-bordered w-full @error('comment') textarea-error @enderror"
                         placeholder="Deel je ervaring of tip..."
                         rows="3"
                         required
-                    >{{ old('comment') }}</textarea>
+                    >{{ old('comment') }}</flux:textarea>
                     @error('comment')
-                        <p class="text-error text-sm mt-1">{{ $message }}</p>
+                        <flux:error>{{ $message }}</flux:error>
                     @enderror
                     <div class="mt-2">
-                        <button type="submit" class="btn btn-primary btn-sm">Plaats reactie</button>
+                        <flux:button type="submit" variant="primary" size="sm">Plaats reactie</flux:button>
                     </div>
                 </form>
             @else
                 @if(Route::has('login'))
-                    <div class="alert mb-8">
-                        <span><a href="{{ route('login') }}" class="link">Log in</a> om een reactie te plaatsen.</span>
-                    </div>
+                    <flux:callout class="mb-8">
+                        <flux:link href="{{ route('login') }}">Log in</flux:link> om een reactie te plaatsen.
+                    </flux:callout>
                 @endif
             @endauth
 
             @forelse($activity->comments as $comment)
                 <div class="flex gap-4 mb-6">
-                    <div class="avatar placeholder">
-                        <div class="bg-neutral text-neutral-content rounded-full w-10">
-                            <span>{{ substr($comment->user->name ?? 'A', 0, 1) }}</span>
-                        </div>
+                    <div class="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center font-semibold shrink-0">
+                        {{ substr($comment->user->name ?? 'A', 0, 1) }}
                     </div>
                     <div>
                         <div class="font-medium">{{ $comment->user->name ?? 'Anoniem' }}</div>
-                        <div class="text-sm text-base-content/60">{{ $comment->created_at->diffForHumans() }}</div>
+                        <flux:text class="text-sm text-[var(--color-text-secondary)]">{{ $comment->created_at->diffForHumans() }}</flux:text>
                         <p class="mt-2">{{ $comment->comment }}</p>
                     </div>
                 </div>
             @empty
-                <p class="text-base-content/60">Nog geen reacties. Wees de eerste!</p>
+                <flux:text class="text-[var(--color-text-secondary)]">Nog geen reacties. Wees de eerste!</flux:text>
             @endforelse
         </section>
     </article>

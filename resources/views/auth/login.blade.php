@@ -1,51 +1,46 @@
 <x-guest-layout>
-    <h1 class="text-2xl font-bold mb-6 text-center">Inloggen</h1>
+    <flux:heading size="xl" class="text-center mb-6">Inloggen</flux:heading>
 
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" class="space-y-4">
         @csrf
 
         <!-- Email Address -->
-        <div class="form-control">
-            <x-input-label for="email" :value="__('E-mailadres')" />
-            <x-text-input id="email" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
+        <flux:field>
+            <flux:label for="email">E-mailadres</flux:label>
+            <flux:input id="email" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" />
-        </div>
+        </flux:field>
 
         <!-- Password -->
-        <div class="form-control mt-4">
-            <x-input-label for="password" :value="__('Wachtwoord')" />
-            <x-text-input id="password" type="password" name="password" required autocomplete="current-password" />
+        <flux:field>
+            <flux:label for="password">Wachtwoord</flux:label>
+            <flux:input id="password" type="password" name="password" required autocomplete="current-password" />
             <x-input-error :messages="$errors->get('password')" />
-        </div>
+        </flux:field>
 
         <!-- Remember Me -->
-        <div class="form-control mt-4">
-            <label class="label cursor-pointer justify-start gap-2">
-                <input id="remember_me" type="checkbox" class="checkbox checkbox-primary checkbox-sm" name="remember">
-                <span class="label-text">Onthoud mij</span>
-            </label>
-        </div>
+        <flux:checkbox id="remember_me" name="remember" label="Onthoud mij" />
 
-        <div class="flex items-center justify-between mt-6">
+        <div class="flex items-center justify-between pt-2">
             @if (Route::has('password.request'))
-                <a class="link link-hover text-sm" href="{{ route('password.request') }}">
+                <flux:link href="{{ route('password.request') }}" variant="subtle">
                     Wachtwoord vergeten?
-                </a>
+                </flux:link>
             @endif
 
-            <x-primary-button>
+            <flux:button type="submit" variant="primary">
                 Inloggen
-            </x-primary-button>
+            </flux:button>
         </div>
 
-        <div class="divider my-6">of</div>
+        <flux:separator text="of" class="my-6" />
 
-        <p class="text-center text-sm">
+        <flux:text class="text-center">
             Nog geen account?
-            <a href="{{ route('register') }}" class="link link-primary">Registreer nu</a>
-        </p>
+            <flux:link href="{{ route('register') }}">Registreer nu</flux:link>
+        </flux:text>
     </form>
 </x-guest-layout>

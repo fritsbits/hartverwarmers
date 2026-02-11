@@ -1,12 +1,12 @@
-import daisyui from 'daisyui'
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
     './resources/**/*.blade.php',
     './resources/**/*.js',
     './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+    './vendor/livewire/flux/stubs/**/*.blade.php',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -16,6 +16,9 @@ export default {
       colors: {
         'hv-red': '#E84C4F',
         'hv-red-hover': '#D43E41',
+        'hv-blue': '#4CB7C5',
+        'hv-yellow': '#F4C44E',
+        'hv-purple': '#B57BB3',
       },
       // Custom spacing scale per design guidelines
       spacing: {
@@ -55,29 +58,5 @@ export default {
       },
     },
   },
-  plugins: [daisyui],
-  daisyui: {
-    themes: [
-      {
-        hartverwarmers: {
-          'primary': '#E84C4F',
-          'primary-content': '#ffffff',
-          'secondary': '#4CB7C5',
-          'secondary-content': '#ffffff',
-          'accent': '#F4C44E',
-          'accent-content': '#1F1F1F',
-          'neutral': '#1F1F1F',
-          'neutral-content': '#ffffff',
-          'base-100': '#F9FBFA',
-          'base-200': '#F5F6F7',
-          'base-300': '#E8E8E8',
-          'base-content': '#1F1F1F',
-          'info': '#4CB7C5',
-          'success': '#36D399',
-          'warning': '#F4C44E',
-          'error': '#E84C4F',
-        },
-      },
-    ],
-  },
+  plugins: [],
 }

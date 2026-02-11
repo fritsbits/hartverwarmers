@@ -1,7 +1,11 @@
 @import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
 @config '../../tailwind.config.js';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/flux/stubs/**/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
@@ -15,6 +19,10 @@
   --color-primary: #E84C4F;
   --color-primary-hover: #D43E41;
 
+  /* Colors - Secondary */
+  --color-secondary: #4CB7C5;
+  --color-accent: #F4C44E;
+
   /* Colors - Text */
   --color-text-primary: #1F1F1F;
   --color-text-secondary: #6F6F6F;
@@ -22,6 +30,7 @@
   /* Colors - Backgrounds */
   --color-bg-white: #FFFFFF;
   --color-bg-subtle: #F5F6F7;
+  --color-bg-base: #F9FBFA;
 
   /* Colors - Borders */
   --color-border-light: #E8E8E8;
@@ -74,6 +83,39 @@
   --transition-fast: 0.2s ease;
 }
 
+/* Dark mode colors */
+.dark {
+  --color-text-primary: #F9FBFA;
+  --color-text-secondary: #A0A0A0;
+  --color-bg-white: #1F1F1F;
+  --color-bg-subtle: #2A2A2A;
+  --color-bg-base: #171717;
+  --color-border-light: #3A3A3A;
+}
+
+/* ==========================================================================
+   Flux UI Theme Customization - Hartverwarmers Colors
+   ========================================================================== */
+
+@theme {
+  /* Flux accent color (primary actions) */
+  --color-accent-50: #fef2f2;
+  --color-accent-100: #fee2e2;
+  --color-accent-200: #fecaca;
+  --color-accent-300: #fca5a5;
+  --color-accent-400: #f87171;
+  --color-accent-500: #E84C4F;
+  --color-accent-600: #D43E41;
+  --color-accent-700: #b91c1c;
+  --color-accent-800: #991b1b;
+  --color-accent-900: #7f1d1d;
+  --color-accent-950: #450a0a;
+
+  /* Fonts */
+  --font-sans: 'Fira Sans', system-ui, sans-serif;
+  --font-heading: 'Alan Sans', system-ui, sans-serif;
+}
+
 /* ==========================================================================
    Base Layer - Typography & Focus States
    ========================================================================== */
@@ -85,6 +127,7 @@
     font-weight: var(--font-weight-regular);
     line-height: var(--leading-normal);
     color: var(--color-text-primary);
+    background-color: var(--color-bg-base);
   }
 
   /* Headings h1-h3: Alan Sans Black (900) */
@@ -136,11 +179,13 @@
 @layer components {
   /* Text CTA style (per brand guidelines - text + arrow, not filled buttons) */
   .cta-link {
-    @apply inline-flex items-center gap-1 text-primary font-semibold transition-all;
+    @apply inline-flex items-center gap-1 font-semibold transition-all;
+    color: var(--color-primary);
   }
 
   .cta-link:hover {
     @apply gap-2;
+    color: var(--color-primary-hover);
   }
 
   .cta-link::after {
@@ -163,8 +208,9 @@
   }
 
   .intro-block p {
-    @apply text-lg text-base-content/70;
+    @apply text-lg;
     font-weight: var(--font-weight-light);
+    color: var(--color-text-secondary);
   }
 
   /* Typography utility classes */
@@ -187,7 +233,7 @@
     font-weight: var(--font-weight-semibold);
   }
 
-  /* Content card (alternative to DaisyUI card) */
+  /* Content card */
   .content-card {
     background: var(--color-bg-white);
     border-radius: var(--radius-md);
@@ -219,6 +265,19 @@
   .card-description {
     color: var(--color-text-secondary);
     margin-bottom: var(--space-md);
+  }
+
+  /* Primary color utilities (for Flux compatibility) */
+  .text-primary {
+    color: var(--color-primary);
+  }
+
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+
+  .border-primary {
+    border-color: var(--color-primary);
   }
 }
 
