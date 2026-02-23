@@ -7,9 +7,6 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile.
-     */
     public function show(Request $request): View
     {
         return view('profile.show', [
@@ -17,21 +14,18 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Display the user's bookmarked activities.
-     */
     public function bookmarks(Request $request): View
     {
-        $bookmarks = $request->user()
+        $elaborations = $request->user()
             ->bookmarks()
-            ->with('likeable')
+            ->with('likeable.initiative', 'likeable.tags')
             ->latest()
             ->get()
             ->pluck('likeable')
             ->filter();
 
         return view('profile.bookmarks', [
-            'activities' => $bookmarks,
+            'elaborations' => $elaborations,
         ]);
     }
 }

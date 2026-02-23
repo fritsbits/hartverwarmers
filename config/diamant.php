@@ -1,0 +1,238 @@
+<?php
+
+return [
+
+    'facets' => [
+        'doen' => [
+            'letter' => 'D',
+            'keyword' => 'Doen',
+            'slug' => 'doen',
+            'tagline' => 'Zelf aan de slag',
+            'quote' => 'Niet: we moeten de bewoner bezighouden. Maar: wat wil deze persoon vandaag ondernemen?',
+
+            'ik_wil' => 'Bewoners doen zelf mee, zijn actief, niet alleen toeschouwer.',
+            'description' => 'De D van Doen staat voor het belang van actief bezig zijn. Bewoners willen iets doen, iets ondernemen, iets creëren. Actief zijn geeft energie, voldoening en een gevoel van zinvolheid. Het gaat niet om presteren, maar om het plezier van het bezig zijn zelf.',
+            'author_name' => 'Maite Mallentjer',
+            'author_role' => 'pedagoog dagbesteding',
+            'challenges' => [
+                'Bewoners motiveren die aangeven "niets meer te kunnen".',
+                'Activiteiten aanpassen aan uiteenlopende fysieke mogelijkheden.',
+                'Het evenwicht vinden tussen uitdaging en haalbaarheid.',
+            ],
+            'practice_subtitle' => 'Kleine momenten van actief bezig zijn maken het verschil.',
+            'practice_examples' => [
+                ['name' => 'Rosa', 'role' => 'Huisvrouw', 'image' => null, 'story' => 'Helpt elke ochtend met het vouwen van servetten. Ze doet het graag — het geeft structuur aan haar dag.'],
+                ['name' => 'Albert', 'role' => 'Timmerman', 'image' => null, 'story' => 'Was timmerman. Hij schuurt en vernist nu de vogelhuisjes voor de tuin.'],
+                ['name' => 'Simonne', 'role' => 'Decoratrice', 'image' => null, 'story' => 'Verzorgt de seizoenstableau in de gang. Ze kiest zelf de materialen.'],
+            ],
+            'reflection_subtitle' => 'Niet als test, maar als spiegel.',
+            'reflection_questions' => [
+                'Bied ik voldoende kansen om actief bezig te zijn, ook voor bewoners met beperkingen?',
+                'Sluit het activiteitenaanbod aan bij wat bewoners vroeger graag deden?',
+                'Hoe kan ik het "doen" meer integreren in het dagelijks leven?',
+            ],
+            'tip_title' => 'Tip: begin klein',
+            'tip_text' => 'Een bewoner hoeft niet een volledige activiteit te doen. Eén handeling — een servet vouwen, een plant water geven — kan al voldoening geven. Kijk naar bestaande initiatieven en denk: waar kan iemand bij aansluiten?',
+            'initiatives_heading' => 'Initiatieven die aanzetten tot doen',
+        ],
+
+        'inclusief' => [
+            'letter' => 'I',
+            'keyword' => 'Inclusief',
+            'slug' => 'inclusief',
+            'tagline' => 'Iedereen erbij',
+            'quote' => 'Niet: deze bewoner kan niet meedoen. Maar: hoe kan deze persoon op zijn manier deelnemen?',
+
+            'ik_wil' => 'Iedereen is welkom — diversiteit in cognitie, mobiliteit, achtergrond.',
+            'description' => 'De I van Inclusief benadrukt dat iedereen moet kunnen deelnemen, ongeacht cognitieve, fysieke of zintuiglijke beperkingen. Inclusief werken betekent activiteiten zo ontwerpen dat ze toegankelijk zijn voor alle bewoners.',
+            'author_name' => 'Maite Mallentjer',
+            'author_role' => 'pedagoog dagbesteding',
+            'challenges' => [
+                'Activiteiten differentiëren voor bewoners met dementie.',
+                'Zintuiglijke beperkingen (zicht, gehoor) opvangen.',
+                'Bewoners die zich terugtrekken toch betrekken.',
+            ],
+            'practice_subtitle' => 'Deelnemen kan op veel manieren — als je er oog voor hebt.',
+            'practice_examples' => [
+                ['name' => 'Jeanne', 'role' => 'Bewoonster', 'image' => null, 'story' => 'Kan niet meer zingen, maar ze wiegt mee op het ritme. Dat is haar manier van deelnemen aan het zangmoment.'],
+                ['name' => 'André', 'role' => 'Bewoner', 'image' => null, 'story' => 'Ziet slecht. De begeleidster drukt de quizkaarten extra groot af zodat hij kan meelezen.'],
+                ['name' => 'Fatima', 'role' => 'Bewoonster', 'image' => null, 'story' => 'Spreekt weinig Nederlands. Via beeldkaarten kiest ze zelf welke activiteit ze wil doen.'],
+            ],
+            'reflection_subtitle' => 'Eerlijk kijken naar wie je wel en niet bereikt.',
+            'reflection_questions' => [
+                'Kan elke bewoner op zijn of haar manier deelnemen aan mijn activiteiten?',
+                'Denk ik bij het plannen na over toegankelijkheid?',
+                'Welke bewoners bereik ik niet en waarom?',
+            ],
+            'tip_title' => 'Tip: denk in deelnamevormen',
+            'tip_text' => 'Eén activiteit, meerdere manieren om mee te doen. Luisteren, kijken, voelen, bewegen — het zijn allemaal geldige vormen van participatie. Bekijk bestaande initiatieven en vraag je af: wie sluit ik onbedoeld uit?',
+            'initiatives_heading' => 'Initiatieven waar iedereen welkom is',
+        ],
+
+        'autonomie' => [
+            'letter' => 'A',
+            'keyword' => 'Autonomie',
+            'slug' => 'autonomie',
+            'tagline' => 'De bewoner kiest',
+            'quote' => 'Niet: wij weten wat het beste is. Maar: wat kiest deze persoon zelf?',
+
+            'ik_wil' => 'Bewoners hebben keuze, bepalen (mee) wat er gebeurt.',
+            'description' => 'De eerste A van DIAMANT staat voor Autonomie: het recht en de mogelijkheid om zelf keuzes te maken. Ook in een zorgomgeving willen bewoners regie houden — over wat ze doen, wanneer, en met wie.',
+            'author_name' => 'Maite Mallentjer',
+            'author_role' => 'pedagoog dagbesteding',
+            'challenges' => [
+                'Keuzevrijheid bieden binnen de structuur van een dagprogramma.',
+                'Bewoners laten kiezen zonder hen te overbelasten met opties.',
+                'Autonomie respecteren wanneer een bewoner "nee" zegt.',
+            ],
+            'practice_subtitle' => 'Kleine keuzes geven groot gevoel van regie.',
+            'practice_examples' => [
+                ['name' => 'Georgette', 'role' => 'Muziekliefhebster', 'image' => null, 'story' => 'Kiest elke vrijdag welk muzieknummer als eerste wordt gespeeld. Dat moment is van haar.'],
+                ['name' => 'Maurice', 'role' => 'Bewoner', 'image' => null, 'story' => 'Wil niet meedoen aan de groepsactiviteit. De begeleidster respecteert zijn keuze zonder aan te dringen.'],
+                ['name' => 'Lea', 'role' => 'Knutselaarster', 'image' => null, 'story' => 'Legt zelf de materialen klaar voor de knutselnamiddag. Ze beslist wat er gemaakt wordt.'],
+            ],
+            'reflection_subtitle' => 'Durven loslaten begint bij jezelf.',
+            'reflection_questions' => [
+                'Bied ik bewoners voldoende keuzemogelijkheden aan?',
+                'Respecteer ik een "nee" zonder aan te dringen?',
+                'Hoe kan ik meer eigen regie stimuleren binnen mijn activiteiten?',
+            ],
+            'tip_title' => 'Tip: bied keuze aan, geen verplichting',
+            'tip_text' => 'Twee opties zijn vaak genoeg. "Wil je meedoen met de wandeling of liever hier iets lezen?" geeft regie zonder te overweldigen. Bekijk initiatieven die keuzevrijheid inbouwen.',
+            'initiatives_heading' => 'Initiatieven die eigen regie versterken',
+        ],
+
+        'mensgericht' => [
+            'letter' => 'M',
+            'keyword' => 'Mensgericht',
+            'slug' => 'mensgericht',
+            'tagline' => 'Bij het levensverhaal',
+            'quote' => 'Niet: wat is het zorgprofiel? Maar: wie is deze mens?',
+
+            'ik_wil' => 'Vertrekken vanuit levensverhaal en identiteit van de persoon.',
+            'description' => 'De M van Mensgericht gaat over het vertrekken vanuit wie de bewoner is als persoon. Een activiteit is pas waardevol als ze aansluit bij het levensverhaal, de identiteit en de voorkeuren van de bewoner. Het draait om de mens achter de zorgvraag.',
+            'author_name' => 'Maite Mallentjer',
+            'author_role' => 'pedagoog dagbesteding',
+            'challenges' => [
+                'Ontdekken wat voor elke individuele bewoner belangrijk is.',
+                'Vermijden dat activiteiten als "kinderachtig" worden ervaren.',
+                'Aansluiten bij de identiteit van bewoners met gevorderde dementie.',
+            ],
+            'practice_subtitle' => 'Wie is deze mens? Daar begint het mee.',
+            'practice_examples' => [
+                ['name' => 'Roger', 'role' => 'Bakker', 'image' => null, 'story' => 'Was bakker. Tijdens het bakmoment vertelt hij over zijn ambacht — de groep luistert geboeid.'],
+                ['name' => 'Bertha', 'role' => 'Zorgende moeder', 'image' => null, 'story' => 'Zorgde altijd voor anderen. Ze helpt nu bij het dekken van de tafel en voelt zich nuttig.'],
+                ['name' => 'Kamiel', 'role' => 'Voetbaltrainer', 'image' => null, 'story' => 'Was voetbaltrainer. Hij kijkt elke zondag naar de match en analyseert de tactiek met medebewoners.'],
+            ],
+            'reflection_subtitle' => 'Ken ik de mens achter de bewoner?',
+            'reflection_questions' => [
+                'Weet ik wat mijn bewoners vroeger belangrijk vonden in hun leven?',
+                'Vertrek ik vanuit de persoon of vanuit de activiteit?',
+                'Hoe kan ik meer aansluiten bij individuele levensverhalen?',
+            ],
+            'tip_title' => 'Tip: maak een levensverhaal zichtbaar',
+            'tip_text' => 'Een kort gesprek met familie kan verrassende inzichten opleveren. Wat deed deze persoon graag? Wat gaf energie? Gebruik die informatie om bestaande initiatieven persoonlijker te maken.',
+            'initiatives_heading' => 'Initiatieven die vertrekken vanuit de persoon',
+        ],
+
+        'anderen' => [
+            'letter' => 'A',
+            'keyword' => 'Anderen',
+            'slug' => 'anderen',
+            'tagline' => 'Samen is meer',
+            'quote' => 'Niet: we zitten samen in de zaal. Maar: zijn we echt met elkaar verbonden?',
+
+            'ik_wil' => 'Sociale verbinding en wederkerigheid — niet naast maar met elkaar.',
+            'description' => 'De tweede A van DIAMANT staat voor Anderen: verbinding met medebewoners, medewerkers, familie en de buitenwereld. Het gaat om echte sociale interactie en wederkerigheid. Niet naast elkaar zitten, maar met elkaar bezig zijn.',
+            'author_name' => 'Maite Mallentjer',
+            'author_role' => 'pedagoog dagbesteding',
+            'challenges' => [
+                'Echte verbinding creëren, niet alleen fysieke nabijheid.',
+                'Bewoners die moeite hebben met sociale interactie toch betrekken.',
+                'De band met familie en de buitenwereld onderhouden.',
+            ],
+            'practice_subtitle' => 'Verbinding ontstaat in de kleine dingen.',
+            'practice_examples' => [
+                ['name' => 'Hilda & Willy', 'role' => 'Bewoners', 'image' => null, 'story' => 'Drinken elke ochtend samen koffie. Ze praten niet altijd — soms is samen stilzijn genoeg.'],
+                ['name' => 'Leerlingen', 'role' => 'Basisschool', 'image' => null, 'story' => 'Komen wekelijks voorlezen. De bewoners stralen als de kinderen binnenkomen.'],
+                ['name' => 'Marcel', 'role' => 'Grootvader', 'image' => null, 'story' => 'Belt elke donderdag met zijn kleinzoon via de tablet. De begeleidster helpt hem met de verbinding.'],
+            ],
+            'reflection_subtitle' => 'Verbinding vraagt aandacht, geen programma.',
+            'reflection_questions' => [
+                'Stimuleren mijn activiteiten echte ontmoeting en gesprek?',
+                'Weet ik welke bewoners eenzaam zijn?',
+                'Hoe betrek ik familie en vrijwilligers bij het activiteitenaanbod?',
+            ],
+            'tip_title' => 'Tip: creëer ontmoetingsmomenten',
+            'tip_text' => 'Verbinding hoeft niet georganiseerd te worden. Een gezellige koffiehoek, een wandeling met twee — soms is een setting genoeg. Bekijk initiatieven die ontmoeting centraal stellen.',
+            'initiatives_heading' => 'Initiatieven die verbinding maken',
+        ],
+
+        'normalisatie' => [
+            'letter' => 'N',
+            'keyword' => 'Normalisatie',
+            'slug' => 'normalisatie',
+            'tagline' => 'Gewoon waar het kan',
+            'quote' => 'Niet: het is tijd voor de activiteit. Maar: het is gewoon een mooie dag.',
+
+            'ik_wil' => 'Aansluiten bij het gewone leven — huiselijk, niet schools.',
+            'description' => 'De N van Normalisatie draait om het aansluiten bij het gewone leven. Activiteiten mogen niet schools of kunstmatig aanvoelen. Het gaat om een huiselijke sfeer, herkenbare bezigheden en een normaal dagritme — zo dicht mogelijk bij hoe het leven buiten het woonzorgcentrum eruitziet.',
+            'author_name' => 'Maite Mallentjer',
+            'author_role' => 'pedagoog dagbesteding',
+            'challenges' => [
+                'Activiteiten organiseren die niet als "les" of "therapie" aanvoelen.',
+                'Een huiselijke sfeer creëren in een institutionele omgeving.',
+                'Het dagritme afstemmen op wat bewoners gewoon zijn van thuis.',
+            ],
+            'practice_subtitle' => 'Het gewone leven als inspiratie.',
+            'practice_examples' => [
+                ['name' => 'Cecile', 'role' => 'Krantenlezer', 'image' => null, 'story' => 'Leest elke ochtend de krant aan de keukentafel — niet in de activiteitenruimte, maar in de huiskamer.'],
+                ['name' => 'Louis', 'role' => 'Tuinman', 'image' => null, 'story' => 'Geeft de planten water. Elke dag hetzelfde rondje, zoals hij dat thuis ook deed.'],
+                ['name' => 'Bewoners', 'role' => 'Bakliefhebbers', 'image' => null, 'story' => 'De geur van vers gebakken appeltaart verspreidt zich door de gang. Bewoners komen spontaan kijken.'],
+            ],
+            'reflection_subtitle' => 'Voelt het hier aan als thuis?',
+            'reflection_questions' => [
+                'Voelen mijn activiteiten aan als een normaal onderdeel van de dag?',
+                'Lijkt de omgeving op een thuis of eerder op een instelling?',
+                'Hoe kan ik meer aansluiten bij het gewone dagelijkse leven?',
+            ],
+            'tip_title' => 'Tip: gebruik het dagelijks leven',
+            'tip_text' => 'De beste activiteiten zijn soms geen activiteiten. Samen koken, de tafel dekken, de was opvouwen — het zijn herkenbare handelingen die structuur en zinvolheid geven.',
+            'initiatives_heading' => 'Initiatieven die het gewone leven eren',
+        ],
+
+        'talent' => [
+            'letter' => 'T',
+            'keyword' => 'Talent',
+            'slug' => 'talent',
+            'tagline' => 'Krachten laten schitteren',
+            'quote' => 'Niet: wat kan deze bewoner nog? Maar: wat kan deze persoon ons brengen?',
+
+            'ik_wil' => 'Focussen op wat iemand wél kan, krachten benutten.',
+            'description' => 'De T van Talent gaat over het zien en benutten van wat bewoners wél kunnen. Iedereen heeft talenten, vaardigheden en kennis — ook op hoge leeftijd, ook met beperkingen. Talent zichtbaar maken geeft waardering en eigenwaarde.',
+            'author_name' => 'Maite Mallentjer',
+            'author_role' => 'pedagoog dagbesteding',
+            'challenges' => [
+                'Talenten ontdekken bij bewoners die zichzelf onderschatten.',
+                'Talenten inzetten zonder druk of verwachtingen te creëren.',
+                'Nieuwe talenten laten ontdekken op latere leeftijd.',
+            ],
+            'practice_subtitle' => 'Herkenbare momenten uit het dagelijks leven.',
+            'practice_examples' => [
+                ['name' => 'Frans', 'role' => 'Boekhouder', 'image' => null, 'story' => 'Was boekhouder. Nu leest hij elke week de teksten voor bij de huiskameractiviteit. Zijn heldere stem geeft de groep rust.'],
+                ['name' => 'Wiske', 'role' => 'Zangeres', 'image' => null, 'story' => 'Zong vroeger in het kerkkoor. Tijdens het zangmoment neemt ze spontaan de leiding — en de groep volgt.'],
+                ['name' => 'Meneer Peeters', 'role' => 'Tuinier', 'image' => null, 'story' => 'Was tuinier van beroep. Hij adviseert nu de begeleidster over de moestuin op het terras.'],
+            ],
+            'reflection_subtitle' => 'Niet als test, maar als spiegel.',
+            'reflection_questions' => [
+                'Ken ik de talenten en vroegere hobby\'s van mijn bewoners?',
+                'Geef ik bewoners de kans om hun expertise te delen?',
+                'Hoe maak ik talenten zichtbaar en bespreekbaar?',
+            ],
+            'tip_title' => 'Tip: verrijk een bestaand initiatief',
+            'tip_text' => 'Je hoeft niet alles van nul te starten. Bekijk de bestaande initiatieven en denk na: hoe kan ik dit verrijken met aandacht voor talent?',
+            'initiatives_heading' => 'Initiatieven die talent laten schitteren',
+        ],
+    ],
+
+];

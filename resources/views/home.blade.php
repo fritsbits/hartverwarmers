@@ -1,63 +1,134 @@
-<x-layout title="Ontdek activiteiten">
-    <section class="text-center">
-        <div class="py-16 max-w-200 mx-auto">
-            <h1 class="mb-4">Deel deugddoende activiteiten</h1>
-            <p class="text-[var(--color-text-secondary)] text-xl font-light">Spaar tijd uit met honderden activiteiten en printbare bestanden ingezonden door activiteitenbegeleiders in de ouderenzorg.</p>
+<x-layout title="Laat je bewoners schitteren">
+    <!-- Hero Section -->
+    <section class="bg-[var(--color-bg-cream)] text-center">
+        <div class="py-20 max-w-3xl mx-auto px-6">
+            <h1 class="text-5xl mb-4">Laat je bewoners schitteren</h1>
+            <p class="text-[var(--color-text-secondary)] text-2xl font-light mb-8">
+                Hartverwarmers helpt begeleiders in woonzorgcentra om elke dag iets betekenisvols mogelijk te maken. Met {{ $stats['initiatives'] }} initiatieven gedeeld door {{ $stats['contributors'] }} collega's.
+            </p>
+
+            <!-- Search bar -->
+            <form action="{{ route('initiatives.index') }}" method="GET" class="max-w-xl mx-auto">
+                <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[var(--color-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                    <input type="text" name="search" placeholder="Zoek een initiatief, thema of materiaal..." class="w-full pl-12 pr-4 py-3.5 rounded-full border border-[var(--color-border-light)] bg-white text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent shadow-sm placeholder:text-[var(--color-text-secondary)]">
+                </div>
+            </form>
         </div>
+    </section>
 
-
-    <!-- Featured Activities -->
-    @if($activities->isNotEmpty())
-        <section class="bg-[var(--color-bg-white)]">
-            <div class="max-w-6xl mx-auto px-6 py-12">
-                <h2 class="text-2xl mb-8 text-center">Recente activiteiten</h2>
+    <!-- Featured Initiatives -->
+    @if($initiatives->isNotEmpty())
+        <section class="bg-[var(--color-bg-base)]">
+            <div class="max-w-6xl mx-auto px-6 py-16">
+                <div class="mb-10">
+                    <span class="section-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                        </svg>
+                        Ontdek initiatieven
+                    </span>
+                    <h2 class="text-2xl">Wat ga je vandaag doen?</h2>
+                    <p class="text-[var(--color-text-secondary)] mt-2">Seizoensgebonden inspiratie en de nieuwste bijdragen van collega's</p>
+                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($activities as $activity)
-                        <x-activity-card :activity="$activity" />
+                    @foreach($initiatives->take(3) as $initiative)
+                        <x-initiative-card :initiative="$initiative" />
                     @endforeach
-            </div>
+                </div>
 
-            <div class="text-center mt-12">
-                <a href="{{ route('activities.index') }}" class="cta-link text-lg">
-                    Bekijk alle activiteiten
-                </a>
-            </div>
+                <div class="text-center mt-10">
+                    <a href="{{ route('initiatives.index') }}" class="cta-link">
+                        Bekijk alle initiatieven
+                    </a>
+                </div>
             </div>
         </section>
     @endif
 
-    <!-- Value Proposition -->
-    <section class="bg-[var(--color-bg-subtle)] py-16">
-        <div class="max-w-6xl mx-auto px-6 text-center">
-            <h2 class="mb-6">Waarom Hartverwarmers?</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
-                <div>
-                    <div class="text-[var(--color-primary)] text-4xl mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                    </div>
-                    <h3 class="font-semibold mb-2">Uitgebreide bibliotheek</h3>
-                    <p class="text-[var(--color-text-secondary)]">Honderden activiteiten voor elke doelgroep en interesse.</p>
+    <!-- Recent Elaborations -->
+    @if($recentElaborations->isNotEmpty())
+        <section class="bg-[var(--color-bg-base)]">
+            <div class="max-w-6xl mx-auto px-6 pb-16">
+                <h3 class="text-xl mb-6">Recent gedeeld</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($recentElaborations->take(3) as $elaboration)
+                        <x-elaboration-card :elaboration="$elaboration" />
+                    @endforeach
                 </div>
-                <div>
-                    <div class="text-[var(--color-primary)] text-4xl mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                        </svg>
-                    </div>
-                    <h3 class="font-semibold mb-2">Print-klaar</h3>
-                    <p class="text-[var(--color-text-secondary)]">Elke activiteit direct printbaar voor je team of leefgroep.</p>
+            </div>
+        </section>
+    @endif
+
+    <!-- DIAMANT Kompas -->
+    <section class="bg-[var(--color-bg-cream)] py-16">
+        <div class="max-w-6xl mx-auto px-6">
+            <span class="section-label">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                </svg>
+                Het DIAMANT-kompas
+            </span>
+            <h2 class="text-2xl mb-3">Zeven doelen om bewoners te laten schitteren</h2>
+            <p class="text-[var(--color-text-secondary)] max-w-2xl mb-6">
+                Het DIAMANT-model biedt zeven doelstellingen die je helpen om van een gewone dag een waardevolle dag te maken. Elke letter staat voor een manier van kijken: wat maakt deze dag betekenisvol voor deze bewoner?
+            </p>
+
+            <a href="{{ route('goals.index') }}" class="cta-link text-sm mb-8 inline-flex">Meer over het DIAMANT-model</a>
+
+            <!-- DIAMANT Letter Buttons -->
+            <div x-data="{ activeGoal: '{{ $firstFacetSlug }}' }" class="mt-8">
+                <div class="flex gap-2 mb-6">
+                    @foreach($facets as $slug => $facet)
+                        <button
+                            @click="activeGoal = '{{ $slug }}'"
+                            :class="activeGoal === '{{ $slug }}' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-[var(--color-primary)] border border-[var(--color-border-light)]'"
+                            class="w-10 h-10 rounded-full font-bold text-sm font-[var(--font-heading)] transition-colors"
+                        >
+                            {{ $facet['letter'] }}
+                        </button>
+                    @endforeach
                 </div>
-                <div>
-                    <div class="text-[var(--color-primary)] text-4xl mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
+
+                <!-- Goal Details -->
+                @foreach($facets as $slug => $facet)
+                    <div x-show="activeGoal === '{{ $slug }}'" x-cloak class="bg-white rounded-xl border border-[var(--color-border-light)] p-6">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="diamant-badge-sm">{{ $facet['letter'] }}</span>
+                            <h3 class="text-lg">{{ $facet['keyword'] }}</h3>
+                        </div>
+                        <p class="font-semibold text-[var(--color-text-primary)] mb-2">{{ $facet['ik_wil'] }}</p>
+                        <p class="text-sm text-[var(--color-text-secondary)] mb-4">{{ Str::limit($facet['description'], 200) }}</p>
+
+                        @if(!empty($facet['practice_examples']))
+                            <ul class="space-y-1.5 mb-4">
+                                @foreach(array_slice($facet['practice_examples'], 0, 3) as $example)
+                                    <li class="flex items-start gap-2 text-sm text-[var(--color-text-primary)]">
+                                        <span class="text-[var(--color-primary)] mt-0.5">&rarr;</span>
+                                        <span class="font-semibold">{{ $example['name'] }}</span> — {{ $example['story'] }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+
+                        @if(($goalInitiativeCounts[$slug] ?? 0) > 0)
+                            <a href="{{ route('goals.show', $slug) }}" class="cta-link text-sm">
+                                Bekijk alle {{ $goalInitiativeCounts[$slug] }} initiatieven voor {{ $facet['keyword'] }}
+                            </a>
+                        @else
+                            <a href="{{ route('goals.show', $slug) }}" class="cta-link text-sm">
+                                Bekijk initiatieven voor {{ $facet['keyword'] }}
+                            </a>
+                        @endif
                     </div>
-                    <h3 class="font-semibold mb-2">Door collega's</h3>
-                    <p class="text-[var(--color-text-secondary)]">Activiteiten gedeeld door ervaren activiteitenbegeleiders.</p>
+                @endforeach
+
+                <div class="text-center mt-8">
+                    <a href="{{ route('goals.index') }}" class="cta-link">Alle 7 doelstellingen bekijken</a>
                 </div>
             </div>
         </div>

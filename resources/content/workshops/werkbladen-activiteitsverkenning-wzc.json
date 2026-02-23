@@ -1,0 +1,53 @@
+{
+  "_type": "workshop",
+  "_published": true,
+  "_meta": {
+    "title": "Herbekijk klassieke groepsactiviteiten",
+    "description": "Een visuele oefening om bestaande activiteiten nieuw leven in te blazen door bewoners meer betekenisvol te betrekken."
+  },
+  "uid": "werkbladen-activiteitsverkenning-wzc",
+  "title": "Herbekijk klassieke groepsactiviteiten",
+  "teaser": "Een visuele oefening om bestaande activiteiten nieuw leven in te blazen door te verkennen hoe bewoners meer betekenisvol betrokken kunnen worden via 'Sense of Home'.",
+  "duration": "30-45 minuten per activiteit",
+  "audience": "Begeleiders wonen en leven",
+  "format": "Brainstorm werkbladen",
+  "preview_image": "https://images.prismic.io/soulcenterbe/b683a1e6-9a2d-4f4a-8d76-0b4414efc345_activiteitsverkenning-woonzorgcentra-sense-of-home.jpg",
+  "hero_image": "https://images.prismic.io/soulcenterbe/b683a1e6-9a2d-4f4a-8d76-0b4414efc345_activiteitsverkenning-woonzorgcentra-sense-of-home.jpg",
+  "hero_description": "Help zorgmedewerkers om systematisch na te denken over hoe bewonersparticipatie in groepsactiviteiten verhoogd kan worden. Zorg dat meer bewoners zich betrokken en gewaardeerd voelen via drie dimensies van thuisgevoel.",
+  "goal": [
+    "Help zorgmedewerkers systematisch nadenken over bewonersparticipatie in groepsactiviteiten.",
+    "Ga van aanbodgericht programmeren naar meer inclusieve benaderingen.",
+    "Zorg dat meer bewoners zich betrokken en gewaardeerd voelen via drie dimensies van thuisgevoel."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Introduceer de workshop met de 'bootmetafoor' om bredere bewonerbetrokkenheid te illustreren."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Selecteer een groepsactiviteit om te revitaliseren; brainstorm gezamenlijk acties."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Verken de sociale dimensie (erbij horen, gemeenschapswaarde, bijdrage)."
+    },
+    {
+      "title": "Stap 4",
+      "content": "Verken de persoonlijke dimensie (autonomie, keuze, gewoontes voortzetten)."
+    },
+    {
+      "title": "Stap 5",
+      "content": "Verken de maatschappelijke dimensie (verbinding buiten de instelling, familiebetrokkenheid)."
+    },
+    {
+      "title": "Stap 6",
+      "content": "Verzamel ideeën voor directe toepassing of toekomstige evaluatie."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/ac48a0d9-7d32-4d19-9ef7-4d16bb906031_Brainstormblad+activiteitsverkenning.pdf",
+    "label": "Download brainstormbladen (A4 of A3)",
+    "description": "Download de brainstormbladen voor activiteitsverkenning."
+  }
+}

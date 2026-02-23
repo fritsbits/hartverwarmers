@@ -1,0 +1,65 @@
+{
+    "_meta": {
+        "description": "",
+        "image": "/img/lessenreeks/sense-of-home/share-image.jpg"
+    },
+    "_published": true,
+    "_type": "overview",
+    "_template": "courses.index",
+    "title": "Vijf stemmen, vijf ondersteuningsvragen",
+    "description": [
+        "Maite Mallentjer is de auteur van het boek 'a sense of home', dat woonzorgcentra inspireert om bewoners een thuisgevoel te geven.",
+        "Als team kan je heel praktisch aan de slag met Maite's concept ‘vijf stemmen’. Vijf gedragingen van bewoners die een teken zijn van een ondersteuningsnood.",
+        "In deze lessenreeks gidst Maite ons door de vijf verschillende stemmen. Ze ging in gesprek met vijf bewoners en toont je hoe je een stem kan opmerken, welke ondersteuningsvraag hierachter schuilt en hoe je daar best op kan reageren.",
+        "Met dank aan WZC Sint Jozef te Rumst voor de locatie van onze gesprekken en home Sint Jozef te Berchem waar de ouderen wonen."
+    ],
+    "video": "e89Kwd5yCb4",
+    "credits": "Door Soulcenter en Maite Mallentjer",
+    "facts": [
+        {
+            "icon": "video_library",
+            "text": "5 videos"
+        },
+        {
+            "icon": "access_time",
+            "text": "37 minuten materiaal"
+        }
+    ],
+    "author": {
+        "image": {
+            "src": "/img/wonen-en-leven/maitemallentjer.jpg",
+            "class": "avatar--mirrored"
+        },
+        "name": "Maite Mallentjer",
+        "firstName": "Maite",
+        "text": "Lector levenslooppsychologie aan AP Hogeschool en auteur van 'a sense of home'.",
+        "links": [{
+            "icon": "info",
+            "label": "Meer over 'a sense of home'",
+            "type": "route",
+            "params": [
+                "content",
+                ["wonen-en-leven/sense-of-home"]
+            ]}, {
+            "icon": "file_copy",
+            "label": "Download stemmengids (PDF)",
+            "type": "path",
+            "params": [
+                "/pdf/sense-of-home-stemmengids.pdf"
+            ]}, {
+            "icon": "book",
+            "label": "Bestel handboek 'a sense of home'",
+            "url": "https://senseofhome.ap.be/boek"
+        }],
+        "social": [
+            {
+                "type": "linkedin",
+                "url": "https://be.linkedin.com/in/maite-mallentjer-16347b176"
+            },
+            {
+                "type": "website",
+                "url": "https://senseofhome.ap.be/"
+            }
+        ]
+    }
+}

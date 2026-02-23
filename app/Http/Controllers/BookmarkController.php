@@ -2,37 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Activity;
+use App\Models\Elaboration;
 use App\Models\Like;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
 {
-    /**
-     * Toggle bookmark for an activity.
-     */
-    public function toggle(Request $request, Activity $activity): RedirectResponse
+    public function toggle(Request $request, Elaboration $elaboration): RedirectResponse
     {
         $user = $request->user();
 
         $bookmark = Like::where('user_id', $user->id)
-            ->where('likeable_type', Activity::class)
-            ->where('likeable_id', $activity->id)
+            ->where('likeable_type', Elaboration::class)
+            ->where('likeable_id', $elaboration->id)
             ->where('type', 'bookmark')
             ->first();
 
         if ($bookmark) {
             $bookmark->delete();
-            $message = 'Activiteit verwijderd uit bookmarks.';
+            $message = 'Uitwerking verwijderd uit bookmarks.';
         } else {
             Like::create([
                 'user_id' => $user->id,
-                'likeable_type' => Activity::class,
-                'likeable_id' => $activity->id,
+                'likeable_type' => Elaboration::class,
+                'likeable_id' => $elaboration->id,
                 'type' => 'bookmark',
             ]);
-            $message = 'Activiteit toegevoegd aan bookmarks.';
+            $message = 'Uitwerking toegevoegd aan bookmarks.';
         }
 
         return back()->with('status', $message);

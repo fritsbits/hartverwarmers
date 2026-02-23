@@ -1,0 +1,156 @@
+{
+  "_meta": {
+    "title": "Tubbe model introductie voor woonzorgcentra",
+    "description": "Overzichtelijke samenvatting van het Tubbemodel. Makkelijk om te vergelijken met andere aanpakken rond wonen en leven in woonzorgcentra.",
+    "image": "/img/content/tubbemodel_01.jpg"
+  },
+  "_type": "page",
+  "_template": "live-and-life",
+  "_published": true,
+  "title": "Tubbemodel",
+  "description": "Een huis waar het goed wonen en werken is",
+  "date": "2019",
+  "author": "Koning Boudewijnstichting",
+  "images": [
+    {
+      "src": "/img/content/tubbemodel_01.jpg",
+      "alt": "Het Tubbemodel: Een huis waar het goed wonen en werken is"
+    }
+  ],
+  "subtitle": "Een huis waar het goed wonen en werken is",
+  "intro": [
+    "Tubbe is een organisatie- en managementmodel van Zweedse origine. De Koning Boudewijnstichting (KBS) helpt Tubbe te implementeren in België.",
+    "Tubbe wil een woonomgeving creëren waar bewoners zich écht thuis voelen en waar ze zo veel mogelijk zin en betekenis ervaren. Het model stimuleert gezamenlijk beslissen en streeft naar participatie van iedereen (bewoners, personeel, families…). Het doel? Het woonzorgcentrum als  een aangename, motiverende woon-, leef- en werkplek, waar ieders vaardigheden aan bod kunnen komen.",
+    "Zoals elke bewoner, is ook elk woonzorgcentrum uniek. Het Tubbemodel volgt dan ook geen strikt kader of pasklaar sjabloon. Er staan tien basisprincipes centraal. Je vindt ze terug onder ‘kernconcepten’."
+  ],
+  "intro_facts": [
+    {
+      "icon": "people",
+      "title": "Doelgroep",
+      "text": "Bewoners, familieleden en medewerkers"
+    },
+    {
+      "icon": "search",
+      "title": "Onderzoek",
+      "text": "Het model werd gedurende anderhalf jaar in zes Belgische woonzorgcentra uitgetest en geëvalueerd. In 2020 zal een nieuwe lichting woonzorgcentra met het model aan de slag gaan."
+    }
+  ],
+  "quote": {
+    "image": {
+      "src": "/img/wonen-en-leven/lilianbohlin.jpg",
+      "alt": "Lilian Bohlin"
+    },
+    "author": {
+      "name": "Lilian Bohlin",
+      "relation": "Directeur van het Tubberödshus"
+    },
+    "text": "Het minste wat een senior mag verwachten aan het einde van een lang leven is het recht om voor zijn gedachten en wensen uit te komen. En dat is even waar in België als in Zweden."
+  },
+  "expectations": {
+    "checklist": [
+      {
+        "checked": true,
+        "name": "Totaalbenadering"
+      },
+      {
+        "checked": false,
+        "name": "Stappenplan"
+      },
+      {
+        "checked": true,
+        "name": "Theoretisch kader"
+      },
+      {
+        "checked": true,
+        "name": "Werk- en hulpmiddelen"
+      },
+      {
+        "checked": false,
+        "name": "Verhaal als startpunt"
+      },
+      {
+        "checked": true,
+        "name": "Coachingstraject mogelijk"
+      }
+    ],
+    "results": [
+      "Betrekt bewoners volledig bij het leven in het woonzorgcentrum, bijvoorbeeld via themagroepen, bij het uitwerken van evenementen, bij het klaarmaken van de maaltijden of bij het verdelen van de post.",
+      "Laat personeelsleden uit hun rol als verzorgende stappen en helpt hen om ook andere vaardigheden en talenten in te zetten.",
+      "Moedigt personeelsleden aan om meer tijd door te brengen met de bewoners en om te luisteren naar hun noden en wensen.",
+      "Verandert de rol van de directie en laat hen veeleer als coach dan als manager fungeren.",
+      "Moedigt de verbondenheid met families aan, bijvoorbeeld via de participatie aan maaltijden en de activiteiten van de instelling.",
+      "Verbetert de zorg op afdelingen.",
+      "Geeft personeelsleden sterker het gevoel ‘dat ze invloed hebben op de manier waarop hun afdeling werkt’.",
+      "Geeft bewoners sterker het gevoel dat ze kunnen overleggen bij nemen van beslissingen (over voeding, meubilair, activiteiten…).",
+      "Geeft meer bewoners gevoel dat “het personeel luistert als ze vragen of problemen hebben”."
+    ]
+  },
+  "core-concepts": [
+    {
+      "title": "Autonomie",
+      "text": "De Tubbelogica bevordert de autonomie en het gevoel van eigenwaarde  door het respecteren van ieders zelfbeslissingsrecht. De autonomie van de bewoners gaat er hand in hand met de autonomie van de personeelsleden."
+    },
+    {
+      "title": "Coaching",
+      "text": "Op directieniveau evolueert men van een ‘piramidaal management’ naar meer coaching. De directeurs zijn niet langer dé verantwoordelijken voor alles. Zij worden coaches en moedigen de teams aan om zo veel mogelijk zelf naar oplossingen te zoeken."
+    },
+    {
+      "title": "Samen beslissen",
+      "text": "Via thematische werkgroepen, worden de bewoners systematisch betrokken bij tal van beslissingen met impact op hun dagelijkse leven: het menu, de activiteiten, de uurroosters, versieringen, de aanwerving en evaluatie van medewerkers enz."
+    },
+    {
+      "title": "Communicatie",
+      "text": "In het Tubbemodel verloopt de communicatie zo open en duidelijk mogelijk, zowel met de bewoners als met het personeel. Iedereen moet de keuze hebben om  ‘akkoord’ of ‘niet akkoord’ te gaan."
+    },
+    {
+      "title": "Openheid",
+      "text": "Het woonzorgcentrum wil een ontmoetingsplek zijn, in rechtstreeks contact met de samenleving. Uitwisselingsmomenten worden er aangemoedigd. Niet alleen met de familie van de bewoner, maar ook met de buurtbewoners, handelaars, vrijwilligers enz. "
+    },
+    {
+      "title": "Potentieel",
+      "text": "Tubbe wil de mogelijkheden, capaciteiten en resterende competenties van de bewoners ten volle benutten. Wat iemand wél nog kan is er veel belangrijker dan wat iemand niet meer kan."
+    },
+    {
+      "title": "Relatiegericht",
+      "text": "Het model is gebaseerd op authentieke contacten tussen medewerkers en bewoners. Medewerkers werken in het huis van de bewoners."
+    },
+    {
+      "title": "Respect",
+      "text": "Respect voor de ander, met zijn noden en verwachtingen, zijn privéleven en zijn intimiteit, staat voorop. Elke kamer wordt gezien als een echte, eigen thuis."
+    },
+    {
+      "title": "Uniek",
+      "text": "Het erkennen en respecteren van ieders unieke karakter staat centraal. ‘Standaardzorg’ is er aanpasbaar en er volgt steeds een adequaat en doelgericht antwoord in functie van iemands behoeften en voorkeuren. "
+    },
+    {
+      "title": "Nut",
+      "text": "De nadruk ligt op het gevoel nuttig te zijn. Dat is belangrijk voor de bewoners én voor de medewerkers. De bewoners nemen deel aan de organisatie van activiteiten en doen hun deel van de dagelijkse taken, in de mate waarin ze dat wensen."
+    }
+  ],
+  "more-info": {
+    "title": "Meer over Tubbe ",
+    "text": "De Koning Boudewijnstichting deelt de ervaring van zes pilootprojecten die ze steunde bij het invoeren van het Tubbemodel.",
+    "video_id": "9VaYVw_SMNA",
+    "image": {
+      "src": "/img/content/tubbemodel_01.jpg",
+      "alt": "BAM boek"
+    },
+    "links": [
+      {
+        "url": "https://www.kbs-frb.be/nl/Activities/Publications/2019/20190612avc",
+        "label": "Publicatie Koning Boudewijnstichting"
+      }
+    ]
+  },
+  "related": {
+    "title": "Tubbe is een van de vele aanpakken. Ons team van Soulcenter zet alle modellen voor jou en voor onszelf graag op een rijtje."
+  },
+  "cta-soulcenter": {
+    "pre-title": "Samenvatting door Soulcenter",
+    "title": "Woon- en leefplatform voor woonzorgcentra",
+    "text": [
+      "Soulcenter geeft een praktische structuur aan Tubbe-trajecten. Concrete tools om de voorkeuren en verlangens van heel jullie woonzorggemeenschap in kaart te brengen en om er mee aan de slag te gaan. Zo bouwen jullie aan een huis waar het aangenaam wonen en werken is."
+    ]
+
+  }
+}

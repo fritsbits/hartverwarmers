@@ -1,0 +1,36 @@
+{
+  "_type": "tool",
+  "_published": true,
+  "_meta": {
+    "title": "Hartverwarmers activiteitendatabank",
+    "description": "Een gezamenlijke activiteitendatabank gemaakt door en voor woonzorgcentra. Meer dan 130 inspirerende activiteiten gedeeld door medewerkers."
+  },
+  "uid": "hartverwarmers-activiteitendatabank-en-boek",
+  "title": "Hartverwarmers activiteitendatabank",
+  "teaser": "Een gezamenlijke activiteitendatabank gemaakt door en voor woonzorgcentra. Meer dan 130 inspirerende activiteiten gedeeld door medewerkers.",
+  "format": "Online databank",
+  "preview_image": "https://images.prismic.io/soulcenterbe/337849eb-f37c-4b10-80ca-db99bdec466d_hartverwarmers-hero.jpg",
+  "hero_image": "https://images.prismic.io/soulcenterbe/337849eb-f37c-4b10-80ca-db99bdec466d_hartverwarmers-hero.jpg",
+  "hero_description": "Een gezamenlijke activiteitendatabank gemaakt door en voor woonzorgcentra. Meer dan 130 inspirerende activiteiten zijn gedeeld door medewerkers binnen de zorggemeenschap.",
+  "goal": [
+    "Bespaar tijd door gebruik te maken van de expertise van tientallen activiteitenbegeleiders uit Vlaanderen en Nederland.",
+    "Krijg toegang tot concrete, direct toepasbare activiteiten met handleidingen en voorbeeldmateriaal.",
+    "Richt je aandacht op wat echt telt: betekenisvolle interactie met bewoners."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Breng de interesses van bewoners in kaart om gepersonaliseerde activiteiten aan te bieden. Gebruik hiervoor de conversatiekaarten en bijbehorende vragenlijsten op het platform."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Zoek inspiratie op de Hartverwarmers website met filterbare interessecategorieën. Pas gevonden activiteiten aan op basis van individuele mogelijkheden en voorkeuren van bewoners."
+    }
+  ],
+  "links": [
+    {
+      "url": "https://hartverwarmers.be/activiteiten",
+      "label": "Bekijk de activiteitendatabank"
+    }
+  ]
+}

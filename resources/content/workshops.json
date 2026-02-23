@@ -1,0 +1,29 @@
+{
+  "_type": "overview",
+  "_published": true,
+  "title": "Workshops",
+  "description": "Doe-het-zelf-workshops Wonen & leven in het woonzorgcentrum",
+  "categories": {
+    "visie": {
+      "title": "Visie",
+      "subtitle": "Krijg de neuzen in dezelfde richting",
+      "color": "yellow",
+      "icon": "emoji_objects",
+      "items": ["visiecanvassen-zinvolle-dagbesteding", "dagbesteding-barometer-ouderenzorg"]
+    },
+    "proces": {
+      "title": "Proces",
+      "subtitle": "Evalueer jullie aanpak en stuur bij",
+      "color": "red",
+      "icon": "account_tree",
+      "items": ["dagbesteding-groeiplanner", "actiepunten-stappenplan-relatiegerichte-zorg", "woonleefcanvas", "intervisie-werkbladen-relatiegerichte-zorg", "zoek-kansen-voor-zinvolle-activiteiten-binnen-jullie-aanpak"]
+    },
+    "activiteiten": {
+      "title": "Invulling activiteiten",
+      "subtitle": "Vernieuw het aanbod",
+      "color": "blue",
+      "icon": "favorite",
+      "items": ["werkbladen-activiteitsverkenning-wzc", "activiteitentoetser-zinvolle-dagbesteding-woonzorgcentra"]
+    }
+  }
+}

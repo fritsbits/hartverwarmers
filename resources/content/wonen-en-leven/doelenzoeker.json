@@ -1,0 +1,120 @@
+{
+  "_meta": {
+    "description": "Overzichtelijke samenvatting van Doelenzoeker. Makkelijk om te vergelijken met andere aanpakken rond wonen en leven in woonzorgcentra.",
+    "image": "/img/content/doelzoeker_vlaamspatientenforum_01.jpg"
+  },
+  "_type": "page",
+  "_template": "live-and-life",
+  "_published": true,
+  "title": "Doelzoeker",
+  "description": "Samen onderweg naar persoonlijke zorg",
+  "date": "2017",
+  "author": "Vlaams Patiëntenplatform",
+  "images": [
+    {
+      "src": "/img/content/doelzoeker_vlaamspatientenforum_01.jpg",
+      "alt": "Doelzoeker: Samen onderweg naar persoonlijke zorg"
+    },
+    {
+      "src": "/img/content/doelzoeker_vlaamspatientenforum_02.jpg",
+      "alt": "Doelzoeker: Samen onderweg naar persoonlijke zorg"
+    },
+    {
+      "src": "/img/content/doelzoeker_vlaamspatientenforum_03.jpg",
+      "alt": "Doelzoeker: Samen onderweg naar persoonlijke zorg"
+    }
+  ],
+  "subtitle": "Samen onderweg naar persoonlijke zorg",
+  "intro": [
+    "De Doelzoeker helpt mensen na te denken over wat hen levenskwaliteit bezorgt, wat ze belangrijk vinden in het leven en wat ze graag doen. Het helpt hen om concrete levensdoelen te formuleren, zodat ze die gemakkelijker kunnen benoemen in hun gesprekken met zorgverleners.",
+    "De Doelzoeker werd ontworpen als ‘roadmap’. De bijbehorende icoontjes, foto's en zelfklevers maken het instrument intuïtief, laagdrempelig en sterk visueel. De levensweg, de vragen en de antwoorden bieden inspiratie om levensdoelen te formuleren. De Doelzoeker gebruik je niet eenmalig, maar over een langere tijdspanne."
+  ],
+  "intro_facts": [
+    {
+      "icon": "people",
+      "title": "Doelgroep",
+      "text": "Bewoners, familieleden en medewerkers"
+    }
+  ],
+  "quote": {
+    "image": {
+      "src": "/img/wonen-en-leven/suzanneopdebeeck.jpg",
+      "alt": "Susanne Op de Beeck"
+    },
+    "author": {
+      "name": "Susanne Op de Beeck",
+      "relation": "Beleidsmedewerker Vlaams Patiëntenplatform"
+    },
+    "text": "Als je als patiënt de Doelzoeker invult, krijg je meer zicht op wat voor jou belangrijk is en wat je in de toekomst wilt blijven doen. Daarover kan je dan gemakkelijker communiceren met je zorgverleners en zo kunnen ze beter rekening mee houden."
+  },
+  "expectations": {
+    "checklist": [
+      {
+        "checked": false,
+        "name": "Totaalbenadering"
+      },
+      {
+        "checked": true,
+        "name": "Stappenplan"
+      },
+      {
+        "checked": false,
+        "name": "Coachingstraject mogelijk"
+      },
+      {
+        "checked": true,
+        "name": "Verhaal als startpunt"
+      },
+      {
+        "checked": true,
+        "name": "Theoretisch kader"
+      }
+    ],
+    "results": [
+      "Vertrekt van wat een patiënt of bewoner echt belangrijk vindt. ",
+      "Helpt bewoners om gemakkelijker over hun levensdoelen te praten met hun zorgverleners, waardoor zij er ook beter rekening mee kunnen houden.",
+      "Ook bruikbaar voor mantelzorgers en zorgverleners, als hulpmiddel voor gesprek.",
+      "Laat zorgverleners beter begrijpen welke richting een patiënt of bewoner uit wil, wat helpt bij het maken van keuzes in het dagelijkse zorgen en werken."    ]
+  },
+  "core-concepts": [
+    {
+      "title": "Levensloop",
+      "text": "De idee ‘levensloop’ is het vertrekpunt: men is onderweg, komt ergens vandaan en gaat ergens naartoe. Zo’n beeld helpt bij het nadenken en vertellen over levensdoelen."
+    },
+    {
+      "title": "Basisbehoeften",
+      "text": "Er komen in de Doelzoeker telkens drie basisbehoeften aan bod: autonomie (iemands psychologische vrijheid en keuzes bij het uitvoeren van een activiteit), competentie (het gevoel dat je een activiteit succesvol kan uitvoeren) en relationele verbondenheid (het ervaren van een warme en hechte band met anderen)."
+    },
+    {
+      "title": "Tijdsdimensies",
+      "text": "De Doelzoeker hanteert drie tijdsdimensies, telkens met bijbehorende vragen: het vroeger, het heden en de toekomst. Vanuit iemands verleden en heden wordt er naar de toekomst gekeken, als een goede manier om levensdoelen te formuleren."
+    }
+  ],
+  "more-info": {
+    "title": "Meer over doelzoeker ",
+    "text": "De Doelzoeker wordt gratis ter beschikking gesteld voor patiënten. Contacteer hiervoor Susanne Op de Beeck bij het Vlaams Patiëntenplatform.",
+    "video_id" : "rmkZcIbyjP8",
+    "image": {
+      "src": "/img/content/doelzoeker_vlaamspatientenforum_01.jpg",
+      "alt": "BAM boek"
+    },
+    "links": [
+      {
+        "url": "http://vlaamspatientenplatform.be/themas/doelzoeker",
+        "label": "Info Vlaams Patiëntenforum"
+      }
+    ]
+  },
+  "related": {
+    "title": "Doelzoeker is een van de vele modellen rond persoonlijke zorg. Ons team van Soulcenter zet alle modellen voor jou en voor onszelf graag op een rijtje."
+  },
+  "cta-soulcenter": {
+    "pre-title": "Samenvatting door Soulcenter",
+    "title": "Woon- en leefplatform voor woonzorgcentra",
+    "text": [
+      "Soulcenter is een onafhankelijke dienst om woonzorgcentra persoonlijker te maken.",
+      "Bij zowel Soulcenter als de Doelzoeker staan verhalen centraal: ze dienen er om de toekomst vorm te geven. We helpen je bewoners hun eigen verhaal te vertellen en we geven jou een beter zicht op hun wensen en behoeftes. We gidsen je graag naar een meer doelgericht wonen en leven."
+    ]
+
+  }
+}

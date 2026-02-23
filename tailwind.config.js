@@ -6,30 +6,23 @@ export default {
     './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
     './vendor/livewire/flux/stubs/**/*.blade.php',
   ],
-  darkMode: 'class',
+
   theme: {
     extend: {
       fontFamily: {
         heading: ['Alan Sans', 'system-ui', 'sans-serif'],
-        body: ['Fira Sans', 'system-ui', 'sans-serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
-        'hv-red': '#E84C4F',
-        'hv-red-hover': '#D43E41',
+        'hv-coral': '#E8764B',
+        'hv-coral-hover': '#D4683F',
         'hv-blue': '#4CB7C5',
         'hv-yellow': '#F4C44E',
         'hv-purple': '#B57BB3',
-      },
-      // Custom spacing scale per design guidelines
-      spacing: {
-        'xs': '0.25rem',   // 4px
-        'sm': '0.5rem',    // 8px
-        'md': '1rem',      // 16px
-        'lg': '1.5rem',    // 24px
-        'xl': '2rem',      // 32px
-        '2xl': '3rem',     // 48px
-        '3xl': '4rem',     // 64px
-        '4xl': '6rem',     // 96px
+        'hv-cream': '#FEF8F4',
+        'hv-warm-gray': '#F5F0EC',
+        'hv-border': '#EBE4DE',
+        'hv-border-hover': '#DDD5CD',
       },
       // Custom font sizes per design guidelines
       fontSize: {
@@ -47,14 +40,19 @@ export default {
       },
       // Custom border radius
       borderRadius: {
-        'sm': '4px',
-        'md': '8px',
+        'sm': '6px',
+        'md': '12px',
       },
       // Custom line heights
       lineHeight: {
         'tight': '1.25',
         'normal': '1.6',
         'loose': '1.8',
+      },
+      // Custom box shadows with warm tones
+      boxShadow: {
+        'card': '0 2px 8px rgba(60, 40, 20, 0.05)',
+        'card-hover': '0 4px 16px rgba(60, 40, 20, 0.10)',
       },
     },
   },

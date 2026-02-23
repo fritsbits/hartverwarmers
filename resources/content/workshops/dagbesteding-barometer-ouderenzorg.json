@@ -1,0 +1,48 @@
+{
+  "_type": "workshop",
+  "_published": true,
+  "_meta": {
+    "title": "Verken huidige perceptie van team",
+    "description": "Een teamevaluatie-workshop voor zinvolle dagbesteding in woonzorgcentra, die tevredenheidsgebieden en verbeterpunten identificeert."
+  },
+  "uid": "dagbesteding-barometer-ouderenzorg",
+  "title": "Verken huidige perceptie van team",
+  "teaser": "Een teamevaluatie-workshop voor zinvolle dagbesteding in woonzorgcentra, die tevredenheidsgebieden en verbeterpunten identificeert door actieve betrokkenheid.",
+  "duration": "1-1,5 uur",
+  "audience": "Multidisciplinaire groep",
+  "format": "Poster (invulposter)",
+  "preview_image": "https://images.prismic.io/soulcenterbe/5cb72afd-deeb-48d9-a141-f75fa7b52874_team-feedback-zinvolle-activiteiten.jpg",
+  "hero_image": "https://images.prismic.io/soulcenterbe/5cb72afd-deeb-48d9-a141-f75fa7b52874_team-feedback-zinvolle-activiteiten.jpg",
+  "hero_description": "Breng op een actieve manier in beeld waar jullie wel en niet tevreden over zijn en stel samen prioriteiten voor zinvolle dagactiviteiten.",
+  "goal": [
+    "Breng visueel de tevredenheidsniveaus van het team in kaart.",
+    "Stel gezamenlijk actiegericht prioriteiten vast voor zinvolle dagactiviteiten."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Plaats vloermarkeringen voor een tevredenheidsschaal (positief/negatief eindpunten met middenpunt)."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Wijs een notulist aan om feedback op de poster vast te leggen."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Presenteer onderwerpen één voor één, vraag deelnemers zich te positioneren volgens tevredenheidsniveau; documenteer afwijkende meningen."
+    },
+    {
+      "title": "Stap 4",
+      "content": "Voer een stemronde uit over prioritaire onderwerpen met sterren op de poster; verdeel gelijke stemmen per deelnemer."
+    },
+    {
+      "title": "Stap 5",
+      "content": "Synthetiseer de resultaten met tevredenheidsniveaus en geprioriteerde uitdagingen voor toekomstige actie."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/9d282ab9-1c2b-4a98-aa46-acd4f286d0ca_feedback-poster-zinvolle-dagbesteding.pdf",
+    "label": "Download PDF",
+    "description": "Download de poster voor notities."
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "_type": "workshop",
+  "_published": true,
+  "_meta": {
+    "title": "Evalueer kernmomenten relatiegerichte zorg",
+    "description": "Een workshop om teams te helpen relatiegerichte zorg te evalueren en verbeteren tijdens belangrijke contactmomenten met bewoners."
+  },
+  "uid": "intervisie-werkbladen-relatiegerichte-zorg",
+  "title": "Evalueer kernmomenten relatiegerichte zorg",
+  "teaser": "Een workshop om teams te helpen relatiegerichte zorg te evalueren en verbeteren tijdens belangrijke contactmomenten met bewoners. Werkbladen begeleiden intervisiesessies.",
+  "duration": "45 minuten per intervisiesessie",
+  "audience": "Veranderteam wonen en leven",
+  "format": "Werkbladen",
+  "preview_image": "https://images.prismic.io/soulcenterbe/78aaaef2-538a-4b56-863a-63d510d653f4_voorbeeld+werkbladen+intervisie.jpg",
+  "hero_image": "https://images.prismic.io/soulcenterbe/78aaaef2-538a-4b56-863a-63d510d653f4_voorbeeld+werkbladen+intervisie.jpg",
+  "hero_description": "Help teams vaardiger te worden in relatiegerichte zorg door huidige praktijken te onderzoeken bij vijf cruciale contactmomenten met bewoners.",
+  "goal": [
+    "Word vaardiger in relatiegerichte zorg.",
+    "Onderzoek huidige praktijken bij vijf cruciale contactmomenten.",
+    "Faciliteer groepsdiscussies over wat al goed werkt, identificeer obstakels en verken verbetermogelijkheden."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Plan meerdere intervisiebijeenkomsten met een kernteam om relatiegerichte zorgbenaderingen te reviewen, met voldoende tijd tussen sessies om plannen in de praktijk te testen."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Leg het doel van de workshop uit tijdens de eerste bijeenkomst, geef een kort overzicht van de vijf kernmomenten, en bekijk optioneel referentievideo's met implementatievoorbeelden."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Selecteer een contactmoment voor bespreking; wijs een notulist aan om inzichten te documenteren en kopieën te verspreiden aan deelnemers als referentiegidsen."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/ce392365-563d-4244-a9c9-b9c54b28314c_Intervisie+werkbladen+relatiegerichte+zorg+in+de+praktijk.pdf",
+    "label": "Download 13 A4 werkbladen",
+    "description": "Download de intervisie werkbladen (PDF)."
+  }
+}

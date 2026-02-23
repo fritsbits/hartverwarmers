@@ -1,0 +1,55 @@
+{
+  "_type": "workshop",
+  "_published": true,
+  "_meta": {
+    "title": "Brainstorm initiatieven wonen en leven",
+    "description": "Een workshop tool met poster en inspiratiekaarten om teams te helpen hun actieplan voor wonen en leven te visualiseren."
+  },
+  "uid": "actiepunten-stappenplan-relatiegerichte-zorg",
+  "title": "Brainstorm initiatieven wonen en leven",
+  "teaser": "Een workshop tool met poster en inspiratiekaarten om teams te helpen hun actieplan voor wonen en leven initiatieven te visualiseren.",
+  "duration": "1 uur",
+  "audience": "Veranderteam wonen en leven",
+  "format": "Poster en inspiratiekaarten",
+  "preview_image": "https://images.prismic.io/soulcenterbe/d924c06d-f837-4a7e-9f8e-6cf116fad917_poster-met-kaartjes.jpg",
+  "hero_image": "https://images.prismic.io/soulcenterbe/d924c06d-f837-4a7e-9f8e-6cf116fad917_poster-met-kaartjes.jpg",
+  "hero_description": "Help veranderteams om duidelijkheid te behouden over voortgang en richting tijdens lange transformatietrajecten. De tool stelt teams in staat om haalbare plannen te maken en effectief te volgen.",
+  "goal": [
+    "Behoud duidelijkheid over voortgang en richting tijdens lange transformatietrajecten.",
+    "Maak haalbare plannen en volg ze effectief.",
+    "Bouw voort op het woonleefcanvas evaluatiekader."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Voorbereiding: Groepeer inspiratiekaarten thematisch met behulp van het interactieve overzicht voor eenvoudige verkenning."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Review: Geef teams tijd om de structuur te begrijpen en ontbrekende initiatieven op blanco kaarten te noteren."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Stemmen: Teamleden stemmen stil op voorkeursinitiatieven met stippen voor inclusiviteit."
+    },
+    {
+      "title": "Stap 4",
+      "content": "Planning: Gebruik de planningsposter om ideeën in drie fasen te plaatsen, bepaal volgorde en lange termijn visie."
+    },
+    {
+      "title": "Stap 5",
+      "content": "Discussie & Toewijzing: Bespreek ideeën als groep, wijs verantwoordelijkheid toe, bepaal tijdlijnen en uitvoeringsmethodes."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/88759803-2e14-4d2f-a0c4-6ed234ae7d84_stappenplan-relatiegerichte-zorg-soulcenter.zip",
+    "label": "Download ZIP",
+    "description": "Download de poster en kaarten (ZIP met aparte PDFs)."
+  },
+  "links": [
+    {
+      "url": "https://soulcenter.be/initiatieven-wonen-en-leven-woonzorgcentrum",
+      "label": "Interactieve inspiratiekaarten"
+    }
+  ]
+}

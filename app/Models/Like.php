@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Like extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'likeable_type',
         'likeable_id',
-        'profile_id',
         'type',
     ];
 
@@ -28,7 +30,7 @@ class Like extends Model
 
     public function scopeLikes($query)
     {
-        return $query->whereNull('type')->orWhere('type', 'like');
+        return $query->where('type', 'like');
     }
 
     public function scopeBookmarks($query)

@@ -15,7 +15,6 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        @fluxAppearance
     </head>
     <body class="font-body antialiased min-h-screen bg-[var(--color-bg-base)]">
         <div class="min-h-screen">
@@ -23,7 +22,7 @@
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-[var(--color-bg-white)] shadow-sm dark:shadow-none dark:border-b dark:border-[var(--color-border-light)]">
+                <header class="bg-[var(--color-bg-white)] shadow-sm">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
