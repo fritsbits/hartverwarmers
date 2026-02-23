@@ -1,0 +1,53 @@
+{
+  "_type": "workshop",
+  "_published": true,
+  "_meta": {
+    "title": "Zoek in jullie aanpak kansen voor zinvolle activiteiten",
+    "description": "Workshop om zorgteams te helpen manieren te identificeren om bewoners te ondersteunen bij het vinden van zinvolle dagactiviteiten."
+  },
+  "uid": "zoek-kansen-voor-zinvolle-activiteiten-binnen-jullie-aanpak",
+  "title": "Zoek in jullie aanpak kansen voor zinvolle activiteiten",
+  "teaser": "Workshop om zorgteams te helpen manieren te identificeren om bewoners te ondersteunen bij het vinden van zinvolle dagactiviteiten door typische momenten en individuele capaciteiten te onderzoeken.",
+  "duration": "30-45 minuten",
+  "audience": "Zorg/woonteam medewerkers",
+  "format": "A4 werkbladen",
+  "preview_image": "https://images.prismic.io/soulcenterbe/058d9dc6-9950-432a-941d-2276d2f3555a_hero_inleefblad.jpg",
+  "hero_image": "https://images.prismic.io/soulcenterbe/058d9dc6-9950-432a-941d-2276d2f3555a_hero_inleefblad.jpg",
+  "hero_description": "Onderzoek hoe bewoners ondersteund worden bij het bereiken van een zinvolle dagbesteding. Teams analyseren belangrijke momenten en identificeren kansen voor meer persoonsgerichte benaderingen.",
+  "goal": [
+    "Onderzoek hoe bewoners ondersteund worden bij zinvolle dagbesteding.",
+    "Analyseer belangrijke momenten: wanneer bewoners interesses delen, aanbod ontdekken, deelnemen aan activiteiten en feedback geven.",
+    "Identificeer kansen voor meer persoonsgerichte benaderingen."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Introductie: Introduceer de workshop en twee voorbeeldbewoners; bespreek verschillen."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Voorbeeld review: Lees fase-voor-fase voorbeelden samen door; erken bestaande initiatieven."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Individuele ideatie: Verdeel werkbladen; geef 10-15 minuten voor stille brainstorm."
+    },
+    {
+      "title": "Stap 4",
+      "content": "Groepsdeling: Nodig deelnemers uit om favoriete ideeën te presenteren; noteer op post-its."
+    },
+    {
+      "title": "Stap 5",
+      "content": "Stemmen: Teamleden stemmen op voorkeursideeën."
+    },
+    {
+      "title": "Stap 6",
+      "content": "Actieplanning: Beslis welke initiatieven te testen; wijs verantwoordelijkheid en tijdlijn toe."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/65a29465-0101-4d1c-8a60-765702b79baf_Inleefblad+zinvolle+dagbesteding+voor+bewoners.pdf",
+    "label": "Download inleefblad",
+    "description": "Download het inleefblad zinvolle dagbesteding voor bewoners (PDF)."
+  }
+}

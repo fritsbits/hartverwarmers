@@ -1,0 +1,129 @@
+{
+  "_meta": {
+    "description": "Overzichtelijke samenvatting van BAM, de betekenisvolle activiteiten methode. Makkelijk om te vergelijken met andere aanpakken rond wonen en leven in woonzorgcentra.",
+    "image": "/img/content/bam_betekenisvolleactiviteitenmethode_01.jpg"
+  },
+  "_type": "page",
+  "_template": "live-and-life",
+  "_published": true,
+  "title": "Betekenisvolle Activiteiten Methode",
+  "description": "Een multidisciplinaire en praktijkgerichte aanpak voor bewoners van woonzorgcentra",
+  "date": "2018",
+  "author": "Arteveldehogeschool Gent",
+  "images": [
+    {
+      "src": "/img/content/bam_betekenisvolleactiviteitenmethode_01.jpg",
+      "alt": "BAM boek"
+    },
+    {
+      "src": "/img/content/bam_betekenisvolleactiviteitenmethode_02.jpg",
+      "alt": "BAM boek en protocol"
+    }
+  ],
+  "subtitle": "Een multidisciplinaire en praktijkgerichte aanpak voor bewoners van woonzorgcentra",
+  "intro": [
+    "De Betekenisvolle Activiteiten Methode (BAM) wil zorgverleners en bewoners op een systematische manier laten samenwerken aan betekenisvolle activiteiten. Dat zijn alle mogelijke activiteiten die een bewoner vrijwillig kiest. Ze hebben een positieve invloed op de fysieke en geestelijke gezondheid en zijn belangrijk voor de levenskwaliteit en levenszin.",
+    "De BAM bestaat uit vier opeenvolgende fasen die elkaar onderling ook beïnvloeden. Je vertrekt telkens vanuit een dialoog en neemt samen beslissingen. Het model helpt je op weg  met voorbeeldvragen, vragenlijsten, meetinstrumenten en notitiekaders."
+  ],
+  "intro_facts": [
+    {
+      "icon": "people",
+      "title": "Doelgroep",
+      "text": "Bewoners en medewerkers"
+    },
+    {
+      "icon": "search",
+      "title": "Onderzoek",
+      "text": "Het model is het resultaat van 5 jaar wetenschappelijk onderzoek."
+    }
+  ],
+  "quote": {
+    "image": {
+      "src": "/img/wonen-en-leven/patriciadevriendt.jpg",
+      "alt": "Patricia Devriendt"
+    },
+    "author": {
+      "name": "Patricia Devriendt",
+      "relation": "Mede-auteur"
+    },
+    "text": "Als zorgverlener moet je de tijd nemen om te weten wat bewoners willen en waar ze nood aan hebben. Luister naar hun mening, hun voorkeuren en verlangens."
+  },
+  "expectations": {
+    "checklist": [
+      {
+        "checked": true,
+        "name": "Totaalbenadering"
+      },
+      {
+        "checked": true,
+        "name": "Stappenplan"
+      },
+      {
+        "checked": true,
+        "name": "Coachingstraject mogelijk"
+      },
+      {
+        "checked": true,
+        "name": "Verhaal als startpunt"
+      },
+      {
+        "checked": true,
+        "name": "Theoretisch kader"
+      }
+    ],
+    "results": [
+      "Helpt het verlies van betekenisvolle activiteiten in een woonzorgcentrum tegengaan.",
+      "Helpt als totaalbenadering het ganse woonzorgcentrum te verbinden.",
+      "Laat zorgverleners en bewoners elkaar beter kennen en begrijpen, vanuit een persoonsgerichte benadering.",
+      "Bevordert het ontstaan van vertrouwensrelaties waarin bewoners en zorgverleners leren wat ze voor elkaar kunnen betekenen.",
+      "Laat zorgverleners te weten komen wat echt betekenisvol voor hun bewoners."
+    ]
+  },
+  "core-concepts": [
+    {
+      "title": "Betekenisvolle activiteiten",
+      "text": "Alle mogelijke activiteiten die een bewoner vrijwillig kiest. Of ze nu voor het plezier zijn of daadwerkelijk een nut hebben; dat maakt niet uit. Wat de betekenis van een activiteit is, zal verschillen van persoon tot persoon en hangt af van iemands mentale beeld van die activiteit."
+    },
+    {
+      "title": "Het mentale beeld",
+      "text": "Het veranderlijke, innerlijke beeld dat komt met een bepaalde activiteit en dat voor iedereen anders zal zijn. Door dat mentale beeld zal iemand al dan niet deelnemen aan een activiteit. Drie elementen zijn bepalend voor dat beeld: de functie van de activiteit (het waarom, de noodzaak ervan), de vorm van de activiteit  (het hoe, wat, waar, wanneer en met wie van een activiteit) en de betekenis die iemand aan de activiteit geeft (het waarom van de activiteit, de persoonlijke waarde, de nood die het invult of het gevoel dat het iemand bezorgt). Als zorgverlener is het essentieel om ook dat mentale beeld van een betekenisvolle activiteit te kennen."
+    },
+    {
+      "title": "Actieve helper",
+      "text": "De coachende rol die zorgverleners krijgen en vervullen in de BAM-logica. Idealiter krijgen de bewoners het woord en komt de zorgverlener te weten wat de betekenisvolle activiteiten zijn voor een bewoner. Als actieve helper krijgt hij/zij het mandaat om anderen in te schakelen en om de bewoner naar betekenisvolle activiteiten (op weg) te helpen."
+    },
+    {
+      "title": "Gezamenlijke besluitvorming",
+      "text": "De bewoner en de zorgverlener nemen samen de verantwoordelijkheid (en delen die ook) om beslissingen te nemen over het dagelijkse leven en de betekenisvolle activiteiten. Deze wijze van gezamenlijk beslissen staat centraal in elk van de BAM-stappen."
+    },
+    {
+      "title": "Begeleidingsprofielen",
+      "text": "Begeleidingsprofielen kunnen dienen als aanvulling op de ‘klassieke KATZ’. De KATZ-schaal scoort de zorgafhankelijkheid, maar is niet echt bruikbaar in het kader van betekenisvolle activiteiten. De begeleidingsprofielen helpen om iemands noden op het vlak van betekenisvolle daginvulling beter te kunnen inschatten. Er zijn 4 profielen: het onafhankelijk begeleidingsprofiel; het begeleidingsprofiel met nood aan ondersteuning; het structuurgebonden begeleidingsprofiel en een afhankelijk begeleidingsprofiel."
+    }
+  ],
+  "more-info": {
+    "title": "Bestel online",
+    "text": "Het boek legt de BAM-methode stap voor stap uit. Je ontdekt samen met bewoners welke activiteiten voor hen van waarde zijn en hoe je die in de praktijk omzet.",
+    "image": {
+      "src": "/img/content/bam_betekenisvolleactiviteitenmethode.jpg",
+      "alt": "BAM boek"
+    },
+    "links": [
+      {
+        "url": "https://www.arteveldehogeschool.be/projecten/de-betekenisvolle-activiteitenmethode-bam",
+        "label": "BAM boek"
+      }
+    ]
+  },
+  "related": {
+    "title": "Dit is een van de talrijke modellen voor warmer en betekenisvoller leven in woonzorgcentra. Het Soulcenter team zet ze voor jou graag op een rijtje."
+  },
+  "cta-soulcenter": {
+    "pre-title": "Samenvatting door Soulcenter",
+    "title": "Dagbestedingssoftware voor woonzorgcentra",
+    "text": [
+      "Via Soulcenter brengen woonzorgcentra hun gemeenschap samen in betekenisvolle activiteiten. De app maak het makkelijk om de voorkeuren en verlangens van iedereen in huis te ontdekken, en om zo samen betekenisvolle activiteiten te doen."
+    ]
+
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "_meta": {
+    "description": "Overzichtelijke samenvatting van Sense of home. Makkelijk om te vergelijken met andere aanpakken rond wonen en leven in woonzorgcentra.",
+    "image": "/img/content/asenseofhome_01.jpg"
+  },
+  "_type": "page",
+  "_template": "live-and-life",
+  "_published": true,
+  "title": "A sense of home",
+  "description": "Samen bouwen aan een nieuwe thuis",
+  "date": "2018",
+  "author": "Artesis Plantijn Hogeschool Antwerpen",
+  "images": [
+    {
+      "src": "/img/content/asenseofhome_01.jpg",
+      "alt": "A sense of home"
+    }
+  ],
+  "subtitle": "Samen bouwen aan een nieuwe thuis",
+  "intro": [
+    "‘Sense of home’ verwijst naar de idee van ‘het woonzorgcentrum als thuis’ en naar de impact die een verhuis naar het woonzorgcentrum kan hebben op iemands zelfwaarde, levenskwaliteit en thuisgevoel.",
+    "Sense of home haalt onder meer inspiratie bij een scandinavische theorie over hechtingsprocessen. In die theorie staan drie dimensies centraal: ‘place’, ‘space’ en ‘beyond institution’. De drie dimensies kregen een eigen Vlaamse variant en interpretatie.",
+    "Hier krijgen levensverhalen en de bijbehorende ‘stemmen’ heel expliciet hun meerwaarde en rol. Met elk verhaal en met elke stem, komt mogelijk een andere nood of vraag én is een verschillend antwoord, aanbod of een andere vorm van ondersteuning nodig."
+  ],
+  "intro_facts": [
+    {
+      "icon": "people",
+      "title": "Doelgroep",
+      "text": "Bewoners, familieleden en medewerkers"
+    },
+    {
+      "icon": "search",
+      "title": "Onderzoek",
+      "text": "Gebaseerd op vier jaar praktijkgericht onderzoek met 775 ouderen."
+    }
+  ],
+    "courses": [
+        {
+            "content": "lessenreeks/vijf-stemmen-vijf-ondersteuningsvragen",
+            "highlight": true,
+            "title": "Video lessenreeks",
+            "description": "In deze lessenreeks gidst Maite ons door vijf verschillende stemmen. Ze ging in gesprek met vijf bewoners en toont je hoe je een stem kan opmerken, welke ondersteuningsvraag hierachter schuilt en hoe je daar best op kan reageren.",
+            "image": {
+                "src": "/img/lessenreeks/sense-of-home/maite-en-mijnheer.jpg"
+            },
+            "cta": {
+                "type": "route",
+                "params": [
+                    "content",
+                    "lessenreeks/vijf-stemmen-vijf-ondersteuningsvragen"
+                ]
+            }
+        }
+    ],
+  "quote": {
+    "image": {
+      "src": "/img/wonen-en-leven/maitemallentjer.jpg",
+      "alt": "Maite Mallentjer"
+    },
+    "author": {
+      "name": "Maite Mallentjer",
+      "relation": "Auteur en lector levenslooppsychologie en ouderen"
+    },
+    "text": "We zijn onze thuis. De plaats die we onze thuis noemen en wie we zijn horen samen. Als mens is het belangrijk om jezelf te kunnen zijn en je zelfwaarde te behouden. We zien het als een kerntaak van het woonzorgcentrum om hier ruimte te creëren, letterlijk en figuurlijk."
+  },
+  "expectations": {
+    "checklist": [
+      {
+        "checked": true,
+        "name": "Totaalbenadering"
+      },
+      {
+        "checked": false,
+        "name": "Stappenplan"
+      },
+      {
+        "checked": true,
+        "name": "Theoretisch kader"
+      },
+      {
+        "checked": true,
+        "name": "Werk- en hulpmiddelen"
+      },
+      {
+        "checked": true,
+        "name": "Verhaal als startpunt"
+      },
+      {
+        "checked": true,
+        "name": "Coachingstraject mogelijk"
+      }
+    ],
+    "results": [
+      "Wil een praktijkgerichte invulling aan het concept ‘kwaliteit van leven’ geven.",
+      "Geeft woonzorgcentra handvatten om een leefklimaat te scheppen dat een thuisgevoel oproept.",
+      "Vertrekt vanuit de individuele ondersteuningsvraag van de oudere en geeft tools om daarop een gepast antwoord te formuleren op micro-, meso- en macroniveau.",
+      "Leent zich makkelijk tot opleiding, vorming en implementatie in de praktijk en zet in op de kwaliteit van de zorgrelatie.",
+      "Verlegt via de narratieve benadering de focus van zorgnoden en gebreken naar de facetten van de identiteit of van het verleden waarop een bewoner trots is. Dat geeft een bewoner opnieuw controle over het eigen leven en een sterker gevoel van waardigheid.",
+      "Wil door alert te zijn voor de stem waarmee een bewoner zich uitdrukt, bewoners en hun strategieën aangepast ondersteunen. Zo kunnen zorgverleners ouderen helpen in bijvoorbeeld hun verwerkingsproces, in het onderhouden van contacten, in het uniek voelen en in het behouden van de regie.",
+      "Wil bewoners via het inherente terugblikken op wat men allemaal heeft bereikt helpen naar verzoening en naar een tevreden afronden van het leven."
+    ]
+  },
+  "core-concepts": [
+    {
+      "title": "Totaalinstitutie",
+      "text": "Het verwijst naar het wat akelige beeld van het woonzorgcentrum als instelling waar je 24 uur per dag verblijft , waar je in grotere groepen leeft, waar het leven verloopt volgens een strak schema en privacy ontbreekt, waar verschillende levenssferen noodgedwongen samenvloeien en waar je met z’n allen onder dezelfde gezagsvorm leeft. Zo’n totaalinstituut heeft nefaste gevolgen voor iemands identiteit en zorgt voor het ‘hospitalisatiesyndroom’ (met een afname van initiatief, een verminderd relativeringsvermogen, apathie, emotionele vervlakking en met het afwijzen van veranderingen)."
+    },
+    {
+      "title": "Attachment to place",
+      "text": "Attachment to place is één van de cruciale dimensies voor het creëren van een thuisgevoel. ‘Place’ is in dit geval de idee van ‘een thuis’ en de betekenis die iemand er zélf aan geeft is doorslaggevend. Deze vorm van hechting hangt bijvoorbeeld samen met het zelf kunnen bepalen van je agenda, met het kunnen bepalen van wie je kamer kan binnenkomen, met het mogen personaliseren van die kamer etc. Stuk voor stuk helpen ze een bewoner om controle te behouden en om op die manier gemakkelijker een thuisgevoel te kunnen ervaren."
+    },
+    {
+      "title": "Attachment to space",
+      "text": "Bij deze dimensie staat de ‘space’ of ‘ruimte’ voor het kluwen aan sociale relaties dat met een bepaalde plaats verbonden is. Het gaat  over iemands verbinding met anderen: medebewoners, personeel, vrijwilligers etc.  Maar ook de ruimere omgeving is belangrijk. Het kunnen deelnemen aan activiteiten, volgens eigen ritme en voorkeur, is voor deze dimensie cruciaal."
+    },
+    {
+      "title": "Attachment beyond the institution",
+      "text": "Deze dimensie gaat over de mogelijkheid om verbonden te kunnen blijven over de muren van het woonzorgcentrum heen. Het is  het kunnen behouden van een band met de samenleving, ook na een verhuis naar het woonzorgcentrum."
+    },
+    {
+      "title": "Psychosociale processen",
+      "text": "De drie dimensies krijgen door ‘psychosociale processen’ nog een extra laag in het model. Psychosociale processen kunnen iemands hechting of gehechtheid ondersteunen of net tegenwerken. Iemands aanpassingsvermogen, de manier waarop met tegenslagen wordt omgegaan, spirituele steun of de mate van trots en dankbaarheid zijn voorbeelden van ondersteunende processen.  Hulpeloosheid en verlieservaringen zijn dan weer voorbeelden van belemmerende psychosociale processen."
+    },
+    {
+      "title": "Sense of self",
+      "text": "‘Sense of self’ is een moeilijker te vertalen begrip of concept. Het gaat over het ‘zelf’, over iemands ‘identiteit’ of ‘eigenheid’. Sense of self is dynamisch, omdat elke persoon evolueert, en omvat een materieel, sociaal en spiritueel ‘zelf’. Het geldt als een noodzakelijke voorwaarde om je ergens thuis te kunnen voelen. Voor het vormgeven en bewaren van een sense of self is het vertellen van verhalen essentieel."
+    },
+    {
+      "title": "Vijf stemmen",
+      "text": "In de uitspraken en verhalen van bewoners zitten verschillende stemmen verscholen. Ze geven aan in welke mate een bewoner zich thuis voelt en hoe de bewoner in een nieuwe omgeving zijn identiteit tracht te bewaren, te herwinnen of te beschermen. Er zijn vijf stemmen of strategieën te onderscheiden: de stem van het verzetten, van het verwerken, het verbinden, het verdragen en de stem van het verschillen. De stemmen zijn op te vatten als vijf verschillende en evoluerende ondersteuningsvragen. Met elke stem komt een  andere nood of vraag én is er een ander antwoord nodig."
+    }
+  ],
+  "more-info": {
+    "title": "Meer over A sense of home ",
+    "text": "In het boek “a sense of home” stellen de auteurs hun praktijkgericht onderzoek voor, met een stevige theoretische onderbouw, tal van inspirerende quotes en praktijkcases. Het boek is verkrijgbaar via maite.mallentjer@ap.be",
+    "image": {
+      "src": "/img/content/asenseofhome_01.jpg",
+      "alt": "A Sense of home"
+    },
+    "links": [
+      {
+        "url": "http://senseofhome.ap.be",
+        "label": "Website A sense of home"
+      }
+    ]
+  },
+  "related": {
+    "title": "Tubbe is een van de vele aanpakken. Ons team van Soulcenter zet alle modellen voor jou en voor onszelf graag op een rijtje."
+  },
+  "cta-soulcenter": {
+    "pre-title": "Samenvatting door Soulcenter",
+    "title": "Woon- en leefplatform voor woonzorgcentra",
+    "text": [
+      "Soulcenter is een onafhankelijke dienst om woonzorgcentra relatiegerichter te maken.",
+      "Deze aanpak zorgt voor een sterkere verbondenheid, een fijner contact en een beter begrip. Iedereen in het woonzorgcentrum krijgt er een rol: bewoners, medewerkers, vrijwilligers, familie,... We helpen hen graag naar meer erkenning, zingeving en voldoening."
+    ]
+
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "_type": "workshop",
+  "_published": true,
+  "_meta": {
+    "title": "Formuleer samen jullie visie op wonen en leven",
+    "description": "Een co-creatieve workshop met gestructureerde inspiratie om samen jullie visie op wonen en leven te formuleren."
+  },
+  "uid": "visiecanvassen-zinvolle-dagbesteding",
+  "title": "Formuleer samen jullie visie op wonen en leven",
+  "teaser": "Een co-creatieve workshop met gestructureerde inspiratie om samen jullie visie op wonen en leven te formuleren. Werk samen als kernteam of met alle medewerkers.",
+  "duration": "1 uur",
+  "audience": "Veranderteam wonen en leven",
+  "format": "Posters (groot formaat afdrukken)",
+  "preview_image": "https://images.prismic.io/soulcenterbe/d3ec03a2-b344-4727-be48-3e0bd11f00be_posters-visie-workshop-wonen-en-leven.jpg",
+  "hero_image": "https://images.prismic.io/soulcenterbe/d3ec03a2-b344-4727-be48-3e0bd11f00be_posters-visie-workshop-wonen-en-leven.jpg",
+  "hero_description": "Een co-creatieve workshop met gestructureerde inspiratie om samen jullie visie op wonen en leven te formuleren.",
+  "goal": [
+    "Past het 'Ikea effect' toe - mensen waarderen dingen die ze zelf gemaakt hebben meer.",
+    "Bouwt betrokkenheid en enthousiasme bij medewerkers over organisatieveranderingen.",
+    "Helpt leiders en teams om gedeelde doelen te formuleren en richting te vinden.",
+    "Focust teamenergie op wat het belangrijkst is.",
+    "Creëert commitment door gewenste toekomstprincipes en strategieën te definiëren.",
+    "Toont dat visievorming energiek en boeiend kan zijn terwijl het concrete resultaten oplevert."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Logisch vervolg op de 'dagbesteding barometer' workshop die de huidige teamperceptie beoordeelt."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Stel een multidisciplinaire groep samen met woonzorgmedewerkers en diverse profielen; informeer het team over gedeelde visieconcepten."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Droomfase met het 'Toekomstbeeld canvas' - twee versies beschikbaar. Begeleid het team bij het voorstellen van een tijdschriftartikel over hun succesvolle aanpak, en verken wat ze zien, horen, voelen en zeggen."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/cfb61b89-9055-4f45-8ccd-6c81c8d96911_visiecanvassen-zinvolle-dagbesteding-soulcenter.pdf",
+    "label": "Download PDF",
+    "description": "Download de workshop materialen."
+  }
+}

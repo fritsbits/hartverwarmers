@@ -1,0 +1,130 @@
+{
+  "_meta": {
+    "description": "Overzichtelijke samenvatting van het Böhm psychobiografische model voor zorgverleners. Makkelijk om te vergelijken met andere aanpakken rond wonen en leven in woonzorgcentra.",
+    "image": "/img/content/bohm_01.jpg"
+  },
+  "_type": "page",
+  "_template": "live-and-life",
+  "_published": true,
+  "title": "Böhm psychobiografische zorg",
+  "description": "Opleven door zingeven",
+  "date": "1983",
+  "author": "Erwin Böhm - Europees Netwerk voor Psychobiografisch Verpleegonderzoek ",
+  "images": [
+    {
+      "src": "/img/content/bohm_01.jpg",
+      "alt": "Böhm zorgmodel boek"
+    }
+  ],
+  "subtitle": "Opleven door zingeven",
+  "intro": [
+    "Het psychobiografische model van Erwin Böhm biedt zorgverleners een helder kader om voor elke bewoner te bepalen welke interventies en activiteiten best passen bij zijn of haar persoonlijke behoeften. De aanpak richt zich hoofdzakelijk op bewoners met dementie en/of geheugenproblemen.",
+    "Het model wil complementair zijn aan bestaande modellen van belevingsgerichte zorg of dementiezorg. Methodisch werken (eerder dan zomaar “iets” doen rond belevingsgerichte zorg) staat er centraal. Böhm wou een eenvoudig uit te leggen methode, één die kwaliteit waarborgt en die plezierig is voor zowel bewoners als medewerkers. Dat plezier komt er omdat ze allebei merken dat ze er beter van worden en dat geeft dan weer meer ruimte voor professionaliteit en persoonlijke betrokkenheid.",
+    "De methode Böhm gaat op zoek naar de leefwereld en levensdrift van bewoners en helpt die te vertalen in individueel passende activiteiten. De activiteiten zijn gericht op zelfredzaamheid en op het stimuleren van iemands eigenwaarde.",
+    "Doorheen het traject is de bewoner zélf de belangrijkste informatie- en inspiratiebron. Zijn of haar eigen beleving van het verleden en de bijbehorende emotionele herinneringen vormen de basis voor een persoonlijke gevoelsbiografie. Aan de hand van die biografie kunnen zorgverleners de juiste interactie- en communicatiepatronen en de passende activiteiten bepalen, kunnen ze stabiliteit creëren en komen ze tot een echt betekenisvolle dagindeling.",
+    "Finaal is “een tevreden dag” het belangrijkste streefdoel."
+  ],
+  "intro_facts": [
+    {
+      "icon": "search",
+      "title": "Onderzoek",
+      "text": "Methode ontwikkeld door de oostenrijkse verpleegwetenschapper Erwin Böhm en beschreven en gevalideerd in meer dan 150 zorginstellingen in Duitsland, Oostenrijk, Zwitserland, Luxemburg en Nederland."
+    }
+  ],
+  "quote": {
+    "image": {
+      "src": "/img/wonen-en-leven/erwinbohm.jpg",
+      "alt": "Erwin Böhm"
+    },
+    "author": {
+      "name": "Erwin Böhm",
+      "relation": "Auteur"
+    },
+    "text": "Elke medewerker (van tuinman tot verpleegkundige) moet in staat zijn om de cliënt of bewoner in zijn normaliteit tegemoet te treden."
+  },
+  "expectations": {
+    "checklist": [
+      {
+        "checked": true,
+        "name": "Totaalbenadering"
+      },
+      {
+        "checked": true,
+        "name": "Stappenplan"
+      },
+      {
+        "checked": true,
+        "name": "Coachingstraject mogelijk"
+      },
+      {
+        "checked": true,
+        "name": "Verhaal als startpunt"
+      },
+      {
+        "checked": true,
+        "name": "Theoretisch kader"
+      },
+      {
+        "checked": true,
+        "name": "Werk-en hulpmiddelen"
+      }
+    ],
+    "results": [
+      "Biedt een complete methode, met een opleiding, theoretisch model, methodisch zorgproces en kwaliteitsbewaking door certificering van professionals en instellingen.",
+      "Draagt aantoonbaar bij aan 'een tevreden dag' voor mensen met dementie.",
+      "Houdt mensen veel langer actief, vaak tot de allerlaatste weken van hun leven.",
+      "Helpt opvallend gedrag bij mensen met dementie voorkomen, begrijpen en behandelen (zonder medicijnen of vrijheidsbeperking).",
+      "Verlaagt stress bij zorgverleners en vergroot hun arbeidstevredenheid.",
+      "Is een kostenefficiënt model.",
+      "Kan gebruikt worden voor diverse doelgroepen en in uiteenlopende zorgsettings."
+    ]
+  },
+  "core-concepts": [
+    {
+      "title": "Biografische kennis",
+      "text": "In de Böhm zorgmethodiek is biografische kennis essentieel om écht tot zorg op maat te komen. Het model leert zorgverleners om per bewoner een heldere analyse te maken van hun behoeften en om daarop de activiteiten, de zorg en de omgeving aan te passen. Die behoeften zijn voor een belangrijk deel gebaseerd op iemands verleden, waarin de persoonlijkheid is ontwikkeld."
+    },
+    {
+      "title": "Psychobiografie",
+      "text": "De methodiek hecht veel belang aan het in kaart brengen van iemands persoonlijke en emotionele verleden: de psychobiografie. Chronologische data en feiten zijn hier minder van belang. Elke bewoner krijgt zo’n psychobiografie. Het document groeit en evolueert met de tijd en vormt de basis voor de analyse van de behoeften en normaliteit van de cliënt. Het helpt bij het ontdekken van wat bewoners echt nodig hebben om zich thuis te kunnen voelen. Ook bij opvallend of ‘storend’ gedrag is de psychobiografie een belangrijke bron om het gedrag te helpen verklaren."
+    },
+    {
+      "title": "Copings",
+      "text": " ‘Copings’ zijn een belangrijk onderdeel in iemands psychobiografie. Het gaat om de wijze waarop iemand geleerd heeft om met veranderende situaties, problemen of tegenslagen om te gaan en over hoe hij/zij daarop reageert. Het werken met dat soort ‘copings' is een absolute voorwaarde om bij een verhuis naar een woonzorgcentrum te voorkomen dat mensen snel achteruit gaan."
+    },
+    {
+      "title": "Normaliteitsprincipe",
+      "text": "Ieder mens ontwikkelt een persoonlijke levensstijl, gevormd door zijn opvoeding, cultuur en ervaringen. Vanuit die levensstijl vorm je jezelf een beeld over wat 'normaal omgaan met elkaar en normaal handelen' is. Volgens Böhm vallen mensen in stadia van dementie terug in hun eigen 'normaliteit' van vroeger (doorgaans uit de eerste 25 à 30 levensjaren). De mens in dementie kan zich niet meer in onze normaliteit verplaatsen, dus moeten wij ons in zijn of haar normaliteit begeven en meebewegen in hun niveau. Zorgverleners en bewoners moeten zich in dezelfde normaliteit bevinden, anders kan er volgens de logica van het model niet goed worden gecommuniceerd. Dit betekent praktisch dat zorgverleners zich begeven in die tijd en normaliteit waarin de bewoner zich bevindt en dat er niet wordt getracht om het andersom af te dwingen. De beleefde leefwereld van elke bewoner is het streefdoel en startpunt."
+    },
+    {
+      "title": "Bereikbaarheids- of interactieniveaus",
+      "text": "Ouder worden gaat vaak gepaard met achteruitgang. Een ‘mens in achteruitgang’ vervalt volgens Böhm dan psychisch in een 'omgekeerde ontwikkeling'. In de methodiek is deze ontwikkeling te onderscheiden in zeven niveaus, aangeduid als 'bereikbaarheidsniveaus' of 'interactieniveaus'. Door precies te meten in welke fase de mens zich bevindt, zouden we beter in staat zijn om die mens te begrijpen, met hem of haar te communiceren, verdere achteruitgang tegen te gaan en reactiverend te kunnen stimuleren."
+    }
+  ],
+  "more-info": {
+    "title": "Bestel online",
+    "text": "Coaching en vorming via De Mensch, een nederlandse organisatie gespecialiseerd in opleidingen, workshops en advies over zorg bij dementie.",
+    "image": {
+      "src": "/img/content/bohm_01.jpg",
+      "alt": "Böhm"
+    },
+    "links": [
+      {
+        "url": "http://www.de-mensch.nl",
+        "label": "Coaching en vorming"
+      }
+    ]
+  },
+  "related": {
+    "title": "Dit is een van de talrijke modellen voor warmer en betekenisvoller leven in woonzorgcentra. Het Soulcenter team zet ze voor jou graag op een rijtje."
+  },
+  "cta-soulcenter": {
+    "pre-title": "Samenvatting door Soulcenter",
+    "title": "Woon- en leefplatform voor woonzorgcentra",
+    "text": [
+      "Soulcenter is een onafhankelijke dienst om woonzorgcentra persoonlijker te maken.",
+      "In de visie van Böhm zijn iemands levensverhalen en verleden essentieel om tot echt belevingsgerichte zorg te komen. Met alleen een vragenlijstje bij opname krijg je daar geen zicht op. De tools van Soulcenter gidsen je samen met je bewoners en familieleden stapsgewijs naar een meer verbonden en begrepen contact. Soulcenter helpt je om belevingsgericht en relatiegericht wonen en leven volwaardig en geloofwaardig vorm te geven in je organisatie."
+    ]
+
+  }
+}

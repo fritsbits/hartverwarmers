@@ -1,0 +1,153 @@
+{
+  "_meta": {
+    "description": "Overzichtelijke samenvatting van Leefplezierplan. Makkelijk om te vergelijken met andere werkwijzes rond wonen en leven in woonzorgcentra.",
+    "image": "/img/content/leefplezierplan_01.jpg"
+  },
+  "_type": "page",
+  "_template": "live-and-life",
+  "_published": true,
+  "title": "Leefplezierplan",
+  "description": "Handreiking voor een narratief kwaliteitskader verpleeghuiszorg",
+  "date": "2019",
+  "author": "Leyden Academy",
+  "images": [
+    {
+      "src": "/img/content/leefplezierplan_01.jpg",
+      "alt": "Leefplezierplan"
+    }
+  ],
+  "subtitle": "Handreiking voor een narratief kwaliteitskader verpleeghuiszorg",
+  "intro": [
+    "Wat gebeurt er als je in ouderenzorg de verlangens van je bewoners als vertrekpunt zou nemen? En als hun leefplezier primeert bij het verantwoorden en het meten van de kwaliteit van de zorg? Wat als je zorgteams zou trainen om regels los te laten en meer naar de mens te kijken?",
+    "Precies dát zijn de uitgangspunten in het project <em>Leefplezierplan</em> van het Nederlandse kennisinstituut Leyden Academy. Het is meteen ook de basis voor een Leefplezierplan, met expliciete aandacht voor de rollen van familie en mantelzorgers en voor de dilemma’s die in de praktijk kunnen ontstaan.",
+    "Zo’n Leefplezierplan is niet gebaseerd op protocollen en afvinklijstjes, maar wel op wat er voor mensen echt toe doet, wat hun verhaal is, wat hen raakt, wat en wie belangrijk voor ze is en welke persoon ze graag willen zijn. Het verschuift de aandacht naar verlangens, leefplezier en betekenisvolle ervaringen.",
+    "Het Leefplezierplan wil zorgorganisaties helpen bij het sturen op positieve ervaringen en op leefplezier. Het stimuleert persoonsgerichte zorg en het spoort zorgverleners aan om meer persoonlijke zorg en ondersteuning te bieden, in plaats van medische en behoeftegerichte zorg."
+  ],
+  "intro_facts": [
+    {
+      "icon": "people",
+      "title": "Doelgroep",
+      "text": "Bewoners, familieleden en medewerkers"
+    },
+    {
+      "icon": "search",
+      "title": "Onderzoek",
+      "text": "Twee jaar onderzoek in 11 verpleeghuizen. In 2019 wordt het project uitgebreid."
+    }
+  ],
+  "quote": {
+    "image": {
+      "src": "/img/wonen-en-leven/jorisslaets.jpg",
+      "alt": "Joris Slaets"
+    },
+    "author": {
+      "name": "Joris Slaets",
+      "relation": "Projectleider Leyden Academy"
+    },
+    "text": "De meeste verzorgers zeiden aanvankelijk dat ze geen tijd hadden om de bewoners en hun verlangens te leren kennen en erop in te spelen. Maar dat blijkt te kunnen met dezelfde mensen en middelen. Je moet gewoon overbodige plichten schrappen. Leefplezier zit vaak in kleine alledaagse dingen."
+  },
+  "expectations": {
+    "checklist": [
+      {
+        "checked": true,
+        "name": "Totaalbenadering"
+      },
+      {
+        "checked": false,
+        "name": "Stappenplan"
+      },
+      {
+        "checked": false,
+        "name": "Theoretisch kader"
+      },
+      {
+        "checked": true,
+        "name": "Werk- en hulpmiddelen"
+      },
+      {
+        "checked": true,
+        "name": "Verhaal als startpunt"
+      },
+      {
+        "checked": false,
+        "name": "Coachingstraject mogelijk"
+      }
+    ],
+    "results": [
+      "Helpt om de zachte dimensies van kwaliteit zichtbaar te maken.",
+      "Helpt zorgverleners om stil te staan bij wat echt van betekenis is voor bewoners, door positieve ervaringen op de voorgrond te plaatsen en door hen te stimuleren om er ook dagelijks iets proberen mee te doen.",
+      "Stimuleert de aandacht voor het leefplezier én voor het vastleggen van de essentiële informatie.",
+      "Maakt aandacht voor en het bespreken van ervaringen en dilemma's tot een vast onderdeel van het kwaliteitsbeleid.",
+      "Helpt organisaties om actiever aan de wensen en de verlangens van bewoners tegemoet te komen en het voorkomt dat het organisatie-aanbod steeds het uitgangspunt is.",
+      "Leidt tot meer werkplezier, doordat zorgverleners hun bewoners beter leren kennen en omdat ze echt ervaren dat ze kunnen bijdragen aan hun leefplezier.",
+      "Kan ouderenzorg aantrekkelijker maken in een tijd van toenemende krapte op de arbeidsmarkt."
+    ]
+  },
+  "core-concepts": [
+    {
+      "title": "Minimale standaard",
+      "text": "Het Leefplezierplan is ontwikkeld als een minimale standaard. Er zijn zeven vaste elementen die elk plan zou moeten bevatten, maar er  zijn geen vaste richtlijnen voor de manier waarop je de informatie best documenteert. Zo ontstaan er vele variaties op het Leefplezierplan, maar zijn de vaste elementen toch in elk plan terug te vinden."
+    },
+    {
+      "title": "Kennen - feitelijk",
+      "text": "In dit element van het Leefplezierplan staat de feitelijke informatie van een bewoner beschreven. Het gaat om basisinformatie (naam, leeftijd, achtergrond, contactpersonen), maar ook om de informatie over iemands gezondheid, functioneren en behoeften op het gebied van zorg. Voor het verzamelen ervan is er geen speciale band tussen bewoner, belangrijke anderen en zorgverlener nodig en de informatie geeft ook geen levendig beeld van wie iemand is. "
+    },
+    {
+      "title": "Kennen - verhalend",
+      "text": "In dit onderdeel gaat het over verlangens: wat voor iemand belangrijk is (gewoontes, rituelen en zingeving), wie belangrijk zijn en welke persoon iemand graag wil zijn. Die unieke, heel persoonlijke informatie dient om de identiteit van een bewoner te leren kennen en kan alleen worden verzameld in een open, wederkerig en onbevangen gesprek (zonder standaard vragenlijst). Het verzamelen ervan is nooit af; wensen, voorkeuren en verlangens zullen in de tijd veranderen."
+    },
+    {
+      "title": "Doen - zorg",
+      "text": "In dit onderdeel staan iemands behoeften op het gebied van zorg beschreven (wat iemand nodig heeft om veilig, gezond en/of comfortabel in leven te blijven). Ook bij behoeftegerichte zorg is het belangrijk om te vertrekken van het leefplezier van een bewoner. Op die manier kan je zoveel mogelijk prettige zorgmomenten creëren en de vervelende zorgmomenten zoveel mogelijk beperken."
+    },
+    {
+      "title": "Doen - leefplezier",
+      "text": "Hier staat beschreven welke handelingen, activiteiten en houdingen van medewerkers bijdragen aan het leefplezier van een bewoner. Het kunnen handelingen en/of activiteiten zijn die regelmatig terugkomen, maar evengoed zijn het handelingen en/of activiteiten die maar af en toe voorkomen. Het is belangrijk om te starten bij de individuele verlangens van een bewoner en hier creatief in te zijn, om verder te kijken dan het standaard activiteitenprogramma en om dingen durven uit te proberen."
+    },
+    {
+      "title": "Dilemma’s",
+      "text": "Dit onderdeel van het Leefplezierplan beschrijft de dilemma’s rondom de zorg en ondersteuning van een bewoner. Een dilemma is een lastige keuze waarin verschillende opties botsen met wat er kan, mag, moet of wat iemand graag zou willen. Zorgverleners lopen dagelijks tegen dilemma’s aan, maar maken ze niet altijd expliciet. Door dilemma’s te benoemen en de verschillende opties en perspectieven met elkaar te bespreken, kunnen afspraken gemaakt worden over ‘de beste keuze’. Zo’n aanpak geldt als een belangrijke indicatie van kwaliteit."
+    },
+    {
+      "title": "Verantwoording - standaard",
+      "text": "Dit zijn alle registraties die nodig zijn voor de standaard verantwoording, zoals de dagelijkse rapportages over zorg en de afvinklijstjes met betrekking tot richtlijnen en protocollen. Het zijn de harde gegevens, de cijfers en de aantallen. In deze logica is er doorgaans geen of nauwelijks aandacht voor het leefplezier."
+    },
+    {
+      "title": "Verantwoording - ervaringen",
+      "text": "Hier worden de ervaringen rondom de zorg en ondersteuning van een bewoner vastgelegd. Bijvoorbeeld in de vorm van verhalen, foto’s en video’s. Niet alleen door zorgverleners, maar ook door bewoners en hun belangrijke anderen. Ervaringen kunnen positief of negatief zijn en kunnen overal over gaan, van noodzakelijke zorg tot leefplezier. Het vastleggen en delen van ervaringen biedt handvatten voor de dagelijkse zorgpraktijk. Ze zijn belangrijk voor een betekenisvol leven en ze zijn essentieel voor het werkplezier van de medewerker."
+    }
+  ],
+  "more-info": {
+    "title": "Meer over Leefplezierplan ",
+    "text": "In het rapport “Handreiking voor een narratief kwaliteitskader verpleeghuiszorg” vindt u een introductie van het Leefplezierplan met de bevindingen uit de pilots en met ervaringen en sprekende foto’s uit de praktijk.",
+    "video_id" : "tVnMCcUjqMY",
+    "image": {
+      "src": "/img/content/leefplezierplan_01.jpg",
+      "alt": "Leefplezierplan"
+    },
+    "links": [
+      {
+        "url": "https://www.leydenacademy.nl/leefplezierplan",
+        "label": "Website Leefplezierplan"
+      },
+      {
+        "url": "https://www.leydenacademy.nl/wp-content/uploads/2019/04/Handreiking-Leefplezierplan-voor-de-zorg.pdf",
+        "label": "Rapport van het pilootproject"
+      }
+
+
+    ]
+  },
+  "related": {
+    "title": "Het Leefplezierplan is een van de vele aanpakken. Ons team van Soulcenter zet alle modellen voor jou en voor onszelf graag op een rijtje."
+  },
+  "cta-soulcenter": {
+    "pre-title": "Samenvatting door Soulcenter",
+    "title": "Woon- en leefplatform voor woonzorgcentra",
+    "text": [
+      "Soulcenter is een onafhankelijke dienst om woonzorgcentra meer plezier te bezorgen.",
+      "Het Leefplezierplan gaat over verhalen en ervaringen. Het kennen van verhalen is er  essentieel voor het leefplezier van bewoners. Soulcenter helpt woonzorgcentra om hun eigen Leefplezierplan gemakkelijk en gebruiksvriendelijk vorm en inhoud te geven. Geïnspireerd door hun unieke levensverhaal en met onze tools en aanpak, geven we jouw bewoners meer leefplezier."
+    ]
+
+  }
+}

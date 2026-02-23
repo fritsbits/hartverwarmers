@@ -1,0 +1,63 @@
+{
+  "_type": "workshop",
+  "_published": true,
+  "_meta": {
+    "title": "Evalueer het activiteitenaanbod",
+    "description": "Interactieve evaluatiewerkbladen om te beoordelen of activiteiten aansluiten bij dimensies van thuisgevoel en bewonersinteresses."
+  },
+  "uid": "activiteitentoetser-zinvolle-dagbesteding-woonzorgcentra",
+  "title": "Evalueer het activiteitenaanbod",
+  "teaser": "Interactieve evaluatiewerkbladen om te beoordelen of activiteiten aansluiten bij dimensies van thuisgevoel, bewonersinteresses matchen en zowel actieve als passieve deelnemers bedienen.",
+  "duration": "1-2 uur",
+  "audience": "Begeleiders wonen en leven",
+  "format": "Prints",
+  "preview_image": "https://images.prismic.io/soulcenterbe/activiteitentoetser-preview.jpg",
+  "hero_image": "https://images.prismic.io/soulcenterbe/activiteitentoetser-hero.jpg",
+  "hero_description": "Biedt gestructureerd overzicht van het complete activiteitenaanbod in zorginstellingen. Maak het mogelijk om bewoners- en activiteitsgegevens in kaart te brengen om sterke punten en lacunes te identificeren.",
+  "goal": [
+    "Bied gestructureerd overzicht van het complete activiteitenaanbod.",
+    "Breng bewoners- en activiteitsgegevens in kaart.",
+    "Identificeer sterke punten en lacunes voor gerichte verbeteringen."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Breng activiteiten in kaart per interessegebied met evaluatiebladen met thuisgevoel-dimensies en begeleidingsprofielen."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Breng bewonersinteresses in kaart over 16 geïdentificeerde interessegebieden via enquêtes en gesprekken."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Categoriseer bewoners op capaciteit met vijf begeleidingsprofielniveaus."
+    },
+    {
+      "title": "Stap 4",
+      "content": "Vul evaluatiebladen in met geïnteresseerde bewoners en activiteiten per profiel en domein."
+    },
+    {
+      "title": "Stap 5",
+      "content": "Kritische evaluatie: identificeer onbediende groepen, ondervertegenwoordigde interesses en verbetermogelijkheden."
+    },
+    {
+      "title": "Stap 6",
+      "content": "Brainstorm nieuwe activiteiten met team en bewoners via de activiteitsverkenning werkbladen."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/evaluatiebladen-activiteitenaanbod.pdf",
+    "label": "Download evaluatiebladen",
+    "description": "Download de evaluatiebladen om het aanbod te toetsen (PDF)."
+  },
+  "links": [
+    {
+      "url": "/workshops/werkbladen-activiteitsverkenning-wzc",
+      "label": "Activiteitsverkenning werkbladen"
+    },
+    {
+      "url": "https://soulcenter.be/leertraject-zinvolle-activiteiten",
+      "label": "Leertraject zinvolle activiteiten"
+    }
+  ]
+}

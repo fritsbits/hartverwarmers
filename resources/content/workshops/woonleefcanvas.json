@@ -1,0 +1,55 @@
+{
+  "_type": "workshop",
+  "_published": true,
+  "_meta": {
+    "title": "Evalueer aanpak woonleefplannen",
+    "description": "Workshop tool met een gestructureerde methode voor teams om hun woon- en zorgplanningmethodologie te evalueren."
+  },
+  "uid": "woonleefcanvas",
+  "title": "Evalueer aanpak woonleefplannen",
+  "teaser": "Workshop tool met een gestructureerde methode voor teams om hun woon- en zorgplanningmethodologie te evalueren met een positieve benadering.",
+  "duration": "45 minuten tot 1 uur",
+  "audience": "Veranderteam wonen en leven",
+  "format": "Poster formaat",
+  "preview_image": "https://images.prismic.io/soulcenterbe/570608cf-2187-4881-9860-dd5a9fc9e087_canvas-wonenenleven-soulcenter.jpg",
+  "hero_image": "https://images.prismic.io/soulcenterbe/570608cf-2187-4881-9860-dd5a9fc9e087_canvas-wonenenleven-soulcenter.jpg",
+  "hero_description": "Help teams om verbeterpunten in hun woonleefplan-implementatie te identificeren en gezamenlijk eerdere initiatieven te reviewen.",
+  "goal": [
+    "Identificeer verbeterpunten in de implementatie van woonleefplannen.",
+    "Review gezamenlijk eerdere initiatieven om te bepalen wat goed werkte.",
+    "Ontdek gebieden voor verbetering en nieuwe aanpakken om te testen."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Verzamel multidisciplinaire groep: Stel diverse professionals samen voor workshopdeelname."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Evalueer fasen systematisch: Review canvas-fasen van visie naar boven, verzamel ervaringen van medewerkers via post-its."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Pas positieve benadering toe: Bespreek waardering van successen, identificeer verbeterpunten, brainstorm nieuwe initiatieven binnen elke fase."
+    },
+    {
+      "title": "Stap 4",
+      "content": "Plan vervolgactie: Gebruik de 'stappenplan relatiegerichte zorg' tool om initiatieven te plannen en te volgen."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/570608cf-2187-4881-9860-dd5a9fc9e087_canvas-wonenenleven-soulcenter.pdf",
+    "label": "Download PDF poster",
+    "description": "Download de evaluatieposter."
+  },
+  "links": [
+    {
+      "url": "https://soulcenter.be/roadmap-verandertraject-wonen-en-leven",
+      "label": "Roadmap wonen en leven"
+    },
+    {
+      "url": "https://soulcenter.be/initiatieven-wonen-en-leven-woonzorgcentrum",
+      "label": "Inspiratiekaarten"
+    }
+  ]
+}

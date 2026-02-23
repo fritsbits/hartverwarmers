@@ -1,0 +1,45 @@
+{
+  "_type": "tool",
+  "_published": true,
+  "_meta": {
+    "title": "Conversatiekaarten",
+    "description": "Krijg vlot een overzicht van wat er voor bewoners toe doet via gesprekskaarten. Door de visuele aanpak kan je ongedwongen een gesprek structureren."
+  },
+  "uid": "conversatiekaarten-woonzorgcentrum",
+  "title": "Conversatiekaarten",
+  "teaser": "Krijg vlot een overzicht van wat er voor bewoners toe doet via gesprekskaarten. Door de visuele aanpak kan je ongedwongen een gesprek structureren.",
+  "format": "PDF kaarten of fysieke set",
+  "preview_image": "https://images.prismic.io/soulcenterbe/65620dfe-3edd-4f9d-b889-bc42ab899f1f_preview-conversatiekaarten.jpg?auto=compress,format&rect=0,0,1024,1024&w=320&h=320",
+  "hero_image": "https://images.prismic.io/soulcenterbe/79cf8054-1173-436c-bb8b-ace8c965c6ae_hero-conversatiekaartjes.jpg",
+  "hero_description": "Krijg vlot een overzicht van wat er voor bewoners toe doet via gesprekskaarten. Door de visuele aanpak kan je ongedwongen een gesprek structureren.",
+  "goal": [
+    "Verzamel efficiënt leefplannen en levensverhalen.",
+    "Gebruik visuele benaderingen in plaats van tekstgebaseerde vragenlijsten.",
+    "Maak substantiële vooruitgang in ongeveer 30 minuten voor bewonersplanning."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Voer een eerste kennismaking uit met acht fundamentele vragen om snel betekenisvolle activiteiten voor bewoners te identificeren, geïnspireerd door de Betekenisvolle Activiteiten Methode. Aanbevolen tijdens de opname van nieuwe bewoners."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Verdiep het begrip van bewonervoorkeuren via leefplankaarten die vier belangrijke domeinen behandelen in gestructureerde gesprekken over wat belangrijk is voor bewoners in woonzorgcentra."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Verzamel achtergrondinformatie via levensverhaalkaarten met negen thematische vraagcategorieën, geschikt voor maandelijkse thematische gesprekken."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/c8a47593-3d3d-45a8-bc6e-1cb7687164fa_conversatiekaartjes-soulcenter.zip",
+    "label": "Download PDF",
+    "description": "Download de conversatiekaarten als PDF."
+  },
+  "links": [
+    {
+      "url": "https://www.makeplayingcards.com/sell/marketplace/babbelkaarten-woonzorg.html",
+      "label": "Bestel fysieke set"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "_type": "tool",
+  "_published": true,
+  "_meta": {
+    "title": "Babbelbladen levensverhaal",
+    "description": "Ontdek wat er belangrijk is voor bewoners via gestructureerde vragen en leg de antwoorden samen vast op levensverhaal werkbladen."
+  },
+  "uid": "bladbabbelbladen-levensverhaal",
+  "title": "Babbelbladen levensverhaal",
+  "teaser": "Ontdek wat er belangrijk is voor bewoners via gestructureerde vragen en leg de antwoorden samen vast op levensverhaal werkbladen.",
+  "format": "A4 PDF documenten (ZIP archief)",
+  "preview_image": "https://images.prismic.io/soulcenterbe/dab37256-5505-4c9a-9333-5eac2aab1125_tools-preview-babbelbladen-square.jpg?auto=compress,format&rect=0,0,1024,1024&w=320&h=320",
+  "hero_image": "https://images.prismic.io/soulcenterbe/19641d55-a102-4555-bd16-b25b2904c11f_hero-stackofpages.jpg?auto=compress,format&rect=0,0,1024,1280&w=640&h=800",
+  "hero_description": "Ontdek wat er belangrijk is voor bewoners. Voer groeps- of individuele gesprekken met bewoners en leg de antwoorden samen vast op levensverhaal werkbladen.",
+  "goal": [
+    "Ontdek wat er belangrijk is voor bewoners via systematisch geselecteerde vragen.",
+    "Leg de antwoorden samen vast op levensverhaal werkbladen voor bredere toegankelijkheid."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Organiseer een groepsgesprek met meerdere bewoners. Nodig extra medewerkers of vrijwilligers uit om te helpen met het interviewen en noteren."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Selecteer een of meerdere thema's voor bespreking. Bekijk het thema-overzicht, print relevante werkbladen en documenteer de antwoorden in kleine groepjes."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Breng de verzamelde verhalen optioneel over naar het Soulcenter platform voor bredere toegankelijkheid."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/2361bf9b-40c3-4ce3-8dce-e991a4b26752_babbelbladen-soulcenter.zip",
+    "label": "Download",
+    "description": "Download de PDF werkbladen."
+  },
+  "related_link": {
+    "url": "https://soulcenter.be/vragen-voor-levensverhaal",
+    "label": "Thema overzicht"
+  }
+}

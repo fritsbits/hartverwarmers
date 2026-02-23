@@ -1,0 +1,52 @@
+{
+    "_meta": {
+        "description": "Overzicht van het stappenplan dat Sint-Camillus gebruikt voor persoonsgerichte zorg voor alle bewoners.",
+        "image": "/img/lessenreeks/praktijkvoorbeeld-relatiegerichte-zorg-met-leefplan/share-image.jpg"
+    },
+    "_published": true,
+    "_type": "overview",
+    "_template": "courses.index",
+    "title": "Persoonsgerichte zorg in de praktijk",
+    "description": [
+        "Hoe ontdek je voor alle bewoners wat belangrijk voor hen is? En hoe doe je hier daadwerkelijk iets mee als team?",
+        "Woonzorgcentrum Sint-Camillus werkte de voorbije jaren een aanpak uit met Soulcenter. In deze lessenreeks delen ze hun volledig stappenplan. Het team van Soulcenter vult de aanpak aan met praktische voorbeelden."
+    ],
+    "video": "05XQ8--pm9o",
+    "credits": "Door Soulcenter en WZC Sint-Camillus",
+    "facts": [
+        {
+            "icon": "video_library",
+            "text": "6 videos"
+        },
+        {
+            "icon": "access_time",
+            "text": "21 minuten materiaal"
+        }
+    ],
+    "author": {
+        "image": {
+            "src": "/img/home/avatar-stevenmesure.jpg",
+            "class": ""
+        },
+        "name": "Steven Mesure",
+        "firstName": "Steven",
+        "text": "Hoofd wonen en leven WZC Sint-Camillus",
+        "links": [{
+            "icon": "file_copy",
+            "label": "Download intervisiebladen",
+            "type": "path",
+            "params": [
+                "/tools/intervisie-werkbladen-relatiegerichte-zorg"
+            ]},
+            {
+            "icon": "file_copy",
+            "label": "Download leefplan-canvas",
+            "type": "path",
+            "params": [
+                "tools/woonleefcanvas"
+            ]}
+        ],
+        "social": [
+        ]
+    }
+}

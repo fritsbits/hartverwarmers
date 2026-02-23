@@ -1,0 +1,19 @@
+{
+    "_meta": {
+        "description": "Multidisciplinair overleg met het team",
+        "image": "/img/lessenreeks/praktijkvoorbeeld-relatiegerichte-zorg-met-leefplan/share-image.jpg"
+    },
+    "_published": true,
+    "_type": "page",
+    "_template": "courses.show",
+    "part": 3,
+    "title": "Teamoverleg",
+    "introduction": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\ntempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\nquis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo\nconsequat. Duis aute irure dolor in reprehenderit in voluptate velit esse\ncillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non\nproident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "length": "3 min",
+    "image": {
+        "src": "https://placekitten.com/g/800/450"
+    },
+    "video": {
+        "id": "8m2Svg5CQ3s"
+    }
+}

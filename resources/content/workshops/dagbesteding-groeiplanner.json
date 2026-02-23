@@ -1,0 +1,53 @@
+{
+  "_type": "workshop",
+  "_published": true,
+  "_meta": {
+    "title": "Apprecieer en plan aanpak dagbesteding",
+    "description": "Een visuele workshop om met je team zinvolle dagactiviteiten voor bewoners te bespreken met behulp van een boommetafoor."
+  },
+  "uid": "dagbesteding-groeiplanner",
+  "title": "Apprecieer en plan aanpak dagbesteding",
+  "teaser": "Een visuele workshop om met je team zinvolle dagactiviteiten voor bewoners te bespreken. Met een boommetafoor verkennen deelnemers groeimogelijkheden.",
+  "duration": "1 uur",
+  "audience": "Veranderteam wonen en leven",
+  "format": "A3 werkblad",
+  "preview_image": "https://images.prismic.io/soulcenterbe/787dc0b9-2ce6-4731-a08e-0a315830cafb_Hero+image.jpg",
+  "hero_image": "https://images.prismic.io/soulcenterbe/787dc0b9-2ce6-4731-a08e-0a315830cafb_Hero+image.jpg",
+  "hero_description": "Ontwikkel samen plannen voor het verbeteren van zinvolle dagactiviteiten. Schets met je team de grote lijnen van een plan om huidige sterktes te beoordelen, aspiraties te definiëren en actiepunten te identificeren binnen 45 minuten.",
+  "goal": [
+    "Ontwikkel samen plannen voor het verbeteren van zinvolle dagactiviteiten.",
+    "Beoordeel huidige sterktes en definieer aspiraties.",
+    "Identificeer actiepunten binnen 45 minuten."
+  ],
+  "steps": [
+    {
+      "title": "Stap 1",
+      "content": "Setup: Verzamel een kleine teamgroep; leg het doel en de structuur van de workshop uit."
+    },
+    {
+      "title": "Stap 2",
+      "content": "Framework: Gebruik de boommetafoor (resultaten/appels → bronnen/wortels → investeringen/water geven → stappen/ladder)."
+    },
+    {
+      "title": "Stap 3",
+      "content": "Gewenste resultaten: Definieer wat bewoners moeten bereiken; identificeer makkelijke vs. uitdagende doelen."
+    },
+    {
+      "title": "Stap 4",
+      "content": "Bronnen: Identificeer bestaande sterktes die zinvolle activiteiten ondersteunen."
+    },
+    {
+      "title": "Stap 5",
+      "content": "Investeringen: Bepaal hoe de omgeving te voeden en bestaande bronnen te versterken."
+    },
+    {
+      "title": "Stap 6",
+      "content": "Actiestappen: Plan concrete veranderingen en nieuwe initiatieven."
+    }
+  ],
+  "download": {
+    "url": "https://soulcenterbe.cdn.prismic.io/soulcenterbe/2f65936c-2927-4a2b-a6d5-4b7f9d2d0743_groeiplanner_a3.pdf",
+    "label": "Download A3 werkblad",
+    "description": "Download het A3 werkblad."
+  }
+}
