@@ -212,8 +212,12 @@
 
   /* Section label (uppercase label with icon) */
   .section-label {
-    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest mb-3;
+    @apply inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest mb-1;
     color: var(--color-primary);
+  }
+
+  .section-label-hero {
+    @apply text-2xl;
   }
 
   /* Intro block styling - per guidelines max-width 800px */
