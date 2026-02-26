@@ -38,9 +38,9 @@ class Initiative extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function elaborations(): HasMany
+    public function fiches(): HasMany
     {
-        return $this->hasMany(Elaboration::class);
+        return $this->hasMany(Fiche::class);
     }
 
     public function comments(): MorphMany

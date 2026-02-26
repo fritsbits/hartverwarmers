@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Elaboration extends Model
+class Fiche extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -21,17 +21,18 @@ class Elaboration extends Model
         'slug',
         'description',
         'practical_tips',
-        'fiche',
+        'materials',
         'target_audience',
         'published',
         'has_diamond',
         'download_count',
+        'kudos_count',
     ];
 
     protected function casts(): array
     {
         return [
-            'fiche' => 'array',
+            'materials' => 'array',
             'target_audience' => 'array',
             'published' => 'boolean',
             'has_diamond' => 'boolean',

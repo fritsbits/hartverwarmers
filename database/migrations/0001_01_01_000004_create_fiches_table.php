@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('elaborations', function (Blueprint $table) {
+        Schema::create('fiches', function (Blueprint $table) {
             $table->id();
             $table->foreignId('initiative_id')->nullable()->constrained('initiatives')->nullOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
@@ -16,11 +16,12 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->text('practical_tips')->nullable();
-            $table->json('fiche')->nullable();
+            $table->json('materials')->nullable();
             $table->json('target_audience')->nullable();
             $table->boolean('published')->default(false);
             $table->boolean('has_diamond')->default(false);
             $table->unsignedInteger('download_count')->default(0);
+            $table->unsignedInteger('kudos_count')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +29,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('elaborations');
+        Schema::dropIfExists('fiches');
     }
 };

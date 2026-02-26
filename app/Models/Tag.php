@@ -21,8 +21,8 @@ class Tag extends Model
         return $this->morphedByMany(Initiative::class, 'taggable');
     }
 
-    public function elaborations(): MorphToMany
+    public function fiches(): MorphToMany
     {
-        return $this->morphedByMany(Elaboration::class, 'taggable');
+        return $this->morphedByMany(Fiche::class, 'taggable');
     }
 }

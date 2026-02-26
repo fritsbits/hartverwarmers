@@ -2,8 +2,7 @@
 
 namespace App\View\Composers;
 
-use App\Models\Elaboration;
-use App\Models\Organisation;
+use App\Models\Fiche;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
@@ -14,9 +13,9 @@ class FooterComposer
     {
         $stats = Cache::remember('footer_stats', 3600, function () {
             return [
-                'elaborations_count' => Elaboration::count(),
+                'fiches_count' => Fiche::count(),
                 'contributors_count' => User::count(),
-                'organisations_count' => Organisation::count(),
+                'organisations_count' => User::whereNotNull('organisation')->distinct('organisation')->count('organisation'),
             ];
         });
 

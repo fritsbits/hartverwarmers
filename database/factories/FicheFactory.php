@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Elaboration>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Fiche>
  */
-class ElaborationFactory extends Factory
+class FicheFactory extends Factory
 {
     public function definition(): array
     {
@@ -23,11 +23,12 @@ class ElaborationFactory extends Factory
             'slug' => Str::slug($title),
             'description' => fake()->paragraph(),
             'practical_tips' => fake()->optional()->paragraph(),
-            'fiche' => null,
+            'materials' => null,
             'target_audience' => null,
             'published' => false,
             'has_diamond' => false,
             'download_count' => 0,
+            'kudos_count' => 0,
         ];
     }
 

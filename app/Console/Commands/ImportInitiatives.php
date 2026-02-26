@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Elaboration;
+use App\Models\Fiche;
 use App\Models\Initiative;
-use App\Models\Organisation;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -15,11 +14,11 @@ use Illuminate\Support\Str;
 class ImportInitiatives extends Command
 {
     protected $signature = 'import:initiatives
-                            {file : Path to the initiatives_import.json file}
+                            {file : Path to the grouped JSON export file}
                             {--dry-run : Preview import without writing to the database}
                             {--fresh : Wipe imported data before re-importing}';
 
-    protected $description = 'Import old Hartverwarmers activities as initiatives & elaborations from a JSON file';
+    protected $description = 'Import old Hartverwarmers activities as initiatives & fiches from a grouped JSON export';
 
     private const SYSTEM_EMAIL = 'import@hartverwarmers.be';
 
@@ -33,7 +32,15 @@ class ImportInitiatives extends Command
         'T' => 'doel-talent',
     ];
 
-    private const INTEREST_MAP = [
+    private const GUIDANCE_MAP = [
+        'active-independent' => 'Actief zelfstandig',
+        'active-participator' => 'Actief zelfstandig',
+        'active-participator-dependent' => 'Passief begeleid',
+        'passive-participator' => 'Passief begeleid',
+        'passive-dependent' => 'Volledig begeleid',
+    ];
+
+    private const THEME_MAP = [
         // Exact matches to existing tags
         'Muziek' => 'Muziek',
         'Sport & Bewegen' => 'Sport & Bewegen',
@@ -162,16 +169,15 @@ class ImportInitiatives extends Command
         }
 
         $data = json_decode(file_get_contents($file), true);
-        if (! $data || ! isset($data['initiatives'])) {
-            $this->error('Invalid JSON file: missing "initiatives" key');
+        if (! is_array($data) || ! isset($data['initiatives']) || empty($data['initiatives'])) {
+            $this->error('Invalid JSON file: expected an object with an "initiatives" key');
 
             return self::FAILURE;
         }
 
         $initiatives = $data['initiatives'];
-        $totalElaborations = array_sum(array_column($initiatives, 'elaborations_count'));
-
-        $this->info("Found {$this->countInitiatives($initiatives)} initiatives with {$totalElaborations} elaborations");
+        $totalFiches = collect($initiatives)->sum(fn ($i) => count($i['elaborations'] ?? []));
+        $this->info('Found '.count($initiatives)." initiatives with {$totalFiches} fiches");
 
         if ($dryRun) {
             $this->warn('DRY RUN — no data will be written');
@@ -189,140 +195,151 @@ class ImportInitiatives extends Command
         return self::SUCCESS;
     }
 
-    private function countInitiatives(array $initiatives): int
-    {
-        return count($initiatives);
-    }
-
     private function previewImport(array $initiatives): void
     {
         $authors = $this->collectUniqueAuthors($initiatives);
 
         $rows = [];
-        foreach ($initiatives as $init) {
+        foreach ($initiatives as $initiative) {
             $rows[] = [
-                Str::slug($init['name']),
-                $init['name'],
-                $init['elaborations_count'],
-                implode(', ', $init['diamant_aspects'] ?? []),
+                Str::slug($initiative['name']),
+                Str::limit($initiative['name'], 50),
+                count($initiative['elaborations'] ?? []),
+                implode(', ', $initiative['diamant_aspects'] ?? []) ?: '—',
             ];
         }
 
-        $this->table(['Slug', 'Initiative', 'Elaborations', 'DIAMANT'], $rows);
+        $this->table(['Slug', 'Name', 'Fiches', 'DIAMANT'], $rows);
         $this->newLine();
         $this->info("Unique authors: {$authors->count()}");
     }
 
     private function importData(array $initiatives): void
     {
-        // 1. Ensure goal tags exist
+        // 1. Load existing theme tags
+        $themeTags = Tag::where('type', 'theme')->get()->keyBy('name');
+        $this->info("Theme tags loaded: {$themeTags->count()}");
+
+        // 2. Load existing guidance tags
+        $guidanceTags = Tag::where('type', 'guidance')->get()->keyBy('name');
+        $this->info("Guidance tags loaded: {$guidanceTags->count()}");
+
+        // 3. Ensure goal tags exist
         $goalTags = $this->ensureGoalTags();
-        $this->info("Goal tags: {$goalTags->count()}");
+        $this->info("Goal tags loaded: {$goalTags->count()}");
 
-        // 2. Load existing interest tags
-        $interestTags = Tag::where('type', 'interest')->get()->keyBy('name');
-        $this->info("Interest tags loaded: {$interestTags->count()}");
-
-        // 3. Create import organisation + system user
-        $organisation = Organisation::firstOrCreate(
-            ['name' => 'Import'],
-            ['city' => null],
-        );
-
+        // 4. Create system user
         $systemUser = User::firstOrCreate(
             ['email' => self::SYSTEM_EMAIL],
             [
-                'name' => 'Hartverwarmers Import',
+                'first_name' => 'Hartverwarmers',
+                'last_name' => 'Import',
                 'password' => Str::random(32),
                 'role' => 'contributor',
-                'organisation_id' => $organisation->id,
+                'organisation' => 'Import',
             ],
         );
 
-        // 4. Create contributor users
+        // 5. Create contributor users
         $authors = $this->collectUniqueAuthors($initiatives);
-        $userMap = $this->createContributorUsers($authors, $organisation);
+        $userMap = $this->createContributorUsers($authors);
         $userMap[self::SYSTEM_EMAIL] = $systemUser;
         $this->info("Created {$authors->count()} contributor users");
 
-        // 5. Import initiatives & elaborations in a transaction
-        $stats = ['initiatives' => 0, 'elaborations' => 0, 'skipped_initiatives' => 0, 'skipped_elaborations' => 0];
+        // 6. Import initiatives & fiches in a transaction
+        $stats = ['initiatives' => 0, 'fiches' => 0, 'skipped' => 0];
 
-        DB::transaction(function () use ($initiatives, $goalTags, $interestTags, $userMap, $systemUser, &$stats) {
-            $usedSlugs = Elaboration::withTrashed()->pluck('slug')->flip();
+        DB::transaction(function () use ($initiatives, $themeTags, $guidanceTags, $goalTags, $userMap, $systemUser, &$stats) {
+            $usedInitiativeSlugs = Initiative::withTrashed()->pluck('slug')->flip();
+            $usedFicheSlugs = Fiche::withTrashed()->pluck('slug')->flip();
 
-            foreach ($initiatives as $initData) {
-                $slug = Str::slug($initData['name']);
+            foreach ($initiatives as $initiativeData) {
+                $initiativeSlug = $this->uniqueSlug($initiativeData['name'], $usedInitiativeSlugs);
 
-                // Idempotency: skip if already exists
-                if (Initiative::withTrashed()->where('slug', $slug)->exists()) {
-                    $this->warn("  Skipping existing initiative: {$initData['name']}");
-                    $stats['skipped_initiatives']++;
+                // Idempotency: skip if initiative slug already existed before import
+                if (Initiative::withTrashed()->where('slug', Str::slug($initiativeData['name']))->exists()) {
+                    $this->warn("  Skipping existing initiative: {$initiativeData['name']}");
+                    $stats['skipped']++;
 
                     continue;
                 }
 
+                $usedInitiativeSlugs[$initiativeSlug] = true;
+
+                // Create initiative
                 $initiative = Initiative::create([
-                    'title' => $initData['name'],
-                    'slug' => $slug,
-                    'description' => $initData['description'] ?? null,
+                    'title' => $initiativeData['name'],
+                    'slug' => $initiativeSlug,
+                    'description' => $initiativeData['description'] ?? null,
                     'published' => true,
                     'created_by' => $systemUser->id,
                 ]);
 
                 // Attach goal tags to initiative
-                $initGoalTagIds = $this->resolveGoalTagIds($initData['diamant_aspects'] ?? [], $goalTags);
-                if ($initGoalTagIds->isNotEmpty()) {
-                    $initiative->tags()->attach($initGoalTagIds);
+                $initiativeGoalTagIds = $this->resolveGoalTagIds($initiativeData['diamant_aspects'] ?? [], $goalTags);
+                if ($initiativeGoalTagIds->isNotEmpty()) {
+                    $initiative->tags()->attach($initiativeGoalTagIds);
                 }
 
                 $stats['initiatives']++;
 
-                // Import elaborations
-                foreach ($initData['elaborations'] as $elabData) {
-                    $user = $this->resolveUser($elabData['authors'] ?? null, $userMap, $systemUser);
-                    $elabSlug = $this->uniqueSlug($elabData['title'], $slug, $usedSlugs);
-                    $usedSlugs[$elabSlug] = true;
+                // Import fiches for this initiative
+                foreach ($initiativeData['elaborations'] ?? [] as $elaboration) {
+                    $ficheSlug = $this->uniqueSlug($elaboration['title'], $usedFicheSlugs);
+                    $usedFicheSlugs[$ficheSlug] = true;
 
-                    $originalData = $elabData['original_data'] ?? [];
-                    $fiche = $this->parseFiche($originalData['fiche'] ?? null);
-                    $targetAudience = $this->parseJsonString($elabData['target_audience'] ?? null);
-                    $hasDiamond = ! empty($elabData['diamant_aspects']);
+                    // Resolve author
+                    $user = $this->resolveUser($elaboration['authors'] ?? null, $userMap, $systemUser);
 
-                    $elaboration = new Elaboration([
+                    // Parse fiche content from original_data
+                    $originalData = $elaboration['original_data'] ?? [];
+                    $materials = $this->parseFiche($originalData['fiche'] ?? null);
+                    $practicalTips = $this->extractPracticalTips($originalData['fiche'] ?? null);
+                    $targetAudience = $this->parseJsonString($elaboration['target_audience'] ?? null);
+                    $hasDiamond = ($originalData['quality_score'] ?? null) === 1;
+
+                    // Create fiche
+                    $fiche = new Fiche([
                         'initiative_id' => $initiative->id,
                         'user_id' => $user->id,
-                        'title' => $elabData['title'],
-                        'slug' => $elabSlug,
-                        'description' => $elabData['description'] ?? null,
-                        'fiche' => $fiche,
+                        'title' => $elaboration['title'],
+                        'slug' => $ficheSlug,
+                        'description' => $elaboration['description'] ?? null,
+                        'practical_tips' => $practicalTips,
+                        'materials' => $materials,
                         'target_audience' => $targetAudience,
                         'published' => true,
                         'has_diamond' => $hasDiamond,
                     ]);
 
-                    // Preserve timestamps
                     if (! empty($originalData['created_at'])) {
-                        $elaboration->created_at = $originalData['created_at'];
+                        $fiche->created_at = $originalData['created_at'];
                     }
                     if (! empty($originalData['updated_at'])) {
-                        $elaboration->updated_at = $originalData['updated_at'];
+                        $fiche->updated_at = $originalData['updated_at'];
                     }
 
-                    $elaboration->save();
+                    $fiche->save();
 
-                    // Attach goal tags to elaboration
-                    $elabGoalTagIds = $this->resolveGoalTagIds($elabData['diamant_aspects'] ?? [], $goalTags);
-
-                    // Attach interest tags to elaboration
-                    $elabInterestTagIds = $this->resolveInterestTagIds($elabData['interests'] ?? '', $interestTags);
-
-                    $allTagIds = $elabGoalTagIds->merge($elabInterestTagIds)->unique();
-                    if ($allTagIds->isNotEmpty()) {
-                        $elaboration->tags()->attach($allTagIds);
+                    // Attach theme tags to fiche
+                    $themeTagIds = $this->resolveThemeTagIds($elaboration['interests'] ?? '', $themeTags);
+                    if ($themeTagIds->isNotEmpty()) {
+                        $fiche->tags()->attach($themeTagIds);
                     }
 
-                    $stats['elaborations']++;
+                    // Attach guidance tags to fiche
+                    $guidanceTagIds = $this->resolveGuidanceTagIds($originalData['guidances'] ?? null, $guidanceTags);
+                    if ($guidanceTagIds->isNotEmpty()) {
+                        $fiche->tags()->attach($guidanceTagIds);
+                    }
+
+                    // Attach goal tags to fiche
+                    $ficheGoalTagIds = $this->resolveGoalTagIds($elaboration['diamant_aspects'] ?? [], $goalTags);
+                    if ($ficheGoalTagIds->isNotEmpty()) {
+                        $fiche->tags()->attach($ficheGoalTagIds);
+                    }
+
+                    $stats['fiches']++;
                 }
             }
         });
@@ -333,10 +350,11 @@ class ImportInitiatives extends Command
             ['Metric', 'Count'],
             [
                 ['Initiatives created', $stats['initiatives']],
-                ['Initiatives skipped', $stats['skipped_initiatives']],
-                ['Elaborations created', $stats['elaborations']],
+                ['Fiches created', $stats['fiches']],
+                ['Initiatives skipped', $stats['skipped']],
+                ['Theme tags', $themeTags->count()],
+                ['Guidance tags', $guidanceTags->count()],
                 ['Goal tags', $goalTags->count()],
-                ['Interest tags', $interestTags->count()],
                 ['Contributor users', count($userMap) - 1],
             ],
         );
@@ -345,47 +363,57 @@ class ImportInitiatives extends Command
     private function ensureGoalTags(): Collection
     {
         $facets = config('diamant.facets');
-        $tags = collect();
+        $goalTags = collect();
 
         foreach ($facets as $facet) {
-            $tags->push(Tag::firstOrCreate(
-                ['slug' => "doel-{$facet['slug']}"],
-                ['name' => $facet['keyword'], 'type' => 'goal'],
-            ));
+            $slug = 'doel-'.$facet['slug'];
+            $tag = Tag::firstOrCreate(
+                ['slug' => $slug, 'type' => 'goal'],
+                ['name' => $facet['keyword']],
+            );
+            $goalTags[$slug] = $tag;
         }
 
-        return $tags;
+        return $goalTags;
+    }
+
+    private function resolveGoalTagIds(array $aspects, Collection $goalTags): Collection
+    {
+        return collect($aspects)
+            ->map(fn ($letter) => self::DIAMANT_MAP[$letter] ?? null)
+            ->filter()
+            ->unique()
+            ->map(fn ($slug) => $goalTags->get($slug)?->id)
+            ->filter()
+            ->values();
     }
 
     private function collectUniqueAuthors(array $initiatives): Collection
     {
-        $authors = collect();
-
-        foreach ($initiatives as $init) {
-            foreach ($init['elaborations'] as $elab) {
-                if (! empty($elab['authors'])) {
-                    $authors->push(trim($elab['authors']));
-                }
-            }
-        }
-
-        return $authors->unique();
+        return collect($initiatives)
+            ->flatMap(fn ($i) => collect($i['elaborations'] ?? [])->pluck('authors'))
+            ->filter()
+            ->map(fn ($name) => trim($name))
+            ->filter()
+            ->unique();
     }
 
-    private function createContributorUsers(Collection $authors, Organisation $organisation): array
+    private function createContributorUsers(Collection $authors): array
     {
         $userMap = [];
 
         foreach ($authors as $authorName) {
             $email = Str::slug($authorName).'@import.hartverwarmers.be';
+            $parts = explode(' ', $authorName, 2);
 
             $user = User::firstOrCreate(
                 ['email' => $email],
                 [
-                    'name' => $authorName,
+                    'first_name' => $parts[0],
+                    'last_name' => $parts[1] ?? '',
                     'password' => Str::random(32),
                     'role' => 'contributor',
-                    'organisation_id' => $organisation->id,
+                    'organisation' => 'Import',
                 ],
             );
 
@@ -404,46 +432,27 @@ class ImportInitiatives extends Command
         return $userMap[trim($authorName)] ?? $systemUser;
     }
 
-    private function uniqueSlug(string $title, string $initiativeSlug, Collection $usedSlugs): string
+    private function uniqueSlug(string $title, Collection $usedSlugs): string
     {
         $slug = Str::slug($title);
 
         if (empty($slug)) {
-            $slug = 'uitwerking';
+            $slug = 'activiteit';
         }
 
         if (! $usedSlugs->has($slug)) {
             return $slug;
         }
 
-        // Append initiative slug as suffix
-        $suffixed = "{$slug}-{$initiativeSlug}";
-        if (! $usedSlugs->has($suffixed)) {
-            return $suffixed;
-        }
-
-        // Final fallback: append a counter
         $counter = 2;
-        while ($usedSlugs->has("{$suffixed}-{$counter}")) {
+        while ($usedSlugs->has("{$slug}-{$counter}")) {
             $counter++;
         }
 
-        return "{$suffixed}-{$counter}";
+        return "{$slug}-{$counter}";
     }
 
-    private function resolveGoalTagIds(array $aspects, Collection $goalTags): Collection
-    {
-        $tagsBySlug = $goalTags->keyBy('slug');
-
-        return collect($aspects)
-            ->map(fn ($aspect) => self::DIAMANT_MAP[$aspect] ?? null)
-            ->filter()
-            ->map(fn ($slug) => $tagsBySlug->get($slug)?->id)
-            ->filter()
-            ->values();
-    }
-
-    private function resolveInterestTagIds(string $interestsString, Collection $interestTags): Collection
+    private function resolveThemeTagIds(string $interestsString, Collection $themeTags): Collection
     {
         if (empty($interestsString)) {
             return collect();
@@ -452,10 +461,30 @@ class ImportInitiatives extends Command
         return collect(explode(',', $interestsString))
             ->map(fn ($name) => trim($name))
             ->filter()
-            ->map(fn ($name) => self::INTEREST_MAP[$name] ?? null)
+            ->map(fn ($name) => self::THEME_MAP[$name] ?? null)
             ->filter()
             ->unique()
-            ->map(fn ($tagName) => $interestTags->get($tagName)?->id)
+            ->map(fn ($tagName) => $themeTags->get($tagName)?->id)
+            ->filter()
+            ->values();
+    }
+
+    private function resolveGuidanceTagIds(?string $guidancesJson, Collection $guidanceTags): Collection
+    {
+        if (empty($guidancesJson)) {
+            return collect();
+        }
+
+        $guidances = json_decode($guidancesJson, true);
+        if (! is_array($guidances)) {
+            return collect();
+        }
+
+        return collect($guidances)
+            ->map(fn ($slug) => self::GUIDANCE_MAP[$slug] ?? null)
+            ->filter()
+            ->unique()
+            ->map(fn ($tagName) => $guidanceTags->get($tagName)?->id)
             ->filter()
             ->values();
     }
@@ -471,11 +500,37 @@ class ImportInitiatives extends Command
             return null;
         }
 
-        // Strip HTML tags from fiche values and filter empty ones
-        $cleaned = array_map(fn ($value) => trim(strip_tags((string) $value)), $parsed);
-        $nonEmpty = array_filter($cleaned, fn ($value) => $value !== '');
+        // Keep process, inventory, preparation with HTML for display; filter empty fields
+        $fields = ['process', 'inventory', 'preparation'];
+        $materials = [];
 
-        return $nonEmpty ?: null;
+        foreach ($fields as $field) {
+            $value = trim($parsed[$field] ?? '');
+            if ($value !== '') {
+                $materials[$field] = $value;
+            }
+        }
+
+        return $materials ?: null;
+    }
+
+    private function extractPracticalTips(?string $ficheJson): ?string
+    {
+        if (empty($ficheJson)) {
+            return null;
+        }
+
+        $parsed = json_decode($ficheJson, true);
+        if (! is_array($parsed)) {
+            return null;
+        }
+
+        $preparation = trim($parsed['preparation'] ?? '');
+        if ($preparation === '') {
+            return null;
+        }
+
+        return trim(strip_tags($preparation)) ?: null;
     }
 
     private function parseJsonString(?string $jsonString): ?array
@@ -493,22 +548,21 @@ class ImportInitiatives extends Command
     {
         $this->warn('Wiping previous import data...');
 
-        $organisation = Organisation::where('name', 'Import')->first();
-        if (! $organisation) {
+        $importUserIds = User::where('organisation', 'Import')->pluck('id');
+
+        if ($importUserIds->isEmpty()) {
             $this->info('No previous import found.');
 
             return;
         }
 
-        $importUserIds = User::where('organisation_id', $organisation->id)->pluck('id');
-
-        // Delete elaborations by import users
-        $elaborationIds = Elaboration::whereIn('user_id', $importUserIds)->pluck('id');
+        // Delete fiches by import users
+        $ficheIds = Fiche::whereIn('user_id', $importUserIds)->pluck('id');
         DB::table('taggables')
-            ->where('taggable_type', Elaboration::class)
-            ->whereIn('taggable_id', $elaborationIds)
+            ->where('taggable_type', Fiche::class)
+            ->whereIn('taggable_id', $ficheIds)
             ->delete();
-        Elaboration::whereIn('id', $elaborationIds)->forceDelete();
+        Fiche::whereIn('id', $ficheIds)->forceDelete();
 
         // Delete initiatives created by import users
         $initiativeIds = Initiative::whereIn('created_by', $importUserIds)->pluck('id');
@@ -518,9 +572,8 @@ class ImportInitiatives extends Command
             ->delete();
         Initiative::whereIn('id', $initiativeIds)->forceDelete();
 
-        // Delete import users and organisation
+        // Delete import users
         User::whereIn('id', $importUserIds)->forceDelete();
-        $organisation->delete();
 
         $this->info('Previous import wiped.');
     }

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $elaboration->title }} - Hartverwarmers</title>
+    <title>{{ $fiche->title }} - Hartverwarmers</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&family=Roboto+Slab:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -18,7 +18,7 @@
         }
 
         body {
-            font-family: 'Fira Sans', sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             font-size: 12pt;
             line-height: 1.6;
             color: #1F1F1F;
@@ -26,26 +26,27 @@
         }
 
         h1, h2, h3 {
-            font-family: 'Roboto Slab', serif;
+            font-family: 'Alan Sans', system-ui, sans-serif;
             font-weight: 900;
+            line-height: 1.25;
         }
 
         h1 {
             font-size: 24pt;
             margin-bottom: 0.5cm;
-            color: #E84C4F;
+            color: #1F1F1F;
         }
 
         h2 {
             font-size: 14pt;
             margin-top: 1cm;
             margin-bottom: 0.5cm;
-            border-bottom: 2px solid #E84C4F;
+            border-bottom: 2px solid #E8764B;
             padding-bottom: 0.2cm;
         }
 
         .header {
-            border-bottom: 1px solid #E8E8E8;
+            border-bottom: 1px solid #EBE4DE;
             padding-bottom: 0.5cm;
             margin-bottom: 1cm;
         }
@@ -64,10 +65,11 @@
         }
 
         .tag {
-            background: #F5F6F7;
+            background: #F5F0EC;
             padding: 0.1cm 0.3cm;
             border-radius: 0.2cm;
             font-size: 9pt;
+            color: #1F1F1F;
         }
 
         .content {
@@ -88,7 +90,7 @@
         }
 
         .fiche-box {
-            background: #F5F6F7;
+            background: #F5F0EC;
             padding: 0.5cm;
             margin-top: 1cm;
             border-radius: 0.2cm;
@@ -112,7 +114,7 @@
         .footer {
             margin-top: 2cm;
             padding-top: 0.5cm;
-            border-top: 1px solid #E8E8E8;
+            border-top: 1px solid #EBE4DE;
             font-size: 9pt;
             color: #6F6F6F;
             text-align: center;
@@ -131,39 +133,39 @@
 </head>
 <body>
     <header class="header">
-        <h1>{{ $elaboration->title }}</h1>
+        <h1>{{ $fiche->title }}</h1>
         <div class="meta">{{ $initiative->title }}</div>
 
-        @if($elaboration->tags->isNotEmpty())
+        @if($fiche->tags->isNotEmpty())
             <div class="tags">
-                @foreach($elaboration->tags as $tag)
+                @foreach($fiche->tags as $tag)
                     <span class="tag">{{ $tag->name }}</span>
                 @endforeach
             </div>
         @endif
     </header>
 
-    @if($elaboration->fiche)
+    @if($fiche->materials)
         <div class="fiche-box">
             <div class="fiche-grid">
-                @if($elaboration->fiche['duration'] ?? null)
+                @if($fiche->materials['duration'] ?? null)
                     <div class="fiche-item">
                         <div class="fiche-label">Duur</div>
-                        <div>{{ $elaboration->fiche['duration'] }}</div>
+                        <div>{{ $fiche->materials['duration'] }}</div>
                     </div>
                 @endif
 
-                @if($elaboration->fiche['group_size'] ?? null)
+                @if($fiche->materials['group_size'] ?? null)
                     <div class="fiche-item">
                         <div class="fiche-label">Groepsgrootte</div>
-                        <div>{{ $elaboration->fiche['group_size'] }}</div>
+                        <div>{{ $fiche->materials['group_size'] }}</div>
                     </div>
                 @endif
 
-                @if($elaboration->fiche['materials'] ?? null)
+                @if($fiche->materials['materials'] ?? null)
                     <div class="fiche-item" style="grid-column: span 2;">
                         <div class="fiche-label">Materiaal</div>
-                        <div>{{ $elaboration->fiche['materials'] }}</div>
+                        <div>{{ $fiche->materials['materials'] }}</div>
                     </div>
                 @endif
             </div>
@@ -172,13 +174,13 @@
 
     <div class="content">
         <h2>Beschrijving</h2>
-        {!! $elaboration->description !!}
+        {!! $fiche->description !!}
     </div>
 
-    @if($elaboration->practical_tips)
+    @if($fiche->practical_tips)
         <div class="content">
             <h2>Praktische tips</h2>
-            {!! $elaboration->practical_tips !!}
+            {!! $fiche->practical_tips !!}
         </div>
     @endif
 

@@ -4,7 +4,7 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\ContributorController;
-use App\Http\Controllers\ElaborationController;
+use App\Http\Controllers\FicheController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InitiativeController;
@@ -20,9 +20,9 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/initiatieven', [InitiativeController::class, 'index'])->name('initiatives.index');
 Route::get('/initiatieven/{initiative:slug}', [InitiativeController::class, 'show'])->name('initiatives.show');
 
-// Elaborations (nested under initiative)
-Route::get('/initiatieven/{initiative:slug}/{elaboration:slug}', [ElaborationController::class, 'show'])->name('elaborations.show');
-Route::get('/initiatieven/{initiative:slug}/{elaboration:slug}/print', [ElaborationController::class, 'print'])->name('elaborations.print');
+// Fiches (nested under initiative)
+Route::get('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'show'])->name('fiches.show');
+Route::get('/initiatieven/{initiative:slug}/{fiche:slug}/print', [FicheController::class, 'print'])->name('fiches.print');
 
 // Themes (placeholder)
 Route::get('/themas', [ThemeController::class, 'index'])->name('themes.index');
@@ -34,10 +34,21 @@ Route::get('/bijdragers/{user}', [ContributorController::class, 'show'])->name('
 // Profile (authenticated)
 Route::middleware('auth')->group(function () {
     Route::get('/profiel', [HvProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profiel/bookmarks', [HvProfileController::class, 'bookmarks'])->name('profile.bookmarks');
-    Route::post('/uitwerkingen/{elaboration}/bookmark', [BookmarkController::class, 'toggle'])->name('elaborations.bookmark');
-    Route::post('/uitwerkingen/{elaboration}/comment', [CommentController::class, 'store'])->name('elaborations.comment');
+    Route::put('/profiel', [HvProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profiel/avatar', [HvProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
+    Route::delete('/profiel/avatar', [HvProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
+    Route::get('/profiel/beveiliging', [HvProfileController::class, 'security'])->name('profile.security');
+    Route::get('/profiel/favorieten', [HvProfileController::class, 'bookmarks'])->name('profile.bookmarks');
+    Route::post('/fiches/{fiche}/favoriet', [BookmarkController::class, 'toggle'])->name('fiches.bookmark');
+    Route::post('/fiches/{fiche}/comment', [CommentController::class, 'store'])->name('fiches.comment');
     Route::post('/initiatieven/{initiative:slug}/comment', [CommentController::class, 'storeForInitiative'])->name('initiatives.comment');
+
+    // Admin actions
+    Route::middleware('admin')->group(function () {
+        Route::delete('/initiatieven/{initiative:slug}', [InitiativeController::class, 'destroy'])->name('initiatives.destroy');
+        Route::post('/initiatieven/{initiative:slug}/{fiche:slug}/diamant', [FicheController::class, 'toggleDiamond'])->name('fiches.toggleDiamond');
+        Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'destroy'])->name('fiches.destroy');
+    });
 });
 
 // Tools & Inspiratie

@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Elaboration;
+use App\Models\Fiche;
 use App\Models\Initiative;
-use App\Models\Organisation;
 use App\Models\User;
 use App\Services\DiamantService;
 use Illuminate\View\View;
@@ -16,11 +15,12 @@ class HomeController extends Controller
         $initiatives = Initiative::query()
             ->where('published', true)
             ->with('tags', 'creator')
+            ->withCount(['fiches' => fn ($q) => $q->published()])
             ->latest()
             ->take(6)
             ->get();
 
-        $recentElaborations = Elaboration::query()
+        $recentFiches = Fiche::query()
             ->published()
             ->with('initiative', 'user', 'tags')
             ->latest()
@@ -28,9 +28,9 @@ class HomeController extends Controller
             ->get();
 
         $stats = [
-            'elaborations' => Elaboration::published()->count(),
-            'contributors' => User::whereHas('elaborations')->count(),
-            'organisations' => Organisation::count(),
+            'fiches' => Fiche::published()->count(),
+            'contributors' => User::whereHas('fiches')->count(),
+            'organisations' => User::whereNotNull('organisation')->distinct('organisation')->count('organisation'),
             'initiatives' => Initiative::where('published', true)->count(),
         ];
 
@@ -51,7 +51,7 @@ class HomeController extends Controller
 
         return view('home', [
             'initiatives' => $initiatives,
-            'recentElaborations' => $recentElaborations,
+            'recentFiches' => $recentFiches,
             'facets' => $facets,
             'firstFacetSlug' => $firstFacetSlug,
             'firstFacet' => $firstFacet,

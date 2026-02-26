@@ -150,9 +150,9 @@
             @endif
 
             <div class="mt-8 text-center">
-                <a href="{{ route('initiatives.index') }}" class="btn-pill">
+                <flux:button variant="primary" href="{{ route('initiatives.index') }}">
                     Alle {{ $facetInitiativeCount > 0 ? $facetInitiativeCount : $totalInitiativeCount }} initiatieven{{ $facetInitiativeCount > 0 ? ' voor ' . $facet['keyword'] : '' }} bekijken
-                </a>
+                </flux:button>
             </div>
         </div>
     </div>

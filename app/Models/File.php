@@ -11,7 +11,7 @@ class File extends Model
     use HasFactory;
 
     protected $fillable = [
-        'elaboration_id',
+        'fiche_id',
         'original_filename',
         'path',
         'mime_type',
@@ -19,8 +19,8 @@ class File extends Model
         'sort_order',
     ];
 
-    public function elaboration(): BelongsTo
+    public function fiche(): BelongsTo
     {
-        return $this->belongsTo(Elaboration::class);
+        return $this->belongsTo(Fiche::class);
     }
 }

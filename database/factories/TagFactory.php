@@ -17,14 +17,14 @@ class TagFactory extends Factory
         return [
             'name' => $name,
             'slug' => Str::slug($name),
-            'type' => fake()->randomElement(['interest', 'guidance', 'goal']),
+            'type' => fake()->randomElement(['theme', 'guidance', 'goal']),
         ];
     }
 
-    public function interest(): static
+    public function theme(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => 'interest',
+            'type' => 'theme',
         ]);
     }
 

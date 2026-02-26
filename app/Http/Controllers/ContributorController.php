@@ -10,9 +10,8 @@ class ContributorController extends Controller
     public function index(): View
     {
         $contributors = User::query()
-            ->has('elaborations')
-            ->with('organisation')
-            ->orderBy('name')
+            ->has('fiches')
+            ->orderBy('last_name')
             ->get();
 
         return view('contributors.index', [
@@ -22,7 +21,7 @@ class ContributorController extends Controller
 
     public function show(User $user): View
     {
-        $user->load(['organisation', 'elaborations' => function ($query) {
+        $user->load(['fiches' => function ($query) {
             $query->published()->with('initiative', 'tags');
         }]);
 

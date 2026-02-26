@@ -5,11 +5,19 @@
         @csrf
 
         <!-- Name -->
-        <flux:field>
-            <flux:label for="name">Naam</flux:label>
-            <flux:input id="name" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" />
-        </flux:field>
+        <div class="grid grid-cols-2 gap-4">
+            <flux:field>
+                <flux:label for="first_name">Voornaam</flux:label>
+                <flux:input id="first_name" type="text" name="first_name" :value="old('first_name')" required autofocus autocomplete="given-name" />
+                <x-input-error :messages="$errors->get('first_name')" />
+            </flux:field>
+
+            <flux:field>
+                <flux:label for="last_name">Achternaam</flux:label>
+                <flux:input id="last_name" type="text" name="last_name" :value="old('last_name')" required autocomplete="family-name" />
+                <x-input-error :messages="$errors->get('last_name')" />
+            </flux:field>
+        </div>
 
         <!-- Email Address -->
         <flux:field>
