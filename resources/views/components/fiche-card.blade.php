@@ -1,18 +1,18 @@
-@props(['elaboration'])
+@props(['fiche', 'showTags' => true])
 
-<a href="{{ route('elaborations.show', [$elaboration->initiative, $elaboration]) }}" class="block cursor-pointer">
+<a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="block cursor-pointer">
 <flux:card class="overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
-    <flux:heading size="lg">{{ $elaboration->title }}</flux:heading>
+    <flux:heading size="lg">{{ $fiche->title }}</flux:heading>
 
-    @if($elaboration->description)
+    @if($fiche->description)
         <flux:text class="mt-2 line-clamp-2">
-            {{ Str::limit(strip_tags($elaboration->description), 120) }}
+            {{ Str::limit(strip_tags($fiche->description), 120) }}
         </flux:text>
     @endif
 
-    @if($elaboration->tags->isNotEmpty())
+    @if($showTags && $fiche->tags->isNotEmpty())
         <div class="flex flex-wrap gap-1 mt-3">
-            @foreach($elaboration->tags->take(3) as $tag)
+            @foreach($fiche->tags->take(3) as $tag)
                 <flux:badge size="sm" color="zinc">{{ $tag->name }}</flux:badge>
             @endforeach
         </div>
@@ -20,8 +20,8 @@
 
     <div class="flex items-center justify-between mt-4 pt-3 border-t border-[var(--color-border-light)]">
         <div class="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-            @if($elaboration->user)
-                <span>Door {{ $elaboration->user->name }}</span>
+            @if($fiche->user)
+                <span>Door {{ $fiche->user->full_name }}</span>
             @endif
         </div>
         <span class="cta-link text-sm">

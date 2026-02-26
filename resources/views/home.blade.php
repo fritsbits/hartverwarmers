@@ -30,13 +30,13 @@
                         </svg>
                         Ontdek initiatieven
                     </span>
-                    <h2 class="text-2xl">Wat ga je vandaag doen?</h2>
-                    <p class="text-[var(--color-text-secondary)] mt-2">Seizoensgebonden inspiratie en de nieuwste bijdragen van collega's</p>
+                    <h2 class="text-3xl">Wat ga je vandaag doen?</h2>
+                    <p class="text-[var(--color-text-secondary)] mt-2">Laat je inspireren door deze  initiatieven en gebruik eventueel een al uitgewerkte fiche</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($initiatives->take(3) as $initiative)
-                        <x-initiative-card :initiative="$initiative" />
+                        <x-initiative-card :initiative="$initiative" :show-fiche-count="true" />
                     @endforeach
                 </div>
 
@@ -49,15 +49,15 @@
         </section>
     @endif
 
-    <!-- Recent Elaborations -->
-    @if($recentElaborations->isNotEmpty())
+    <!-- Recent Fiches -->
+    @if($recentFiches->isNotEmpty())
         <section class="bg-[var(--color-bg-base)]">
             <div class="max-w-6xl mx-auto px-6 pb-16">
-                <h3 class="text-xl mb-6">Recent gedeeld</h3>
+                <h3 class="text-2xl mb-6">Recent gedeeld</h3>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($recentElaborations->take(3) as $elaboration)
-                        <x-elaboration-card :elaboration="$elaboration" />
+                    @foreach($recentFiches->take(3) as $fiche)
+                        <x-fiche-card :fiche="$fiche" :show-tags="false" />
                     @endforeach
                 </div>
             </div>

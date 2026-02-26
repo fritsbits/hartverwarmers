@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,14 +15,17 @@ class User extends Authenticatable
     use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'role',
-        'organisation_id',
+        'organisation',
         'function_title',
         'avatar_path',
         'bio',
+        'website',
+        'linkedin',
     ];
 
     /**
@@ -41,9 +44,9 @@ class User extends Authenticatable
         ];
     }
 
-    public function organisation(): BelongsTo
+    protected function fullName(): Attribute
     {
-        return $this->belongsTo(Organisation::class);
+        return Attribute::get(fn () => "{$this->first_name} {$this->last_name}");
     }
 
     public function initiatives(): HasMany
@@ -51,9 +54,9 @@ class User extends Authenticatable
         return $this->hasMany(Initiative::class, 'created_by');
     }
 
-    public function elaborations(): HasMany
+    public function fiches(): HasMany
     {
-        return $this->hasMany(Elaboration::class);
+        return $this->hasMany(Fiche::class);
     }
 
     public function comments(): HasMany
@@ -81,11 +84,11 @@ class User extends Authenticatable
         return $this->role === 'curator';
     }
 
-    public function hasBookmarked(Elaboration $elaboration): bool
+    public function hasBookmarked(Fiche $fiche): bool
     {
         return $this->likes()
-            ->where('likeable_type', Elaboration::class)
-            ->where('likeable_id', $elaboration->id)
+            ->where('likeable_type', Fiche::class)
+            ->where('likeable_id', $fiche->id)
             ->where('type', 'bookmark')
             ->exists();
     }

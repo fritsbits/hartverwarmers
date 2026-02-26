@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Elaboration;
+use App\Models\Fiche;
 use App\Models\Initiative;
 use App\Models\Like;
 use App\Models\Tag;
@@ -28,7 +28,7 @@ class InitiativeTest extends TestCase
 
     public function test_initiatives_index_filters_by_tag(): void
     {
-        $tag = Tag::factory()->interest()->create();
+        $tag = Tag::factory()->theme()->create();
         $tagged = Initiative::factory()->published()->create();
         $tagged->tags()->attach($tag);
         $untagged = Initiative::factory()->published()->create();
@@ -59,11 +59,11 @@ class InitiativeTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_initiative_show_displays_published_elaborations(): void
+    public function test_initiative_show_displays_published_fiches(): void
     {
         $initiative = Initiative::factory()->published()->create();
-        $published = Elaboration::factory()->published()->create(['initiative_id' => $initiative->id]);
-        $unpublished = Elaboration::factory()->create(['initiative_id' => $initiative->id, 'published' => false]);
+        $published = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+        $unpublished = Fiche::factory()->create(['initiative_id' => $initiative->id, 'published' => false]);
 
         $response = $this->get(route('initiatives.show', $initiative));
 
@@ -72,69 +72,69 @@ class InitiativeTest extends TestCase
         $response->assertDontSee($unpublished->title);
     }
 
-    public function test_elaboration_show_page_loads(): void
+    public function test_fiche_show_page_loads(): void
     {
         $initiative = Initiative::factory()->published()->create();
-        $elaboration = Elaboration::factory()->published()->create(['initiative_id' => $initiative->id]);
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
 
-        $response = $this->get(route('elaborations.show', [$initiative, $elaboration]));
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee($elaboration->title);
+        $response->assertSee($fiche->title);
     }
 
-    public function test_elaboration_show_returns_404_for_unpublished(): void
+    public function test_fiche_show_returns_404_for_unpublished(): void
     {
         $initiative = Initiative::factory()->published()->create();
-        $elaboration = Elaboration::factory()->create(['initiative_id' => $initiative->id, 'published' => false]);
+        $fiche = Fiche::factory()->create(['initiative_id' => $initiative->id, 'published' => false]);
 
-        $response = $this->get(route('elaborations.show', [$initiative, $elaboration]));
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(404);
     }
 
-    public function test_elaboration_print_page_loads(): void
+    public function test_fiche_print_page_loads(): void
     {
         $initiative = Initiative::factory()->published()->create();
-        $elaboration = Elaboration::factory()->published()->create(['initiative_id' => $initiative->id]);
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
 
-        $response = $this->get(route('elaborations.print', [$initiative, $elaboration]));
+        $response = $this->get(route('fiches.print', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee($elaboration->title);
+        $response->assertSee($fiche->title);
     }
 
     public function test_bookmark_toggle_creates_and_removes_bookmark(): void
     {
         $user = User::factory()->create();
-        $elaboration = Elaboration::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create();
 
         // Create bookmark
-        $response = $this->actingAs($user)->post(route('elaborations.bookmark', $elaboration));
+        $response = $this->actingAs($user)->post(route('fiches.bookmark', $fiche));
         $response->assertRedirect();
         $this->assertDatabaseHas('likes', [
             'user_id' => $user->id,
-            'likeable_type' => Elaboration::class,
-            'likeable_id' => $elaboration->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
             'type' => 'bookmark',
         ]);
 
         // Remove bookmark
-        $response = $this->actingAs($user)->post(route('elaborations.bookmark', $elaboration));
+        $response = $this->actingAs($user)->post(route('fiches.bookmark', $fiche));
         $response->assertRedirect();
         $this->assertDatabaseMissing('likes', [
             'user_id' => $user->id,
-            'likeable_type' => Elaboration::class,
-            'likeable_id' => $elaboration->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
             'type' => 'bookmark',
         ]);
     }
 
     public function test_bookmark_requires_authentication(): void
     {
-        $elaboration = Elaboration::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create();
 
-        $response = $this->post(route('elaborations.bookmark', $elaboration));
+        $response = $this->post(route('fiches.bookmark', $fiche));
 
         $response->assertRedirect(route('login'));
     }
@@ -142,26 +142,26 @@ class InitiativeTest extends TestCase
     public function test_comment_store_creates_comment(): void
     {
         $user = User::factory()->create();
-        $elaboration = Elaboration::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create();
 
-        $response = $this->actingAs($user)->post(route('elaborations.comment', $elaboration), [
-            'body' => 'Geweldige uitwerking!',
+        $response = $this->actingAs($user)->post(route('fiches.comment', $fiche), [
+            'body' => 'Geweldige fiche!',
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('comments', [
             'user_id' => $user->id,
-            'commentable_type' => Elaboration::class,
-            'commentable_id' => $elaboration->id,
-            'body' => 'Geweldige uitwerking!',
+            'commentable_type' => Fiche::class,
+            'commentable_id' => $fiche->id,
+            'body' => 'Geweldige fiche!',
         ]);
     }
 
     public function test_comment_requires_authentication(): void
     {
-        $elaboration = Elaboration::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create();
 
-        $response = $this->post(route('elaborations.comment', $elaboration), [
+        $response = $this->post(route('fiches.comment', $fiche), [
             'body' => 'Test',
         ]);
 
@@ -171,38 +171,38 @@ class InitiativeTest extends TestCase
     public function test_comment_validates_body_required(): void
     {
         $user = User::factory()->create();
-        $elaboration = Elaboration::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create();
 
-        $response = $this->actingAs($user)->post(route('elaborations.comment', $elaboration), [
+        $response = $this->actingAs($user)->post(route('fiches.comment', $fiche), [
             'body' => '',
         ]);
 
         $response->assertSessionHasErrors('body');
     }
 
-    public function test_contributors_index_shows_users_with_elaborations(): void
+    public function test_contributors_index_shows_users_with_fiches(): void
     {
         $contributor = User::factory()->create();
-        Elaboration::factory()->create(['user_id' => $contributor->id]);
+        Fiche::factory()->create(['user_id' => $contributor->id]);
 
-        $userWithoutElaborations = User::factory()->create();
+        $userWithoutFiches = User::factory()->create();
 
         $response = $this->get(route('contributors.index'));
 
         $response->assertStatus(200);
-        $response->assertSee($contributor->name);
-        $response->assertDontSee($userWithoutElaborations->name);
+        $response->assertSee($contributor->full_name);
+        $response->assertDontSee($userWithoutFiches->full_name);
     }
 
     public function test_contributor_show_page_loads(): void
     {
         $contributor = User::factory()->create();
-        Elaboration::factory()->published()->create(['user_id' => $contributor->id]);
+        Fiche::factory()->published()->create(['user_id' => $contributor->id]);
 
         $response = $this->get(route('contributors.show', $contributor));
 
         $response->assertStatus(200);
-        $response->assertSee($contributor->name);
+        $response->assertSee($contributor->full_name);
     }
 
     public function test_themes_index_shows_placeholder(): void
@@ -213,13 +213,13 @@ class InitiativeTest extends TestCase
         $response->assertSee('In opbouw');
     }
 
-    public function test_initiative_show_highlights_diamond_elaboration(): void
+    public function test_initiative_show_highlights_diamond_fiche(): void
     {
         $initiative = Initiative::factory()->published()->create();
-        $diamond = Elaboration::factory()->published()->withDiamond()->create([
+        $diamond = Fiche::factory()->published()->withDiamond()->create([
             'initiative_id' => $initiative->id,
         ]);
-        $regular = Elaboration::factory()->published()->create([
+        $regular = Fiche::factory()->published()->create([
             'initiative_id' => $initiative->id,
         ]);
 
@@ -231,88 +231,95 @@ class InitiativeTest extends TestCase
         $response->assertSee($regular->title);
     }
 
-    public function test_elaboration_show_displays_related_elaborations(): void
+    public function test_fiche_show_displays_related_fiches(): void
     {
         $initiative = Initiative::factory()->published()->create();
-        $elaboration = Elaboration::factory()->published()->create([
+        $fiche = Fiche::factory()->published()->create([
             'initiative_id' => $initiative->id,
         ]);
-        $related = Elaboration::factory()->published()->create([
+        $related = Fiche::factory()->published()->create([
             'initiative_id' => $initiative->id,
         ]);
 
-        $response = $this->get(route('elaborations.show', [$initiative, $elaboration]));
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('Gerelateerde uitwerkingen');
+        $response->assertSee('Gerelateerde fiches');
         $response->assertSee($related->title);
     }
 
-    public function test_elaboration_show_displays_diamond_badge(): void
+    public function test_fiche_show_displays_diamond_badge(): void
     {
         $initiative = Initiative::factory()->published()->create();
-        $elaboration = Elaboration::factory()->published()->withDiamond()->create([
+        $fiche = Fiche::factory()->published()->withDiamond()->create([
             'initiative_id' => $initiative->id,
         ]);
 
-        $response = $this->get(route('elaborations.show', [$initiative, $elaboration]));
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
         $response->assertSee('Diamantje');
     }
 
-    public function test_profile_bookmarks_shows_bookmarked_elaborations(): void
+    public function test_profile_bookmarks_shows_bookmarked_fiches(): void
     {
         $user = User::factory()->create();
-        $elaboration = Elaboration::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create();
 
         Like::create([
             'user_id' => $user->id,
-            'likeable_type' => Elaboration::class,
-            'likeable_id' => $elaboration->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
             'type' => 'bookmark',
         ]);
 
         $response = $this->actingAs($user)->get(route('profile.bookmarks'));
 
         $response->assertStatus(200);
-        $response->assertSee($elaboration->title);
+        $response->assertSee($fiche->title);
     }
 
-    public function test_initiative_show_displays_diamant_profile(): void
+    public function test_initiative_show_does_not_display_diamant_profile(): void
     {
         $initiative = Initiative::factory()->published()->withDiamantGuidance()->create();
 
         $response = $this->get(route('initiatives.show', $initiative));
 
         $response->assertStatus(200);
-        $response->assertSee('Doen');
-        $response->assertSee('Inclusief');
-        $response->assertSee('Autonomie');
-        $response->assertSee('Mensgericht');
-        $response->assertSee('Anderen');
-        $response->assertSee('Normalisatie');
-        $response->assertSee('Talent');
-        $response->assertSee('Van '.$initiative->title.' naar diamantje');
+        $response->assertDontSee('Van '.$initiative->title.' naar diamantje');
     }
 
-    public function test_initiative_show_displays_contributor_count(): void
+    public function test_initiative_show_displays_fiche_and_comment_counts(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
-        Elaboration::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user1->id]);
-        Elaboration::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user2->id]);
+        Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user1->id]);
+        Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user2->id]);
 
         $response = $this->get(route('initiatives.show', $initiative));
 
         $response->assertStatus(200);
-        $response->assertSee('Uitgevoerd door 2 begeleiders');
+        $response->assertSee('2 fiches');
+        $response->assertDontSee('keer ervaringen gedeeld');
+    }
+
+    public function test_initiative_show_displays_comment_count_when_comments_exist(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $user = User::factory()->create();
+        $initiative->comments()->create(['user_id' => $user->id, 'body' => 'Geweldig initiatief!']);
+        $initiative->comments()->create(['user_id' => $user->id, 'body' => 'Werkt heel goed.']);
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertSee('2 keer ervaringen gedeeld');
     }
 
     public function test_initiative_show_displays_related_initiatives(): void
     {
-        $tag = Tag::factory()->interest()->create();
+        $tag = Tag::factory()->theme()->create();
         $initiative = Initiative::factory()->published()->create();
         $initiative->tags()->attach($tag);
         $related = Initiative::factory()->published()->create();

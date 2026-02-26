@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Elaboration;
+use App\Models\Fiche;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -13,7 +13,7 @@ class FileFactory extends Factory
     public function definition(): array
     {
         return [
-            'elaboration_id' => Elaboration::factory(),
+            'fiche_id' => Fiche::factory(),
             'original_filename' => fake()->word().'.pdf',
             'path' => 'files/'.fake()->uuid().'.pdf',
             'mime_type' => 'application/pdf',

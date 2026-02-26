@@ -4,19 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Initiative;
 use App\Models\Tag;
-use App\Services\DiamantService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class InitiativeController extends Controller
 {
-    public function __construct(private DiamantService $diamantService) {}
-
     public function index(Request $request): View
     {
         $query = Initiative::query()
             ->published()
-            ->with('tags', 'creator');
+            ->with('tags')
+            ->withCount(['fiches' => fn ($q) => $q->published()]);
 
         if ($request->filled('tag')) {
             $query->whereHas('tags', function ($q) use ($request) {
@@ -26,10 +25,8 @@ class InitiativeController extends Controller
 
         $initiatives = $query->latest()->paginate(12);
 
-        $tagTypes = ['interest', 'guidance'];
         $filterTags = Tag::query()
-            ->whereIn('type', $tagTypes)
-            ->orderBy('type')
+            ->where('type', 'theme')
             ->orderBy('name')
             ->get()
             ->groupBy('type');
@@ -49,31 +46,15 @@ class InitiativeController extends Controller
 
         $initiative->load([
             'tags',
-            'creator',
-            'elaborations' => function ($query) {
+            'fiches' => function ($query) {
                 $query->published()
-                    ->with(['tags', 'user.organisation', 'files'])
-                    ->withCount(['likes' => fn ($q) => $q->where('type', 'like')]);
+                    ->with(['tags', 'user', 'files'])
+                    ->withCount(['likes as bookmarks_count' => fn ($q) => $q->where('type', 'bookmark')]);
             },
             'comments' => function ($query) {
-                $query->with('user.organisation')->latest();
+                $query->with('user')->latest();
             },
         ]);
-
-        // DIAMANT profile: merge config facets with initiative's guidance JSON
-        $diamantProfile = collect($this->diamantService->all())->map(function ($facet) use ($initiative) {
-            $guidance = $initiative->diamant_guidance[$facet['slug']] ?? null;
-
-            return [
-                ...$facet,
-                'active' => $guidance['active'] ?? false,
-                'initiative_description' => $guidance['description'] ?? null,
-                'initiative_guidance' => $guidance['guidance'] ?? null,
-            ];
-        });
-
-        // Social proof stats
-        $contributorsCount = $initiative->elaborations->pluck('user_id')->unique()->count();
 
         // Related initiatives (shared tags, max 4)
         $tagIds = $initiative->tags->pluck('id');
@@ -82,16 +63,22 @@ class InitiativeController extends Controller
                 ->published()
                 ->where('id', '!=', $initiative->id)
                 ->whereHas('tags', fn ($q) => $q->whereIn('tags.id', $tagIds))
-                ->with(['tags', 'creator'])
+                ->with('tags')
                 ->limit(4)
                 ->get()
             : collect();
 
         return view('initiatives.show', [
             'initiative' => $initiative,
-            'diamantProfile' => $diamantProfile,
-            'contributorsCount' => $contributorsCount,
             'relatedInitiatives' => $relatedInitiatives,
         ]);
+    }
+
+    public function destroy(Initiative $initiative): RedirectResponse
+    {
+        $initiative->delete();
+
+        return redirect()->route('initiatives.index')
+            ->with('success', "Initiatief \"{$initiative->title}\" is verwijderd.");
     }
 }

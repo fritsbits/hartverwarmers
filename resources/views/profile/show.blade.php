@@ -1,25 +1,74 @@
-<x-layout title="Mijn profiel">
-    <div class="max-w-4xl mx-auto px-6 py-12">
-        <h1 class="text-3xl font-bold mb-8">Mijn profiel</h1>
+<x-profile-layout title="Mijn profiel">
+    <flux:card>
+        <flux:heading size="lg" class="mb-6">Persoonlijke gegevens</flux:heading>
 
-        <flux:card>
-            <div class="flex items-center gap-4 mb-6">
-                <div class="w-16 h-16 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-2xl font-semibold">
-                    {{ substr($user->name, 0, 1) }}
+        {{-- Avatar section --}}
+        <livewire:avatar-upload />
+
+        {{-- Profile form --}}
+        <form action="{{ route('profile.update') }}" method="POST">
+            @csrf
+            @method('PUT')
+
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <flux:field>
+                        <flux:label>Voornaam</flux:label>
+                        <flux:input name="first_name" :value="old('first_name', $user->first_name)" required />
+                        <x-input-error :messages="$errors->get('first_name')" />
+                    </flux:field>
+
+                    <flux:field>
+                        <flux:label>Achternaam</flux:label>
+                        <flux:input name="last_name" :value="old('last_name', $user->last_name)" required />
+                        <x-input-error :messages="$errors->get('last_name')" />
+                    </flux:field>
                 </div>
-                <div>
-                    <flux:heading size="lg">{{ $user->name }}</flux:heading>
-                    <flux:text class="text-[var(--color-text-secondary)]">{{ $user->email }}</flux:text>
+
+                <flux:field>
+                    <flux:label>E-mailadres</flux:label>
+                    <flux:input type="email" name="email" :value="old('email', $user->email)" required />
+                    <x-input-error :messages="$errors->get('email')" />
+                </flux:field>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <flux:field>
+                        <flux:label>Jobfunctie</flux:label>
+                        <flux:input name="function_title" :value="old('function_title', $user->function_title)" />
+                        <x-input-error :messages="$errors->get('function_title')" />
+                    </flux:field>
+
+                    <flux:field>
+                        <flux:label>Organisatie</flux:label>
+                        <flux:input name="organisation" :value="old('organisation', $user->organisation)" />
+                        <x-input-error :messages="$errors->get('organisation')" />
+                    </flux:field>
+                </div>
+
+                <flux:field>
+                    <flux:label>Over jou</flux:label>
+                    <flux:textarea name="bio" rows="4">{{ old('bio', $user->bio) }}</flux:textarea>
+                    <x-input-error :messages="$errors->get('bio')" />
+                </flux:field>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <flux:field>
+                        <flux:label>Website</flux:label>
+                        <flux:input type="url" name="website" :value="old('website', $user->website)" placeholder="https://" />
+                        <x-input-error :messages="$errors->get('website')" />
+                    </flux:field>
+
+                    <flux:field>
+                        <flux:label>LinkedIn</flux:label>
+                        <flux:input type="url" name="linkedin" :value="old('linkedin', $user->linkedin)" placeholder="https://linkedin.com/in/" />
+                        <x-input-error :messages="$errors->get('linkedin')" />
+                    </flux:field>
+                </div>
+
+                <div class="flex justify-end">
+                    <flux:button type="submit" variant="primary">Opslaan</flux:button>
                 </div>
             </div>
-
-            <flux:separator class="my-6" />
-
-            <div class="grid gap-4">
-                <flux:button variant="ghost" href="{{ route('profile.bookmarks') }}" icon="bookmark" class="justify-start">
-                    Mijn bookmarks
-                </flux:button>
-            </div>
-        </flux:card>
-    </div>
-</x-layout>
+        </form>
+    </flux:card>
+</x-profile-layout>

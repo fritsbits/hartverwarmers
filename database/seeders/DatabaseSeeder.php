@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Elaboration;
+use App\Models\Fiche;
 use App\Models\Initiative;
-use App\Models\Organisation;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -16,57 +15,47 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        // Create organisations
-        $organisations = collect([
-            Organisation::factory()->create(['name' => 'WZC Zonneveld', 'city' => 'Antwerpen']),
-            Organisation::factory()->create(['name' => 'WZC De Vlinder', 'city' => 'Gent']),
-            Organisation::factory()->create(['name' => 'WZC Het Anker', 'city' => 'Brugge']),
-            Organisation::factory()->create(['name' => 'WZC Zonnebloem', 'city' => 'Leuven']),
-            Organisation::factory()->create(['name' => 'WZC De Oase', 'city' => 'Mechelen']),
-            Organisation::factory()->create(['name' => 'WZC Residentie Berchem', 'city' => 'Berchem']),
-            Organisation::factory()->create(['name' => 'Hartverwarmers', 'city' => 'Antwerpen']),
-        ]);
-
         // Create admin
         $admin = User::factory()->admin()->create([
-            'name' => 'Frederik Vincx',
+            'first_name' => 'Frederik',
+            'last_name' => 'Vincx',
             'email' => 'frederik.vincx@gmail.com',
             'password' => 'fvx853',
-            'organisation_id' => $organisations->last()->id,
+            'organisation' => 'Hartverwarmers',
         ]);
 
         // Create named contributors
         $contributors = collect([
-            User::factory()->create(['name' => 'An Peeters', 'organisation_id' => $organisations[0]->id]),
-            User::factory()->create(['name' => 'Jan Verhoeven', 'organisation_id' => $organisations[1]->id]),
-            User::factory()->create(['name' => 'Lisa De Graef', 'organisation_id' => $organisations[2]->id]),
-            User::factory()->create(['name' => 'Katrien Willems', 'organisation_id' => $organisations[3]->id]),
-            User::factory()->create(['name' => 'Thomas De Smedt', 'organisation_id' => $organisations[4]->id]),
-            User::factory()->create(['name' => 'Marie Janssens', 'organisation_id' => $organisations[5]->id]),
-            User::factory()->create(['name' => 'Peter Van den Berg', 'organisation_id' => $organisations[0]->id]),
-            User::factory()->create(['name' => 'Sofie Claes', 'organisation_id' => $organisations[1]->id]),
+            User::factory()->create(['first_name' => 'An', 'last_name' => 'Peeters', 'organisation' => 'WZC Zonneveld']),
+            User::factory()->create(['first_name' => 'Jan', 'last_name' => 'Verhoeven', 'organisation' => 'WZC De Vlinder']),
+            User::factory()->create(['first_name' => 'Lisa', 'last_name' => 'De Graef', 'organisation' => 'WZC Het Anker']),
+            User::factory()->create(['first_name' => 'Katrien', 'last_name' => 'Willems', 'organisation' => 'WZC Zonnebloem']),
+            User::factory()->create(['first_name' => 'Thomas', 'last_name' => 'De Smedt', 'organisation' => 'WZC De Oase']),
+            User::factory()->create(['first_name' => 'Marie', 'last_name' => 'Janssens', 'organisation' => 'WZC Residentie Berchem']),
+            User::factory()->create(['first_name' => 'Peter', 'last_name' => 'Van den Berg', 'organisation' => 'WZC Zonneveld']),
+            User::factory()->create(['first_name' => 'Sofie', 'last_name' => 'Claes', 'organisation' => 'WZC De Vlinder']),
         ]);
 
         $allUsers = $contributors->push($admin);
 
         // Create tags
-        $interestTags = collect([
-            Tag::factory()->interest()->create(['name' => 'Beheren & organiseren', 'slug' => 'beheren-organiseren']),
-            Tag::factory()->interest()->create(['name' => 'Geloof & tradities', 'slug' => 'geloof-tradities']),
-            Tag::factory()->interest()->create(['name' => 'Gezelschap', 'slug' => 'gezelschap']),
-            Tag::factory()->interest()->create(['name' => 'Huishouden', 'slug' => 'huishouden']),
-            Tag::factory()->interest()->create(['name' => 'Klussen & creatief', 'slug' => 'klussen-creatief']),
-            Tag::factory()->interest()->create(['name' => 'Kunst & cultuur', 'slug' => 'kunst-cultuur']),
-            Tag::factory()->interest()->create(['name' => 'Lezen & schrijven', 'slug' => 'lezen-schrijven']),
-            Tag::factory()->interest()->create(['name' => 'Muziek', 'slug' => 'muziek']),
-            Tag::factory()->interest()->create(['name' => 'Natuur & dieren', 'slug' => 'natuur-dieren']),
-            Tag::factory()->interest()->create(['name' => 'Nieuws & actualiteit', 'slug' => 'nieuws-actualiteit']),
-            Tag::factory()->interest()->create(['name' => 'Spelletjes', 'slug' => 'spelletjes']),
-            Tag::factory()->interest()->create(['name' => 'Sport & Bewegen', 'slug' => 'sport-bewegen']),
-            Tag::factory()->interest()->create(['name' => 'Technologie', 'slug' => 'technologie']),
-            Tag::factory()->interest()->create(['name' => 'Tv & film', 'slug' => 'tv-film']),
-            Tag::factory()->interest()->create(['name' => 'Uitstappen', 'slug' => 'uitstappen']),
-            Tag::factory()->interest()->create(['name' => 'Zelfzorg', 'slug' => 'zelfzorg']),
+        $themeTags = collect([
+            Tag::factory()->theme()->create(['name' => 'Beheren & organiseren', 'slug' => 'beheren-organiseren']),
+            Tag::factory()->theme()->create(['name' => 'Geloof & tradities', 'slug' => 'geloof-tradities']),
+            Tag::factory()->theme()->create(['name' => 'Gezelschap', 'slug' => 'gezelschap']),
+            Tag::factory()->theme()->create(['name' => 'Huishouden', 'slug' => 'huishouden']),
+            Tag::factory()->theme()->create(['name' => 'Klussen & creatief', 'slug' => 'klussen-creatief']),
+            Tag::factory()->theme()->create(['name' => 'Kunst & cultuur', 'slug' => 'kunst-cultuur']),
+            Tag::factory()->theme()->create(['name' => 'Lezen & schrijven', 'slug' => 'lezen-schrijven']),
+            Tag::factory()->theme()->create(['name' => 'Muziek', 'slug' => 'muziek']),
+            Tag::factory()->theme()->create(['name' => 'Natuur & dieren', 'slug' => 'natuur-dieren']),
+            Tag::factory()->theme()->create(['name' => 'Nieuws & actualiteit', 'slug' => 'nieuws-actualiteit']),
+            Tag::factory()->theme()->create(['name' => 'Spelletjes', 'slug' => 'spelletjes']),
+            Tag::factory()->theme()->create(['name' => 'Sport & Bewegen', 'slug' => 'sport-bewegen']),
+            Tag::factory()->theme()->create(['name' => 'Technologie', 'slug' => 'technologie']),
+            Tag::factory()->theme()->create(['name' => 'Tv & film', 'slug' => 'tv-film']),
+            Tag::factory()->theme()->create(['name' => 'Uitstappen', 'slug' => 'uitstappen']),
+            Tag::factory()->theme()->create(['name' => 'Zelfzorg', 'slug' => 'zelfzorg']),
         ]);
 
         $guidanceTags = collect([
@@ -86,33 +75,43 @@ class DatabaseSeeder extends Seeder
             Tag::factory()->goal()->create(['name' => 'Talent', 'slug' => 'doel-talent']),
         ]);
 
-        $allTags = $interestTags->merge($guidanceTags);
+        $allTags = $themeTags->merge($guidanceTags);
 
-        // Create realistic initiatives with specific titles
-        $initiativeTitles = [
-            'Kookworkshop met bewoners',
-            'Tuinproject in de binnentuin',
-            'Muziekquiz jaren 60',
-            'Breicafe',
-            'Liefdesbrieven schrijven',
-            'Valentijnsbingo',
-            'Ochtendwandeling met zintuigen',
-            'Vlaamse schlagernamiddag',
-            'Seizoenstableau maken',
-            'Verhalen van vroeger',
-            'Fotoproject: ons verhaal',
-            'Gedichtennamiddag over liefde',
-            'Schilderen met waterverf',
-            'Bloemschikken voor de leefgroep',
-            'Bakken voor de buren',
+        // Create initiatives with real Dutch descriptions
+        $initiativeData = [
+            ['title' => 'Kookworkshop met bewoners', 'description' => 'Samen koken met bewoners: van recept kiezen tot aan tafel genieten. Een activiteit die zintuigen prikkelt en herinneringen oproept.'],
+            ['title' => 'Tuinproject in de binnentuin', 'description' => 'Bewoners onderhouden samen een moestuin of bloementuin. Planten, zaaien en oogsten op eigen tempo.'],
+            ['title' => 'Muziekquiz jaren 60', 'description' => 'Een interactieve quiz rond de grootste hits van de jaren 60. Luisteren, raden en samen meezingen.'],
+            ['title' => 'Breicafe', 'description' => 'Gezellig samenkomen om te breien, haken of handwerken. Ervaren breiers helpen beginners op weg.'],
+            ['title' => 'Liefdesbrieven schrijven', 'description' => 'Bewoners schrijven brieven aan geliefden, vrienden of zichzelf. Een creatieve schrijfactiviteit vol emotie en verbinding.'],
+            ['title' => 'Valentijnsbingo', 'description' => 'Een feestelijke bingo rond het thema liefde en valentijn. Met leuke prijsjes en gezellige sfeer.'],
+            ['title' => 'Ochtendwandeling met zintuigen', 'description' => 'Een korte wandeling waarbij bewoners bewust stilstaan bij wat ze zien, horen, ruiken en voelen.'],
+            ['title' => 'Vlaamse schlagernamiddag', 'description' => 'Een namiddag vol Vlaamse schlagers en meezingers. Van Will Tura tot Helmut Lotti.'],
+            ['title' => 'Seizoenstableau maken', 'description' => 'Bewoners maken samen een groot kunstwerk dat het huidige seizoen uitbeeldt. Met natuurlijke materialen en creatieve technieken.'],
+            ['title' => 'Verhalen van vroeger', 'description' => 'Bewoners vertellen verhalen uit hun jeugd en delen herinneringen. Een warme activiteit die verbindt over generaties heen.'],
+            ['title' => 'Fotoproject: ons verhaal', 'description' => 'Bewoners fotograferen hun dagelijks leven in het woonzorgcentrum. De mooiste foto\'s worden tentoongesteld.'],
+            ['title' => 'Gedichtennamiddag over liefde', 'description' => 'Samen gedichten lezen en bespreken rond het thema liefde. Bewoners kunnen ook eigen werk voordragen.'],
+            ['title' => 'Schilderen met waterverf', 'description' => 'Een creatieve sessie waarin bewoners experimenteren met waterverf. Geen ervaring nodig, wel plezier gegarandeerd.'],
+            ['title' => 'Bloemschikken voor de leefgroep', 'description' => 'Bewoners maken zelf bloemstukken voor hun leefruimte. Seizoensbloemen en natuurlijke materialen staan centraal.'],
+            ['title' => 'Bakken voor de buren', 'description' => 'Samen koekjes, taart of brood bakken om te delen met medebewoners en buurtgenoten. De geur alleen al maakt iedereen blij.'],
+        ];
+
+        $ficheDescriptions = [
+            'Stap voor stap uitgewerkt met aandacht voor verschillende zorgniveaus.',
+            'Praktisch draaiboek dat je meteen kunt gebruiken in je leefgroep.',
+            'Uitwerking met focus op samenwerking en sociale interactie.',
+            'Aangepaste versie voor bewoners met beperkte mobiliteit.',
+            'Compacte variant die in een halfuur uit te voeren is.',
         ];
 
         $initiatives = collect();
 
-        foreach ($initiativeTitles as $title) {
+        foreach ($initiativeData as $data) {
             $initiative = Initiative::factory()->published()->create([
-                'title' => $title,
-                'slug' => \Str::slug($title),
+                'title' => $data['title'],
+                'slug' => \Str::slug($data['title']),
+                'description' => $data['description'],
+                'content' => null,
                 'created_by' => $allUsers->random()->id,
             ]);
 
@@ -121,19 +120,26 @@ class DatabaseSeeder extends Seeder
             $initiatives->push($initiative);
         }
 
-        // Create elaborations for each initiative (2-5 per initiative)
-        $initiatives->each(function (Initiative $initiative) use ($allUsers, $allTags) {
-            $numElaborations = rand(2, 5);
+        // Create fiches for each initiative (2-5 per initiative)
+        $initiatives->each(function (Initiative $initiative) use ($allUsers, $allTags, $ficheDescriptions) {
+            $numFiches = rand(2, 5);
 
-            for ($i = 0; $i < $numElaborations; $i++) {
+            for ($i = 0; $i < $numFiches; $i++) {
                 $user = $allUsers->random();
-                $elaboration = Elaboration::factory()->published()->create([
+                $suffix = $numFiches > 1 ? ' - versie '.($i + 1) : '';
+                $ficheTitle = 'Uitwerking: '.$initiative->title.$suffix;
+
+                $fiche = Fiche::factory()->published()->create([
                     'initiative_id' => $initiative->id,
                     'user_id' => $user->id,
+                    'title' => $ficheTitle,
+                    'slug' => \Str::slug($ficheTitle),
+                    'description' => $ficheDescriptions[$i % count($ficheDescriptions)],
+                    'practical_tips' => null,
                     'has_diamond' => $i === 0,
                 ]);
 
-                $elaboration->tags()->attach($allTags->random(rand(1, 3)));
+                $fiche->tags()->attach($allTags->random(rand(1, 3)));
             }
         });
     }

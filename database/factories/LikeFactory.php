@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Elaboration;
+use App\Models\Fiche;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -15,8 +15,8 @@ class LikeFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'likeable_type' => Elaboration::class,
-            'likeable_id' => Elaboration::factory(),
+            'likeable_type' => Fiche::class,
+            'likeable_id' => Fiche::factory(),
             'type' => 'like',
         ];
     }

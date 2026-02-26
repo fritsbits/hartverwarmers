@@ -21,7 +21,7 @@
 
   /* Colors - Secondary */
   --color-secondary: #4CB7C5;
-  --color-accent: #F4C44E;
+  --color-yellow: #F4C44E;
 
   /* Colors - Text */
   --color-text-primary: #1F1F1F;
@@ -94,18 +94,23 @@
    ========================================================================== */
 
 @theme {
-  /* Flux accent color (coral-orange) */
-  --color-accent-50: #fef6f2;
-  --color-accent-100: #fdebe3;
-  --color-accent-200: #fbd5c5;
-  --color-accent-300: #f7b89e;
-  --color-accent-400: #f09470;
-  --color-accent-500: #E8764B;
-  --color-accent-600: #D4683F;
-  --color-accent-700: #b25232;
-  --color-accent-800: #93432a;
-  --color-accent-900: #7a3a27;
-  --color-accent-950: #421c11;
+  /* Flux accent color — Hartverwarmers primary orange */
+  --color-accent: #E8764B;
+  --color-accent-content: #D4683F;
+  --color-accent-foreground: #FFFFFF;
+
+  /* Warm red — harmonizes with the orange palette (hue ~8°) */
+  --color-red-50: #fef3f1;
+  --color-red-100: #fee5e1;
+  --color-red-200: #fecfc8;
+  --color-red-300: #fcada1;
+  --color-red-400: #f87e6c;
+  --color-red-500: #ee5540;
+  --color-red-600: #dc3a26;
+  --color-red-700: #b92d1c;
+  --color-red-800: #99291b;
+  --color-red-900: #7f291d;
+  --color-red-950: #45110a;
 
   /* Fonts */
   --font-sans: 'Inter', system-ui, sans-serif;

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Elaboration;
+use App\Models\Fiche;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -15,8 +15,8 @@ class CommentFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'commentable_type' => Elaboration::class,
-            'commentable_id' => Elaboration::factory(),
+            'commentable_type' => Fiche::class,
+            'commentable_id' => Fiche::factory(),
             'body' => fake()->paragraph(),
         ];
     }

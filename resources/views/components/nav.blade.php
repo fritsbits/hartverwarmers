@@ -30,7 +30,7 @@
                             </svg>
                         </button>
 
-                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" @click.outside="open = false" class="absolute left-0 top-full mt-1 w-96 bg-white rounded-xl shadow-lg border border-[var(--color-border-light)] z-50">
+                        <div x-cloak x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" @click.outside="open = false" class="absolute left-0 top-full mt-1 w-96 bg-white rounded-xl shadow-lg border border-[var(--color-border-light)] z-50">
                             <div class="px-4 pt-3 pb-1">
                                 <span class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">Zeven doelstellingen</span>
                             </div>
@@ -65,7 +65,7 @@
                             </svg>
                         </button>
 
-                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" @click.outside="open = false" class="absolute left-0 top-full mt-1 w-96 bg-white rounded-xl shadow-lg border border-[var(--color-border-light)] z-50">
+                        <div x-cloak x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" @click.outside="open = false" class="absolute left-0 top-full mt-1 w-96 bg-white rounded-xl shadow-lg border border-[var(--color-border-light)] z-50">
                             <div class="px-4 pt-3 pb-1">
                                 <span class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">Leren & verdiepen</span>
                             </div>
@@ -128,16 +128,20 @@
                     <flux:dropdown>
                         <flux:button variant="ghost" icon-trailing="chevron-down">
                             <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-sm font-semibold">
-                                    {{ substr(auth()->user()->name, 0, 1) }}
-                                </div>
-                                <span class="hidden sm:inline">{{ str(auth()->user()->name)->before(' ') }}</span>
+                                @if(auth()->user()->avatar_path)
+                                    <img src="{{ Storage::url(auth()->user()->avatar_path) }}" alt="{{ auth()->user()->first_name }}" class="w-8 h-8 rounded-full object-cover">
+                                @else
+                                    <div class="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-sm font-semibold">
+                                        {{ substr(auth()->user()->first_name, 0, 1) }}
+                                    </div>
+                                @endif
+                                <span class="hidden sm:inline">{{ auth()->user()->first_name }}</span>
                             </div>
                         </flux:button>
 
                         <flux:menu>
                             <flux:menu.item href="{{ route('profile.show') }}" icon="user">Mijn profiel</flux:menu.item>
-                            <flux:menu.item href="{{ route('profile.bookmarks') }}" icon="bookmark">Mijn bookmarks</flux:menu.item>
+                            <flux:menu.item href="{{ route('profile.bookmarks') }}" icon="bookmark">Mijn favorieten</flux:menu.item>
                             <flux:separator />
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -150,7 +154,7 @@
                         <flux:button variant="ghost" href="{{ route('login') }}">Inloggen</flux:button>
                     @endif
                     @if(Route::has('register'))
-                        <a href="{{ route('register') }}" class="btn-pill text-sm">Registreren</a>
+                        <flux:button variant="primary" size="sm" href="{{ route('register') }}">Registreren</flux:button>
                     @endif
                 @endauth
 
@@ -159,7 +163,7 @@
                     <svg x-show="!mobileMenuOpen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
-                    <svg x-show="mobileMenuOpen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg x-cloak x-show="mobileMenuOpen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -168,7 +172,7 @@
     </div>
 
     <!-- Mobile Navigation -->
-    <div x-show="mobileMenuOpen" x-transition class="lg:hidden border-t border-[var(--color-border-light)]">
+    <div x-cloak x-show="mobileMenuOpen" x-transition class="lg:hidden border-t border-[var(--color-border-light)]">
         <div class="px-2 pt-2 pb-3 space-y-1">
             <a href="{{ route('initiatives.index') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-bg-accent-light)]">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -188,7 +192,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                 </button>
-                <div x-show="open" x-transition class="mt-1 space-y-1 pl-3">
+                <div x-cloak x-show="open" x-transition class="mt-1 space-y-1 pl-3">
                     @foreach(config('diamant.facets') as $slug => $item)
                         <a href="{{ route('goals.show', $slug) }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-bg-cream)]">
                             <span class="text-base font-bold text-[var(--color-primary)] w-6 text-center" style="font-family: var(--font-heading)">{{ $item['letter'] }}</span>
@@ -210,7 +214,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                 </button>
-                <div x-show="open" x-transition class="mt-1 space-y-1 pl-3">
+                <div x-cloak x-show="open" x-transition class="mt-1 space-y-1 pl-3">
                     <a href="{{ route('tools.videolessen') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-bg-cream)]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />

@@ -16,22 +16,22 @@
                         <flux:card class="hover:shadow-md transition-shadow text-center">
                             @if($contributor->avatar_path)
                                 <div class="flex justify-center mb-4">
-                                    <img src="{{ Storage::url($contributor->avatar_path) }}" alt="{{ $contributor->name }}" class="w-20 h-20 rounded-full object-cover">
+                                    <img src="{{ Storage::url($contributor->avatar_path) }}" alt="{{ $contributor->full_name }}" class="w-20 h-20 rounded-full object-cover">
                                 </div>
                             @else
                                 <div class="flex justify-center mb-4">
                                     <div class="w-20 h-20 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-2xl font-semibold">
-                                        {{ substr($contributor->name, 0, 1) }}
+                                        {{ substr($contributor->first_name, 0, 1) }}
                                     </div>
                                 </div>
                             @endif
 
-                            <flux:heading size="lg" class="mt-4">{{ $contributor->name }}</flux:heading>
+                            <flux:heading size="lg" class="mt-4">{{ $contributor->full_name }}</flux:heading>
                             @if($contributor->function_title)
                                 <flux:text class="text-[var(--color-text-secondary)] text-sm">{{ $contributor->function_title }}</flux:text>
                             @endif
                             @if($contributor->organisation)
-                                <flux:text class="text-sm">{{ $contributor->organisation->name }}</flux:text>
+                                <flux:text class="text-sm">{{ $contributor->organisation }}</flux:text>
                             @endif
                         </flux:card>
                     </a>

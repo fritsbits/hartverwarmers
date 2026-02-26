@@ -19,6 +19,20 @@
     <!-- Navigation -->
     <x-nav />
 
+    <!-- Flash Messages -->
+    @if(session('success'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="max-w-6xl mx-auto px-6 mt-4">
+            <div class="flex items-center justify-between gap-4 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
+                <span>{{ session('success') }}</span>
+                <button @click="show = false" class="shrink-0 text-green-600 hover:text-green-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    @endif
+
     <!-- Main Content -->
     <main>
         {{ $slot }}
@@ -26,31 +40,11 @@
 
     <!-- Footer -->
     <footer class="mt-16">
-        <!-- Stats & CTA Bar -->
-        <div class="bg-[var(--color-bg-subtle)] border-t border-[var(--color-border-light)]">
-            <div class="max-w-6xl mx-auto px-6 py-8">
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div>
-                        <p class="font-bold text-[var(--color-text-primary)]">
-                            {{ $footerStats['elaborations_count'] ?? 0 }} uitwerkingen
-                            <span class="text-[var(--color-text-secondary)]">&middot;</span>
-                            {{ $footerStats['contributors_count'] ?? 0 }} bijdragers
-                            <span class="text-[var(--color-text-secondary)]">&middot;</span>
-                            {{ $footerStats['organisations_count'] ?? 0 }} organisaties
-                        </p>
-                        <a href="{{ route('register') }}" class="cta-link text-sm mt-1 inline-flex">+ Heb je ook een uitwerking om te delen? Draag bij</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        
         <!-- Bottom Footer -->
         <div class="bg-[var(--color-bg-base)] border-t border-[var(--color-border-light)]">
             <div class="max-w-6xl mx-auto px-6 py-6">
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm text-[var(--color-text-secondary)]">
-                    <a href="#" class="hover:text-[var(--color-primary)] transition-colors">Over Hartverwarmers</a>
-                    <a href="#" class="hover:text-[var(--color-primary)] transition-colors">Contact</a>
-                    <a href="#" class="hover:text-[var(--color-primary)] transition-colors">Nieuwsbrief</a>
                     <span>&copy; {{ date('Y') }} Hartverwarmers</span>
                 </div>
             </div>

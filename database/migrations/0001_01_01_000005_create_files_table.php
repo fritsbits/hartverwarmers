@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('files', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('elaboration_id')->constrained('elaborations')->cascadeOnDelete();
+            $table->foreignId('fiche_id')->constrained('fiches')->cascadeOnDelete();
             $table->string('original_filename');
             $table->string('path');
             $table->string('mime_type');
