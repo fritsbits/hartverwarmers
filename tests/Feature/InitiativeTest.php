@@ -340,7 +340,19 @@ class InitiativeTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Vertel, hoe ging het bij jullie?');
-        $response->assertSee('Collega-begeleiders delen hun ervaringen met '.$initiative->title.'.');
+        $response->assertSee('om je ervaring te delen.');
+    }
+
+    public function test_initiative_show_displays_empty_encouragement_for_authenticated_user(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        $response = $this->actingAs($user)->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertSee('Vertel, hoe ging het bij jullie?');
+        $response->assertSee('Wees de eerste die een ervaring deelt.');
     }
 
     public function test_initiative_comment_store_creates_comment(): void

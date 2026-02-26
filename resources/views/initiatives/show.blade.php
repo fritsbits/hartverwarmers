@@ -46,14 +46,14 @@
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
             {{-- Left column --}}
             <div class="lg:col-span-3">
-                <span class="section-label">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <span class="section-label section-label-hero">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12l-8.954 8.955a1.126 1.126 0 01-1.591 0L2.25 12z" />
                     </svg>
                     Initiatief
                 </span>
 
-                <h1 class="text-5xl sm:text-6xl mt-3 mb-4">{{ $initiative->title }}</h1>
+                <h1 class="text-5xl sm:text-6xl mt-1 mb-4">{{ $initiative->title }}</h1>
 
                 @if($initiative->description)
                     <div class="text-[var(--color-text-secondary)] text-2xl font-light mb-8">
@@ -124,7 +124,7 @@
                 </svg>
                 Fiches
             </span>
-            <h2 class="text-3xl mt-3 mb-2">
+            <h2 class="text-3xl mt-1 mb-2">
                 {{ $initiative->fiches->count() }} {{ $initiative->fiches->count() === 1 ? 'fiche' : 'fiches' }} door collega's
             </h2>
 
@@ -142,11 +142,11 @@
                 {{-- Featured diamond fiche --}}
                 @if($diamondFiche)
                     <div class="mb-8 mt-6">
-                        <a href="{{ route('fiches.show', [$initiative, $diamondFiche]) }}" class="block cursor-pointer">
-                            <flux:card class="overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <x-diamond-badge card />
-                                </div>
+                        <flux:card class="overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
+                            <div class="flex items-center gap-2 mb-2">
+                                <x-diamond-badge />
+                            </div>
+                            <a href="{{ route('fiches.show', [$initiative, $diamondFiche]) }}" class="block">
                                 <flux:heading size="lg">{{ $diamondFiche->title }}</flux:heading>
                                 @if($diamondFiche->description)
                                     <flux:text class="mt-2 line-clamp-2">
@@ -174,8 +174,8 @@
                                     </div>
                                     <span class="cta-link text-sm">Bekijk</span>
                                 </div>
-                            </flux:card>
-                        </a>
+                            </a>
+                        </flux:card>
                     </div>
                 @endif
 
@@ -227,35 +227,34 @@
             </svg>
             Uit de praktijk
         </span>
-        <h2 class="text-2xl mt-3 mb-2">Vertel, hoe ging het bij jullie?</h2>
-        <p class="text-[var(--color-text-secondary)] mb-8">Collega-begeleiders delen hun ervaringen met {{ $initiative->title }}.</p>
+        <h2 class="text-3xl mt-1 mb-4">Vertel, hoe ging het bij jullie?</h2>
 
         {{-- Existing comments --}}
-        @forelse($initiative->comments as $comment)
-            <div class="flex gap-4 py-4 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
-                <div class="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center font-semibold shrink-0">
-                    {{ substr($comment->user->first_name ?? 'A', 0, 1) }}
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-start justify-between">
-                        <div class="text-sm">
-                            <span class="font-semibold">{{ $comment->user->full_name ?? 'Anoniem' }}</span>
-                            @if($comment->user?->organisation)
-                                <span class="text-[var(--color-text-secondary)]"> &middot; {{ $comment->user->organisation }}</span>
-                            @endif
-                        </div>
-                        <span class="text-sm text-[var(--color-text-secondary)] shrink-0">{{ $comment->created_at->diffForHumans() }}</span>
+        @if($initiative->comments->isNotEmpty())
+            @foreach($initiative->comments as $comment)
+                <div class="flex gap-4 py-4 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
+                    <div class="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center font-semibold shrink-0">
+                        {{ substr($comment->user->first_name ?? 'A', 0, 1) }}
                     </div>
-                    <p class="mt-2">{{ $comment->body }}</p>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between">
+                            <div class="text-sm">
+                                <span class="font-semibold">{{ $comment->user->full_name ?? 'Anoniem' }}</span>
+                                @if($comment->user?->organisation)
+                                    <span class="text-[var(--color-text-secondary)]"> &middot; {{ $comment->user->organisation }}</span>
+                                @endif
+                            </div>
+                            <span class="text-sm text-[var(--color-text-secondary)] shrink-0">{{ $comment->created_at->diffForHumans() }}</span>
+                        </div>
+                        <p class="mt-2">{{ $comment->body }}</p>
+                    </div>
                 </div>
-            </div>
-        @empty
-            <p class="text-[var(--color-text-secondary)] mb-6">Nog geen ervaringen gedeeld. Jouw verhaal kan de eerste zijn!</p>
-        @endforelse
+            @endforeach
+        @endif
 
         {{-- Comment form --}}
         @auth
-            <div class="bg-[var(--color-bg-cream)] rounded-xl p-6 mt-8">
+            <div class="bg-[var(--color-bg-cream)] rounded-xl p-6 {{ $initiative->comments->isNotEmpty() ? 'mt-8' : '' }}">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-sm font-semibold shrink-0">
                         {{ substr(auth()->user()->first_name, 0, 1) }}
@@ -274,7 +273,10 @@
                     @error('body')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
-                    <div class="mt-3 flex justify-end">
+                    <div class="mt-3 flex items-center {{ $initiative->comments->isEmpty() ? 'justify-between' : 'justify-end' }}">
+                        @if($initiative->comments->isEmpty())
+                            <span class="text-sm text-[var(--color-text-secondary)]">Wees de eerste die een ervaring deelt.</span>
+                        @endif
                         <flux:button type="submit" variant="primary" size="sm">Deel je ervaring</flux:button>
                     </div>
                 </form>
@@ -291,7 +293,7 @@
     {{-- Zone 4 — Related Initiatives --}}
     @if($relatedInitiatives->isNotEmpty())
         <div class="max-w-6xl mx-auto px-6 py-16">
-            <h2 class="text-2xl mb-8">Gerelateerde initiatieven</h2>
+            <h2 class="text-3xl mb-8">Gerelateerde initiatieven</h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($relatedInitiatives as $related)
