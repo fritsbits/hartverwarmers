@@ -63,11 +63,17 @@
 
 ## Typography
 
+**Fonts:** Headings use **Aleo** (slab-serif, weight 700 bold) via `font-heading`. Body text uses **Fira Sans** (sans-serif, weights 300–700) via `font-body`. Both loaded from Bunny Fonts.
+
+**Card titles:** `<flux:heading>` components don't render as `<h1>`–`<h3>`, so they don't inherit heading styles automatically. Always add `class="font-heading font-bold"` to card title headings.
+
+**Nav brand name:** Uses `font-heading font-bold` explicitly to display "hartverwarmers" in Aleo.
+
 ### Heading 1
 
 **Class:** `h1`
 
-**When to use:** Main page title. One per page only. Use inside .intro-block for index pages, or standalone for detail page heroes.
+**When to use:** Main page title. One per page only. Use inside .intro-block for index pages, or standalone for detail page heroes. Renders in Aleo Bold (700) automatically.
 
 **When NOT to use:** Never use more than one h1 per page. Don't use for section headings within a page — use h2 or h3.
 
@@ -75,7 +81,7 @@
 
 **Class:** `h2`
 
-**When to use:** Major section heading within a page. Use for top-level content divisions (e.g. "Initiatieven", "Doelen").
+**When to use:** Major section heading within a page. Use for top-level content divisions (e.g. "Initiatieven", "Doelen"). Renders in Aleo Bold (700) automatically.
 
 **When NOT to use:** Don't use for card titles or minor sub-sections — use h3 or h4 instead.
 
@@ -83,7 +89,7 @@
 
 **Class:** `h3`
 
-**When to use:** Sub-section heading. Use for content groupings within a section, or as titles for card groups.
+**When to use:** Sub-section heading. Use for content groupings within a section, or as titles for card groups. Renders in Aleo Bold (700) automatically.
 
 **When NOT to use:** Don't use inside cards — card titles should use h4 or .card-title.
 
@@ -91,7 +97,7 @@
 
 **Class:** `h4`
 
-**When to use:** Smallest heading level. Use for card titles, sidebar section headings, and minor content labels.
+**When to use:** Smallest heading level. Use for card titles, sidebar section headings, and minor content labels. Renders in Aleo Bold (700) automatically.
 
 **When NOT to use:** Don't use for page-level or section-level headings — use h2 or h3.
 
