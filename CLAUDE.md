@@ -64,6 +64,8 @@ All routes use Dutch URL slugs: `/initiatieven`, `/doelen`, `/bijdragers`, `/the
 
 Custom design tokens are defined as CSS custom properties in `resources/css/app.css` (colors, typography, spacing). The `@theme` block in the CSS customizes Flux UI accent colors. **Do not add spacing keys like `xl`, `2xl`, `3xl`, `4xl` to `tailwind.config.js` `extend.spacing`** — they conflict with Tailwind v4's `max-w-*` resolution.
 
+**Typography:** Headings use **Aleo** (slab-serif, weight 700) and body text uses **Fira Sans** (sans-serif, weights 300–700). Both are loaded from **Bunny Fonts** (privacy-friendly, no Google Fonts). Tailwind utilities: `font-heading` for Aleo, `font-body` for Fira Sans. Card titles (`<flux:heading>`) need explicit `class="font-heading font-bold"` since they don't render as `<h1>`–`<h3>` elements.
+
 Component classes (`.cta-link`, `.btn-pill`, `.section-label`, `.content-card`, `.diamant-badge`, etc.) are defined in `@layer components` in `app.css`.
 
 **For component usage rules (which button/link/title to use where), see [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md).**
