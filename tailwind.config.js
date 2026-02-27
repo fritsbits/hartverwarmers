@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        heading: ['Alan Sans', 'system-ui', 'sans-serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
+        heading: ['Aleo', 'system-ui', 'serif'],
+        body: ['Fira Sans', 'system-ui', 'sans-serif'],
       },
       colors: {
         'hv-coral': '#E8764B',
