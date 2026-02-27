@@ -7,7 +7,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[var(--color-primary)]" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                     </svg>
-                    <span class="font-heading text-xl font-bold tracking-tight">hartverwarmers</span>
+                    <span class="font-heading text-xl font-bold tracking-tight"><span class="sm:hidden">HVW</span><span class="hidden sm:inline">hartverwarmers</span></span>
                 </a>
 
                 <!-- Desktop Navigation -->
@@ -118,7 +118,7 @@
             <!-- Auth Section -->
             <div class="flex items-center gap-3">
                 <!-- Search icon -->
-                <a href="{{ route('initiatives.index') }}" class="p-2 rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)] transition-colors" title="Zoeken">
+                <a href="{{ route('initiatives.index') }}" class="hidden sm:block p-2 rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)] transition-colors" title="Zoeken">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                     </svg>
