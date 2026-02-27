@@ -14,7 +14,7 @@
         </div>
     @endif
 
-    <flux:heading size="lg">{{ $initiative->title }}</flux:heading>
+    <flux:heading size="lg" class="font-heading font-bold">{{ $initiative->title }}</flux:heading>
 
     @if($initiative->description)
         <flux:text class="mt-2 line-clamp-2">

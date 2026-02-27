@@ -6,9 +6,8 @@
     <title>{{ $fiche->title }} - Hartverwarmers</title>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -18,7 +17,7 @@
         }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: 'Fira Sans', system-ui, sans-serif;
             font-size: 12pt;
             line-height: 1.6;
             color: #1F1F1F;
@@ -26,8 +25,8 @@
         }
 
         h1, h2, h3 {
-            font-family: 'Alan Sans', system-ui, sans-serif;
-            font-weight: 900;
+            font-family: 'Aleo', system-ui, serif;
+            font-weight: 700;
             line-height: 1.25;
         }
 
