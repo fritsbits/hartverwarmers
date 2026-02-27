@@ -105,7 +105,16 @@
 
 **Class:** `.section-label`
 
-**When to use:** Eyebrow label that sits above a heading to categorize the section. Always pair with a heading below it. Use the orange primary color.
+**When to use:** Eyebrow label that sits above a heading to categorize the section. Always pair with an H2 below it. Use the orange primary color.
+
+**Content system:** The accent label is a short **keyword** (1–2 words) that names the category or topic. The H2 below it is **outcome-driven** — it tells the reader what they'll get, not just what the section is. Example: accent "Gidsen" + H2 "Ontdek bewezen aanpakken voor je team".
+
+**HTML pattern:**
+
+```html
+<span class="section-label">Keyword</span>
+<h2 class="mb-6">Outcome-driven benefit title</h2>
+```
 
 **When NOT to use:** Don't use standalone without a heading. Don't use for navigation or metadata — only for section categorization.
 
@@ -116,6 +125,25 @@
 **When to use:** Light, muted text for metadata (dates, counts, author names, secondary information).
 
 **When NOT to use:** Don't use for primary content or actionable text — it's deliberately de-emphasized.
+
+### Meta Group
+
+**Class:** `.meta-group` + `.meta-item`
+
+**When to use:** Icon + text metadata rows showing counts, durations, authors, and other secondary information. Each `.meta-item` pairs an SVG icon with a text label. The SVG inherits size (16px) and stroke-width (1.5) from the class.
+
+**HTML pattern:**
+
+```html
+<div class="meta-group">
+    <span class="meta-item">
+        <svg ...><!-- icon --></svg>
+        Label text
+    </span>
+</div>
+```
+
+**When NOT to use:** Don't use for primary content or navigation. Don't add extra size/stroke classes to the SVG — the component handles it.
 
 ### Intro Block
 
@@ -279,6 +307,49 @@
 
 **When NOT to use:** Don't use standalone — always within a .question-row container.
 
+### Page Sections
+
+**Pattern:** `<section>` + `<div class="max-w-6xl mx-auto px-6 py-16">`
+
+**When to use:** Full-width page layout for Tools & Inspiratie pages and other content-heavy pages. Creates a consistent visual rhythm with alternating backgrounds and clear section boundaries.
+
+**Structure:**
+1. **Hero section** — `bg-[var(--color-bg-cream)]` with section-label + h1 + description
+2. **Content sections** — `bg-white` (or `bg-[var(--color-bg-base)]`) with h2 + content
+3. **HR separators** — `<hr class="border-[var(--color-border-light)]">` between sections
+
+**Requirements:**
+- Layout must use `:full-width="true"` on `<x-layout>` so sections span the full viewport
+- Each `<section>` contains a `<div class="max-w-6xl mx-auto px-6 py-16">` for consistent inner padding
+- Use `py-16` (64px) for all sections including the hero
+
+**HTML pattern:**
+
+```html
+<x-layout title="Page Title" :full-width="true">
+    {{-- Hero --}}
+    <section class="bg-[var(--color-bg-cream)]">
+        <div class="max-w-6xl mx-auto px-6 py-16">
+            <span class="section-label section-label-hero">Category</span>
+            <h1 class="text-5xl mt-1">Page Title</h1>
+            <p class="text-2xl text-[var(--color-text-secondary)] mt-4">Description</p>
+        </div>
+    </section>
+
+    <hr class="border-[var(--color-border-light)]">
+
+    {{-- Content Section --}}
+    <section>
+        <div class="max-w-6xl mx-auto px-6 py-16">
+            <h2>Section Title</h2>
+            <!-- content -->
+        </div>
+    </section>
+</x-layout>
+```
+
+**When NOT to use:** Don't use for pages that already have clear background alternation (like index pages with cream/white bands). Don't nest sections — keep them flat siblings.
+
 ## Quick Reference
 
 | Component | Class | Use for | Don't use for |
@@ -294,8 +365,9 @@
 | Heading 2 | `h2` | Major section heading within a page | Don't use for card titles or minor sub-sections — use h3 or h4 instead |
 | Heading 3 | `h3` | Sub-section heading | Don't use inside cards — card titles should use h4 or  |
 | Heading 4 | `h4` | Smallest heading level | Don't use for page-level or section-level headings — use h2 or h3 |
-| Section Label | `.section-label` | Eyebrow label that sits above a heading to categorize the section | Don't use standalone without a heading |
+| Section Label | `.section-label` | Eyebrow keyword above an outcome-driven H2 | Don't use standalone without a heading |
 | Text Meta | `.text-meta` | Light, muted text for metadata (dates, counts, author names, secondary information) | Don't use for primary content or actionable text — it's deliberately de-emphasized |
+| Meta Group | `.meta-group` + `.meta-item` | Icon + text metadata rows (counts, durations, authors) | Don't use for primary content or navigation |
 | Intro Block | `.intro-block` | Centered hero/intro area at top of index pages | Don't use on detail/show pages — those have their own hero layouts |
 | Pill Button | `.btn-pill` | / | Don't use |
 | Flux Button (Primary) | `<flux:button variant="primary">` | Standard form submit button | Don't use for page-level marketing CTAs — use  |
@@ -315,3 +387,4 @@
 | Practice Card | `.practice-card` | Card for displaying practice examples on goal detail pages | Don't add hover effects |
 | Question Row | `.question-row` | Row layout for reflection questions on goal detail pages | Don't use for FAQ-style content with expandable answers — this is for simple question display only |
 | Question Badge | `.question-badge` | Circle badge showing "?" inside a question-row | Don't use standalone — always within a  |
+| Page Sections | `<section>` + `max-w-6xl mx-auto px-6 py-16` | Full-width page layout with cream hero + white content sections + HR separators | Don't use for pages with clear background alternation already |

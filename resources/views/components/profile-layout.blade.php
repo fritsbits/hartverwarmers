@@ -1,16 +1,15 @@
 @props(['title'])
 
 <x-layout :title="$title">
-    <div class="max-w-6xl mx-auto px-6 py-12">
-        <!-- Breadcrumbs -->
-        <flux:breadcrumbs class="mb-6">
-            <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
-            <flux:breadcrumbs.item href="{{ route('profile.show') }}">Profiel</flux:breadcrumbs.item>
-            @if(! request()->routeIs('profile.show'))
-                <flux:breadcrumbs.item>{{ $title }}</flux:breadcrumbs.item>
-            @endif
-        </flux:breadcrumbs>
+    <x-slot:breadcrumbs>
+        <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('profile.show') }}">Profiel</flux:breadcrumbs.item>
+        @if(! request()->routeIs('profile.show'))
+            <flux:breadcrumbs.item>{{ $title }}</flux:breadcrumbs.item>
+        @endif
+    </x-slot:breadcrumbs>
 
+    <div class="py-12">
         <div class="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-8">
             <!-- Sidebar -->
             <aside>

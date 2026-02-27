@@ -23,6 +23,13 @@ class InitiativeController extends Controller
             });
         }
 
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
+            });
+        }
+
         $initiatives = $query->latest()->paginate(12);
 
         $filterTags = Tag::query()
@@ -35,6 +42,7 @@ class InitiativeController extends Controller
             'initiatives' => $initiatives,
             'filterTags' => $filterTags,
             'selectedTag' => $request->tag,
+            'search' => $request->search,
         ]);
     }
 

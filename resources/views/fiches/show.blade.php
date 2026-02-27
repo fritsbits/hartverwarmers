@@ -1,24 +1,20 @@
-<x-layout :title="$fiche->title">
+<x-layout :title="$fiche->title" :full-width="true">
+    <x-slot:breadcrumbs>
+        <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('initiatives.index') }}">Initiatieven</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('initiatives.show', $initiative) }}">{{ $initiative->title }}</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item>{{ $fiche->title }}</flux:breadcrumbs.item>
+    </x-slot:breadcrumbs>
 
-    {{-- Zone 1 — Header --}}
-    <div class="max-w-6xl mx-auto px-6 pt-8">
-        <div class="flex items-center justify-between">
-            <flux:breadcrumbs class="mb-0">
-                <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
-                <flux:breadcrumbs.item href="{{ route('initiatives.index') }}">Initiatieven</flux:breadcrumbs.item>
-                <flux:breadcrumbs.item href="{{ route('initiatives.show', $initiative) }}">{{ $initiative->title }}</flux:breadcrumbs.item>
-                <flux:breadcrumbs.item>{{ $fiche->title }}</flux:breadcrumbs.item>
-            </flux:breadcrumbs>
-
-            @auth
-                @if(auth()->user()->isAdmin())
-                    <flux:modal.trigger name="delete-fiche">
-                        <flux:button variant="danger" size="sm" icon="trash">Verwijderen</flux:button>
-                    </flux:modal.trigger>
-                @endif
-            @endauth
-        </div>
-    </div>
+    <x-slot:headerActions>
+        @auth
+            @if(auth()->user()->isAdmin())
+                <flux:modal.trigger name="delete-fiche">
+                    <flux:button variant="danger" size="sm" icon="trash">Verwijderen</flux:button>
+                </flux:modal.trigger>
+            @endif
+        @endauth
+    </x-slot:headerActions>
 
     @auth
         @if(auth()->user()->isAdmin())
@@ -44,12 +40,7 @@
     @endauth
 
     <div class="max-w-6xl mx-auto px-6 py-8">
-        <span class="section-label">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-            </svg>
-            Fiche
-        </span>
+        <span class="section-label section-label-hero">Fiche</span>
 
         <div class="flex flex-wrap items-center gap-3 mt-3 mb-4">
             <h1 class="text-5xl sm:text-6xl">{{ $fiche->title }}</h1>
@@ -84,18 +75,18 @@
         @endif
 
         @if($fiche->bookmarks_count > 0 || $fiche->comments->isNotEmpty())
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[var(--color-text-secondary)] mb-6">
+            <div class="meta-group mb-6">
                 @if($fiche->bookmarks_count > 0)
-                    <span class="flex items-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <span class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
                         </svg>
                         {{ $fiche->bookmarks_count }} keer als favoriet bewaard
                     </span>
                 @endif
                 @if($fiche->comments->isNotEmpty())
-                    <span class="flex items-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <span class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                         </svg>
                         {{ $fiche->comments->count() }} {{ $fiche->comments->count() === 1 ? 'reactie' : 'reacties' }}

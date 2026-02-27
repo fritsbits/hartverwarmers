@@ -14,6 +14,7 @@ return [
             'description' => 'De D van Doen staat voor het belang van actief bezig zijn. Bewoners willen iets doen, iets ondernemen, iets creëren. Actief zijn geeft energie, voldoening en een gevoel van zinvolheid. Het gaat niet om presteren, maar om het plezier van het bezig zijn zelf.',
             'author_name' => 'Maite Mallentjer',
             'author_role' => 'pedagoog dagbesteding',
+            'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Bewoners motiveren die aangeven "niets meer te kunnen".',
                 'Activiteiten aanpassen aan uiteenlopende fysieke mogelijkheden.',
@@ -47,6 +48,7 @@ return [
             'description' => 'De I van Inclusief benadrukt dat iedereen moet kunnen deelnemen, ongeacht cognitieve, fysieke of zintuiglijke beperkingen. Inclusief werken betekent activiteiten zo ontwerpen dat ze toegankelijk zijn voor alle bewoners.',
             'author_name' => 'Maite Mallentjer',
             'author_role' => 'pedagoog dagbesteding',
+            'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Activiteiten differentiëren voor bewoners met dementie.',
                 'Zintuiglijke beperkingen (zicht, gehoor) opvangen.',
@@ -80,6 +82,7 @@ return [
             'description' => 'De eerste A van DIAMANT staat voor Autonomie: het recht en de mogelijkheid om zelf keuzes te maken. Ook in een zorgomgeving willen bewoners regie houden — over wat ze doen, wanneer, en met wie.',
             'author_name' => 'Maite Mallentjer',
             'author_role' => 'pedagoog dagbesteding',
+            'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Keuzevrijheid bieden binnen de structuur van een dagprogramma.',
                 'Bewoners laten kiezen zonder hen te overbelasten met opties.',
@@ -113,6 +116,7 @@ return [
             'description' => 'De M van Mensgericht gaat over het vertrekken vanuit wie de bewoner is als persoon. Een activiteit is pas waardevol als ze aansluit bij het levensverhaal, de identiteit en de voorkeuren van de bewoner. Het draait om de mens achter de zorgvraag.',
             'author_name' => 'Maite Mallentjer',
             'author_role' => 'pedagoog dagbesteding',
+            'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Ontdekken wat voor elke individuele bewoner belangrijk is.',
                 'Vermijden dat activiteiten als "kinderachtig" worden ervaren.',
@@ -146,6 +150,7 @@ return [
             'description' => 'De tweede A van DIAMANT staat voor Anderen: verbinding met medebewoners, medewerkers, familie en de buitenwereld. Het gaat om echte sociale interactie en wederkerigheid. Niet naast elkaar zitten, maar met elkaar bezig zijn.',
             'author_name' => 'Maite Mallentjer',
             'author_role' => 'pedagoog dagbesteding',
+            'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Echte verbinding creëren, niet alleen fysieke nabijheid.',
                 'Bewoners die moeite hebben met sociale interactie toch betrekken.',
@@ -179,6 +184,7 @@ return [
             'description' => 'De N van Normalisatie draait om het aansluiten bij het gewone leven. Activiteiten mogen niet schools of kunstmatig aanvoelen. Het gaat om een huiselijke sfeer, herkenbare bezigheden en een normaal dagritme — zo dicht mogelijk bij hoe het leven buiten het woonzorgcentrum eruitziet.',
             'author_name' => 'Maite Mallentjer',
             'author_role' => 'pedagoog dagbesteding',
+            'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Activiteiten organiseren die niet als "les" of "therapie" aanvoelen.',
                 'Een huiselijke sfeer creëren in een institutionele omgeving.',
@@ -212,6 +218,7 @@ return [
             'description' => 'De T van Talent gaat over het zien en benutten van wat bewoners wél kunnen. Iedereen heeft talenten, vaardigheden en kennis — ook op hoge leeftijd, ook met beperkingen. Talent zichtbaar maken geeft waardering en eigenwaarde.',
             'author_name' => 'Maite Mallentjer',
             'author_role' => 'pedagoog dagbesteding',
+            'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Talenten ontdekken bij bewoners die zichzelf onderschatten.',
                 'Talenten inzetten zonder druk of verwachtingen te creëren.',
