@@ -1,67 +1,59 @@
-<x-layout :title="$facet['keyword'] . ' — DIAMANT-kompas'">
+<x-layout :title="$facet['keyword'] . ' — DIAMANT-kompas'" :full-width="true">
+    {{-- Hero --}}
+    <section class="bg-[var(--color-bg-cream)]">
+        <div class="max-w-6xl mx-auto px-6 pt-8 pb-12">
+            <flux:breadcrumbs class="mb-6">
+                <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
+                <flux:breadcrumbs.item href="{{ route('goals.index') }}">DIAMANT-kompas</flux:breadcrumbs.item>
+                <flux:breadcrumbs.item>{{ $facet['keyword'] }}</flux:breadcrumbs.item>
+            </flux:breadcrumbs>
 
-    {{-- Breadcrumbs --}}
-    <div class="max-w-6xl mx-auto px-6 pt-8">
-        <flux:breadcrumbs class="mb-0">
-            <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
-            <flux:breadcrumbs.item href="{{ route('goals.index') }}">DIAMANT-kompas</flux:breadcrumbs.item>
-            <flux:breadcrumbs.item>{{ $facet['keyword'] }}</flux:breadcrumbs.item>
-        </flux:breadcrumbs>
-    </div>
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+                {{-- Left column --}}
+                <div class="lg:col-span-3">
+                    <span class="section-label section-label-hero">Doelstelling</span>
+                    <h1 class="text-5xl mt-1 mb-6">{{ $facet['keyword'] }}</h1>
 
-    {{-- Hero (2-column) --}}
-    <div class="max-w-6xl mx-auto px-6 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            {{-- Left column --}}
-            <div class="lg:col-span-3">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="diamant-badge">
-                        {{ $facet['letter'] }}
+                    <div class="text-xl leading-relaxed text-[var(--color-text-secondary)]">
+                        <p>{{ $facet['description'] }}</p>
                     </div>
-                    <h1 class="text-5xl">{{ $facet['keyword'] }}</h1>
                 </div>
 
-                <p class="text-2xl font-semibold mb-4" style="color: var(--color-primary)">{{ $facet['ik_wil'] }}</p>
-
-                <div class="text-2xl leading-relaxed text-[var(--color-text-secondary)]">
-                    <p>{{ $facet['description'] }}</p>
-                </div>
-            </div>
-
-            {{-- Right column: Quote card --}}
-            <div class="lg:col-span-2">
-                <div class="quote-card h-full flex flex-col justify-between">
-                    <div>
-                        <div class="quote-marks">&ldquo;</div>
-                        <p class="font-bold text-lg leading-snug mt-2">{{ $facet['quote'] }}</p>
-                    </div>
-
-                    <div class="mt-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-sm font-semibold text-white">
-                                {{ substr($facet['author_name'], 0, 1) }}
-                            </div>
-                            <div class="text-sm">
-                                <span class="font-medium text-white">{{ $facet['author_name'] }}</span>
-                                @if(!empty($facet['author_role']))
-                                    <span class="text-white/70"> &middot; {{ $facet['author_role'] }}</span>
-                                @endif
-                            </div>
+                {{-- Right column: Quote paper --}}
+                <div class="lg:col-span-2 pt-2">
+                    <div class="relative">
+                        <div class="quote-paper-mark">&ldquo;</div>
+                        <div class="quote-paper">
+                            <p class="quote-ik-wil">{{ $facet['ik_wil'] }}</p>
+                            <p>{{ $facet['quote'] }}</p>
                         </div>
-                        <a href="{{ route('goals.index') }}" class="text-sm font-semibold text-white/90 hover:text-white inline-flex items-center gap-1 transition-colors">
-                            Meer over het DIAMANT-kompas &rarr;
-                        </a>
+                    </div>
+
+                    {{-- Author below the paper --}}
+                    <div class="mt-4 flex items-center gap-3">
+                        @if(!empty($facet['author_image']))
+                            <img src="{{ $facet['author_image'] }}" alt="{{ $facet['author_name'] }}" class="w-10 h-10 rounded-full object-cover">
+                        @endif
+                        <div class="text-sm">
+                            <span class="font-semibold text-[var(--color-text-primary)]">{{ $facet['author_name'] }}</span>
+                            @if(!empty($facet['author_role']))
+                                <span class="text-[var(--color-text-secondary)]"> &middot; {{ $facet['author_role'] }}</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    {{-- In de praktijk (cream background band) --}}
+    {{-- In de praktijk --}}
     @if(!empty($facet['practice_examples']))
-        <div class="bg-[var(--color-bg-cream)]">
+        <hr class="border-[var(--color-border-light)]">
+
+        <section>
             <div class="max-w-6xl mx-auto px-6 py-16">
-                <h2 class="text-2xl mb-2">In de praktijk</h2>
+                <span class="section-label">Praktijk</span>
+                <h2 class="mb-2">In de praktijk</h2>
                 @if(!empty($facet['practice_subtitle']))
                     <p class="text-[var(--color-text-secondary)] mb-8">{{ $facet['practice_subtitle'] }}</p>
                 @endif
@@ -92,19 +84,22 @@
                     @endforeach
                 </div>
             </div>
-        </div>
+        </section>
     @endif
 
-    {{-- Vragen voor jezelf (white background) --}}
+    {{-- Vragen voor jezelf --}}
     @if(!empty($facet['reflection_questions']))
-        <div class="max-w-4xl mx-auto px-6 py-16">
-            <div class="border-t border-[var(--color-border-light)] pt-10">
-                <h2 class="text-2xl mb-2">Vragen voor jezelf</h2>
+        <hr class="border-[var(--color-border-light)]">
+
+        <section>
+            <div class="max-w-6xl mx-auto px-6 py-16">
+                <span class="section-label">Reflectie</span>
+                <h2 class="mb-2">Vragen voor jezelf</h2>
                 @if(!empty($facet['reflection_subtitle']))
                     <p class="text-[var(--color-text-secondary)] mb-8">{{ $facet['reflection_subtitle'] }}</p>
                 @endif
 
-                <div class="space-y-3">
+                <div class="max-w-4xl space-y-3">
                     @foreach($facet['reflection_questions'] as $question)
                         <div class="question-row">
                             <span class="question-badge">?</span>
@@ -115,7 +110,7 @@
 
                 {{-- Tip box --}}
                 @if(!empty($facet['tip_title']))
-                    <div class="mt-8 bg-[var(--color-bg-cream)] rounded-xl p-6 border border-[var(--color-border-light)]">
+                    <div class="max-w-4xl mt-8 bg-[var(--color-bg-cream)] rounded-xl p-6 border border-[var(--color-border-light)]">
                         <div class="flex items-start gap-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 mt-0.5 text-[var(--color-accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
@@ -130,13 +125,16 @@
                     </div>
                 @endif
             </div>
-        </div>
+        </section>
     @endif
 
-    {{-- Initiatieven (cream background band) --}}
-    <div class="bg-[var(--color-bg-cream)]">
+    <hr class="border-[var(--color-border-light)]">
+
+    {{-- Initiatieven --}}
+    <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
-            <h2 class="text-2xl mb-2">{{ $facet['initiatives_heading'] ?? 'Initiatieven bij deze doelstelling' }}</h2>
+            <span class="section-label">Initiatieven</span>
+            <h2 class="mb-2">{{ $facet['initiatives_heading'] ?? 'Initiatieven bij deze doelstelling' }}</h2>
             <p class="text-[var(--color-text-secondary)] mb-8">Deze initiatieven scoren sterk op het facet {{ $facet['keyword'] }}.</p>
 
             @if($initiatives->isEmpty())
@@ -155,31 +153,35 @@
                 </flux:button>
             </div>
         </div>
-    </div>
+    </section>
 
-    {{-- Ontdek de andere doelstellingen (white background) --}}
-    <div class="max-w-4xl mx-auto px-6 py-16">
-        <h2 class="text-2xl mb-6">Ontdek de andere doelstellingen</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @foreach($allFacets as $slug => $item)
-                @if($slug !== $facet['slug'])
-                    <a href="{{ route('goals.show', $slug) }}"
-                       class="flex items-center gap-4 p-4 rounded-xl hover:bg-[var(--color-bg-subtle)] transition-colors">
-                        <span class="text-2xl font-bold shrink-0" style="font-family: var(--font-heading); color: var(--color-primary)">{{ $item['letter'] }}</span>
-                        <div class="flex-1 min-w-0">
-                            <span class="font-semibold text-[var(--color-text-primary)]">{{ $item['keyword'] }}</span>
-                            <span class="text-[var(--color-text-secondary)]"> &middot; {{ $item['tagline'] }}</span>
-                        </div>
-                    </a>
-                @endif
-            @endforeach
+    <hr class="border-[var(--color-border-light)]">
+
+    {{-- Ontdek de andere doelstellingen --}}
+    <section>
+        <div class="max-w-6xl mx-auto px-6 py-16">
+            <span class="section-label">DIAMANT-kompas</span>
+            <h2 class="mb-6">Ontdek de andere doelstellingen</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @foreach($allFacets as $slug => $item)
+                    @if($slug !== $facet['slug'])
+                        <a href="{{ route('goals.show', $slug) }}"
+                           class="flex items-center gap-4 p-4 rounded-xl hover:bg-[var(--color-bg-subtle)] transition-colors">
+                            <span class="text-2xl font-bold shrink-0" style="font-family: var(--font-heading); color: var(--color-primary)">{{ $item['letter'] }}</span>
+                            <div class="flex-1 min-w-0">
+                                <span class="font-semibold text-[var(--color-text-primary)]">{{ $item['keyword'] }}</span>
+                                <span class="text-[var(--color-text-secondary)]"> &middot; {{ $item['tagline'] }}</span>
+                            </div>
+                        </a>
+                    @endif
+                @endforeach
+            </div>
+
+            <div class="mt-8 text-center">
+                <a href="{{ route('initiatives.index') }}" class="cta-link">
+                    Alle {{ $totalInitiativeCount }} initiatieven bekijken
+                </a>
+            </div>
         </div>
-
-        <div class="mt-8 text-center">
-            <a href="{{ route('initiatives.index') }}" class="cta-link">
-                Alle {{ $totalInitiativeCount }} initiatieven bekijken
-            </a>
-        </div>
-    </div>
-
+    </section>
 </x-layout>

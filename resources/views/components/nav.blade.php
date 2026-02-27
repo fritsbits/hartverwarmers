@@ -1,5 +1,5 @@
 <nav x-data="{ mobileMenuOpen: false }" class="bg-[var(--color-bg-white)] sticky top-0 z-50 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto px-6">
         <div class="flex justify-between h-18">
             <div class="flex items-center">
                 <!-- Logo -->
@@ -118,11 +118,13 @@
             <!-- Auth Section -->
             <div class="flex items-center gap-3">
                 <!-- Search icon -->
-                <a href="{{ route('initiatives.index') }}" class="hidden sm:block p-2 rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)] transition-colors" title="Zoeken">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                    </svg>
-                </a>
+                <flux:modal.trigger name="search" shortcut="cmd.k">
+                    <button class="p-2 rounded-lg text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)] transition-colors" title="Zoeken (⌘K)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                    </button>
+                </flux:modal.trigger>
 
                 @auth
                     <flux:dropdown>

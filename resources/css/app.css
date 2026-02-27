@@ -23,9 +23,9 @@
   --color-secondary: #4CB7C5;
   --color-yellow: #F4C44E;
 
-  /* Colors - Text */
-  --color-text-primary: #1F1F1F;
-  --color-text-secondary: #6F6F6F;
+  /* Colors - Text (warm-tinted, hue ~24° toward orange/cream) */
+  --color-text-primary: #231E1A;
+  --color-text-secondary: #756C65;
 
   /* Colors - Backgrounds */
   --color-bg-white: #FFFFFF;
@@ -98,6 +98,32 @@
   --color-accent: #E8764B;
   --color-accent-content: #D4683F;
   --color-accent-foreground: #FFFFFF;
+
+  /* Warm neutrals — grays tinted ~20% toward orange/cream (hue ~24°) */
+  /* Overrides both zinc and gray so all Flux/Tailwind components use warm grays */
+  --color-zinc-50: #FDFAF8;
+  --color-zinc-100: #F6F2EE;
+  --color-zinc-200: #EBE5E0;
+  --color-zinc-300: #DBD4CD;
+  --color-zinc-400: #AEA59C;
+  --color-zinc-500: #7E756D;
+  --color-zinc-600: #5D564F;
+  --color-zinc-700: #48423C;
+  --color-zinc-800: #2E2823;
+  --color-zinc-900: #1F1B17;
+  --color-zinc-950: #100D0B;
+
+  --color-gray-50: #FDFAF8;
+  --color-gray-100: #F6F2EE;
+  --color-gray-200: #EBE5E0;
+  --color-gray-300: #DBD4CD;
+  --color-gray-400: #AEA59C;
+  --color-gray-500: #7E756D;
+  --color-gray-600: #5D564F;
+  --color-gray-700: #48423C;
+  --color-gray-800: #2E2823;
+  --color-gray-900: #1F1B17;
+  --color-gray-950: #100D0B;
 
   /* Warm red — harmonizes with the orange palette (hue ~8°) */
   --color-red-50: #fef3f1;
@@ -210,9 +236,10 @@
     @apply shadow-md;
   }
 
-  /* Section label (uppercase label with icon) */
+  /* Section label (uppercase accent label) */
   .section-label {
-    @apply inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest mb-1;
+    @apply inline-flex items-center gap-2 font-semibold uppercase tracking-widest mb-0;
+    font-size: 18px;
     color: var(--color-primary);
   }
 
@@ -338,17 +365,43 @@
     color: var(--color-text-primary);
   }
 
-  /* Quote card (goal show hero) */
-  .quote-card {
-    @apply rounded-xl p-6 text-white;
-    background-color: var(--color-primary);
+  /* Quote paper (goal show hero — ruled-paper style) */
+  .quote-paper {
+    @apply relative bg-white rounded-lg shadow-lg;
+    padding: 1.75rem 2rem 1.25rem;
+    transform: rotate(2.5deg);
+    z-index: 1;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 31px,
+      color-mix(in srgb, var(--color-primary) 18%, transparent) 31px,
+      color-mix(in srgb, var(--color-primary) 18%, transparent) 32px
+    );
+    background-position: 0 24px;
   }
 
-  .quote-marks {
-    font-family: var(--font-heading);
-    font-size: 3rem;
-    line-height: 1;
-    opacity: 0.3;
+  .quote-paper p {
+    font-family: 'Nanum Pen Script', cursive;
+    font-size: 1.5rem;
+    line-height: 32px;
+  }
+
+  .quote-paper .quote-ik-wil {
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+
+  .quote-paper-mark {
+    @apply absolute select-none;
+    font-family: 'Garamond', 'Georgia', 'Times New Roman', serif;
+    font-size: 14rem;
+    line-height: 0.5;
+    top: -0.5rem;
+    right: -0.5rem;
+    z-index: 0;
+    color: var(--color-primary);
+    opacity: 0.15;
   }
 
   /* Question row (goal show reflection) */
@@ -370,6 +423,70 @@
     background: var(--color-bg-white);
     border: 1px solid var(--color-border-light);
   }
+
+  /* Meta group — icon + text metadata rows (counts, durations, author) */
+  .meta-group {
+    @apply flex flex-wrap items-center;
+    gap: var(--space-lg);
+    color: var(--color-text-secondary);
+  }
+
+  .meta-item {
+    @apply inline-flex items-center;
+    gap: var(--space-xs);
+    font-size: var(--text-small);
+    font-weight: var(--font-weight-light);
+  }
+
+  .meta-item svg {
+    @apply shrink-0;
+    width: 16px;
+    height: 16px;
+    stroke-width: 1.5;
+  }
+}
+
+/* ==========================================================================
+   Responsive Typography
+   ========================================================================== */
+
+/* ==========================================================================
+   Search Command Palette — orange-branded, prominent overlay
+   ========================================================================== */
+
+dialog[data-modal="search"]::backdrop {
+    background-color: rgba(0, 0, 0, 0.50) !important;
+}
+
+[data-flux-command] {
+    @apply border-0 rounded-2xl;
+    box-shadow: 0 30px 80px -10px rgba(0, 0, 0, 0.6), 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+}
+
+[data-flux-command-input] {
+    background-color: var(--color-primary);
+    @apply rounded-t-2xl;
+}
+
+[data-flux-command-input] input {
+    @apply text-white placeholder-white/70 text-base font-semibold;
+    background-color: transparent;
+}
+
+[data-flux-command-input] [data-flux-icon] {
+    @apply text-white/80;
+}
+
+[data-flux-command-input] button {
+    @apply text-white/80 hover:text-white;
+}
+
+[data-flux-command-item] {
+    @apply h-auto py-2.5 border-b border-zinc-100;
+}
+
+[data-flux-command-item]:last-child {
+    @apply border-b-0;
 }
 
 /* ==========================================================================

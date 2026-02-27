@@ -1,68 +1,71 @@
-<x-layout :title="$content['title']">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        {{-- Breadcrumbs --}}
-        <nav class="mb-6">
-            <ol class="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                <li><a href="{{ route('home') }}" class="hover:text-[var(--color-primary)]">Home</a></li>
-                <li>/</li>
-                <li><a href="{{ route('tools.videolessen') }}" class="hover:text-[var(--color-primary)]">Videolessen</a></li>
-                <li>/</li>
+<x-layout :title="$content['title']" :full-width="true">
+    {{-- Hero --}}
+    <section class="bg-[var(--color-bg-cream)]">
+        <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
+            <flux:breadcrumbs class="mb-6">
+                <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
+                <flux:breadcrumbs.item href="{{ route('tools.videolessen') }}">Videolessen</flux:breadcrumbs.item>
                 @if($parent)
-                    <li><a href="{{ url($overviewSlug) }}" class="hover:text-[var(--color-primary)]">{{ $parent['title'] }}</a></li>
-                    <li>/</li>
+                    <flux:breadcrumbs.item href="{{ url($overviewSlug) }}">{{ $parent['title'] }}</flux:breadcrumbs.item>
                 @endif
-                <li class="text-[var(--color-text-primary)] font-medium">{{ $content['title'] }}</li>
-            </ol>
-        </nav>
+                <flux:breadcrumbs.item>{{ $content['title'] }}</flux:breadcrumbs.item>
+            </flux:breadcrumbs>
 
-        <div class="flex flex-col lg:flex-row gap-8">
-            <div class="lg:w-2/3">
-                <p class="text-sm font-semibold text-[var(--color-primary)] uppercase tracking-wide">Video lessenreeks</p>
+            <span class="section-label section-label-hero">Les {{ $content['part'] }}</span>
+            <h1 class="text-5xl mt-1">{{ $content['title'] }}</h1>
 
-                {{-- Video embed --}}
-                <div class="aspect-video rounded-lg overflow-hidden shadow-lg mt-3 mb-4">
-                    <iframe src="https://www.youtube.com/embed/{{ $content['video']['id'] }}?rel=0&modestbranding=1&autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
-                </div>
+            @if($parent)
+                <p class="text-[var(--color-text-secondary)] text-lg mt-3">
+                    In lessenreeks <a href="{{ url($overviewSlug) }}" class="text-[var(--color-primary)] hover:underline">{{ $parent['title'] }}</a>
+                </p>
+            @endif
 
-                {{-- Content --}}
-                <div class="bg-[var(--color-bg-white)] border border-[var(--color-border-light)] rounded-lg p-6">
-                    <h1 class="text-5xl">{{ $content['title'] }}</h1>
-                    <p class="text-sm font-semibold text-[var(--color-primary)] uppercase tracking-wide mt-1">Les {{ $content['part'] }}</p>
+            @if($parent && isset($parent['credits']))
+                <p class="text-[var(--color-text-secondary)] mt-2">{{ $parent['credits'] }}</p>
+            @endif
+        </div>
+    </section>
 
-                    @if($parent && isset($parent['credits']))
-                        <p class="text-sm text-[var(--color-text-secondary)] mt-2">{{ $parent['credits'] }}</p>
-                    @endif
+    <hr class="border-[var(--color-border-light)]">
+
+    {{-- Video + Author --}}
+    <section>
+        <div class="max-w-6xl mx-auto px-6 py-16">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-2/3">
+                    <div class="aspect-video rounded-lg overflow-hidden shadow-lg">
+                        <iframe src="https://www.youtube.com/embed/{{ $content['video']['id'] }}?rel=0&modestbranding=1&autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+                    </div>
 
                     @php $nextPage = $content['_pages']->where('_page.part', $content['part']+1)->first() @endphp
                     @if($nextPage)
-                        <hr class="my-4 border-[var(--color-border-light)]">
-                        <div class="flex items-center justify-between flex-wrap gap-3">
-                            <span class="text-sm text-[var(--color-text-secondary)]">
-                                In lessenreeks <a href="{{ url($overviewSlug) }}" class="text-[var(--color-primary)] hover:underline">{{ $parent['title'] }}</a>
-                            </span>
-                            <flux:button variant="primary" href="{{ $nextPage['url'] }}" size="sm">
+                        <div class="mt-6 flex justify-end">
+                            <flux:button variant="primary" href="{{ $nextPage['url'] }}">
                                 Volgende les &rarr;
                             </flux:button>
                         </div>
                     @endif
                 </div>
-            </div>
-
-            {{-- Sidebar --}}
-            <div class="lg:w-1/3">
                 @if($parent && isset($parent['author']))
-                    @include('content.templates.courses._author', ['author' => $parent['author']])
+                    <div class="lg:w-1/3">
+                        @include('content.templates.courses._author', ['author' => $parent['author'], 'context' => []])
+                    </div>
                 @endif
             </div>
         </div>
+    </section>
 
-        {{-- Other lessons --}}
-        <div class="mt-12">
-            <p class="text-sm font-semibold text-[var(--color-primary)] uppercase tracking-wide mb-4">Andere lessen binnen deze reeks</p>
+    <hr class="border-[var(--color-border-light)]">
+
+    {{-- Other lessons --}}
+    <section>
+        <div class="max-w-6xl mx-auto px-6 py-16">
+            <span class="section-label">Reeks</span>
+            <h2 class="mb-6">Andere lessen binnen deze reeks</h2>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 @each('content.templates.courses._video', $content['_pages']->sortBy('_page.part')->where('slug', '!=', $slug), 'page')
             </div>
         </div>
-    </div>
+    </section>
 </x-layout>

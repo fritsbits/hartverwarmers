@@ -1,4 +1,4 @@
-<x-layout title="Laat je bewoners schitteren">
+<x-layout title="Laat je bewoners schitteren" :full-width="true">
     <!-- Hero Section -->
     <section class="bg-[var(--color-bg-cream)] text-center">
         <div class="py-20 max-w-3xl mx-auto px-6">
@@ -7,15 +7,12 @@
                 Hartverwarmers helpt begeleiders in woonzorgcentra om elke dag iets betekenisvols mogelijk te maken. Met {{ $stats['initiatives'] }} initiatieven gedeeld door {{ $stats['contributors'] }} collega's.
             </p>
 
-            <!-- Search bar -->
-            <form action="{{ route('initiatives.index') }}" method="GET" class="max-w-xl mx-auto">
-                <div class="relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[var(--color-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                    </svg>
-                    <input type="text" name="search" placeholder="Zoek een initiatief, thema of materiaal..." class="w-full pl-12 pr-4 py-3.5 rounded-full border border-[var(--color-border-light)] bg-white text-base focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent shadow-sm placeholder:text-[var(--color-text-secondary)]">
-                </div>
-            </form>
+            <!-- Search bar (opens command palette modal) -->
+            <div class="max-w-xl mx-auto">
+                <flux:modal.trigger name="search">
+                    <flux:input as="button" icon="magnifying-glass" placeholder="Zoek initiatieven en fiches..." class="!rounded-full !py-3.5 !text-base" />
+                </flux:modal.trigger>
+            </div>
         </div>
     </section>
 

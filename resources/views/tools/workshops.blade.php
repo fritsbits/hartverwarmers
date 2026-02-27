@@ -1,47 +1,63 @@
-<x-layout title="Workshops">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<x-layout title="Workshops" :full-width="true">
+    {{-- Hero --}}
+    <section class="bg-[var(--color-bg-cream)]">
+        <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
+            <flux:breadcrumbs class="mb-6">
+                <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
+                <flux:breadcrumbs.item>Tools & inspiratie</flux:breadcrumbs.item>
+                <flux:breadcrumbs.item>Workshops</flux:breadcrumbs.item>
+            </flux:breadcrumbs>
+            <span class="section-label section-label-hero">Workshops</span>
+            <h1 class="text-5xl mt-1">Doe-het-zelf-workshops Wonen &amp; leven in het woonzorgcentrum</h1>
+            <p class="text-2xl text-[var(--color-text-secondary)] mt-4">Geef je team extra steun om persoonsgericht te werken. Geef hen deze volledig uitgewerkte workshops, telkens met stappenplan en werkbladen</p>
+        </div>
+    </section>
 
-        {{-- Breadcrumbs --}}
-        <nav class="mb-6">
-            <ol class="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                <li><a href="{{ route('home') }}" class="hover:text-[var(--color-primary)]">Home</a></li>
-                <li>/</li>
-                <li><a href="{{ route('tools.index') }}" class="hover:text-[var(--color-primary)]">Tools & inspiratie</a></li>
-                <li>/</li>
-                <li class="text-[var(--color-text-primary)] font-medium">Workshops</li>
-            </ol>
-        </nav>
+    <hr class="border-[var(--color-border-light)]">
 
-        <p class="text-sm font-semibold text-[var(--color-primary)] uppercase tracking-wide">Workshops</p>
-        <h1 class="text-5xl mt-1">Doe-het-zelf-workshops Wonen &amp; leven in het woonzorgcentrum</h1>
-        <p class="text-2xl text-[var(--color-text-secondary)] mt-4 mb-10 pb-6 border-b border-[var(--color-border-light)]">Geef je team extra steun om persoonsgericht te werken. Geef hen deze volledig uitgewerkte workshops, telkens met stappenplan en werkbladen</p>
+    {{-- Visie --}}
+    <section>
+        <div class="max-w-6xl mx-auto px-6 py-16">
+            <span class="section-label">Visie</span>
+            <h2 class="mb-6">Krijg de neuzen in dezelfde richting</h2>
 
-        {{-- Visie --}}
-        <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Visie</h2>
-        <p class="text-[var(--color-text-secondary)] mb-6">Krijg de neuzen in dezelfde richting</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($workshopsVisie as $workshop)
+                    @include('tools._workshop', ['workshop' => $workshop])
+                @endforeach
+            </div>
+        </div>
+    </section>
 
-        @foreach($workshopsVisie as $workshop)
-            @include('tools._workshop', ['workshop' => $workshop])
-        @endforeach
+    <hr class="border-[var(--color-border-light)]">
 
-        <hr class="my-10 border-[var(--color-border-light)]">
+    {{-- Proces --}}
+    <section>
+        <div class="max-w-6xl mx-auto px-6 py-16">
+            <span class="section-label">Proces</span>
+            <h2 class="mb-6">Evalueer jullie aanpak en stuur bij</h2>
 
-        {{-- Proces --}}
-        <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Proces</h2>
-        <p class="text-[var(--color-text-secondary)] mb-6">Evalueer jullie aanpak en stuur bij</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($workshopsProces as $workshop)
+                    @include('tools._workshop', ['workshop' => $workshop])
+                @endforeach
+            </div>
+        </div>
+    </section>
 
-        @foreach($workshopsProces as $workshop)
-            @include('tools._workshop', ['workshop' => $workshop])
-        @endforeach
+    <hr class="border-[var(--color-border-light)]">
 
-        <hr class="my-10 border-[var(--color-border-light)]">
+    {{-- Activiteiten --}}
+    <section>
+        <div class="max-w-6xl mx-auto px-6 py-16">
+            <span class="section-label">Activiteiten</span>
+            <h2 class="mb-6">Vernieuw het aanbod met frisse ideeën</h2>
 
-        {{-- Activiteiten --}}
-        <h2 class="text-2xl font-bold text-[var(--color-text-primary)]">Invulling activiteiten</h2>
-        <p class="text-[var(--color-text-secondary)] mb-6">Vernieuw het aanbod</p>
-
-        @foreach($workshopsActiviteiten as $workshop)
-            @include('tools._workshop', ['workshop' => $workshop])
-        @endforeach
-    </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($workshopsActiviteiten as $workshop)
+                    @include('tools._workshop', ['workshop' => $workshop])
+                @endforeach
+            </div>
+        </div>
+    </section>
 </x-layout>

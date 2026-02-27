@@ -1,3 +1,4 @@
+@props(['title' => null, 'fullWidth' => false])
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -8,7 +9,7 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700|nanum-pen-script:400&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -34,7 +35,26 @@
 
     <!-- Main Content -->
     <main>
-        {{ $slot }}
+        @isset($breadcrumbs)
+            <div class="max-w-6xl mx-auto px-6 pt-8">
+                <div class="flex items-center justify-between">
+                    <flux:breadcrumbs>
+                        {{ $breadcrumbs }}
+                    </flux:breadcrumbs>
+                    @isset($headerActions)
+                        {{ $headerActions }}
+                    @endisset
+                </div>
+            </div>
+        @endisset
+
+        @if($fullWidth)
+            {{ $slot }}
+        @else
+            <div class="max-w-6xl mx-auto px-6">
+                {{ $slot }}
+            </div>
+        @endif
     </main>
 
     <!-- Footer -->
@@ -49,6 +69,8 @@
             </div>
         </div>
     </footer>
+
+    <livewire:search />
 
     @fluxScripts
 </body>

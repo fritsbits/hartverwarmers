@@ -40,6 +40,53 @@ class InitiativeTest extends TestCase
         $response->assertDontSee($untagged->title);
     }
 
+    public function test_initiatives_index_filters_by_search(): void
+    {
+        $matching = Initiative::factory()->published()->create(['title' => 'Muziektherapie voor senioren']);
+        $nonMatching = Initiative::factory()->published()->create(['title' => 'Wandelen in het park']);
+
+        $response = $this->get(route('initiatives.index', ['search' => 'Muziek']));
+
+        $response->assertStatus(200);
+        $response->assertSee($matching->title);
+        $response->assertDontSee($nonMatching->title);
+    }
+
+    public function test_initiatives_index_search_and_tag_combined(): void
+    {
+        $tag = Tag::factory()->theme()->create();
+        $matchesBoth = Initiative::factory()->published()->create(['title' => 'Muziektherapie']);
+        $matchesBoth->tags()->attach($tag);
+        $matchesSearchOnly = Initiative::factory()->published()->create(['title' => 'Muziekles']);
+        $matchesTagOnly = Initiative::factory()->published()->create(['title' => 'Wandelen']);
+        $matchesTagOnly->tags()->attach($tag);
+
+        $response = $this->get(route('initiatives.index', ['search' => 'Muziek', 'tag' => $tag->slug]));
+
+        $response->assertStatus(200);
+        $response->assertSee($matchesBoth->title);
+        $response->assertDontSee($matchesSearchOnly->title);
+        $response->assertDontSee($matchesTagOnly->title);
+    }
+
+    public function test_initiatives_index_search_matches_description(): void
+    {
+        $matching = Initiative::factory()->published()->create([
+            'title' => 'Activiteit A',
+            'description' => 'Een leuke knutselmiddag voor bewoners',
+        ]);
+        $nonMatching = Initiative::factory()->published()->create([
+            'title' => 'Activiteit B',
+            'description' => 'Wandelen door de tuin',
+        ]);
+
+        $response = $this->get(route('initiatives.index', ['search' => 'knutsel']));
+
+        $response->assertStatus(200);
+        $response->assertSee($matching->title);
+        $response->assertDontSee($nonMatching->title);
+    }
+
     public function test_initiative_show_displays_published_initiative(): void
     {
         $initiative = Initiative::factory()->published()->create();
@@ -289,19 +336,43 @@ class InitiativeTest extends TestCase
         $response->assertDontSee('Van '.$initiative->title.' naar diamantje');
     }
 
-    public function test_initiative_show_displays_fiche_and_comment_counts(): void
+    public function test_initiative_show_displays_fiches_section_heading_and_fiche_titles(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
-        Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user1->id]);
-        Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user2->id]);
+        $fiche1 = Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user1->id]);
+        $fiche2 = Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user2->id]);
 
         $response = $this->get(route('initiatives.show', $initiative));
 
         $response->assertStatus(200);
-        $response->assertSee('2 fiches');
+        $response->assertSee("Fiches door collega's", false);
+        $response->assertSee($fiche1->title);
+        $response->assertSee($fiche2->title);
         $response->assertDontSee('keer ervaringen gedeeld');
+    }
+
+    public function test_initiative_show_displays_expand_button_when_more_than_six_fiches(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        Fiche::factory()->published()->count(8)->create(['initiative_id' => $initiative->id]);
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertSee('Alle 8 fiches tonen');
+    }
+
+    public function test_initiative_show_hides_expand_button_when_six_or_fewer_fiches(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        Fiche::factory()->published()->count(5)->create(['initiative_id' => $initiative->id]);
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('fiches tonen');
     }
 
     public function test_initiative_show_displays_comment_count_when_comments_exist(): void

@@ -1,7 +1,12 @@
-@props(['fiche', 'showTags' => true])
+@props(['fiche', 'showTags' => true, 'showDiamond' => false])
 
 <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="block cursor-pointer">
 <flux:card class="overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
+    @if($showDiamond)
+        <div class="mb-2">
+            <x-diamond-badge />
+        </div>
+    @endif
     <flux:heading size="lg" class="font-heading font-bold">{{ $fiche->title }}</flux:heading>
 
     @if($fiche->description)

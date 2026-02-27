@@ -11,8 +11,8 @@
   "duration": "1-2 uur",
   "audience": "Begeleiders wonen en leven",
   "format": "Prints",
-  "preview_image": "https://images.prismic.io/soulcenterbe/activiteitentoetser-preview.jpg",
-  "hero_image": "https://images.prismic.io/soulcenterbe/activiteitentoetser-hero.jpg",
+  "preview_image": "https://images.prismic.io/soulcenterbe/04011743-61cd-4d05-bbc7-851a6b0e2d08_preview-activiteitentoetsing.jpg?auto=compress,format&rect=0,0,320,320&w=320&h=320",
+  "hero_image": "https://images.prismic.io/soulcenterbe/b7e98f4f-83c6-4470-be24-0d68513ab930_activiteiten-toetsing-evaluatiebladen-hero.jpg?auto=compress,format&rect=0,0,1280,1600&w=640&h=800",
   "hero_description": "Biedt gestructureerd overzicht van het complete activiteitenaanbod in zorginstellingen. Maak het mogelijk om bewoners- en activiteitsgegevens in kaart te brengen om sterke punten en lacunes te identificeren.",
   "goal": [
     "Bied gestructureerd overzicht van het complete activiteitenaanbod.",
@@ -54,10 +54,6 @@
     {
       "url": "/workshops/werkbladen-activiteitsverkenning-wzc",
       "label": "Activiteitsverkenning werkbladen"
-    },
-    {
-      "url": "https://soulcenter.be/leertraject-zinvolle-activiteiten",
-      "label": "Leertraject zinvolle activiteiten"
     }
   ]
 }
