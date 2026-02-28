@@ -16,6 +16,7 @@ class Like extends Model
         'likeable_type',
         'likeable_id',
         'type',
+        'count',
     ];
 
     public function likeable(): MorphTo
@@ -36,5 +37,10 @@ class Like extends Model
     public function scopeBookmarks($query)
     {
         return $query->where('type', 'bookmark');
+    }
+
+    public function scopeKudos($query)
+    {
+        return $query->where('type', 'kudos');
     }
 }

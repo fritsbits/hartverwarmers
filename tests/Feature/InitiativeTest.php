@@ -140,17 +140,6 @@ class InitiativeTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_fiche_print_page_loads(): void
-    {
-        $initiative = Initiative::factory()->published()->create();
-        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
-
-        $response = $this->get(route('fiches.print', [$initiative, $fiche]));
-
-        $response->assertStatus(200);
-        $response->assertSee($fiche->title);
-    }
-
     public function test_bookmark_toggle_creates_and_removes_bookmark(): void
     {
         $user = User::factory()->create();
@@ -278,7 +267,7 @@ class InitiativeTest extends TestCase
         $response->assertSee($regular->title);
     }
 
-    public function test_fiche_show_displays_related_fiches(): void
+    public function test_fiche_show_displays_other_fiches_from_initiative(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create([
@@ -291,7 +280,7 @@ class InitiativeTest extends TestCase
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('Gerelateerde fiches');
+        $response->assertSee('Meer fiches');
         $response->assertSee($related->title);
     }
 
