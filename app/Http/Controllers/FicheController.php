@@ -15,35 +15,29 @@ class FicheController extends Controller
             abort(404);
         }
 
-        $fiche->load(['tags', 'user', 'files', 'comments.user']);
-        $fiche->loadCount(['likes as bookmarks_count' => fn ($q) => $q->where('type', 'bookmark')]);
+        $fiche->load(['tags', 'user', 'files']);
+        $fiche->loadCount([
+            'comments',
+            'likes as bookmarks_count' => fn ($q) => $q->where('type', 'bookmark'),
+        ]);
 
-        $relatedFiches = Fiche::query()
+        $goalTags = $fiche->tags->where('type', 'goal');
+        $kudosTotal = $fiche->totalKudosCount();
+
+        $otherFiches = Fiche::query()
             ->where('initiative_id', $initiative->id)
             ->where('id', '!=', $fiche->id)
             ->published()
-            ->with('user', 'tags')
-            ->take(4)
+            ->with(['user', 'tags'])
+            ->take(6)
             ->get();
 
         return view('fiches.show', [
             'initiative' => $initiative,
             'fiche' => $fiche,
-            'relatedFiches' => $relatedFiches,
-        ]);
-    }
-
-    public function print(Initiative $initiative, Fiche $fiche): View
-    {
-        if (! $initiative->published || ! $fiche->published) {
-            abort(404);
-        }
-
-        $fiche->load(['tags', 'user', 'files']);
-
-        return view('fiches.print', [
-            'initiative' => $initiative,
-            'fiche' => $fiche,
+            'goalTags' => $goalTags,
+            'kudosTotal' => $kudosTotal,
+            'otherFiches' => $otherFiches,
         ]);
     }
 

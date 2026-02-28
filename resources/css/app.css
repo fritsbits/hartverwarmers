@@ -203,6 +203,14 @@
    Component Layer - Reusable Components
    ========================================================================== */
 
+/* Flux tooltip — warm style override */
+[data-flux-tooltip-content] {
+  background: var(--color-bg-white);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-card);
+}
+
 @layer components {
   /* Text CTA style (per brand guidelines - text + arrow, not filled buttons) */
   .cta-link {
@@ -424,6 +432,67 @@
     border: 1px solid var(--color-border-light);
   }
 
+  /* DIAMANT pill — compact goal link */
+  .diamant-pill {
+    @apply inline-flex items-center rounded-full font-semibold no-underline;
+    gap: 6px;
+    padding: 5px 12px 5px 8px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    background: #FEF8F4;
+    color: #231E1A;
+    transition: all 0.15s ease;
+  }
+
+  .diamant-pill:hover {
+    background: var(--color-bg-accent-light);
+  }
+
+  .diamant-pill-inactive {
+    opacity: 0.55;
+    background: transparent;
+    color: #B0A89F;
+  }
+
+  /* DIAMANT letter — diamond-shaped indicator inside pill */
+  .diamant-letter {
+    @apply inline-flex items-center justify-center shrink-0;
+    width: 18px;
+    height: 18px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 11px;
+    background: #E8764B;
+    color: #FFFFFF;
+    line-height: 1;
+    border-radius: 3px;
+    transform: rotate(45deg);
+  }
+
+  .diamant-letter span {
+    transform: rotate(-45deg);
+    display: block;
+  }
+
+  .diamant-letter-inactive {
+    background: #F5F0EC;
+    color: #B0A89F;
+  }
+
+  /* DIAMANT pill — small variant for meta strip */
+  .diamant-pill-sm {
+    gap: 5px;
+    padding: 3px 9px 3px 6px;
+    font-size: 12px;
+  }
+
+  .diamant-letter-sm {
+    width: 15px;
+    height: 15px;
+    font-size: 9px;
+    border-radius: 2.5px;
+  }
+
   /* Meta group — icon + text metadata rows (counts, durations, author) */
   .meta-group {
     @apply flex flex-wrap items-center;
@@ -443,6 +512,50 @@
     width: 16px;
     height: 16px;
     stroke-width: 1.5;
+  }
+
+  /* Practical content — rich HTML from materials JSON (replaces non-functional prose) */
+  .practical-content {
+    line-height: 1.75;
+  }
+
+  .practical-content p {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .practical-content h1,
+  .practical-content h2,
+  .practical-content h3,
+  .practical-content h4,
+  .practical-content h5,
+  .practical-content h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .practical-content h1:first-child,
+  .practical-content h2:first-child,
+  .practical-content h3:first-child,
+  .practical-content h4:first-child,
+  .practical-content h5:first-child,
+  .practical-content h6:first-child {
+    margin-top: 0;
+  }
+
+  .practical-content a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+    text-underline-offset: 2px;
+    word-break: break-all;
+  }
+
+  .practical-content a:hover {
+    text-decoration-color: var(--color-primary);
   }
 }
 
@@ -492,6 +605,22 @@ dialog[data-modal="search"]::backdrop {
 /* ==========================================================================
    Responsive Typography
    ========================================================================== */
+
+/* Kudos floating heart animation */
+@keyframes kudosFloat {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-30px) scale(1.2) rotate(-5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-65px) scale(0.8) rotate(5deg);
+  }
+}
 
 @media (max-width: 768px) {
   :root {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
 use App\Models\Fiche;
 use App\Models\Initiative;
@@ -10,14 +11,11 @@ use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    public function store(Request $request, Fiche $fiche): RedirectResponse
+    public function store(StoreCommentRequest $request, Fiche $fiche): RedirectResponse
     {
-        $validated = $request->validate([
-            'body' => 'required|string|max:1000',
-        ]);
-
         Comment::create([
-            'body' => $validated['body'],
+            'body' => $request->validated('body'),
+            'parent_id' => $request->validated('parent_id'),
             'user_id' => $request->user()->id,
             'commentable_type' => Fiche::class,
             'commentable_id' => $fiche->id,

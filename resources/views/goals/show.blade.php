@@ -52,7 +52,6 @@
 
         <section>
             <div class="max-w-6xl mx-auto px-6 py-16">
-                <span class="section-label">Praktijk</span>
                 <h2 class="mb-2">In de praktijk</h2>
                 @if(!empty($facet['practice_subtitle']))
                     <p class="text-[var(--color-text-secondary)] mb-8">{{ $facet['practice_subtitle'] }}</p>
@@ -76,8 +75,7 @@
 
                             {{-- Card body --}}
                             <div class="p-5">
-                                <span class="text-sm font-semibold" style="color: var(--color-primary)">{{ $example['role'] }}</span>
-                                <h3 class="text-lg mt-1 mb-2">{{ $example['name'] }}</h3>
+                                <h3 class="text-lg mb-2">{{ $example['role'] }} {{ $example['name'] }}</h3>
                                 <p class="text-sm text-[var(--color-text-secondary)]">{{ $example['story'] }}</p>
                             </div>
                         </div>
@@ -93,7 +91,6 @@
 
         <section>
             <div class="max-w-6xl mx-auto px-6 py-16">
-                <span class="section-label">Reflectie</span>
                 <h2 class="mb-2">Vragen voor jezelf</h2>
                 @if(!empty($facet['reflection_subtitle']))
                     <p class="text-[var(--color-text-secondary)] mb-8">{{ $facet['reflection_subtitle'] }}</p>
@@ -133,7 +130,6 @@
     {{-- Initiatieven --}}
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
-            <span class="section-label">Initiatieven</span>
             <h2 class="mb-2">{{ $facet['initiatives_heading'] ?? 'Initiatieven bij deze doelstelling' }}</h2>
             <p class="text-[var(--color-text-secondary)] mb-8">Deze initiatieven scoren sterk op het facet {{ $facet['keyword'] }}.</p>
 
@@ -160,7 +156,6 @@
     {{-- Ontdek de andere doelstellingen --}}
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
-            <span class="section-label">DIAMANT-kompas</span>
             <h2 class="mb-6">Ontdek de andere doelstellingen</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @foreach($allFacets as $slug => $item)

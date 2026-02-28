@@ -27,4 +27,12 @@ class LikeFactory extends Factory
             'type' => 'bookmark',
         ]);
     }
+
+    public function kudos(int $count = 1): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'kudos',
+            'count' => $count,
+        ]);
+    }
 }

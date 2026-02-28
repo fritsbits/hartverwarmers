@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -67,6 +68,79 @@ class Fiche extends Model
     public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'likeable');
+    }
+
+    public function kudos(): MorphMany
+    {
+        return $this->morphMany(Like::class, 'likeable')->where('type', 'kudos');
+    }
+
+    public function totalKudosCount(): int
+    {
+        return (int) $this->kudos()->sum('count');
+    }
+
+    /**
+     * Structured practical sections built from the materials JSON,
+     * falling back to the practical_tips text field.
+     *
+     * @return Attribute<array<int, array{title: string, content: string}>, never>
+     */
+    protected function practicalSections(): Attribute
+    {
+        return Attribute::get(function (): array {
+            $materials = $this->materials ?? [];
+            $map = [
+                'preparation' => 'Voorbereiding',
+                'inventory' => 'Benodigdheden',
+                'process' => 'Werkwijze',
+            ];
+
+            $sections = [];
+            foreach ($map as $key => $title) {
+                $content = trim(strip_tags($materials[$key] ?? ''));
+                if ($content !== '') {
+                    $sections[] = ['title' => $title, 'content' => self::autoLinkUrls($materials[$key])];
+                }
+            }
+
+            if ($sections === [] && $this->practical_tips && trim(strip_tags($this->practical_tips)) !== '') {
+                $sections[] = ['title' => 'Praktische tips', 'content' => self::autoLinkUrls($this->practical_tips)];
+            }
+
+            return $sections;
+        });
+    }
+
+    /**
+     * Extract the "materials" metadata key for display in the practical info section.
+     *
+     * @return Attribute<array<int, array{label: string, value: string}>, never>
+     */
+    protected function materialsMeta(): Attribute
+    {
+        return Attribute::get(function (): array {
+            $materials = $this->materials ?? [];
+            $meta = [];
+
+            if (! empty($materials['materials'])) {
+                $meta[] = ['label' => 'Materiaal', 'value' => $materials['materials']];
+            }
+
+            return $meta;
+        });
+    }
+
+    /**
+     * Wrap bare URLs in anchor tags, skipping URLs already inside href="...".
+     */
+    private static function autoLinkUrls(string $html): string
+    {
+        return preg_replace(
+            '~(?<!href=["\'])(?<!["\'>])(https?://[^\s<>"\']+)~i',
+            '<a href="$1" target="_blank" rel="noopener">$1</a>',
+            $html,
+        );
     }
 
     public function scopePublished($query)

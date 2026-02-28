@@ -22,7 +22,6 @@ Route::get('/initiatieven/{initiative:slug}', [InitiativeController::class, 'sho
 
 // Fiches (nested under initiative)
 Route::get('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'show'])->name('fiches.show');
-Route::get('/initiatieven/{initiative:slug}/{fiche:slug}/print', [FicheController::class, 'print'])->name('fiches.print');
 
 // Themes (placeholder)
 Route::get('/themas', [ThemeController::class, 'index'])->name('themes.index');
