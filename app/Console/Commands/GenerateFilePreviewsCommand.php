@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Concerns\ConvertsDocumentsViaSoffice;
 use App\Models\File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -9,12 +10,14 @@ use Imagick;
 
 class GenerateFilePreviewsCommand extends Command
 {
+    use ConvertsDocumentsViaSoffice;
+
     protected $signature = 'file:generate-previews
         {--file= : Specific file ID}
         {--all : Process all files without previews}
         {--max-slides=8 : Maximum number of slide previews to generate}';
 
-    protected $description = 'Generate preview images for uploaded files (PPTX, PDF)';
+    protected $description = 'Generate preview images for uploaded files (PPTX, DOCX, PDF, images)';
 
     public function handle(): int
     {
@@ -33,7 +36,9 @@ class GenerateFilePreviewsCommand extends Command
         }
 
         if ($this->option('all')) {
-            $files = File::whereNull('preview_images')->get();
+            $files = File::where(function ($q) {
+                $q->whereNull('preview_images')->orWhereNull('total_slides');
+            })->get();
             $this->info("Processing {$files->count()} files...");
 
             $success = 0;
@@ -66,77 +71,88 @@ class GenerateFilePreviewsCommand extends Command
         }
 
         $isPptx = str_contains($file->mime_type, 'presentation') || str_contains($file->mime_type, 'powerpoint');
+        $isDocx = str_contains($file->mime_type, 'word') || str_contains($file->mime_type, 'document');
         $isPdf = str_contains($file->mime_type, 'pdf');
+        $isImage = str_starts_with($file->mime_type, 'image/');
 
-        if (! $isPptx && ! $isPdf) {
+        if (! $isPptx && ! $isDocx && ! $isPdf && ! $isImage) {
             $this->warn("  Skipping: unsupported file type ({$file->mime_type})");
 
             return false;
         }
 
-        $pdfPath = $storagePath;
+        try {
+            if ($isImage) {
+                return $this->processImage($storagePath, $file);
+            }
 
-        if ($isPptx) {
-            $pdfPath = $this->convertPptxToPdf($storagePath);
+            $pdfPath = $storagePath;
 
-            if (! $pdfPath) {
+            if ($isPptx || $isDocx) {
+                $pdfPath = $this->convertToPdf($storagePath);
+
+                if (! $pdfPath) {
+                    return false;
+                }
+            }
+
+            $result = $this->generateSlideImages($pdfPath, $file->id, $maxSlides);
+
+            if (($isPptx || $isDocx) && $pdfPath !== $storagePath) {
+                @unlink($pdfPath);
+            }
+
+            if (empty($result['paths'])) {
+                $this->error('  No preview images generated.');
+
                 return false;
             }
-        }
 
-        $previewPaths = $this->generateSlideImages($pdfPath, $file->id, $maxSlides);
+            $file->update([
+                'preview_images' => $result['paths'],
+                'total_slides' => $result['totalPages'],
+            ]);
+            $this->info('  Generated '.count($result['paths']).' preview images (total: '.$result['totalPages'].' pages).');
 
-        if ($isPptx && $pdfPath !== $storagePath) {
-            @unlink($pdfPath);
-        }
-
-        if (empty($previewPaths)) {
-            $this->error('  No preview images generated.');
+            return true;
+        } catch (\Throwable $e) {
+            $this->error("  Failed: {$e->getMessage()}");
+            report($e);
 
             return false;
         }
+    }
 
-        $file->update(['preview_images' => $previewPaths]);
-        $this->info('  Generated '.count($previewPaths).' preview images.');
+    private function processImage(string $storagePath, File $file): bool
+    {
+        $this->info('  Processing image...');
+
+        $previewDir = "file-previews/{$file->id}";
+        Storage::disk('public')->makeDirectory($previewDir);
+
+        $relativePath = "{$previewDir}/slide-001.jpg";
+        $absolutePath = Storage::disk('public')->path($relativePath);
+
+        $im = new Imagick($storagePath);
+        $im->setImageFormat('jpeg');
+        $im->setImageCompressionQuality(85);
+
+        $width = $im->getImageWidth();
+        if ($width > 1280) {
+            $im->resizeImage(1280, 0, Imagick::FILTER_LANCZOS, 1);
+        }
+
+        $im->writeImage($absolutePath);
+        $im->destroy();
+
+        $file->update(['preview_images' => [$relativePath], 'total_slides' => 1]);
+        $this->info('  Generated 1 preview image.');
 
         return true;
     }
 
-    private function convertPptxToPdf(string $pptxPath): ?string
-    {
-        $outputDir = sys_get_temp_dir();
-        $basename = pathinfo($pptxPath, PATHINFO_FILENAME);
-
-        $command = sprintf(
-            'soffice --headless --convert-to pdf --outdir %s %s 2>&1',
-            escapeshellarg($outputDir),
-            escapeshellarg($pptxPath)
-        );
-
-        $this->info('  Converting PPTX to PDF...');
-        exec($command, $output, $exitCode);
-
-        if ($exitCode !== 0) {
-            $this->error('  LibreOffice conversion failed: '.implode("\n", $output));
-
-            return null;
-        }
-
-        $pdfPath = $outputDir.'/'.$basename.'.pdf';
-
-        if (! file_exists($pdfPath)) {
-            $this->error('  PDF output not found at: '.$pdfPath);
-
-            return null;
-        }
-
-        $this->info('  PDF created successfully.');
-
-        return $pdfPath;
-    }
-
     /**
-     * @return string[]
+     * @return array{paths: string[], totalPages: int}
      */
     private function generateSlideImages(string $pdfPath, int $fileId, int $maxSlides): array
     {
@@ -150,7 +166,7 @@ class GenerateFilePreviewsCommand extends Command
         $imagick = new Imagick;
         $imagick->setResolution(200, 200);
 
-        $pageCount = $imagick->pingImage($pdfPath);
+        $imagick->pingImage($pdfPath);
         $totalPages = $imagick->getNumberImages();
         $pagesToProcess = min($totalPages, $maxSlides);
 
@@ -160,11 +176,13 @@ class GenerateFilePreviewsCommand extends Command
             $im = new Imagick;
             $im->setResolution(200, 200);
             $im->readImage("{$pdfPath}[{$i}]");
+            $im->setImageBackgroundColor('white');
+            $im->setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE);
+            $im = $im->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
             $im->setImageFormat('jpeg');
             $im->setImageCompressionQuality(85);
 
             $width = $im->getImageWidth();
-            $height = $im->getImageHeight();
 
             if ($width > 1280) {
                 $im->resizeImage(1280, 0, Imagick::FILTER_LANCZOS, 1);
@@ -180,6 +198,6 @@ class GenerateFilePreviewsCommand extends Command
             $paths[] = $relativePath;
         }
 
-        return $paths;
+        return ['paths' => $paths, 'totalPages' => $totalPages];
     }
 }

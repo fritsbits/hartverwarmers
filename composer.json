@@ -7,7 +7,10 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "laravel/ai": "^0.2.5",
         "laravel/framework": "^12.0",
+        "laravel/pennant": "^1.20",
+        "laravel/pulse": "^1.6",
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.11",
         "livewire/flux-pro": "^2.12",
@@ -48,7 +51,11 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=queue,logs,vite --kill-others"
+        ],
+        "queue": [
+            "Composer\\Config::disableProcessTimeout",
+            "php artisan queue:listen --tries=1"
         ],
         "test": [
             "@php artisan config:clear --ansi",

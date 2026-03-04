@@ -62,6 +62,7 @@
     @endif
 
     <!-- DIAMANT Kompas -->
+    @feature('diamant-goals')
     <section class="bg-[var(--color-bg-cream)] py-16">
         <div class="max-w-6xl mx-auto px-6">
             <span class="section-label">
@@ -83,10 +84,10 @@
                     @foreach($facets as $slug => $facet)
                         <button
                             @click="activeGoal = '{{ $slug }}'"
-                            :class="activeGoal === '{{ $slug }}' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-[var(--color-primary)] border border-[var(--color-border-light)]'"
-                            class="w-10 h-10 rounded-full font-bold text-sm font-[var(--font-heading)] transition-colors"
+                            class="transition-opacity"
+                            :class="activeGoal === '{{ $slug }}' ? '' : 'opacity-50'"
                         >
-                            {{ $facet['letter'] }}
+                            <x-diamant-gem :letter="$facet['letter']" size="md" />
                         </button>
                     @endforeach
                 </div>
@@ -95,7 +96,7 @@
                 @foreach($facets as $slug => $facet)
                     <div x-show="activeGoal === '{{ $slug }}'" x-cloak class="bg-white rounded-xl border border-[var(--color-border-light)] p-6">
                         <div class="flex items-center gap-3 mb-3">
-                            <span class="diamant-badge-sm">{{ $facet['letter'] }}</span>
+                            <x-diamant-gem :letter="$facet['letter']" size="md" />
                             <h3 class="text-lg">{{ $facet['keyword'] }}</h3>
                         </div>
                         <p class="font-semibold text-[var(--color-text-primary)] mb-2">{{ $facet['ik_wil'] }}</p>
@@ -130,4 +131,5 @@
             </div>
         </div>
     </section>
+    @endfeature
 </x-layout>

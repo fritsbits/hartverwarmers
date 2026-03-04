@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Initiative extends Model
 {
@@ -51,6 +52,13 @@ class Initiative extends Model
     public function tags(): MorphToMany
     {
         return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    public function thumbnailUrl(): ?string
+    {
+        return $this->image
+            ? Str::replaceLast('.webp', '-thumb.webp', $this->image)
+            : null;
     }
 
     public function scopePublished($query)

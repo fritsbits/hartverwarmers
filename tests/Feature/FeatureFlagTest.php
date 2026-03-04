@@ -1,0 +1,195 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Features\DiamantGoals;
+use App\Models\Fiche;
+use App\Models\Initiative;
+use App\Models\Tag;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Pennant\Feature;
+use Tests\TestCase;
+
+class FeatureFlagTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_goal_routes_return_404_when_feature_disabled(): void
+    {
+        Feature::define('diamant-goals', false);
+
+        $this->get(route('goals.index'))->assertStatus(404);
+        $this->get(route('goals.show', 'talent'))->assertStatus(404);
+    }
+
+    public function test_goal_routes_return_200_when_feature_enabled(): void
+    {
+        Feature::define('diamant-goals', true);
+
+        $this->get(route('goals.index'))->assertStatus(200);
+        $this->get(route('goals.show', 'talent'))->assertStatus(200);
+    }
+
+    public function test_homepage_hides_diamant_section_when_feature_disabled(): void
+    {
+        Feature::define('diamant-goals', false);
+
+        $response = $this->get(route('home'));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Het DIAMANT-kompas');
+        $response->assertDontSee('Zeven doelen om bewoners te laten schitteren');
+    }
+
+    public function test_homepage_shows_diamant_section_when_feature_enabled(): void
+    {
+        Feature::define('diamant-goals', true);
+
+        $response = $this->get(route('home'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Het DIAMANT-kompas');
+    }
+
+    public function test_nav_hides_doelen_dropdown_when_feature_disabled(): void
+    {
+        Feature::define('diamant-goals', false);
+
+        $response = $this->get(route('home'));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Zeven doelstellingen');
+    }
+
+    public function test_nav_shows_doelen_dropdown_when_feature_enabled(): void
+    {
+        Feature::define('diamant-goals', true);
+
+        $response = $this->get(route('home'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Zeven doelstellingen');
+    }
+
+    public function test_fiche_show_hides_goal_tags_when_feature_disabled(): void
+    {
+        Feature::define('diamant-goals', false);
+
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+        $goalTag = Tag::factory()->goal()->create(['slug' => 'doel-doen', 'name' => 'Doen']);
+        $fiche->tags()->attach($goalTag);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('diamant-pill', false);
+    }
+
+    public function test_fiche_show_shows_goal_tags_when_feature_enabled(): void
+    {
+        Feature::define('diamant-goals', true);
+
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+        $goalTag = Tag::factory()->goal()->create(['slug' => 'doel-doen', 'name' => 'Doen']);
+        $fiche->tags()->attach($goalTag);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('diamant-pill', false);
+    }
+
+    public function test_admin_can_view_features_page(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->get(route('admin.features'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Feature Flags');
+        $response->assertSee('DIAMANT-doelen');
+    }
+
+    public function test_non_admin_gets_403_on_features_page(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('admin.features'));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_guest_cannot_access_features_page(): void
+    {
+        $response = $this->get(route('admin.features'));
+
+        $response->assertRedirect(route('login'));
+    }
+
+    public function test_admin_can_toggle_feature_on(): void
+    {
+        Feature::define('diamant-goals', false);
+
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post(route('admin.features.toggle', 'diamant-goals'));
+
+        $response->assertRedirect(route('admin.features'));
+        $this->assertTrue(Feature::for(null)->active(DiamantGoals::class));
+    }
+
+    public function test_admin_can_toggle_feature_off(): void
+    {
+        Feature::define('diamant-goals', true);
+        Feature::activateForEveryone(DiamantGoals::class);
+
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post(route('admin.features.toggle', 'diamant-goals'));
+
+        $response->assertRedirect(route('admin.features'));
+        $this->assertFalse(Feature::for(null)->active(DiamantGoals::class));
+    }
+
+    public function test_unknown_feature_toggle_returns_404(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->post(route('admin.features.toggle', 'non-existent'));
+
+        $response->assertStatus(404);
+    }
+
+    public function test_fiche_edit_preserves_goal_tags_when_feature_disabled(): void
+    {
+        Feature::define('diamant-goals', false);
+
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'user_id' => $user->id,
+        ]);
+        $goalTag = Tag::factory()->goal()->create(['slug' => 'doel-doen', 'name' => 'Doen']);
+        $themeTag = Tag::factory()->theme()->create();
+        $fiche->tags()->attach([$goalTag->id, $themeTag->id]);
+
+        $this->actingAs($user);
+
+        \Livewire\Livewire::test(\App\Livewire\FicheEdit::class, ['fiche' => $fiche])
+            ->set('title', 'Updated Title')
+            ->set('selectedThemeTags', [$themeTag->id])
+            ->call('save');
+
+        $fiche->refresh();
+        $this->assertTrue($fiche->tags->contains($goalTag));
+        $this->assertTrue($fiche->tags->contains($themeTag));
+    }
+}

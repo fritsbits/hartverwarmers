@@ -5,11 +5,19 @@ namespace Tests\Feature;
 use App\Models\Initiative;
 use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
 class GoalTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Feature::define('diamant-goals', true);
+    }
 
     public function test_goals_index_displays_all_facets(): void
     {

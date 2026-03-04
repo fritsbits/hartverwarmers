@@ -27,9 +27,7 @@
                     @endphp
                     <a href="{{ route('goals.show', $slug) }}"
                        class="content-card p-6 flex gap-5 items-start group {{ $loop->last && $loop->count % 2 !== 0 ? 'md:col-span-2' : '' }}">
-                        <div class="diamant-badge">
-                            {{ $facet['letter'] }}
-                        </div>
+                        <x-diamant-gem :letter="$facet['letter']" size="lg" />
                         <div class="flex-1 min-w-0">
                             <h3 class="text-xl mb-1">{{ $facet['keyword'] }}</h3>
                             <p class="text-[var(--color-text-secondary)] mb-3">{{ $facet['ik_wil'] }}</p>

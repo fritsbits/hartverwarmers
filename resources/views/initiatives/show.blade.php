@@ -85,7 +85,7 @@
                 {{-- Right column: Image --}}
                 <div class="lg:col-span-2">
                     @if($initiative->image)
-                        <img src="{{ $initiative->image }}" alt="{{ $initiative->title }}" class="w-full rounded-xl object-cover aspect-video">
+                        <img src="{{ $initiative->image }}" alt="{{ $initiative->title }}" class="w-full rounded-xl object-cover aspect-video" loading="lazy">
                     @else
                         <div class="w-full rounded-xl bg-white/50 aspect-video flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-[var(--color-border-light)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">

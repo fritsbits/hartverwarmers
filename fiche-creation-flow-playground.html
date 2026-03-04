@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiche Creation Flow — UX Playground</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700" rel="stylesheet">
+<style>
+  :root {
+    --color-primary: #E8764B;
+    --color-primary-light: #F0A07A;
+    --color-primary-dark: #C95E35;
+    --color-bg-subtle: #F5F0EC;
+    --color-bg-cream: #FEF8F4;
+    --color-text-primary: #231E1A;
+    --color-text-secondary: #756C65;
+    --color-border-light: #EBE4DE;
+    --color-success: #4CAF50;
+    --color-success-light: #E8F5E9;
+    --color-danger: #E53935;
+    --color-danger-light: #FFEBEE;
+    --font-heading: 'Aleo', serif;
+    --font-body: 'Fira Sans', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); color: var(--color-text-primary); background: var(--color-bg-subtle); min-height: 100vh; }
+
+  /* ── Top bar ── */
+  .top-bar { background: white; border-bottom: 1px solid var(--color-border-light); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .top-bar h1 { font-family: var(--font-heading); font-size: 18px; color: var(--color-primary); }
+  .top-bar .subtitle { font-size: 13px; color: var(--color-text-secondary); margin-left: 12px; }
+  .btn { font-family: var(--font-body); font-size: 13px; font-weight: 500; padding: 6px 16px; border-radius: 6px; border: 1px solid var(--color-border-light); background: white; color: var(--color-text-primary); cursor: pointer; transition: all 0.15s; }
+  .btn:hover { background: var(--color-bg-subtle); }
+  .btn-primary { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+  .btn-primary:hover { background: var(--color-primary-dark); }
+  .btn-sm { font-size: 11px; padding: 4px 10px; }
+  .btn-success { background: var(--color-success); color: white; border-color: var(--color-success); }
+  .btn-outline-danger { color: var(--color-danger); border-color: var(--color-danger); background: white; }
+  .btn-outline-danger:hover { background: var(--color-danger-light); }
+
+  /* ── Layout ── */
+  .layout { display: grid; grid-template-columns: 360px 1fr; min-height: calc(100vh - 53px); }
+
+  /* ── Controls ── */
+  .controls { background: white; border-right: 1px solid var(--color-border-light); padding: 20px; overflow-y: auto; max-height: calc(100vh - 53px); position: sticky; top: 53px; }
+  .control-section { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--color-border-light); }
+  .control-section:last-child { border-bottom: none; }
+  .control-label { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .control-label .letter { font-family: var(--font-heading); font-size: 11px; width: 20px; height: 20px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .control-label h3 { font-family: var(--font-heading); font-size: 13px; }
+  .control-desc { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 8px; margin-left: 28px; }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 4px; margin-left: 28px; }
+  .pill { font-size: 11px; padding: 5px 10px; border: 1px solid var(--color-border-light); border-radius: 14px; background: white; cursor: pointer; transition: all 0.15s; font-family: var(--font-body); color: var(--color-text-secondary); line-height: 1.3; }
+  .pill:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .pill.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+  .pill .current-tag { font-size: 9px; opacity: 0.7; }
+
+  /* ── Preview ── */
+  .preview-area { padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .device-frame { width: 500px; max-height: 750px; background: white; border-radius: 24px; box-shadow: 0 8px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06); overflow: hidden; display: flex; flex-direction: column; }
+  .wizard-header { padding: 16px 20px 12px; background: white; border-bottom: 1px solid var(--color-border-light); flex-shrink: 0; }
+  .wizard-header h2 { font-family: var(--font-heading); font-size: 16px; margin-bottom: 12px; }
+  .step-dots { display: flex; gap: 8px; align-items: center; }
+  .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-border-light); transition: all 0.3s; cursor: pointer; }
+  .step-dot:hover { background: var(--color-primary-light); }
+  .step-dot.active { background: var(--color-primary); width: 24px; border-radius: 4px; }
+  .step-dot.done { background: var(--color-success); }
+  .step-connector { flex: 1; height: 2px; background: var(--color-border-light); }
+  .step-label { font-size: 10px; color: var(--color-text-secondary); margin-left: 4px; }
+  .wizard-content { flex: 1; overflow-y: auto; padding: 20px; }
+  .wizard-footer { flex-shrink: 0; padding: 12px 20px; border-top: 1px solid var(--color-border-light); display: flex; gap: 8px; justify-content: flex-end; }
+  .wizard-footer .btn { flex: none; }
+
+  /* ── Step 1 ── */
+  .upload-done { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--color-success-light); border: 1px solid #C8E6C9; border-radius: 10px; }
+  .upload-done .file-icon { font-size: 28px; }
+  .upload-done .file-info { flex: 1; }
+  .upload-done .file-name { font-size: 13px; font-weight: 500; }
+  .upload-done .file-status { font-size: 11px; color: var(--color-success); display: flex; align-items: center; gap: 4px; }
+  .processing-done { margin-top: 16px; }
+  .processing-done .proc-step { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-success); margin-bottom: 6px; }
+
+  /* ── Step 2 ── */
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .form-input { width: 100%; padding: 8px 12px; border: 1px solid var(--color-border-light); border-radius: 8px; font-family: var(--font-body); font-size: 13px; color: var(--color-text-primary); background: white; outline: none; }
+  .form-input:disabled { background: var(--color-bg-cream); color: var(--color-text-secondary); }
+  textarea.form-input { resize: vertical; min-height: 60px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .prefilled-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; color: var(--color-primary); margin-left: 6px; }
+  .prefilled-field { border-style: dashed !important; border-color: var(--color-primary-light) !important; }
+
+  /* ── Step 3: General ── */
+  .review-section { margin-bottom: 16px; }
+  .review-section h4 { font-family: var(--font-heading); font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .section-actions { display: flex; gap: 6px; margin-top: 8px; }
+
+  /* Overwritten field (B: overschrijven) */
+  .overwrite-value { font-size: 12px; color: var(--color-text-primary); padding: 10px 12px; background: var(--color-bg-cream); border-radius: 8px; line-height: 1.5; }
+  .overwrite-value ol, .overwrite-value ul { margin-left: 16px; }
+  .overwrite-value li { margin-bottom: 2px; }
+
+  /* User original + AI suggestion (B: suggestie-eronder) */
+  .user-original { font-size: 12px; padding: 10px 12px; border: 2px solid var(--color-border-light); border-radius: 8px; background: white; color: var(--color-text-primary); margin-bottom: 8px; line-height: 1.5; }
+  .user-original-label { font-size: 10px; color: var(--color-text-secondary); margin-bottom: 2px; font-weight: 500; }
+  .ai-suggestion { font-size: 12px; padding: 10px 12px; border: 2px dashed var(--color-primary-light); border-radius: 8px; background: #FEF8F4; line-height: 1.5; }
+  .ai-suggestion ol, .ai-suggestion ul { margin-left: 16px; }
+  .ai-suggestion li { margin-bottom: 2px; }
+  .ai-suggestion-header { font-size: 11px; font-weight: 600; color: var(--color-primary); margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+
+  /* Diff view (B: inline-diff) */
+  .diff-view { font-size: 12px; padding: 10px 12px; border: 1px solid var(--color-border-light); border-radius: 8px; background: white; line-height: 1.8; }
+  .diff-add { background: #E8F5E9; color: #2E7D32; text-decoration: underline; text-decoration-color: #81C784; padding: 1px 2px; border-radius: 2px; }
+  .diff-del { background: #FFEBEE; color: #C62828; text-decoration: line-through; text-decoration-color: #EF9A9A; padding: 1px 2px; border-radius: 2px; }
+
+  /* Tab switch (B: wissel-tabs) */
+  .tab-switch { display: flex; border-bottom: 2px solid var(--color-border-light); margin-bottom: 8px; }
+  .tab-btn { font-family: var(--font-body); font-size: 11px; font-weight: 500; padding: 6px 14px; border: none; background: none; cursor: pointer; color: var(--color-text-secondary); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.15s; }
+  .tab-btn.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+  .tab-content { font-size: 12px; padding: 10px 12px; border: 1px solid var(--color-border-light); border-radius: 8px; background: white; line-height: 1.5; min-height: 40px; }
+  .tab-content ol, .tab-content ul { margin-left: 16px; }
+  .tab-content li { margin-bottom: 2px; }
+  .tab-content.hidden { display: none; }
+  .tab-empty { color: var(--color-text-secondary); font-style: italic; }
+
+  /* ── Tips ── */
+  .tips-top-group { background: #FFFDE7; border: 1px solid #FFF9C4; border-radius: 10px; padding: 12px; margin-bottom: 16px; }
+  .tips-top-group h4 { font-family: var(--font-heading); font-size: 12px; margin-bottom: 8px; color: #F9A825; }
+  .tip-item-top { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 6px; display: flex; gap: 6px; line-height: 1.4; }
+  .tip-item-top:last-child { margin-bottom: 0; }
+
+  .tip-callout { background: #FFFDE7; border: 1px solid #FFF9C4; border-radius: 8px; padding: 8px 10px; margin-top: 8px; font-size: 11px; color: var(--color-text-secondary); display: flex; gap: 6px; line-height: 1.4; }
+
+  .tip-icon-btn { background: none; border: none; cursor: pointer; font-size: 14px; padding: 0; line-height: 1; opacity: 0.5; transition: opacity 0.15s; }
+  .tip-icon-btn:hover { opacity: 1; }
+  .tip-inline-expanded { background: #FFFDE7; border: 1px solid #FFF9C4; border-radius: 6px; padding: 6px 10px; margin-top: 6px; font-size: 11px; color: var(--color-text-secondary); line-height: 1.4; }
+
+  .section-with-margin { display: grid; grid-template-columns: 1fr 110px; gap: 8px; align-items: start; }
+  .tip-margin { font-size: 10px; color: var(--color-text-secondary); padding: 6px 8px; background: #FFFDE7; border-left: 2px solid #F9A825; border-radius: 0 4px 4px 0; line-height: 1.4; align-self: start; }
+
+  /* ── Accordion (A) ── */
+  .accordion-section { border: 1px solid var(--color-border-light); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+  .accordion-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; background: white; transition: background 0.15s; user-select: none; }
+  .accordion-header:hover { background: var(--color-bg-cream); }
+  .accordion-chevron { font-size: 10px; color: var(--color-text-secondary); transition: transform 0.2s; width: 12px; }
+  .accordion-chevron.open { transform: rotate(90deg); }
+  .accordion-header h4 { font-family: var(--font-heading); font-size: 12px; flex: 1; margin: 0; }
+  .accordion-status { font-size: 10px; color: var(--color-primary); }
+  .accordion-body { padding: 0 14px 12px; display: none; }
+  .accordion-body.open { display: block; }
+
+  /* ── Sub-wizard (A: stap-voor-stap) ── */
+  .substep-progress { margin-bottom: 16px; }
+  .substep-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .substep-bar { height: 4px; background: var(--color-border-light); border-radius: 2px; overflow: hidden; }
+  .substep-fill { height: 100%; background: var(--color-primary); border-radius: 2px; transition: width 0.3s; }
+  .substep-nav { display: flex; gap: 8px; margin-top: 16px; justify-content: space-between; }
+
+  /* ── Two columns (A) ── */
+  .two-col-header { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; font-size: 10px; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+  .two-col-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .two-col-row h4 { grid-column: 1 / -1; font-family: var(--font-heading); font-size: 12px; margin-bottom: 2px; }
+  .col-user { font-size: 11px; padding: 8px 10px; border: 1px solid var(--color-border-light); border-radius: 8px; background: var(--color-bg-subtle); color: var(--color-text-secondary); line-height: 1.5; }
+  .col-user ol, .col-user ul { margin-left: 14px; }
+  .col-user li { margin-bottom: 2px; }
+  .col-ai { font-size: 11px; padding: 8px 10px; border: 2px dashed var(--color-primary-light); border-radius: 8px; background: #FEF8F4; line-height: 1.5; }
+  .col-ai ol, .col-ai ul { margin-left: 14px; }
+  .col-ai li { margin-bottom: 2px; }
+  .col-ai-header { font-size: 10px; font-weight: 600; color: var(--color-primary); margin-bottom: 3px; }
+  .col-empty { font-style: italic; color: #bbb; }
+
+  /* ── Tags ── */
+  .tag-group { margin-top: 8px; }
+  .tag-group-label { font-size: 11px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .tag-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .tag-chip { font-size: 11px; padding: 4px 10px; border-radius: 14px; border: 1px solid var(--color-border-light); background: white; color: var(--color-text-secondary); display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; }
+  .tag-chip.preselected { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+  .tag-chip.accepted { background: var(--color-success-light); color: var(--color-success); border-color: #A5D6A7; }
+  .tag-chip.rejected { opacity: 0.4; text-decoration: line-through; }
+  .tag-chip .tag-action { cursor: pointer; font-size: 13px; line-height: 1; margin-left: 2px; }
+  .tag-chip .tag-action:hover { transform: scale(1.2); }
+  .tag-confidence { font-size: 9px; opacity: 0.6; margin-left: 2px; }
+  .tag-recommended { font-size: 9px; background: #FFF3E0; color: #E65100; padding: 1px 6px; border-radius: 8px; font-weight: 600; }
+  .tag-category-nav { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+  .tag-show-more { font-size: 11px; color: var(--color-primary); cursor: pointer; border: none; background: none; font-family: var(--font-body); padding: 4px 0; }
+  .tag-show-more:hover { text-decoration: underline; }
+
+  /* ── Metadata in review ── */
+  .metadata-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .metadata-item { padding: 8px 10px; background: var(--color-bg-cream); border-radius: 8px; border: 1px dashed var(--color-primary-light); }
+  .metadata-item .meta-label { font-size: 10px; font-weight: 600; color: var(--color-text-secondary); margin-bottom: 2px; }
+  .metadata-item .meta-value { font-size: 12px; color: var(--color-text-primary); display: flex; align-items: center; gap: 4px; }
+
+  /* ── Prompt output ── */
+  .prompt-output { width: 500px; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .prompt-output h3 { font-family: var(--font-heading); font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .prompt-output .copy-btn { font-size: 11px; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--color-border-light); background: white; cursor: pointer; font-family: var(--font-body); color: var(--color-text-secondary); }
+  .prompt-output .copy-btn:hover { background: var(--color-bg-subtle); }
+  .prompt-text { font-size: 12px; line-height: 1.6; color: var(--color-text-secondary); white-space: pre-wrap; background: var(--color-bg-cream); padding: 12px; border-radius: 8px; border: 1px solid var(--color-border-light); max-height: 200px; overflow-y: auto; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div style="display:flex;align-items:baseline;">
+    <h1>Fiche Creation Flow</h1>
+    <span class="subtitle">UX Playground — Stap 3 Review</span>
+  </div>
+  <button class="btn" id="resetBtn">Reset alles</button>
+</div>
+
+<div class="layout">
+  <!-- ── Controls ── -->
+  <div class="controls" id="controls">
+
+    <div class="control-section">
+      <div class="control-label"><span class="letter">A</span><h3>Reviewstructuur</h3></div>
+      <div class="control-desc">Hoe worden suggesties gepresenteerd?</div>
+      <div class="pill-group" data-dim="structure">
+        <span class="pill active" data-val="alles-tegelijk">Alles tegelijk <span class="current-tag">(huidig)</span></span>
+        <span class="pill" data-val="accordion">Accordion</span>
+        <span class="pill" data-val="stap-voor-stap">Stap-voor-stap</span>
+        <span class="pill" data-val="twee-kolommen">Twee kolommen</span>
+      </div>
+    </div>
+
+    <div class="control-section">
+      <div class="control-label"><span class="letter">B</span><h3>Tekstsuggesties</h3></div>
+      <div class="control-desc">Hoe worden tekstwijzigingen getoond?</div>
+      <div class="pill-group" data-dim="text">
+        <span class="pill active" data-val="overschrijven">Overschrijven <span class="current-tag">(huidig)</span></span>
+        <span class="pill" data-val="suggestie-eronder">Suggestie eronder</span>
+        <span class="pill" data-val="inline-diff">Inline diff</span>
+        <span class="pill" data-val="wissel-tabs">Wissel-tabs</span>
+      </div>
+    </div>
+
+    <div class="control-section">
+      <div class="control-label"><span class="letter">C</span><h3>Tips</h3></div>
+      <div class="control-desc">Waar verschijnen tips?</div>
+      <div class="pill-group" data-dim="tips">
+        <span class="pill active" data-val="bovenaan">Bovenaan <span class="current-tag">(huidig)</span></span>
+        <span class="pill" data-val="bij-sectie">Bij de sectie</span>
+        <span class="pill" data-val="uitklapbaar">Uitklapbaar icoon</span>
+        <span class="pill" data-val="zijmarge">Zijmarge</span>
+      </div>
+    </div>
+
+    <div class="control-section">
+      <div class="control-label"><span class="letter">D</span><h3>Metadata</h3></div>
+      <div class="control-desc">Wanneer vult de gebruiker metadata in?</div>
+      <div class="pill-group" data-dim="metadata">
+        <span class="pill active" data-val="ai-review">AI in review <span class="current-tag">(huidig)</span></span>
+        <span class="pill" data-val="gebruiker-stap2">Gebruiker in stap 2</span>
+        <span class="pill" data-val="slim-vooringevuld">Slim vooringevuld</span>
+      </div>
+    </div>
+
+    <div class="control-section">
+      <div class="control-label"><span class="letter">E</span><h3>Tags &amp; doelen</h3></div>
+      <div class="control-desc">Hoe worden tag-suggesties aangeboden?</div>
+      <div class="pill-group" data-dim="tags">
+        <span class="pill active" data-val="alles-preselected">Alles pre-selected <span class="current-tag">(huidig)</span></span>
+        <span class="pill" data-val="accept-reject">Accept/reject chips</span>
+        <span class="pill" data-val="per-categorie">Per categorie</span>
+        <span class="pill" data-val="vertrouwen">Op vertrouwen</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Preview ── -->
+  <div class="preview-area">
+    <div class="device-frame" id="device">
+      <div class="wizard-header">
+        <h2>Nieuwe fiche</h2>
+        <div class="step-dots">
+          <div class="step-dot done" id="dot1" onclick="goToStep(1)"></div>
+          <span class="step-label">Upload</span>
+          <div class="step-connector"></div>
+          <div class="step-dot done" id="dot2" onclick="goToStep(2)"></div>
+          <span class="step-label">Details</span>
+          <div class="step-connector"></div>
+          <div class="step-dot active" id="dot3" onclick="goToStep(3)"></div>
+          <span class="step-label">Review</span>
+        </div>
+      </div>
+      <div class="wizard-content" id="wizardContent"></div>
+      <div class="wizard-footer" id="wizardFooter"></div>
+    </div>
+
+    <div class="prompt-output">
+      <h3>Implementatie-prompt <button class="copy-btn" id="copyPrompt">Kopieer</button></h3>
+      <div class="prompt-text" id="promptText"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+const userData = {
+  title: 'Quiz Gezonde Voeding',
+  description: 'Een quiz over gezonde voeding voor bewoners',
+};
+
+const aiData = {
+  title: 'Interactieve Quiz: Gezonde Voeding voor Senioren',
+  description: 'Stimuleer bewoners om op een speelse manier na te denken over gezonde voeding. Deze interactieve quiz combineert kennisoverdracht met gezelligheid en kan individueel of in groepsverband worden gespeeld.',
+  voorbereiding: 'Print de quizvragen uit op groot lettertype (minimaal 16pt). Bereid scoreborden voor en zet de ruimte op met tafels in een halve cirkel. Test eventuele digitale hulpmiddelen vooraf.',
+  werkwijze: [
+    'Verwelkom de deelnemers en leg de spelregels uit',
+    'Verdeel de groep in teams van 2-3 personen',
+    'Stel de vragen één voor één — geef 30 seconden bedenktijd',
+    'Bespreek na elk antwoord kort het thema',
+    'Houd de score bij en maak het gezellig',
+    'Sluit af met een korte samenvatting en uitreiking van prijsjes',
+  ],
+  benodigdheden: [
+    'Geprinte quizvragen (groot lettertype)',
+    'Pennen',
+    'Scoreborden of whiteboards',
+    'Eventueel tablet of beeldscherm',
+    'Kleine prijsjes',
+  ],
+  metadata: {
+    materiaal: 'Geprint, Digitaal',
+    duur: '30-45 minuten',
+    groepsgrootte: '4-12 personen',
+  },
+};
+
+const tips = [
+  { sectionId: 'titel', text: 'Een specifiekere titel helpt andere activiteitenbegeleiders je fiche sneller te vinden.' },
+  { sectionId: 'werkwijze', text: 'Voeg rustmomenten toe tussen de rondes voor bewoners die snel vermoeid raken.' },
+  { sectionId: 'benodigdheden', text: 'Overweeg een digitale versie als alternatief voor bewoners met beperkt zicht.' },
+];
+
+const tagData = {
+  themas: [
+    { name: 'gezondheid', confidence: 95 },
+    { name: 'voeding', confidence: 92 },
+    { name: 'quiz', confidence: 88 },
+    { name: 'groepsactiviteit', confidence: 75 },
+    { name: 'kennisoverdracht', confidence: 60 },
+  ],
+  doelen: [
+    { name: 'Inclusief', confidence: 85 },
+    { name: 'Mensgericht', confidence: 70 },
+    { name: 'Normalisatie', confidence: 55 },
+  ],
+};
+
+const diffs = {
+  title: '<span class="diff-add">Interactieve </span>Quiz<span class="diff-add">:</span> Gezonde Voeding<span class="diff-add"> voor Senioren</span>',
+  description: '<span class="diff-del">Een quiz over gezonde voeding voor bewoners</span> <span class="diff-add">Stimuleer bewoners om op een speelse manier na te denken over gezonde voeding. Deze interactieve quiz combineert kennisoverdracht met gezelligheid en kan individueel of in groepsverband worden gespeeld.</span>',
+};
+
+const sections = [
+  { id: 'titel', label: 'Titel', userValue: userData.title, aiValue: aiData.title, diffHtml: diffs.title, hasOriginal: true },
+  { id: 'beschrijving', label: 'Beschrijving', userValue: userData.description, aiValue: aiData.description, diffHtml: diffs.description, hasOriginal: true },
+  { id: 'voorbereiding', label: 'Voorbereiding', userValue: null, aiValueHtml: `<p>${aiData.voorbereiding}</p>`, aiValue: aiData.voorbereiding, hasOriginal: false },
+  { id: 'werkwijze', label: 'Werkwijze', userValue: null, aiValueHtml: '<ol>' + aiData.werkwijze.map(s => `<li>${s}</li>`).join('') + '</ol>', aiValue: aiData.werkwijze.join('\n'), hasOriginal: false },
+  { id: 'benodigdheden', label: 'Benodigdheden', userValue: null, aiValueHtml: '<ul>' + aiData.benodigdheden.map(s => `<li>${s}</li>`).join('') + '</ul>', aiValue: aiData.benodigdheden.join(', '), hasOriginal: false },
+];
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+const state = {
+  step: 3,
+  structure: 'alles-tegelijk',
+  text: 'overschrijven',
+  tips: 'bovenaan',
+  metadata: 'ai-review',
+  tags: 'alles-preselected',
+  // sub-states
+  openAccordion: 'titel',
+  subStep: 0,
+  tagCategory: 0,
+  expandedTips: {},
+  activeTabs: {},
+  acceptedTags: {},
+  rejectedTags: {},
+  showMoreTags: false,
+};
+
+function getTipForSection(sectionId) {
+  return tips.find(t => t.sectionId === sectionId) || null;
+}
+
+function getDisplayValue(section) {
+  return section.aiValueHtml || section.aiValue;
+}
+
+// ══════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════
+document.querySelectorAll('.pill-group').forEach(group => {
+  const dim = group.dataset.dim;
+  group.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      group.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      const oldVal = state[dim];
+      state[dim] = pill.dataset.val;
+      // Reset sub-states when dimension changes
+      if (dim === 'structure') { state.openAccordion = 'titel'; state.subStep = 0; }
+      if (dim === 'tags') { state.tagCategory = 0; state.acceptedTags = {}; state.rejectedTags = {}; state.showMoreTags = false; }
+      if (dim === 'text') { state.activeTabs = {}; }
+      if (dim === 'tips') { state.expandedTips = {}; }
+      render();
+    });
+  });
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  state.step = 3;
+  state.structure = 'alles-tegelijk';
+  state.text = 'overschrijven';
+  state.tips = 'bovenaan';
+  state.metadata = 'ai-review';
+  state.tags = 'alles-preselected';
+  state.openAccordion = 'titel';
+  state.subStep = 0;
+  state.tagCategory = 0;
+  state.expandedTips = {};
+  state.activeTabs = {};
+  state.acceptedTags = {};
+  state.rejectedTags = {};
+  state.showMoreTags = false;
+  // Reset pills
+  document.querySelectorAll('.pill-group').forEach(group => {
+    group.querySelectorAll('.pill').forEach((p, i) => {
+      p.classList.toggle('active', i === 0);
+    });
+  });
+  render();
+});
+
+document.getElementById('copyPrompt').addEventListener('click', () => {
+  const text = document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyPrompt');
+    btn.textContent = 'Gekopieerd!';
+    setTimeout(() => { btn.textContent = 'Kopieer'; }, 1500);
+  });
+});
+
+// ══════════════════════════════════════
+// STEP NAVIGATION
+// ══════════════════════════════════════
+function goToStep(n) {
+  state.step = n;
+  render();
+}
+
+function renderStepDots() {
+  [1, 2, 3].forEach(i => {
+    const dot = document.getElementById('dot' + i);
+    dot.classList.remove('active', 'done');
+    if (i < state.step) dot.classList.add('done');
+    if (i === state.step) dot.classList.add('active');
+  });
+}
+
+// ══════════════════════════════════════
+// RENDERING
+// ══════════════════════════════════════
+function render() {
+  renderStepDots();
+  const content = document.getElementById('wizardContent');
+  const footer = document.getElementById('wizardFooter');
+
+  if (state.step === 1) {
+    content.innerHTML = renderStep1();
+    footer.innerHTML = '<button class="btn btn-primary" onclick="goToStep(2)">Volgende</button>';
+  } else if (state.step === 2) {
+    content.innerHTML = renderStep2();
+    footer.innerHTML = '<button class="btn" onclick="goToStep(1)">Vorige</button><button class="btn btn-primary" onclick="goToStep(3)">Volgende</button>';
+  } else {
+    content.innerHTML = renderStep3();
+    if (state.structure === 'stap-voor-stap') {
+      footer.innerHTML = ''; // nav is inside the content
+    } else {
+      footer.innerHTML = '<button class="btn" onclick="goToStep(2)">Vorige</button><button class="btn">Concept opslaan</button><button class="btn btn-primary">Publiceren</button>';
+    }
+  }
+  updatePrompt();
+}
+
+// ── Step 1 ──
+function renderStep1() {
+  return `
+    <div class="upload-done">
+      <div class="file-icon">&#128196;</div>
+      <div class="file-info">
+        <div class="file-name">kerstactiviteit-knutselen.pdf</div>
+        <div class="file-status">&#10003; Geüpload en geanalyseerd</div>
+      </div>
+    </div>
+    <div class="processing-done">
+      <div class="proc-step">&#10003; Bestand geüpload</div>
+      <div class="proc-step">&#10003; Preview gegenereerd</div>
+      <div class="proc-step">&#10003; Inhoud geanalyseerd</div>
+    </div>`;
+}
+
+// ── Step 2 ──
+function renderStep2() {
+  let metaFields = '';
+  if (state.metadata === 'gebruiker-stap2') {
+    metaFields = `
+      <div class="form-row" style="margin-top: 4px;">
+        <div class="form-group"><label>Materiaal</label><input class="form-input" placeholder="bv. Geprint, Digitaal" disabled></div>
+        <div class="form-group"><label>Duur</label><input class="form-input" placeholder="bv. 30 min" disabled></div>
+        <div class="form-group"><label>Groepsgrootte</label><input class="form-input" placeholder="bv. 4-8" disabled></div>
+      </div>`;
+  } else if (state.metadata === 'slim-vooringevuld') {
+    metaFields = `
+      <div class="form-row" style="margin-top: 4px;">
+        <div class="form-group">
+          <label>Materiaal <span class="prefilled-badge">&#10024; vooringevuld</span></label>
+          <input class="form-input prefilled-field" value="${aiData.metadata.materiaal}" disabled>
+        </div>
+        <div class="form-group">
+          <label>Duur <span class="prefilled-badge">&#10024; vooringevuld</span></label>
+          <input class="form-input prefilled-field" value="${aiData.metadata.duur}" disabled>
+        </div>
+        <div class="form-group">
+          <label>Groepsgrootte <span class="prefilled-badge">&#10024; vooringevuld</span></label>
+          <input class="form-input prefilled-field" value="${aiData.metadata.groepsgrootte}" disabled>
+        </div>
+      </div>`;
+  }
+
+  return `
+    <div class="form-group">
+      <label>Titel</label>
+      <input class="form-input" value="${userData.title}" disabled>
+    </div>
+    <div class="form-group">
+      <label>Beschrijving</label>
+      <textarea class="form-input" disabled>${userData.description}</textarea>
+    </div>
+    ${metaFields}`;
+}
+
+// ── Step 3 ──
+function renderStep3() {
+  let html = '';
+
+  // Tips at top (C: bovenaan)
+  if (state.tips === 'bovenaan') {
+    html += `<div class="tips-top-group">
+      <h4>&#128161; Tips voor je fiche</h4>
+      ${tips.map(t => `<div class="tip-item-top">&#128161; ${t.text}</div>`).join('')}
+    </div>`;
+  }
+
+  // Build sections based on structure (A)
+  const activeSections = [...sections];
+  if (state.metadata === 'ai-review') {
+    activeSections.push({ id: 'metadata', label: 'Praktische info', special: 'metadata' });
+  }
+  activeSections.push({ id: 'tags', label: 'Tags & Doelen', special: 'tags' });
+
+  if (state.structure === 'alles-tegelijk') {
+    html += activeSections.map(s => renderSectionBlock(s)).join('');
+  } else if (state.structure === 'accordion') {
+    html += activeSections.map(s => renderAccordionSection(s)).join('');
+  } else if (state.structure === 'stap-voor-stap') {
+    html += renderSubWizard(activeSections);
+  } else if (state.structure === 'twee-kolommen') {
+    html += renderTwoColumns(activeSections);
+  }
+
+  return html;
+}
+
+// ── Section block (alles-tegelijk) ──
+function renderSectionBlock(section) {
+  if (section.special === 'metadata') return renderMetadataBlock();
+  if (section.special === 'tags') return renderTagsBlock();
+
+  const tip = getTipForSection(section.id);
+  const hasTip = tip && state.tips !== 'bovenaan';
+  const useMargin = hasTip && state.tips === 'zijmarge';
+
+  let inner = '';
+
+  // Header
+  let headerExtra = '';
+  if (hasTip && state.tips === 'uitklapbaar') {
+    headerExtra = `<button class="tip-icon-btn" onclick="toggleTip('${section.id}')" title="Tip bekijken">&#128161;</button>`;
+  }
+  inner += `<div class="review-section"><h4>${section.label} ${section.hasOriginal ? '' : '<span style="font-size:10px;color:var(--color-primary)">&#10024; Nieuw</span>'} ${headerExtra}</h4>`;
+
+  // Expandable tip
+  if (hasTip && state.tips === 'uitklapbaar' && state.expandedTips[section.id]) {
+    inner += `<div class="tip-inline-expanded">&#128161; ${tip.text}</div>`;
+  }
+
+  // Content
+  inner += renderSectionContent(section);
+
+  // Tip below section
+  if (hasTip && state.tips === 'bij-sectie') {
+    inner += `<div class="tip-callout">&#128161; ${tip.text}</div>`;
+  }
+
+  inner += '</div>';
+
+  // Margin layout
+  if (useMargin) {
+    return `<div class="section-with-margin"><div>${inner}</div><div class="tip-margin">&#128161; ${tip.text}</div></div>`;
+  }
+  return inner;
+}
+
+// ── Section content based on text suggestion mode (B) ──
+function renderSectionContent(section) {
+  const b = state.text;
+  const displayVal = getDisplayValue(section);
+
+  if (b === 'overschrijven') {
+    return `<div class="overwrite-value">${displayVal}</div>`;
+  }
+
+  if (b === 'suggestie-eronder') {
+    let html = '';
+    if (section.hasOriginal) {
+      html += `<div class="user-original-label">Jouw tekst</div>
+        <div class="user-original">${section.userValue}</div>`;
+    }
+    html += `<div class="ai-suggestion">
+      <div class="ai-suggestion-header">&#10024; ${section.hasOriginal ? 'Suggestie' : 'Nieuwe suggestie'}</div>
+      ${displayVal}
+      <div class="section-actions">
+        <button class="btn btn-sm btn-success">${section.hasOriginal ? 'Gebruik dit' : 'Toevoegen'}</button>
+        <button class="btn btn-sm btn-outline-danger">Negeer</button>
+      </div>
+    </div>`;
+    return html;
+  }
+
+  if (b === 'inline-diff') {
+    if (section.hasOriginal && section.diffHtml) {
+      return `<div class="diff-view">${section.diffHtml}</div>
+        <div class="section-actions">
+          <button class="btn btn-sm btn-success">Accepteer wijzigingen</button>
+          <button class="btn btn-sm btn-outline-danger">Behoud origineel</button>
+        </div>`;
+    }
+    return `<div class="ai-suggestion">
+      <div class="ai-suggestion-header">&#10024; Nieuwe suggestie</div>
+      ${displayVal}
+      <div class="section-actions">
+        <button class="btn btn-sm btn-success">Toevoegen</button>
+        <button class="btn btn-sm btn-outline-danger">Negeer</button>
+      </div>
+    </div>`;
+  }
+
+  if (b === 'wissel-tabs') {
+    const activeTab = state.activeTabs[section.id] || 'user';
+    return `<div class="tab-switch">
+      <button class="tab-btn ${activeTab === 'user' ? 'active' : ''}" onclick="switchTab('${section.id}','user')">Jouw versie</button>
+      <button class="tab-btn ${activeTab === 'ai' ? 'active' : ''}" onclick="switchTab('${section.id}','ai')">Suggestie</button>
+    </div>
+    <div class="tab-content ${activeTab !== 'user' ? 'hidden' : ''}">
+      ${section.hasOriginal ? section.userValue : '<span class="tab-empty">Niet ingevuld</span>'}
+    </div>
+    <div class="tab-content ${activeTab !== 'ai' ? 'hidden' : ''}">${displayVal}</div>
+    <div class="section-actions">
+      <button class="btn btn-sm btn-success">Gebruik suggestie</button>
+    </div>`;
+  }
+
+  return `<div class="overwrite-value">${displayVal}</div>`;
+}
+
+// ── Accordion ──
+function renderAccordionSection(section) {
+  const isOpen = state.openAccordion === section.id;
+  let bodyContent = '';
+
+  if (section.special === 'metadata') {
+    bodyContent = renderMetadataInner();
+  } else if (section.special === 'tags') {
+    bodyContent = renderTagsInner();
+  } else {
+    const tip = getTipForSection(section.id);
+    const hasTip = tip && state.tips !== 'bovenaan';
+
+    bodyContent = renderSectionContent(section);
+
+    if (hasTip) {
+      if (state.tips === 'bij-sectie') {
+        bodyContent += `<div class="tip-callout">&#128161; ${tip.text}</div>`;
+      } else if (state.tips === 'uitklapbaar') {
+        bodyContent = `<div style="margin-bottom:6px"><button class="tip-icon-btn" onclick="toggleTip('${section.id}')">&#128161; Tip bekijken</button></div>
+          ${state.expandedTips[section.id] ? `<div class="tip-inline-expanded" style="margin-bottom:8px">&#128161; ${tip.text}</div>` : ''}
+          ${bodyContent}`;
+      } else if (state.tips === 'zijmarge') {
+        bodyContent = `<div class="section-with-margin"><div>${bodyContent}</div><div class="tip-margin">&#128161; ${tip.text}</div></div>`;
+      }
+    }
+
+    bodyContent += `<div class="section-actions" style="margin-top:10px">
+      <button class="btn btn-sm btn-success">Accepteer</button>
+      <button class="btn btn-sm">Sla over</button>
+    </div>`;
+  }
+
+  const statusLabel = section.hasOriginal ? '&#10024; Wijziging' : (section.special ? '' : '&#10024; Nieuw');
+
+  return `<div class="accordion-section">
+    <div class="accordion-header" onclick="toggleAccordion('${section.id}')">
+      <span class="accordion-chevron ${isOpen ? 'open' : ''}">&#9654;</span>
+      <h4>${section.label}</h4>
+      <span class="accordion-status">${statusLabel}</span>
+    </div>
+    <div class="accordion-body ${isOpen ? 'open' : ''}">${bodyContent}</div>
+  </div>`;
+}
+
+// ── Sub-wizard (stap-voor-stap) ──
+function renderSubWizard(allSections) {
+  const total = allSections.length;
+  const current = Math.min(state.subStep, total - 1);
+  const section = allSections[current];
+  const pct = ((current + 1) / total * 100).toFixed(0);
+
+  let bodyContent = '';
+  if (section.special === 'metadata') {
+    bodyContent = `<h4 style="font-family:var(--font-heading);font-size:13px;margin-bottom:8px">${section.label}</h4>` + renderMetadataInner();
+  } else if (section.special === 'tags') {
+    bodyContent = `<h4 style="font-family:var(--font-heading);font-size:13px;margin-bottom:8px">${section.label}</h4>` + renderTagsInner();
+  } else {
+    const tip = getTipForSection(section.id);
+    const hasTip = tip && state.tips !== 'bovenaan';
+
+    let headerExtra = '';
+    if (hasTip && state.tips === 'uitklapbaar') {
+      headerExtra = `<button class="tip-icon-btn" onclick="toggleTip('${section.id}')" title="Tip">&#128161;</button>`;
+    }
+
+    bodyContent = `<h4 style="font-family:var(--font-heading);font-size:13px;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+      ${section.label} ${section.hasOriginal ? '' : '<span style="font-size:10px;color:var(--color-primary)">&#10024; Nieuw</span>'} ${headerExtra}
+    </h4>`;
+
+    if (hasTip && state.tips === 'uitklapbaar' && state.expandedTips[section.id]) {
+      bodyContent += `<div class="tip-inline-expanded" style="margin-bottom:8px">&#128161; ${tip.text}</div>`;
+    }
+
+    const sectionHtml = renderSectionContent(section);
+
+    if (hasTip && state.tips === 'zijmarge') {
+      bodyContent += `<div class="section-with-margin"><div>${sectionHtml}</div><div class="tip-margin">&#128161; ${tip.text}</div></div>`;
+    } else {
+      bodyContent += sectionHtml;
+    }
+
+    if (hasTip && state.tips === 'bij-sectie') {
+      bodyContent += `<div class="tip-callout">&#128161; ${tip.text}</div>`;
+    }
+  }
+
+  // Tips at top only for first sub-step
+  let tipsAtTop = '';
+  if (state.tips === 'bovenaan' && current === 0) {
+    tipsAtTop = `<div class="tips-top-group" style="margin-bottom:12px">
+      <h4>&#128161; Tips voor je fiche</h4>
+      ${tips.map(t => `<div class="tip-item-top">&#128161; ${t.text}</div>`).join('')}
+    </div>`;
+  }
+
+  return `
+    ${tipsAtTop}
+    <div class="substep-progress">
+      <div class="substep-label">${current + 1} van ${total} beoordeeld</div>
+      <div class="substep-bar"><div class="substep-fill" style="width:${pct}%"></div></div>
+    </div>
+    ${bodyContent}
+    <div class="substep-nav">
+      <button class="btn btn-sm" ${current === 0 ? 'disabled style="opacity:0.4"' : ''} onclick="subStepNav(-1)">&#9664; Vorige</button>
+      ${current === total - 1
+        ? '<button class="btn btn-sm btn-primary" onclick="goToStep(2)">Publiceren</button>'
+        : '<button class="btn btn-sm btn-primary" onclick="subStepNav(1)">Volgende &#9654;</button>'
+      }
+    </div>`;
+}
+
+// ── Two columns ──
+function renderTwoColumns(allSections) {
+  let html = '';
+
+  // Tips at top
+  if (state.tips === 'bovenaan') {
+    // Already rendered above in renderStep3
+  }
+
+  html += `<div class="two-col-header"><div>Jouw versie</div><div>&#10024; AI-suggestie</div></div>`;
+
+  for (const section of allSections) {
+    if (section.special === 'metadata') {
+      html += `<div class="review-section"><h4>${section.label}</h4>${renderMetadataInner()}</div>`;
+      continue;
+    }
+    if (section.special === 'tags') {
+      html += `<div class="review-section"><h4>${section.label}</h4>${renderTagsInner()}</div>`;
+      continue;
+    }
+
+    const tip = getTipForSection(section.id);
+    const hasTip = tip && state.tips !== 'bovenaan';
+    const displayVal = getDisplayValue(section);
+
+    html += `<div class="two-col-row">
+      <h4>${section.label} ${section.hasOriginal ? '' : '<span style="font-size:10px;color:var(--color-primary)">&#10024; Nieuw</span>'}
+        ${hasTip && state.tips === 'uitklapbaar' ? `<button class="tip-icon-btn" onclick="toggleTip('${section.id}')">&#128161;</button>` : ''}
+      </h4>`;
+
+    if (hasTip && state.tips === 'uitklapbaar' && state.expandedTips[section.id]) {
+      html += `<div class="tip-inline-expanded" style="grid-column:1/-1;margin-bottom:4px">&#128161; ${tip.text}</div>`;
+    }
+
+    html += `<div class="col-user">${section.hasOriginal ? section.userValue : '<span class="col-empty">Niet ingevuld</span>'}</div>
+      <div class="col-ai">
+        <div class="col-ai-header">&#10024; Suggestie</div>
+        ${displayVal}
+        <div class="section-actions" style="margin-top:6px">
+          <button class="btn btn-sm btn-success">&#10003;</button>
+          <button class="btn btn-sm btn-outline-danger">&#10005;</button>
+        </div>
+      </div>`;
+
+    if (hasTip && state.tips === 'bij-sectie') {
+      html += `<div class="tip-callout" style="grid-column:1/-1">&#128161; ${tip.text}</div>`;
+    }
+    if (hasTip && state.tips === 'zijmarge') {
+      html += `<div class="tip-margin" style="grid-column:1/-1">&#128161; ${tip.text}</div>`;
+    }
+
+    html += '</div>';
+  }
+
+  return html;
+}
+
+// ── Metadata block ──
+function renderMetadataBlock() {
+  return `<div class="review-section"><h4>Praktische info <span style="font-size:10px;color:var(--color-primary)">&#10024; AI-gegenereerd</span></h4>${renderMetadataInner()}</div>`;
+}
+
+function renderMetadataInner() {
+  return `<div class="metadata-grid">
+    <div class="metadata-item">
+      <div class="meta-label">Materiaal</div>
+      <div class="meta-value">&#10024; ${aiData.metadata.materiaal}</div>
+    </div>
+    <div class="metadata-item">
+      <div class="meta-label">Duur</div>
+      <div class="meta-value">&#10024; ${aiData.metadata.duur}</div>
+    </div>
+    <div class="metadata-item">
+      <div class="meta-label">Groepsgrootte</div>
+      <div class="meta-value">&#10024; ${aiData.metadata.groepsgrootte}</div>
+    </div>
+  </div>
+  <div class="section-actions"><button class="btn btn-sm">Bewerken</button></div>`;
+}
+
+// ── Tags block ──
+function renderTagsBlock() {
+  return `<div class="review-section"><h4>Tags &amp; Doelen</h4>${renderTagsInner()}</div>`;
+}
+
+function renderTagsInner() {
+  const e = state.tags;
+  const allTags = [...tagData.themas.map(t => ({...t, cat: 'Thema'})), ...tagData.doelen.map(t => ({...t, cat: 'DIAMANT-doel'}))];
+
+  if (e === 'alles-preselected') {
+    return `<div class="tag-group">
+      <div class="tag-group-label">Thema's</div>
+      <div class="tag-chips">${tagData.themas.map(t => `<span class="tag-chip preselected">${t.name}</span>`).join('')}</div>
+    </div>
+    <div class="tag-group">
+      <div class="tag-group-label">DIAMANT-doelen</div>
+      <div class="tag-chips">${tagData.doelen.map(t => `<span class="tag-chip preselected">${t.name}</span>`).join('')}</div>
+    </div>`;
+  }
+
+  if (e === 'accept-reject') {
+    const renderChip = (t) => {
+      const key = t.name;
+      const acc = state.acceptedTags[key];
+      const rej = state.rejectedTags[key];
+      const cls = acc ? 'accepted' : rej ? 'rejected' : '';
+      return `<span class="tag-chip ${cls}">${t.name}
+        ${!acc && !rej ? `<span class="tag-action" onclick="acceptTag('${key}')" title="Accepteer">&#10003;</span><span class="tag-action" onclick="rejectTag('${key}')" title="Afwijzen">&#10005;</span>` : ''}
+        ${acc ? '<span style="color:var(--color-success);font-size:10px">&#10003;</span>' : ''}
+      </span>`;
+    };
+    return `<div class="tag-group">
+      <div class="tag-group-label">Thema's</div>
+      <div class="tag-chips">${tagData.themas.map(renderChip).join('')}</div>
+    </div>
+    <div class="tag-group">
+      <div class="tag-group-label">DIAMANT-doelen</div>
+      <div class="tag-chips">${tagData.doelen.map(renderChip).join('')}</div>
+    </div>`;
+  }
+
+  if (e === 'per-categorie') {
+    const cats = [
+      { label: "Thema's", items: tagData.themas },
+      { label: 'DIAMANT-doelen', items: tagData.doelen },
+    ];
+    const cat = cats[state.tagCategory] || cats[0];
+    const renderChip = (t) => {
+      const key = t.name;
+      const acc = state.acceptedTags[key];
+      const rej = state.rejectedTags[key];
+      const cls = acc ? 'accepted' : rej ? 'rejected' : '';
+      return `<span class="tag-chip ${cls}">${t.name}
+        ${!acc && !rej ? `<span class="tag-action" onclick="acceptTag('${key}')">&#10003;</span><span class="tag-action" onclick="rejectTag('${key}')">&#10005;</span>` : ''}
+      </span>`;
+    };
+
+    return `<div class="tag-group">
+      <div class="substep-label" style="margin-bottom:6px">Categorie ${state.tagCategory + 1} van ${cats.length}</div>
+      <div class="tag-group-label">${cat.label}</div>
+      <div class="tag-chips">${cat.items.map(renderChip).join('')}</div>
+      <div class="tag-category-nav">
+        <button class="btn btn-sm" ${state.tagCategory === 0 ? 'disabled style="opacity:0.4"' : ''} onclick="tagCatNav(-1)">&#9664; Vorige</button>
+        ${state.tagCategory < cats.length - 1
+          ? '<button class="btn btn-sm btn-primary" onclick="tagCatNav(1)">Volgende categorie &#9654;</button>'
+          : '<span style="font-size:11px;color:var(--color-success)">&#10003; Alle categorieën beoordeeld</span>'
+        }
+      </div>
+    </div>`;
+  }
+
+  if (e === 'vertrouwen') {
+    const sorted = [...allTags].sort((a, b) => b.confidence - a.confidence);
+    const top = sorted.slice(0, 3);
+    const rest = sorted.slice(3);
+
+    let html = `<div class="tag-group">
+      <div class="tag-group-label">Sterk aanbevolen</div>
+      <div class="tag-chips">${top.map(t => `<span class="tag-chip">${t.name} <span class="tag-confidence">${t.confidence}%</span> <span class="tag-recommended">Aanbevolen</span></span>`).join('')}</div>
+    </div>`;
+
+    if (state.showMoreTags) {
+      html += `<div class="tag-group">
+        <div class="tag-group-label">Meer suggesties</div>
+        <div class="tag-chips">${rest.map(t => `<span class="tag-chip">${t.name} <span class="tag-confidence">${t.confidence}%</span></span>`).join('')}</div>
+      </div>`;
+    } else {
+      html += `<button class="tag-show-more" onclick="showMoreTags()">&#9660; Meer suggesties tonen (${rest.length})</button>`;
+    }
+    return html;
+  }
+
+  return '';
+}
+
+// ══════════════════════════════════════
+// INTERACTIVE HANDLERS
+// ══════════════════════════════════════
+function toggleAccordion(id) {
+  state.openAccordion = state.openAccordion === id ? null : id;
+  render();
+}
+
+function subStepNav(dir) {
+  state.subStep = Math.max(0, state.subStep + dir);
+  render();
+}
+
+function toggleTip(sectionId) {
+  state.expandedTips[sectionId] = !state.expandedTips[sectionId];
+  render();
+}
+
+function switchTab(sectionId, tab) {
+  state.activeTabs[sectionId] = tab;
+  render();
+}
+
+function acceptTag(name) {
+  delete state.rejectedTags[name];
+  state.acceptedTags[name] = true;
+  render();
+}
+
+function rejectTag(name) {
+  delete state.acceptedTags[name];
+  state.rejectedTags[name] = true;
+  render();
+}
+
+function tagCatNav(dir) {
+  state.tagCategory = Math.max(0, state.tagCategory + dir);
+  render();
+}
+
+function showMoreTags() {
+  state.showMoreTags = true;
+  render();
+}
+
+// ══════════════════════════════════════
+// PROMPT GENERATION
+// ══════════════════════════════════════
+function updatePrompt() {
+  const structureMap = {
+    'alles-tegelijk': 'toon alle suggesties op één scrollbare pagina',
+    'accordion': 'toon suggesties sectie-voor-sectie in een accordion (één sectie tegelijk open)',
+    'stap-voor-stap': 'toon suggesties stap-voor-stap in een mini-wizard met voortgangsbalk',
+    'twee-kolommen': "toon de gebruikerstekst links en AI-suggesties rechts in twee kolommen",
+  };
+  const textMap = {
+    'overschrijven': 'overschrijf de gebruikerstekst met de AI-suggestie',
+    'suggestie-eronder': "toon de suggestie in een kaart onder het origineel van de gebruiker met 'Gebruik dit' / 'Negeer' knoppen — overschrijf nooit de gebruikerstekst",
+    'inline-diff': 'toon wijzigingen inline met doorgestreepte verwijderingen (rood) en groene toevoegingen',
+    'wissel-tabs': "laat de gebruiker wisselen tussen 'Jouw versie' en 'Suggestie' tabs boven het tekstveld",
+  };
+  const tipsMap = {
+    'bovenaan': 'groepeer alle tips bovenaan de reviewpagina',
+    'bij-sectie': 'plaats tips als callout-kaarten direct onder hun relevante sectie',
+    'uitklapbaar': 'toon tips als uitklapbare lampje-iconen bij de sectie-headers',
+    'zijmarge': 'toon tips in de rechter zijmarge als annotaties bij hun sectie',
+  };
+  const metaMap = {
+    'ai-review': 'laat de AI metadata genereren in de review-stap met een sparkle-icoon',
+    'gebruiker-stap2': 'laat de gebruiker metadata (materiaal, duur, groepsgrootte) zelf invullen in stap 2',
+    'slim-vooringevuld': 'toon slim vooringevulde metadata in stap 2 (AI-waarden met stippellijn) die de gebruiker bevestigt of aanpast',
+  };
+  const tagsMap = {
+    'alles-preselected': 'selecteer alle voorgestelde tags automatisch (gebruiker moet verkeerde deselecteren)',
+    'accept-reject': 'toon tags als neutrale chips met individueel accepteren/afwijzen per tag',
+    'per-categorie': "toon tag-categorieën één voor één (eerst thema's, dan doelen) met een 'Volgende categorie' knop",
+    'vertrouwen': "sorteer tags op betrouwbaarheid — toon top 3 prominent met 'Sterk aanbevolen' label, rest achter 'Meer suggesties'",
+  };
+
+  const prompt = `In de review-stap, ${structureMap[state.structure]}. Voor tekstvelden, ${textMap[state.text]}. ${tipsMap[state.tips].charAt(0).toUpperCase() + tipsMap[state.tips].slice(1)}. Metadata: ${metaMap[state.metadata]}. Tags: ${tagsMap[state.tags]}.`;
+
+  document.getElementById('promptText').textContent = prompt;
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+render();
+</script>
+
+</body>
+</html>

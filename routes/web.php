@@ -4,6 +4,8 @@ use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\ContributorController;
+use App\Http\Controllers\DesignSystemController;
+use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\FicheController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\HomeController;
@@ -12,6 +14,7 @@ use App\Http\Controllers\ProfileController as HvProfileController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\ToolsInspirationController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
 // Home
 Route::get('/', HomeController::class)->name('home');
@@ -22,6 +25,7 @@ Route::get('/initiatieven/{initiative:slug}', [InitiativeController::class, 'sho
 
 // Fiches (nested under initiative)
 Route::get('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'show'])->name('fiches.show');
+Route::get('/initiatieven/{initiative:slug}/{fiche:slug}/download', [FicheController::class, 'downloadFiles'])->name('fiches.download');
 
 // Themes (placeholder)
 Route::get('/themas', [ThemeController::class, 'index'])->name('themes.index');
@@ -42,8 +46,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/fiches/{fiche}/comment', [CommentController::class, 'store'])->name('fiches.comment');
     Route::post('/initiatieven/{initiative:slug}/comment', [CommentController::class, 'storeForInitiative'])->name('initiatives.comment');
 
+    // Fiche creation & editing
+    Route::get('/uitwerkingen/nieuw', [FicheController::class, 'create'])->name('fiches.create');
+    Route::get('/uitwerkingen/{fiche:slug}/bewerken', [FicheController::class, 'edit'])->name('fiches.edit');
+
     // Admin actions
     Route::middleware('admin')->group(function () {
+        Route::get('/admin/design-systeem', [DesignSystemController::class, 'index'])->name('admin.design-system');
+        Route::get('/admin/features', [FeatureController::class, 'index'])->name('admin.features');
+        Route::post('/admin/features/{feature}/toggle', [FeatureController::class, 'toggle'])->name('admin.features.toggle');
         Route::delete('/initiatieven/{initiative:slug}', [InitiativeController::class, 'destroy'])->name('initiatives.destroy');
         Route::post('/initiatieven/{initiative:slug}/{fiche:slug}/diamant', [FicheController::class, 'toggleDiamond'])->name('fiches.toggleDiamond');
         Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'destroy'])->name('fiches.destroy');
@@ -59,8 +70,10 @@ Route::get('/workshops/{uid}', [ToolsInspirationController::class, 'showWorkshop
 Route::get('/roadmap-verandertraject-wonen-en-leven', [ContentController::class, 'roadmap'])->name('content.roadmap');
 
 // Goals (DIAMANT model)
-Route::get('/doelen', [GoalController::class, 'index'])->name('goals.index');
-Route::get('/doelen/{facetSlug}', [GoalController::class, 'show'])->name('goals.show');
+Route::middleware(EnsureFeaturesAreActive::using('diamant-goals'))->group(function () {
+    Route::get('/doelen', [GoalController::class, 'index'])->name('goals.index');
+    Route::get('/doelen/{facetSlug}', [GoalController::class, 'show'])->name('goals.show');
+});
 
 // Generic content (lessenreeks, wonen-en-leven)
 Route::get('/{slug}', [ContentController::class, 'content'])

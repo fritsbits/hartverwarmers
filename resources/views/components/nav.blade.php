@@ -19,6 +19,7 @@
                         Alle initiatieven
                     </a>
 
+                    @feature('diamant-goals')
                     <div x-data="{ open: false, timeout: null }" @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 150)" class="relative">
                         <button @click="open = !open" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] rounded-lg hover:bg-[var(--color-bg-accent-light)] transition-colors whitespace-nowrap">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -53,6 +54,7 @@
                             </div>
                         </div>
                     </div>
+                    @endfeature
 
                     <div x-data="{ open: false, timeout: null }" @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 150)" class="relative">
                         <button @click="open = !open" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] rounded-lg hover:bg-[var(--color-bg-accent-light)] transition-colors whitespace-nowrap">
@@ -127,6 +129,10 @@
                 </flux:modal.trigger>
 
                 @auth
+                    <flux:button variant="primary" size="sm" icon="plus" href="{{ route('fiches.create') }}" class="hidden sm:inline-flex">
+                        Nieuwe fiche
+                    </flux:button>
+
                     <flux:dropdown>
                         <flux:button variant="ghost" icon-trailing="chevron-down">
                             <div class="flex items-center gap-2">
@@ -144,7 +150,16 @@
                         <flux:menu>
                             <flux:menu.item href="{{ route('profile.show') }}" icon="user">Mijn profiel</flux:menu.item>
                             <flux:menu.item href="{{ route('profile.bookmarks') }}" icon="bookmark">Mijn favorieten</flux:menu.item>
-                            <flux:separator />
+                            @if(auth()->user()->isAdmin())
+                                <flux:menu.separator />
+                                <div class="px-2 py-1.5">
+                                    <flux:text size="sm" class="pl-5 font-medium">Admin</flux:text>
+                                </div>
+                                <flux:menu.item href="{{ route('admin.design-system') }}" icon="swatch">Design Systeem</flux:menu.item>
+                                <flux:menu.item href="{{ route('admin.features') }}" icon="flag">Features</flux:menu.item>
+                                <flux:menu.item href="{{ route('pulse') }}" icon="chart-bar">Pulse</flux:menu.item>
+                            @endif
+                            <flux:menu.separator />
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <flux:menu.item type="submit" icon="arrow-right-start-on-rectangle">Uitloggen</flux:menu.item>
@@ -182,6 +197,7 @@
                 </svg>
                 Alle initiatieven
             </a>
+            @feature('diamant-goals')
             <div x-data="{ open: false }" class="border-t border-[var(--color-border-light)] mt-2 pt-2">
                 <button @click="open = !open" class="flex items-center justify-between w-full px-3 py-2 rounded-lg text-base font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)]">
                     <span class="flex items-center gap-2">
@@ -204,6 +220,7 @@
                     <a href="{{ route('goals.index') }}" class="block px-3 py-2 cta-link text-sm">Alle doelstellingen bekijken</a>
                 </div>
             </div>
+            @endfeature
             <div x-data="{ open: false }" class="border-t border-[var(--color-border-light)] mt-2 pt-2">
                 <button @click="open = !open" class="flex items-center justify-between w-full px-3 py-2 rounded-lg text-base font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-bg-accent-light)]">
                     <span class="flex items-center gap-2">

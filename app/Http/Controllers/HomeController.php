@@ -7,6 +7,7 @@ use App\Models\Initiative;
 use App\Models\User;
 use App\Services\DiamantService;
 use Illuminate\View\View;
+use Laravel\Pennant\Feature;
 
 class HomeController extends Controller
 {
@@ -34,19 +35,25 @@ class HomeController extends Controller
             'initiatives' => Initiative::where('published', true)->count(),
         ];
 
-        $facets = $diamantService->all();
-        $firstFacetSlug = array_key_first($facets);
-        $firstFacet = $facets[$firstFacetSlug];
-
-        // Count initiatives per goal
+        $facets = [];
+        $firstFacetSlug = null;
+        $firstFacet = null;
         $goalInitiativeCounts = [];
-        foreach ($facets as $slug => $facet) {
-            $goalInitiativeCounts[$slug] = Initiative::query()
-                ->where('published', true)
-                ->whereHas('tags', function ($q) use ($slug) {
-                    $q->where('slug', 'doel-'.$slug);
-                })
-                ->count();
+
+        if (Feature::active('diamant-goals')) {
+            $facets = $diamantService->all();
+            $firstFacetSlug = array_key_first($facets);
+            $firstFacet = $facets[$firstFacetSlug];
+
+            // Count initiatives per goal
+            foreach ($facets as $slug => $facet) {
+                $goalInitiativeCounts[$slug] = Initiative::query()
+                    ->where('published', true)
+                    ->whereHas('tags', function ($q) use ($slug) {
+                        $q->where('slug', 'doel-'.$slug);
+                    })
+                    ->count();
+            }
         }
 
         return view('home', [

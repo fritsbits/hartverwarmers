@@ -18,6 +18,8 @@ class File extends Model
         'size_bytes',
         'sort_order',
         'preview_images',
+        'total_slides',
+        'extracted_text',
     ];
 
     protected function casts(): array
@@ -30,6 +32,40 @@ class File extends Model
     public function hasPreviewImages(): bool
     {
         return ! empty($this->preview_images);
+    }
+
+    public function hasExtractedText(): bool
+    {
+        return ! empty($this->extracted_text);
+    }
+
+    public function typeLabel(): string
+    {
+        return match (true) {
+            str_contains($this->mime_type, 'presentation'),
+            str_contains($this->mime_type, 'powerpoint') => 'PowerPoint',
+            str_contains($this->mime_type, 'pdf') => 'PDF',
+            str_contains($this->mime_type, 'image') => 'Afbeelding',
+            str_contains($this->mime_type, 'word'),
+            str_contains($this->mime_type, 'document') => 'Word-document',
+            str_contains($this->mime_type, 'spreadsheet'),
+            str_contains($this->mime_type, 'excel') => 'Excel',
+            default => 'Bestand',
+        };
+    }
+
+    public function pageUnitLabel(): string
+    {
+        return 'slides';
+    }
+
+    public function formattedSize(): string
+    {
+        $mb = $this->size_bytes / (1024 * 1024);
+
+        return $mb >= 1
+            ? number_format($mb, 0).' MB'
+            : number_format($this->size_bytes / 1024, 0).' KB';
     }
 
     public function fiche(): BelongsTo

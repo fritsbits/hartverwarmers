@@ -3,46 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\Initiative;
-use App\Models\Tag;
+use App\Services\DiamantService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class InitiativeController extends Controller
 {
-    public function index(Request $request): View
+    public function index(DiamantService $diamant): View
     {
-        $query = Initiative::query()
+        $initiatives = Initiative::query()
             ->published()
-            ->with('tags')
-            ->withCount(['fiches' => fn ($q) => $q->published()]);
+            ->with(['tags' => fn ($q) => $q->where('type', 'goal')])
+            ->withCount(['fiches' => fn ($q) => $q->published()])
+            ->orderBy('title')
+            ->get();
 
-        if ($request->filled('tag')) {
-            $query->whereHas('tags', function ($q) use ($request) {
-                $q->where('tags.slug', $request->tag);
-            });
-        }
-
-        if ($request->filled('search')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', '%'.$request->search.'%')
-                    ->orWhere('description', 'like', '%'.$request->search.'%');
-            });
-        }
-
-        $initiatives = $query->latest()->paginate(12);
-
-        $filterTags = Tag::query()
-            ->where('type', 'theme')
-            ->orderBy('name')
-            ->get()
-            ->groupBy('type');
+        $goals = collect($diamant->all())->map(fn (array $facet) => [
+            'slug' => $facet['slug'],
+            'tagSlug' => 'doel-'.$facet['slug'],
+            'letter' => $facet['letter'],
+            'keyword' => $facet['keyword'],
+            'description' => $facet['ik_wil'],
+        ])->values()->all();
 
         return view('initiatives.index', [
             'initiatives' => $initiatives,
-            'filterTags' => $filterTags,
-            'selectedTag' => $request->tag,
-            'search' => $request->search,
+            'goals' => $goals,
         ]);
     }
 

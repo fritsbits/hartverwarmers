@@ -1,10 +1,16 @@
-@props(['files' => collect()])
+@props(['files' => collect(), 'downloadUrl' => null, 'downloadLabel' => null, 'downloadSize' => null])
 
 @php
     $previews = [];
     $dummies = [];
+    $totalSlides = null;
+    $pageUnit = 'slides';
     foreach ($files as $file) {
         if ($file->hasPreviewImages()) {
+            if ($totalSlides === null) {
+                $totalSlides = $file->total_slides;
+                $pageUnit = $file->pageUnitLabel();
+            }
             foreach ($file->preview_images as $path) {
                 $previews[] = ['type' => 'preview', 'url' => Storage::url($path), 'filename' => $file->original_filename];
             }
@@ -15,6 +21,9 @@
     // Only show skeletons when there are no real previews at all
     $slides = count($previews) > 0 ? $previews : $dummies;
     $total = count($slides);
+    $previewCount = count($previews);
+    $hasMoreSlides = $totalSlides && $totalSlides > $previewCount;
+    $remaining = $hasMoreSlides ? $totalSlides - $previewCount : 0;
 @endphp
 
 @if($total > 0)
@@ -33,35 +42,53 @@
             if (diff > 50) next();
             if (diff < -50) prev();
         "
-        class="relative bg-[var(--color-bg-subtle)] rounded-xl overflow-hidden mb-6"
+        class="relative bg-[var(--color-bg-subtle)] rounded-2xl mb-5"
         data-carousel
     >
+        {{-- Preview badge (top-left) --}}
+        @if($hasMoreSlides)
+            <span class="absolute top-3 left-0 z-10 text-[11px] font-semibold uppercase tracking-wide bg-[var(--color-bg-cream)] text-[var(--color-primary)] pl-3 pr-2.5 py-1 rounded-r border border-l-0 border-[var(--color-border-light)]" data-preview-counter>Preview</span>
+        @endif
+
         {{-- Slide viewport --}}
-        <div class="overflow-hidden px-6 py-8 sm:px-10 sm:py-10">
+        <div class="overflow-hidden">
             <div
                 class="flex transition-transform duration-300 ease-in-out"
                 :style="`transform: translateX(-${current * 100}%)`"
             >
-                @foreach($slides as $slide)
-                    <div class="w-full shrink-0 flex justify-center">
+                @foreach($slides as $index => $slide)
+                    <div class="w-full shrink-0 px-8 pt-8">
                         @if($slide['type'] === 'preview')
-                            {{-- Real preview image --}}
-                            <div class="flex flex-col items-center gap-3 w-full">
+                            <div class="relative w-full">
                                 <img
                                     src="{{ $slide['url'] }}"
                                     alt="Preview van {{ $slide['filename'] }}"
                                     loading="lazy"
-                                    class="max-w-[560px] w-full rounded-lg shadow-md"
+                                    class="w-full rounded-lg shadow-md"
                                     data-preview-image
                                 >
-                                <p class="text-xs text-[var(--color-text-secondary)] truncate max-w-[560px] w-full text-center">
-                                    {{ $slide['filename'] }}
-                                </p>
+                                @if($hasMoreSlides && $loop->last)
+                                    <div class="absolute inset-0 rounded-lg bg-white border border-[var(--color-border-light)] flex flex-col items-center justify-center" data-preview-overlay>
+                                        <span class="text-3xl font-heading font-bold text-[var(--color-primary)]">+{{ $remaining }}</span>
+                                        <span class="text-sm text-[var(--color-text-secondary)]">{{ $pageUnit }} in dit bestand</span>
+                                        @if($downloadUrl && $downloadLabel)
+                                            <div class="mt-3">
+                                                <flux:button variant="primary" icon="arrow-down-tray"
+                                                    href="{{ $downloadUrl }}">
+                                                    {{ $downloadLabel }}
+                                                    @if($downloadSize)
+                                                        <span class="text-xs font-normal text-white/70">{{ $downloadSize }}</span>
+                                                    @endif
+                                                </flux:button>
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endif
                             </div>
                         @else
                             {{-- Dummy skeleton card --}}
                             @php $file = $slide['file']; @endphp
-                            <div class="bg-white rounded-lg shadow-md w-full max-w-[280px] aspect-[3/4] p-6 sm:p-8 flex flex-col" data-skeleton-card>
+                            <div class="bg-white rounded-lg shadow-md w-full max-w-[280px] mx-auto aspect-[3/4] p-6 sm:p-8 flex flex-col" data-skeleton-card>
                                 <div class="flex-1 flex flex-col gap-3">
                                     <div class="flex items-center gap-2 mb-2">
                                         @php
@@ -138,24 +165,18 @@
             </svg>
         </button>
 
-        {{-- Indicators: dots for <=7, numeric counter for 8+ --}}
+        {{-- Dot indicators --}}
         @if($total > 1)
-            @if($total <= 7)
-                <div class="flex justify-center gap-1.5 pb-4">
-                    <template x-for="i in total" :key="i">
-                        <button
-                            x-on:click="goTo(i - 1)"
-                            class="w-2 h-2 rounded-full transition-colors cursor-pointer"
-                            :class="current === i - 1 ? 'bg-[var(--color-primary)]' : 'bg-zinc-300 hover:bg-zinc-400'"
-                            :aria-label="`Ga naar slide ${i}`"
-                        ></button>
-                    </template>
-                </div>
-            @else
-                <div class="flex justify-center pb-4">
-                    <span class="text-sm text-[var(--color-text-secondary)] tabular-nums" x-text="`${current + 1} / {{ $total }}`"></span>
-                </div>
-            @endif
+            <div class="flex justify-center gap-1.5 pt-4 pb-4">
+                <template x-for="i in total" :key="i">
+                    <button
+                        x-on:click="goTo(i - 1)"
+                        class="w-2 h-2 rounded-full transition-colors cursor-pointer"
+                        :class="current === i - 1 ? 'bg-[var(--color-primary)]' : 'bg-zinc-300 hover:bg-zinc-400'"
+                        :aria-label="`Ga naar slide ${i}`"
+                    ></button>
+                </template>
+            </div>
         @endif
     </div>
 @endif

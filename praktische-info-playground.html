@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Praktische Informatie — CTA Playground</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700" rel="stylesheet">
+<style>
+  /* ── Reset & Dark UI Shell ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Fira Sans', system-ui, sans-serif; background: #1a1a1a; color: #ccc; display: grid; grid-template-columns: 320px 1fr; height: 100vh; overflow: hidden; }
+
+  /* ── Controls Panel ── */
+  .controls { background: #222; border-right: 1px solid #333; overflow-y: auto; padding: 20px; }
+  .controls h1 { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .controls h2 { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin: 20px 0 10px; padding-top: 16px; border-top: 1px solid #333; }
+  .controls h2:first-of-type { border-top: none; margin-top: 8px; }
+
+  /* Preset buttons */
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .preset-btn { font-size: 11px; padding: 5px 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #ccc; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .preset-btn:hover { border-color: #E8764B; color: #E8764B; }
+  .preset-btn.active { background: #E8764B; border-color: #E8764B; color: #fff; }
+
+  /* Variant grid */
+  .variant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+  .variant-card { padding: 10px; border: 2px solid #333; border-radius: 8px; cursor: pointer; transition: all 0.15s; text-align: center; background: #2a2a2a; }
+  .variant-card:hover { border-color: #666; }
+  .variant-card.active { border-color: #E8764B; background: #332218; }
+  .variant-card .icon { font-size: 24px; margin-bottom: 4px; }
+  .variant-card .label { font-size: 10px; color: #aaa; font-weight: 500; }
+  .variant-card.active .label { color: #E8764B; }
+
+  /* Control rows */
+  .control-row { margin-bottom: 12px; }
+  .control-row label { display: block; font-size: 11px; color: #999; margin-bottom: 4px; font-weight: 500; }
+  .control-row select, .control-row input[type="range"] { width: 100%; }
+  select { font-family: inherit; font-size: 12px; padding: 6px 8px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #ccc; cursor: pointer; }
+  input[type="range"] { -webkit-appearance: none; height: 4px; background: #444; border-radius: 2px; outline: none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #E8764B; cursor: pointer; }
+  .range-val { font-size: 11px; color: #E8764B; float: right; font-variant-numeric: tabular-nums; }
+
+  /* Toggle switch */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .toggle-row span { font-size: 11px; color: #999; font-weight: 500; }
+  .toggle { width: 36px; height: 20px; border-radius: 10px; background: #444; position: relative; cursor: pointer; transition: background 0.2s; }
+  .toggle.on { background: #E8764B; }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+  .toggle.on::after { transform: translateX(16px); }
+
+  /* ── Preview Area ── */
+  .preview-area { display: flex; flex-direction: column; overflow: hidden; }
+  .preview-scroll { flex: 1; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px; }
+  .preview-context { width: 100%; max-width: 740px; }
+
+  /* Mock page context */
+  .page-bg { background: #FEF8F4; border-radius: 12px; padding: 40px 48px; position: relative; }
+  .mock-title { font-family: 'Aleo', serif; font-size: 28px; font-weight: 700; color: #231E1A; line-height: 1.25; margin-bottom: 12px; }
+  .mock-excerpt { font-family: 'Fira Sans', sans-serif; font-size: 16px; color: #756C65; font-weight: 300; line-height: 1.6; margin-bottom: 28px; max-width: 560px; }
+
+  /* The actual CTA preview */
+  #cta-preview { transition: all 0.25s ease; }
+
+  /* ── Prompt Output ── */
+  .prompt-bar { background: #1e1e1e; border-top: 1px solid #333; padding: 16px 24px; }
+  .prompt-bar .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .prompt-bar .header span { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  .copy-btn { font-family: inherit; font-size: 11px; padding: 4px 12px; border-radius: 4px; border: 1px solid #444; background: #2a2a2a; color: #ccc; cursor: pointer; transition: all 0.15s; }
+  .copy-btn:hover { border-color: #E8764B; color: #E8764B; }
+  .copy-btn.copied { background: #E8764B; border-color: #E8764B; color: #fff; }
+  #prompt-output { font-family: 'Fira Code', monospace, monospace; font-size: 12px; line-height: 1.6; color: #aaa; white-space: pre-wrap; max-height: 80px; overflow-y: auto; }
+
+  /* ── Design tokens used in preview ── */
+  :root {
+    --color-primary: #E8764B;
+    --color-primary-hover: #D4683F;
+    --color-text-primary: #231E1A;
+    --color-text-secondary: #756C65;
+    --color-bg-white: #FFFFFF;
+    --color-bg-subtle: #F5F0EC;
+    --color-bg-cream: #FEF8F4;
+    --color-bg-accent-light: #FDF3EE;
+    --color-border-light: #EBE4DE;
+    --color-border-hover: #DDD5CD;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ CONTROLS ═══════════════════ -->
+<div class="controls">
+  <h1>Praktische Informatie CTA</h1>
+
+  <h2>Presets</h2>
+  <div class="presets" id="presets"></div>
+
+  <h2>Layout Variant</h2>
+  <div class="variant-grid" id="variant-grid"></div>
+
+  <h2>Container</h2>
+  <div class="control-row">
+    <label>Background</label>
+    <select id="bg">
+      <option value="none">None (inherit)</option>
+      <option value="cream">Cream (#FEF8F4)</option>
+      <option value="white">White</option>
+      <option value="subtle">Subtle (#F5F0EC)</option>
+      <option value="accent-light">Accent light (#FDF3EE)</option>
+    </select>
+  </div>
+  <div class="control-row">
+    <label>Border <span class="range-val" id="border-val"></span></label>
+    <select id="border">
+      <option value="none">None</option>
+      <option value="light">Light border</option>
+      <option value="left-accent">Left accent bar</option>
+      <option value="dashed">Dashed border</option>
+      <option value="bottom-only">Bottom border only</option>
+    </select>
+  </div>
+  <div class="control-row">
+    <label>Border radius <span class="range-val" id="radius-val"></span></label>
+    <input type="range" id="radius" min="0" max="24" value="12">
+  </div>
+  <div class="control-row">
+    <label>Padding <span class="range-val" id="padding-val"></span></label>
+    <input type="range" id="padding" min="0" max="32" value="20">
+  </div>
+
+  <h2>Icon</h2>
+  <div class="control-row">
+    <label>Icon style</label>
+    <select id="icon-style">
+      <option value="none">No icon</option>
+      <option value="clipboard">Clipboard / checklist</option>
+      <option value="tools">Tools / wrench</option>
+      <option value="book-open">Open book</option>
+      <option value="lightbulb">Lightbulb</option>
+      <option value="puzzle">Puzzle piece</option>
+      <option value="rocket">Rocket</option>
+      <option value="list-check">Numbered list</option>
+      <option value="emoji-hands">Emoji: hands</option>
+      <option value="emoji-sparkle">Emoji: sparkle</option>
+    </select>
+  </div>
+  <div class="control-row">
+    <label>Icon size <span class="range-val" id="icon-size-val"></span></label>
+    <input type="range" id="icon-size" min="20" max="56" value="32">
+  </div>
+  <div class="control-row">
+    <label>Icon treatment</label>
+    <select id="icon-treatment">
+      <option value="bare">Bare (color only)</option>
+      <option value="circle-subtle">Circle subtle bg</option>
+      <option value="circle-primary">Circle primary bg</option>
+      <option value="rounded-subtle">Rounded square subtle bg</option>
+      <option value="rounded-primary">Rounded square primary bg</option>
+    </select>
+  </div>
+
+  <h2>Content</h2>
+  <div class="control-row">
+    <label>Title style</label>
+    <select id="title-style">
+      <option value="heading-lg">Large heading (Aleo)</option>
+      <option value="heading-md">Medium heading (Aleo)</option>
+      <option value="section-label">Section label (uppercase)</option>
+      <option value="body-bold">Body bold (Fira Sans)</option>
+    </select>
+  </div>
+  <div class="control-row">
+    <label>Subtitle format</label>
+    <select id="subtitle-format">
+      <option value="dot-joined">Dot-separated (· )</option>
+      <option value="comma">Comma-separated</option>
+      <option value="pills">Individual pills/tags</option>
+      <option value="numbered">Numbered steps</option>
+      <option value="hidden">Hidden</option>
+    </select>
+  </div>
+  <div class="toggle-row">
+    <span>Show section count badge</span>
+    <div class="toggle" id="toggle-count" onclick="toggleControl('showCount')"></div>
+  </div>
+
+  <h2>Action / Toggle</h2>
+  <div class="control-row">
+    <label>Toggle style</label>
+    <select id="toggle-style">
+      <option value="text-chevron">Text + chevron ("Toon ↓")</option>
+      <option value="chevron-only">Chevron only</option>
+      <option value="pill-button">Pill button</option>
+      <option value="arrow-circle">Arrow in circle</option>
+      <option value="plus-minus">Plus / minus</option>
+      <option value="underline-link">Underline link</option>
+    </select>
+  </div>
+
+  <h2>Hover / Interaction</h2>
+  <div class="toggle-row">
+    <span>Hover lift (translateY)</span>
+    <div class="toggle" id="toggle-lift" onclick="toggleControl('hoverLift')"></div>
+  </div>
+  <div class="toggle-row">
+    <span>Hover glow</span>
+    <div class="toggle" id="toggle-glow" onclick="toggleControl('hoverGlow')"></div>
+  </div>
+  <div class="toggle-row">
+    <span>Hover border color change</span>
+    <div class="toggle on" id="toggle-borderhover" onclick="toggleControl('hoverBorder')"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PREVIEW ═══════════════════ -->
+<div class="preview-area">
+  <div class="preview-scroll">
+    <div class="preview-context">
+      <div class="page-bg">
+        <div class="mock-title">Maak een podcast voor bewoners, medewerkers en familie</div>
+        <div class="mock-excerpt">Een podcast maken voor en met bewoners, medewerkers en familie! Iedereen die wil kan participeren, maar ook iedereen kan luisteren.</div>
+        <div id="cta-preview"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prompt-bar">
+    <div class="header">
+      <span>Prompt output</span>
+      <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">Copy prompt</button>
+    </div>
+    <div id="prompt-output"></div>
+  </div>
+</div>
+
+<script>
+// ── SVG Icons ──
+const ICONS = {
+  clipboard: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>`,
+  tools: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.1 5.1a2.12 2.12 0 01-3-3l5.1-5.1m0 0L3.07 7.83a1.5 1.5 0 010-2.12l.88-.88a1.5 1.5 0 012.12 0l4.35 4.35m0 0l1.42-1.42m7.6-2.83a2.12 2.12 0 010 3l-1.06 1.06-3-3 1.06-1.06a2.12 2.12 0 013 0zM16.5 16.5l3 3m-1.5 0h-5.25m5.25 0v-5.25" /></svg>`,
+  'book-open': `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>`,
+  lightbulb: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg>`,
+  puzzle: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 01-.657.643 48.39 48.39 0 01-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 01-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 00-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 01-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 00.657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 01-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.401.604-.401.959v0c0 .333.277.599.61.58a48.1 48.1 0 005.427-.63 48.05 48.05 0 00.582-4.717.532.532 0 00-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.959.401v0a.656.656 0 00.659-.663 47.703 47.703 0 00-.31-4.82 47.972 47.972 0 00-4.168.294.64.64 0 01-.657-.643v0z" /></svg>`,
+  rocket: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>`,
+  'list-check': `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>`,
+  'emoji-hands': null,
+  'emoji-sparkle': null,
+};
+
+const EMOJIS = {
+  'emoji-hands': '🙌',
+  'emoji-sparkle': '✨',
+};
+
+const CHEVRON_DOWN = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>`;
+const PLUS_ICON = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>`;
+const ARROW_DOWN = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:16px;height:16px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" /></svg>`;
+
+const SECTIONS = ['Voorbereiding', 'Benodigdheden', 'Werkwijze'];
+
+// ── State ──
+const DEFAULTS = {
+  variant: 'horizontal',
+  bg: 'none',
+  border: 'none',
+  radius: 12,
+  padding: 20,
+  iconStyle: 'none',
+  iconSize: 32,
+  iconTreatment: 'bare',
+  titleStyle: 'heading-lg',
+  subtitleFormat: 'dot-joined',
+  showCount: false,
+  toggleStyle: 'text-chevron',
+  hoverLift: false,
+  hoverGlow: false,
+  hoverBorder: true,
+};
+
+let state = { ...DEFAULTS };
+
+// ── Variants ──
+const VARIANTS = [
+  { id: 'horizontal', icon: '↔', label: 'Horizontal' },
+  { id: 'stacked', icon: '↕', label: 'Stacked center' },
+  { id: 'icon-left', icon: '◧', label: 'Icon left block' },
+  { id: 'card-full', icon: '▣', label: 'Full card' },
+  { id: 'minimal', icon: '—', label: 'Minimal line' },
+  { id: 'banner', icon: '▬', label: 'Banner strip' },
+];
+
+// ── Presets ──
+const PRESETS = [
+  { name: 'Current', state: { ...DEFAULTS } },
+  { name: 'Clipboard card', state: { variant: 'icon-left', bg: 'accent-light', border: 'left-accent', radius: 12, padding: 20, iconStyle: 'clipboard', iconSize: 36, iconTreatment: 'circle-subtle', titleStyle: 'heading-md', subtitleFormat: 'pills', showCount: true, toggleStyle: 'pill-button', hoverLift: true, hoverGlow: false, hoverBorder: false } },
+  { name: 'Clean minimal', state: { variant: 'minimal', bg: 'none', border: 'bottom-only', radius: 0, padding: 12, iconStyle: 'none', iconSize: 32, iconTreatment: 'bare', titleStyle: 'body-bold', subtitleFormat: 'dot-joined', showCount: false, toggleStyle: 'chevron-only', hoverLift: false, hoverGlow: false, hoverBorder: true } },
+  { name: 'Bold banner', state: { variant: 'banner', bg: 'subtle', border: 'none', radius: 16, padding: 24, iconStyle: 'lightbulb', iconSize: 40, iconTreatment: 'circle-primary', titleStyle: 'heading-lg', subtitleFormat: 'numbered', showCount: true, toggleStyle: 'arrow-circle', hoverLift: true, hoverGlow: true, hoverBorder: false } },
+  { name: 'Warm invite', state: { variant: 'card-full', bg: 'cream', border: 'light', radius: 16, padding: 24, iconStyle: 'book-open', iconSize: 44, iconTreatment: 'rounded-subtle', titleStyle: 'heading-md', subtitleFormat: 'dot-joined', showCount: false, toggleStyle: 'underline-link', hoverLift: false, hoverGlow: true, hoverBorder: true } },
+  { name: 'Playful', state: { variant: 'stacked', bg: 'accent-light', border: 'dashed', radius: 20, padding: 24, iconStyle: 'emoji-sparkle', iconSize: 48, iconTreatment: 'bare', titleStyle: 'heading-lg', subtitleFormat: 'pills', showCount: true, toggleStyle: 'pill-button', hoverLift: true, hoverGlow: false, hoverBorder: false } },
+];
+
+// ── Init UI ──
+function initControls() {
+  // Presets
+  const presetsEl = document.getElementById('presets');
+  PRESETS.forEach((p, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn';
+    btn.textContent = p.name;
+    btn.dataset.index = i;
+    btn.onclick = () => applyPreset(i);
+    presetsEl.appendChild(btn);
+  });
+
+  // Variants
+  const grid = document.getElementById('variant-grid');
+  VARIANTS.forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'variant-card';
+    card.dataset.id = v.id;
+    card.innerHTML = `<div class="icon">${v.icon}</div><div class="label">${v.label}</div>`;
+    card.onclick = () => { state.variant = v.id; updateAll(); };
+    grid.appendChild(card);
+  });
+
+  // Bind controls
+  bindSelect('bg', 'bg');
+  bindSelect('border', 'border');
+  bindRange('radius', 'radius', 'radius-val', 'px');
+  bindRange('padding', 'padding', 'padding-val', 'px');
+  bindSelect('icon-style', 'iconStyle');
+  bindRange('icon-size', 'iconSize', 'icon-size-val', 'px');
+  bindSelect('icon-treatment', 'iconTreatment');
+  bindSelect('title-style', 'titleStyle');
+  bindSelect('subtitle-format', 'subtitleFormat');
+  bindSelect('toggle-style', 'toggleStyle');
+}
+
+function bindSelect(elId, stateKey) {
+  document.getElementById(elId).onchange = function() { state[stateKey] = this.value; updateAll(); };
+}
+function bindRange(elId, stateKey, valId, unit) {
+  const el = document.getElementById(elId);
+  const valEl = document.getElementById(valId);
+  el.oninput = function() { state[stateKey] = +this.value; valEl.textContent = this.value + unit; updateAll(); };
+  valEl.textContent = el.value + unit;
+}
+
+function toggleControl(key) {
+  state[key] = !state[key];
+  document.getElementById('toggle-' + key.replace(/([A-Z])/g, (m) => m.toLowerCase())).classList.toggle('on', state[key]);
+
+  // Map camelCase to toggle element IDs
+  const idMap = { showCount: 'toggle-count', hoverLift: 'toggle-lift', hoverGlow: 'toggle-glow', hoverBorder: 'toggle-borderhover' };
+  const el = document.getElementById(idMap[key]);
+  if (el) el.classList.toggle('on', state[key]);
+  updateAll();
+}
+
+function applyPreset(index) {
+  state = { ...PRESETS[index].state };
+  syncControlsToState();
+  updateAll();
+}
+
+function syncControlsToState() {
+  document.getElementById('bg').value = state.bg;
+  document.getElementById('border').value = state.border;
+  document.getElementById('radius').value = state.radius;
+  document.getElementById('radius-val').textContent = state.radius + 'px';
+  document.getElementById('padding').value = state.padding;
+  document.getElementById('padding-val').textContent = state.padding + 'px';
+  document.getElementById('icon-style').value = state.iconStyle;
+  document.getElementById('icon-size').value = state.iconSize;
+  document.getElementById('icon-size-val').textContent = state.iconSize + 'px';
+  document.getElementById('icon-treatment').value = state.iconTreatment;
+  document.getElementById('title-style').value = state.titleStyle;
+  document.getElementById('subtitle-format').value = state.subtitleFormat;
+  document.getElementById('toggle-style').value = state.toggleStyle;
+
+  // Toggles
+  document.getElementById('toggle-count').classList.toggle('on', state.showCount);
+  document.getElementById('toggle-lift').classList.toggle('on', state.hoverLift);
+  document.getElementById('toggle-glow').classList.toggle('on', state.hoverGlow);
+  document.getElementById('toggle-borderhover').classList.toggle('on', state.hoverBorder);
+
+  // Variant cards
+  document.querySelectorAll('.variant-card').forEach(c => c.classList.toggle('active', c.dataset.id === state.variant));
+
+  // Preset buttons
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    const p = PRESETS[+b.dataset.index];
+    b.classList.toggle('active', JSON.stringify(p.state) === JSON.stringify(state));
+  });
+}
+
+// ── Render ──
+function updateAll() {
+  syncControlsToState();
+  renderPreview();
+  updatePrompt();
+}
+
+function renderPreview() {
+  const el = document.getElementById('cta-preview');
+
+  // Build icon HTML
+  let iconHtml = '';
+  if (state.iconStyle !== 'none') {
+    const isEmoji = state.iconStyle.startsWith('emoji-');
+    const iconContent = isEmoji
+      ? `<span style="font-size:${state.iconSize}px;line-height:1">${EMOJIS[state.iconStyle]}</span>`
+      : `<span style="width:${state.iconSize}px;height:${state.iconSize}px;color:var(--color-primary);display:flex;align-items:center;justify-content:center">${ICONS[state.iconStyle]}</span>`;
+
+    let wrapStyle = '';
+    const boxSize = state.iconSize + 16;
+    switch (state.iconTreatment) {
+      case 'circle-subtle':
+        wrapStyle = `width:${boxSize}px;height:${boxSize}px;border-radius:50%;background:var(--color-bg-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
+        break;
+      case 'circle-primary':
+        wrapStyle = `width:${boxSize}px;height:${boxSize}px;border-radius:50%;background:var(--color-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
+        break;
+      case 'rounded-subtle':
+        wrapStyle = `width:${boxSize}px;height:${boxSize}px;border-radius:${Math.min(12, state.radius)}px;background:var(--color-bg-subtle);display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
+        break;
+      case 'rounded-primary':
+        wrapStyle = `width:${boxSize}px;height:${boxSize}px;border-radius:${Math.min(12, state.radius)}px;background:var(--color-primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
+        break;
+      default:
+        wrapStyle = `display:flex;align-items:center;justify-content:center;flex-shrink:0;`;
+    }
+
+    // Invert icon color for primary bg
+    const invertColor = (state.iconTreatment === 'circle-primary' || state.iconTreatment === 'rounded-primary') && !isEmoji;
+    const innerIcon = invertColor
+      ? iconContent.replace('color:var(--color-primary)', 'color:#fff')
+      : iconContent;
+
+    iconHtml = `<div style="${wrapStyle}">${innerIcon}</div>`;
+  }
+
+  // Build title HTML
+  let titleHtml = '';
+  const titleText = 'Praktische informatie';
+  switch (state.titleStyle) {
+    case 'heading-lg':
+      titleHtml = `<div style="font-family:'Aleo',serif;font-size:20px;font-weight:700;color:var(--color-text-primary);line-height:1.3">${titleText}</div>`;
+      break;
+    case 'heading-md':
+      titleHtml = `<div style="font-family:'Aleo',serif;font-size:17px;font-weight:700;color:var(--color-text-primary);line-height:1.3">${titleText}</div>`;
+      break;
+    case 'section-label':
+      titleHtml = `<div style="font-family:'Fira Sans',sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--color-primary)">${titleText}</div>`;
+      break;
+    case 'body-bold':
+      titleHtml = `<div style="font-family:'Fira Sans',sans-serif;font-size:16px;font-weight:600;color:var(--color-text-primary)">${titleText}</div>`;
+      break;
+  }
+
+  // Build subtitle HTML
+  let subtitleHtml = '';
+  if (state.subtitleFormat !== 'hidden') {
+    switch (state.subtitleFormat) {
+      case 'dot-joined':
+        subtitleHtml = `<div style="font-size:13px;color:var(--color-text-secondary);margin-top:3px">${SECTIONS.join(' · ')}</div>`;
+        break;
+      case 'comma':
+        subtitleHtml = `<div style="font-size:13px;color:var(--color-text-secondary);margin-top:3px">${SECTIONS.join(', ')}</div>`;
+        break;
+      case 'pills':
+        const pills = SECTIONS.map(s => `<span style="display:inline-block;padding:2px 10px;border-radius:99px;background:var(--color-bg-subtle);font-size:12px;color:var(--color-text-secondary);font-weight:500">${s}</span>`).join('');
+        subtitleHtml = `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${pills}</div>`;
+        break;
+      case 'numbered':
+        const nums = SECTIONS.map((s, i) => `<span style="font-size:13px;color:var(--color-text-secondary)"><span style="color:var(--color-primary);font-weight:600">${i+1}.</span> ${s}</span>`).join('<span style="margin:0 6px;color:var(--color-border-light)">—</span>');
+        subtitleHtml = `<div style="margin-top:4px;display:flex;flex-wrap:wrap;align-items:center">${nums}</div>`;
+        break;
+    }
+  }
+
+  // Count badge
+  let countBadge = '';
+  if (state.showCount) {
+    countBadge = `<span style="display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:11px;background:var(--color-primary);color:#fff;font-size:11px;font-weight:600;padding:0 6px;margin-left:8px">${SECTIONS.length}</span>`;
+  }
+
+  // Build toggle HTML
+  let toggleHtml = '';
+  switch (state.toggleStyle) {
+    case 'text-chevron':
+      toggleHtml = `<div style="display:flex;align-items:center;gap:6px;color:var(--color-primary);font-size:14px;font-weight:500;white-space:nowrap">Toon ${CHEVRON_DOWN}</div>`;
+      break;
+    case 'chevron-only':
+      toggleHtml = `<div style="color:var(--color-primary);display:flex">${CHEVRON_DOWN}</div>`;
+      break;
+    case 'pill-button':
+      toggleHtml = `<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:99px;background:var(--color-primary);color:#fff;font-size:13px;font-weight:500;white-space:nowrap">Bekijk ${CHEVRON_DOWN}</div>`;
+      break;
+    case 'arrow-circle':
+      toggleHtml = `<div style="width:36px;height:36px;border-radius:50%;border:2px solid var(--color-primary);color:var(--color-primary);display:flex;align-items:center;justify-content:center">${ARROW_DOWN}</div>`;
+      break;
+    case 'plus-minus':
+      toggleHtml = `<div style="color:var(--color-primary);display:flex">${PLUS_ICON}</div>`;
+      break;
+    case 'underline-link':
+      toggleHtml = `<div style="color:var(--color-primary);font-size:14px;font-weight:500;text-decoration:underline;text-underline-offset:3px;white-space:nowrap">Toon details</div>`;
+      break;
+  }
+
+  // Container styles
+  const bgMap = { none: 'transparent', cream: 'var(--color-bg-cream)', white: 'var(--color-bg-white)', subtle: 'var(--color-bg-subtle)', 'accent-light': 'var(--color-bg-accent-light)' };
+  let borderStyle = 'border:none;';
+  switch (state.border) {
+    case 'light': borderStyle = 'border:1px solid var(--color-border-light);'; break;
+    case 'left-accent': borderStyle = 'border:none;border-left:4px solid var(--color-primary);'; break;
+    case 'dashed': borderStyle = 'border:2px dashed var(--color-border-light);'; break;
+    case 'bottom-only': borderStyle = 'border:none;border-bottom:1px solid var(--color-border-light);'; break;
+  }
+
+  const hoverClasses = [];
+  if (state.hoverLift) hoverClasses.push('cta-hover-lift');
+  if (state.hoverGlow) hoverClasses.push('cta-hover-glow');
+  if (state.hoverBorder) hoverClasses.push('cta-hover-border');
+
+  // Assemble based on variant
+  let inner = '';
+  const containerStyle = `background:${bgMap[state.bg]};${borderStyle}border-radius:${state.radius}px;padding:${state.padding}px;cursor:pointer;transition:all 0.2s ease;`;
+
+  switch (state.variant) {
+    case 'horizontal':
+      inner = `
+        <div style="display:flex;align-items:center;gap:16px;">
+          ${iconHtml}
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center">${titleHtml}${countBadge}</div>
+            ${subtitleHtml}
+          </div>
+          ${toggleHtml}
+        </div>`;
+      break;
+
+    case 'stacked':
+      inner = `
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;">
+          ${iconHtml}
+          <div>
+            <div style="display:flex;align-items:center;justify-content:center">${titleHtml}${countBadge}</div>
+            ${subtitleHtml}
+          </div>
+          <div style="margin-top:4px">${toggleHtml}</div>
+        </div>`;
+      break;
+
+    case 'icon-left':
+      inner = `
+        <div style="display:flex;gap:16px;">
+          ${iconHtml}
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center">${titleHtml}${countBadge}</div>
+              ${toggleHtml}
+            </div>
+            <div style="margin-top:4px">${subtitleHtml}</div>
+          </div>
+        </div>`;
+      break;
+
+    case 'card-full':
+      inner = `
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px">
+            ${iconHtml}
+            <div style="display:flex;align-items:center">${titleHtml}${countBadge}</div>
+          </div>
+          ${subtitleHtml}
+          <div style="display:flex;justify-content:flex-end;margin-top:4px">${toggleHtml}</div>
+        </div>`;
+      break;
+
+    case 'minimal':
+      inner = `
+        <div style="display:flex;align-items:center;gap:12px;">
+          ${iconHtml}
+          <div style="flex:1;display:flex;align-items:center;gap:8px">
+            ${titleHtml}
+            ${state.subtitleFormat !== 'hidden' && state.subtitleFormat !== 'pills' ? `<span style="color:var(--color-border-light);font-size:13px">—</span><span style="font-size:13px;color:var(--color-text-secondary)">${SECTIONS.join(', ')}</span>` : subtitleHtml}
+            ${countBadge}
+          </div>
+          ${toggleHtml}
+        </div>`;
+      break;
+
+    case 'banner':
+      inner = `
+        <div style="display:flex;align-items:center;gap:16px;">
+          ${iconHtml}
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center">${titleHtml}${countBadge}</div>
+            ${subtitleHtml}
+          </div>
+          ${toggleHtml}
+        </div>`;
+      break;
+  }
+
+  el.innerHTML = `<div class="${hoverClasses.join(' ')}" style="${containerStyle}">${inner}</div>`;
+
+  // Inject hover styles
+  let styleEl = document.getElementById('hover-styles');
+  if (!styleEl) { styleEl = document.createElement('style'); styleEl.id = 'hover-styles'; document.head.appendChild(styleEl); }
+  styleEl.textContent = `
+    .cta-hover-lift:hover { transform: translateY(-2px); }
+    .cta-hover-glow:hover { box-shadow: 0 4px 20px rgba(232,118,75,0.15); }
+    .cta-hover-border:hover { border-color: var(--color-border-hover) !important; }
+  `;
+}
+
+function updatePrompt() {
+  const parts = [];
+
+  // Describe the variant
+  const variantNames = { horizontal: 'horizontal row layout', stacked: 'stacked/centered layout', 'icon-left': 'icon-left block layout', 'card-full': 'full card layout', minimal: 'minimal single-line layout', banner: 'banner strip layout' };
+  parts.push(`Use a **${variantNames[state.variant]}** for the "Praktische informatie" expandable CTA.`);
+
+  // Container
+  const bgDesc = { none: null, cream: 'cream background (`bg-[var(--color-bg-cream)]`)', white: 'white background', subtle: 'subtle gray background (`bg-[var(--color-bg-subtle)]`)', 'accent-light': 'warm accent background (`bg-[var(--color-bg-accent-light)]`)' };
+  const borderDesc = { none: null, light: 'a light border (`border border-[var(--color-border-light)]`)', 'left-accent': 'a left accent bar in primary orange (`border-l-4 border-[var(--color-primary)]`)', dashed: 'a dashed border (`border-2 border-dashed border-[var(--color-border-light)]`)', 'bottom-only': 'a bottom border only (`border-b border-[var(--color-border-light)]`)' };
+  const containerParts = [];
+  if (bgDesc[state.bg]) containerParts.push(bgDesc[state.bg]);
+  if (borderDesc[state.border]) containerParts.push(borderDesc[state.border]);
+  if (state.radius !== 12) containerParts.push(`border-radius of ${state.radius}px`);
+  if (state.padding !== 20) containerParts.push(`${state.padding}px padding`);
+  if (containerParts.length) parts.push(`Container: ${containerParts.join(', ')}.`);
+
+  // Icon
+  if (state.iconStyle !== 'none') {
+    const iconNames = { clipboard: 'clipboard/checklist', tools: 'tools/wrench', 'book-open': 'open book', lightbulb: 'lightbulb', puzzle: 'puzzle piece', rocket: 'rocket', 'list-check': 'numbered list', 'emoji-hands': '🙌 hands emoji', 'emoji-sparkle': '✨ sparkle emoji' };
+    const treatNames = { bare: 'bare (no background)', 'circle-subtle': 'in a subtle circle', 'circle-primary': 'in a primary-colored circle (white icon)', 'rounded-subtle': 'in a subtle rounded square', 'rounded-primary': 'in a primary-colored rounded square (white icon)' };
+    parts.push(`Icon: **${iconNames[state.iconStyle]}** at ${state.iconSize}px, ${treatNames[state.iconTreatment]}.`);
+  }
+
+  // Title
+  const titleNames = { 'heading-lg': 'large Aleo heading (20px)', 'heading-md': 'medium Aleo heading (17px)', 'section-label': 'uppercase section label in primary color', 'body-bold': 'bold Fira Sans body text' };
+  if (state.titleStyle !== 'heading-lg') parts.push(`Title: ${titleNames[state.titleStyle]}.`);
+
+  // Subtitle
+  const subNames = { 'dot-joined': 'dot-separated section names', comma: 'comma-separated section names', pills: 'section names as small pill/tag badges', numbered: 'numbered steps (1. Voorbereiding — 2. Benodigdheden — 3. Werkwijze)', hidden: 'hidden' };
+  if (state.subtitleFormat !== 'dot-joined') parts.push(`Subtitle: ${subNames[state.subtitleFormat]}.`);
+
+  if (state.showCount) parts.push(`Show a small orange count badge with the number of sections.`);
+
+  // Toggle
+  const toggleNames = { 'text-chevron': '"Toon" text + chevron', 'chevron-only': 'chevron icon only', 'pill-button': 'primary orange pill button ("Bekijk")', 'arrow-circle': 'down arrow in a circle outline', 'plus-minus': 'plus/minus icon', 'underline-link': 'underlined text link ("Toon details")' };
+  if (state.toggleStyle !== 'text-chevron') parts.push(`Toggle action: ${toggleNames[state.toggleStyle]}.`);
+
+  // Hover
+  const hovers = [];
+  if (state.hoverLift) hovers.push('subtle lift (translateY -2px)');
+  if (state.hoverGlow) hovers.push('warm orange glow shadow');
+  if (state.hoverBorder) hovers.push('border color darkens');
+  if (hovers.length) parts.push(`Hover effects: ${hovers.join(', ')}.`);
+
+  document.getElementById('prompt-output').textContent = parts.join('\n');
+}
+
+function copyPrompt() {
+  const text = document.getElementById('prompt-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy prompt'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// ── Boot ──
+initControls();
+applyPreset(0);
+</script>
+</body>
+</html>

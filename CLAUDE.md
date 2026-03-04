@@ -68,7 +68,9 @@ Custom design tokens are defined as CSS custom properties in `resources/css/app.
 
 Component classes (`.cta-link`, `.btn-pill`, `.section-label`, `.content-card`, `.diamant-badge`, etc.) are defined in `@layer components` in `app.css`.
 
-**For component usage rules (which button/link/title to use where), see [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md).**
+**Design System:**
+- **Living pattern library** (admin-only): view at `resources/views/admin/design-system.blade.php` — all visual components rendered with real CSS/Blade. Read this file to see every component name, markup pattern, and usage note.
+- **Written reference**: [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) — concise rules for when to use which component.
 
 ===
 
@@ -84,8 +86,11 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
 - php - 8.4.18
+- laravel/ai (AI) - v0
 - laravel/framework (LARAVEL) - v12
+- laravel/pennant (PENNANT) - v1
 - laravel/prompts (PROMPTS) - v0
+- laravel/pulse (PULSE) - v1
 - livewire/flux (FLUXUI_FREE) - v2
 - livewire/flux-pro (FLUXUI_PRO) - v2
 - livewire/livewire (LIVEWIRE) - v4
@@ -103,6 +108,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 
 This project has domain-specific skills available. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
 
+- `pennant-development` — Manages feature flags with Laravel Pennant. Activates when creating, checking, or toggling feature flags; showing or hiding features conditionally; implementing A/B testing; working with @feature directive; or when the user mentions feature flags, feature toggles, Pennant, conditional features, rollouts, or gradually enabling features.
 - `fluxui-development` — Develops UIs with Flux UI Pro components. Activates when creating buttons, forms, modals, inputs, tables, charts, date pickers, or UI components; replacing HTML elements with Flux; working with flux: components; or when the user mentions Flux, component library, UI components, form fields, or asks about available Flux components.
 - `livewire-development` — Develops reactive Livewire 4 components. Activates when creating, updating, or modifying Livewire components; working with wire:model, wire:click, wire:loading, or any wire: directives; adding real-time updates, loading states, or reactivity; debugging component behavior; writing Livewire tests; or when the user mentions Livewire, component, counter, or reactive UI.
 - `tailwindcss-development` — Styles applications using Tailwind CSS v4 utilities. Activates when adding styles, restyling components, working with gradients, spacing, layout, flex, grid, responsive design, dark mode, colors, typography, or borders; or when the user mentions CSS, styling, classes, Tailwind, restyle, hero section, cards, buttons, or any visual/UI changes.
@@ -211,6 +217,13 @@ protected function isAccessible(User $user, ?string $path = null): bool
 
 - Add useful array shape type definitions when appropriate.
 
+=== herd rules ===
+
+# Laravel Herd
+
+- The application is served by Laravel Herd and will be available at: `https?://[kebab-case-project-dir].test`. Use the `get-absolute-url` tool to generate valid URLs for the user.
+- You must not run any commands to make the site available via HTTP(S). It is always available through Laravel Herd.
+
 === tests rules ===
 
 # Test Enforcement
@@ -297,6 +310,14 @@ protected function isAccessible(User $user, ?string $path = null): bool
 ### Models
 
 - Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
+
+=== pennant/core rules ===
+
+# Laravel Pennant
+
+- This application uses Laravel Pennant for feature flag management, providing a flexible system for controlling feature availability across different organizations and user types.
+- IMPORTANT: Always use `search-docs` tool for version-specific Pennant documentation and updated code examples.
+- IMPORTANT: Activate `pennant-development` every time you're working with a Pennant or feature-flag-related task.
 
 === fluxui-pro/core rules ===
 
