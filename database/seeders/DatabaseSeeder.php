@@ -77,7 +77,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($initiativeImages as $slug) {
             Initiative::where('slug', $slug)
-                ->update(['image' => "/storage/initiatives/{$slug}.webp"]);
+                ->update(['image' => "/img/initiatives/{$slug}.webp"]);
         }
     }
 }
