@@ -8,6 +8,7 @@ use App\Models\Initiative;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
 class FicheShowTest extends TestCase
@@ -38,6 +39,8 @@ class FicheShowTest extends TestCase
 
     public function test_fiche_show_displays_diamant_pills_with_links(): void
     {
+        Feature::define('diamant-goals', true);
+
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create([
             'initiative_id' => $initiative->id,
@@ -114,13 +117,15 @@ class FicheShowTest extends TestCase
         File::factory()->create([
             'fiche_id' => $fiche->id,
             'original_filename' => 'activiteit-plan.pdf',
+            'mime_type' => 'application/pdf',
         ]);
 
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('activiteit-plan.pdf');
         $response->assertSee('Bestanden');
+        $response->assertSee('Download PDF');
+        $response->assertSee(route('fiches.download', [$initiative, $fiche]));
     }
 
     public function test_fiche_show_does_not_display_related_initiatives(): void
@@ -254,7 +259,7 @@ class FicheShowTest extends TestCase
         $fiche = Fiche::factory()->published()->create([
             'initiative_id' => $initiative->id,
         ]);
-        File::factory()->count(2)->create([
+        File::factory()->pptx()->withPreviews(2)->count(2)->create([
             'fiche_id' => $fiche->id,
         ]);
 
@@ -308,7 +313,7 @@ class FicheShowTest extends TestCase
         $response->assertDontSee('data-skeleton-card', false);
     }
 
-    public function test_fiche_show_displays_dummy_skeleton_for_files_without_previews(): void
+    public function test_fiche_show_hides_carousel_for_files_without_previews(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create([
@@ -321,8 +326,62 @@ class FicheShowTest extends TestCase
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('data-skeleton-card', false);
-        $response->assertDontSee('data-preview-image', false);
+        $response->assertDontSee('data-carousel', false);
+        $response->assertSee('Bestanden');
+    }
+
+    public function test_fiche_show_displays_preview_indicator_when_file_has_more_slides(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+        File::factory()->pptx()->withPreviews(5, 65)->create([
+            'fiche_id' => $fiche->id,
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('data-preview-counter', false);
+        $response->assertSee('data-preview-overlay', false);
+        $response->assertSee('+60');
+        $response->assertSee('slides in dit bestand');
+    }
+
+    public function test_fiche_show_hides_preview_indicator_when_all_slides_shown(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+        File::factory()->withPreviews(3, 3)->create([
+            'fiche_id' => $fiche->id,
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('data-preview-counter', false);
+        $response->assertDontSee('data-preview-overlay', false);
+    }
+
+    public function test_fiche_show_displays_slides_for_pdf_preview(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+        File::factory()->withPreviews(5, 30)->create([
+            'fiche_id' => $fiche->id,
+            'mime_type' => 'application/pdf',
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('+25');
+        $response->assertSee('slides in dit bestand');
     }
 
     public function test_fiche_show_hides_skeletons_when_previews_exist(): void

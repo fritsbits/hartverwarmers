@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bestanden Sectie — Layout Playground</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700" rel="stylesheet">
+<style>
+  /* ── Reset & Dark UI Shell ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Fira Sans', system-ui, sans-serif; background: #1a1a1a; color: #ccc; display: grid; grid-template-columns: 320px 1fr; height: 100vh; overflow: hidden; }
+
+  /* ── Controls Panel ── */
+  .controls { background: #222; border-right: 1px solid #333; overflow-y: auto; padding: 20px; }
+  .controls h1 { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .controls .subtitle { font-size: 11px; color: #666; margin-bottom: 16px; }
+  .controls h2 { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin: 20px 0 10px; padding-top: 16px; border-top: 1px solid #333; }
+  .controls h2:first-of-type { border-top: none; margin-top: 8px; }
+
+  /* Preset buttons */
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .preset-btn { font-size: 11px; padding: 5px 10px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #ccc; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .preset-btn:hover { border-color: #E8764B; color: #E8764B; }
+  .preset-btn.active { background: #E8764B; border-color: #E8764B; color: #fff; }
+
+  /* Variant grid */
+  .variant-grid { display: grid; gap: 6px; margin-bottom: 16px; }
+  .variant-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .variant-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .variant-card { padding: 10px 6px; border: 2px solid #333; border-radius: 8px; cursor: pointer; transition: all 0.15s; text-align: center; background: #2a2a2a; }
+  .variant-card:hover { border-color: #666; }
+  .variant-card.active { border-color: #E8764B; background: #332218; }
+  .variant-card .icon { font-size: 20px; margin-bottom: 4px; }
+  .variant-card .label { font-size: 9px; color: #aaa; font-weight: 500; line-height: 1.3; }
+  .variant-card.active .label { color: #E8764B; }
+
+  /* Control rows */
+  .control-row { margin-bottom: 12px; }
+  .control-row label { display: block; font-size: 11px; color: #999; margin-bottom: 4px; font-weight: 500; }
+  .control-row select, .control-row input[type="range"] { width: 100%; }
+  select { font-family: inherit; font-size: 12px; padding: 6px 8px; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #ccc; cursor: pointer; }
+  input[type="range"] { -webkit-appearance: none; height: 4px; background: #444; border-radius: 2px; outline: none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #E8764B; cursor: pointer; }
+  .range-val { font-size: 11px; color: #E8764B; float: right; font-variant-numeric: tabular-nums; }
+
+  /* Toggle switch */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .toggle-row span { font-size: 11px; color: #999; font-weight: 500; }
+  .toggle { width: 36px; height: 20px; border-radius: 10px; background: #444; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+  .toggle.on { background: #E8764B; }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+  .toggle.on::after { transform: translateX(16px); }
+
+  /* Conditional sections */
+  .control-section { transition: opacity 0.2s; }
+  .control-section.disabled { opacity: 0.35; pointer-events: none; }
+
+  /* ── Preview Area ── */
+  .preview-area { display: flex; flex-direction: column; overflow: hidden; }
+  .preview-header { background: #222; border-bottom: 1px solid #333; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .preview-header .title { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  .width-toggle { display: flex; gap: 4px; }
+  .width-btn { font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid #444; background: #2a2a2a; color: #999; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .width-btn:hover { border-color: #666; color: #ccc; }
+  .width-btn.active { background: #E8764B; border-color: #E8764B; color: #fff; }
+  .preview-scroll { flex: 1; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px; }
+  .preview-context { width: 100%; transition: max-width 0.3s ease; }
+
+  /* Mock page context */
+  .page-bg { background: #fff; border-radius: 12px; padding: 40px 48px; }
+  .section-label-mock { font-family: 'Fira Sans', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-primary); display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+
+  /* ── Prompt Output ── */
+  .prompt-bar { background: #1e1e1e; border-top: 1px solid #333; padding: 16px 24px; }
+  .prompt-bar .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .prompt-bar .header span { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  .copy-btn { font-family: inherit; font-size: 11px; padding: 4px 12px; border-radius: 4px; border: 1px solid #444; background: #2a2a2a; color: #ccc; cursor: pointer; transition: all 0.15s; }
+  .copy-btn:hover { border-color: #E8764B; color: #E8764B; }
+  .copy-btn.copied { background: #E8764B; border-color: #E8764B; color: #fff; }
+  #prompt-output { font-family: 'Fira Code', monospace, monospace; font-size: 12px; line-height: 1.6; color: #aaa; white-space: pre-wrap; max-height: 100px; overflow-y: auto; }
+
+  /* ── Design tokens ── */
+  :root {
+    --color-primary: #E8764B;
+    --color-primary-hover: #D4683F;
+    --color-text-primary: #231E1A;
+    --color-text-secondary: #756C65;
+    --color-bg-white: #FFFFFF;
+    --color-bg-subtle: #F5F0EC;
+    --color-bg-cream: #FEF8F4;
+    --color-bg-accent-light: #FDF3EE;
+    --color-border-light: #EBE4DE;
+    --color-border-hover: #DDD5CD;
+  }
+
+  /* ═══════════════════════════════════════════════
+     PREVIEW COMPONENT STYLES
+     ═══════════════════════════════════════════════ */
+
+  /* ── Carousel ── */
+  .carousel-wrap { position: relative; border-radius: 12px; overflow: hidden; }
+  .carousel-viewport { overflow: hidden; padding: 24px; }
+  .carousel-track { display: flex; transition: transform 0.3s ease-in-out; }
+  .carousel-slide { width: 100%; flex-shrink: 0; display: flex; justify-content: center; }
+  .carousel-slide img { width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block; }
+  .carousel-slide .slide-label { font-size: 12px; color: var(--color-text-secondary); text-align: center; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 50%; background: #fff; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; transition: background 0.15s; }
+  .carousel-btn:hover { background: #f5f5f5; }
+  .carousel-btn.prev { left: 8px; }
+  .carousel-btn.next { right: 8px; }
+  .carousel-btn svg { width: 16px; height: 16px; color: var(--color-text-primary); }
+
+  .carousel-dots { display: flex; justify-content: center; gap: 6px; padding-bottom: 12px; }
+  .carousel-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; border: none; cursor: pointer; transition: background 0.2s; padding: 0; }
+  .carousel-dot.active { background: var(--color-primary); }
+  .carousel-counter { text-align: center; padding-bottom: 12px; font-size: 14px; color: var(--color-text-secondary); font-variant-numeric: tabular-nums; }
+
+  /* ── Buttons ── */
+  .dl-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 10px; background: var(--color-primary); color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap; border: none; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+  .dl-btn-primary:hover { background: var(--color-primary-hover); }
+  .dl-btn-primary svg { width: 16px; height: 16px; }
+  .dl-btn-primary-sm { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 8px; background: var(--color-primary); color: #fff; font-size: 13px; font-weight: 500; text-decoration: none; white-space: nowrap; border: none; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+  .dl-btn-primary-sm:hover { background: var(--color-primary-hover); }
+  .dl-btn-primary-sm svg { width: 14px; height: 14px; }
+  .dl-btn-outline { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 10px; background: transparent; color: var(--color-primary); font-size: 14px; font-weight: 600; text-decoration: none; white-space: nowrap; border: 2px solid var(--color-primary); cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .dl-btn-outline:hover { background: var(--color-bg-accent-light); }
+  .dl-btn-outline svg { width: 16px; height: 16px; }
+
+  /* ── File card (for individual list approach) ── */
+  .file-card { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 12px; transition: all 0.15s; position: relative; }
+  .file-card .file-icon-wrap { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .file-card .file-info { flex: 1; min-width: 0; }
+  .file-card .file-name { font-weight: 500; font-size: 15px; color: var(--color-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-card .file-meta { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+
+  /* ── Manifest / contents indicator ── */
+  .manifest { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+  .manifest-summary { font-weight: 500; color: var(--color-text-primary); font-size: 14px; }
+  .manifest-files { list-style: none; padding: 0; margin: 6px 0 0 0; }
+  .manifest-files li { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .manifest-files li svg { width: 14px; height: 14px; color: var(--color-text-secondary); flex-shrink: 0; }
+  .manifest-files .fname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+  .manifest-files .fsize { color: var(--color-text-secondary); font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+
+  .manifest-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .manifest-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 99px; background: var(--color-bg-subtle); font-size: 12px; color: var(--color-text-secondary); font-weight: 500; }
+  .manifest-pill svg { width: 12px; height: 12px; }
+
+  .manifest-inline { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--color-text-secondary); margin-top: 4px; }
+  .manifest-inline .sep { color: var(--color-border-light); }
+
+  /* ── Bundle card ── */
+  .bundle-card { background: var(--color-bg-cream); border-radius: 12px; padding: 20px; }
+  .bundle-card-white { background: #fff; border: 1px solid var(--color-border-light); border-radius: 12px; padding: 20px; }
+
+  /* ── Two-column layout ── */
+  .files-layout { display: flex; flex-direction: column; }
+  .files-layout.side-by-side { flex-direction: row; align-items: flex-start; }
+  .files-layout .panel-carousel { min-width: 0; }
+  .files-layout .panel-aside { min-width: 0; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ CONTROLS ═══════════════════ -->
+<div class="controls">
+  <h1>Bestanden Sectie</h1>
+  <div class="subtitle">Preview-driven download experience</div>
+
+  <h2>Presets</h2>
+  <div class="presets" id="presets"></div>
+
+  <h2>Approach</h2>
+  <div class="variant-grid cols-2" id="approach-grid"></div>
+
+  <div id="section-layout" class="control-section">
+    <h2>Layout</h2>
+    <div class="variant-grid cols-3" id="layout-grid"></div>
+    <div class="control-row">
+      <label>Column ratio</label>
+      <select id="ratio">
+        <option value="50/50">50 / 50</option>
+        <option value="55/45">55 / 45</option>
+        <option value="60/40">60 / 40</option>
+      </select>
+    </div>
+    <div class="control-row">
+      <label>Gap</label>
+      <select id="gap">
+        <option value="16">16px</option>
+        <option value="24">24px</option>
+        <option value="32">32px</option>
+      </select>
+    </div>
+  </div>
+
+  <h2>Carousel</h2>
+  <div class="control-row">
+    <label>Background</label>
+    <select id="carousel-bg">
+      <option value="subtle">Subtle (#F5F0EC)</option>
+      <option value="cream">Cream (#FEF8F4)</option>
+      <option value="white">White</option>
+      <option value="none">None (transparent)</option>
+    </select>
+  </div>
+  <div class="toggle-row">
+    <span>Show slide counter</span>
+    <div class="toggle on" id="toggle-counter" onclick="toggleControl('showCounter')"></div>
+  </div>
+
+  <div id="section-bundle" class="control-section">
+    <h2>Download & Contents</h2>
+    <div class="control-row">
+      <label>Download button style</label>
+      <select id="btn-style">
+        <option value="primary">Filled primary</option>
+        <option value="outline">Outline</option>
+      </select>
+    </div>
+    <div class="control-row">
+      <label>Contents manifest</label>
+      <select id="manifest-style">
+        <option value="list">File list (names + sizes)</option>
+        <option value="pills">Type pills (PPTX, 2 PDF)</option>
+        <option value="inline">Inline summary text</option>
+        <option value="none">None (just total size)</option>
+      </select>
+    </div>
+    <div class="control-row">
+      <label>Button position</label>
+      <select id="btn-position">
+        <option value="below-manifest">Below contents</option>
+        <option value="above-manifest">Above contents</option>
+        <option value="beside-manifest">Beside contents (row)</option>
+      </select>
+    </div>
+    <div class="toggle-row">
+      <span>Show file count in button</span>
+      <div class="toggle on" id="toggle-filecount" onclick="toggleControl('showFileCount')"></div>
+    </div>
+    <div class="toggle-row">
+      <span>Show total size</span>
+      <div class="toggle on" id="toggle-totalsize" onclick="toggleControl('showTotalSize')"></div>
+    </div>
+  </div>
+
+  <div id="section-individual" class="control-section">
+    <h2>Individual Files</h2>
+    <div class="control-row">
+      <label>Card style</label>
+      <select id="card-style">
+        <option value="current">Current (cream bg, full button)</option>
+        <option value="compact">Compact (white bg, text-link)</option>
+        <option value="minimal">Minimal (borderless)</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PREVIEW ═══════════════════ -->
+<div class="preview-area">
+  <div class="preview-header">
+    <span class="title">Live Preview</span>
+    <div class="width-toggle">
+      <button class="width-btn active" data-width="900" onclick="setPreviewWidth(900)">lg (900px)</button>
+      <button class="width-btn" data-width="740" onclick="setPreviewWidth(740)">md (740px)</button>
+      <button class="width-btn" data-width="375" onclick="setPreviewWidth(375)">sm (375px)</button>
+    </div>
+  </div>
+  <div class="preview-scroll">
+    <div class="preview-context" id="preview-context" style="max-width: 900px">
+      <div class="page-bg">
+        <div class="section-label-mock">
+          <svg xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+          </svg>
+          Bestanden
+        </div>
+        <div id="files-preview"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="prompt-bar">
+    <div class="header">
+      <span>Prompt output</span>
+      <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">Copy prompt</button>
+    </div>
+    <div id="prompt-output"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA & ICONS
+// ═══════════════════════════════════════════════════
+
+const SVG = {
+  pptx: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" /></svg>`,
+  pdf: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>`,
+  download: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>`,
+  archive: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>`,
+  folder: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" /></svg>`,
+  doc: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>`,
+  chevronL: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>`,
+  chevronR: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>`,
+};
+
+const SLIDE_BASE = 'https://26hartverwarmers.test/storage/file-previews/3/';
+const SLIDES = Array.from({length: 8}, (_, i) => ({
+  url: `${SLIDE_BASE}slide-${String(i + 1).padStart(3, '0')}.jpg`,
+}));
+
+const FILES = [
+  { name: 'quiz-gezonde-voeding.pptx', ext: 'PPTX', size: '43.1 MB', bytes: 45242979, icon: 'pptx', hasPreviews: true },
+  { name: 'Memoriespel Honden - Printbare kaarten.pdf', ext: 'PDF', size: '2.4 MB', bytes: 2457600, icon: 'pdf', hasPreviews: false },
+  { name: 'Memoriespel Honden - Handleiding begeleider.pdf', ext: 'PDF', size: '180 KB', bytes: 184320, icon: 'pdf', hasPreviews: false },
+];
+
+const TOTAL_SIZE = '45.8 MB';
+const FILE_COUNT = FILES.length;
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+
+const DEFAULTS = {
+  // Core approach
+  approach: 'bundle',        // 'bundle' | 'individual'
+  // Layout (for bundle side-by-side)
+  layout: 'stacked',         // 'stacked' | 'side-by-side'
+  ratio: '60/40',
+  gap: 32,
+  // Carousel
+  carouselBg: 'subtle',
+  showCounter: true,
+  // Bundle download
+  btnStyle: 'primary',       // 'primary' | 'outline'
+  manifestStyle: 'list',     // 'list' | 'pills' | 'inline' | 'none'
+  btnPosition: 'below-manifest',  // 'below-manifest' | 'above-manifest' | 'beside-manifest'
+  showFileCount: true,
+  showTotalSize: true,
+  // Individual (old approach)
+  cardStyle: 'current',
+};
+
+let state = { ...DEFAULTS };
+let currentSlide = 0;
+let previewWidth = 900;
+
+// ═══════════════════════════════════════════════════
+// APPROACHES & LAYOUTS
+// ═══════════════════════════════════════════════════
+
+const APPROACHES = [
+  { id: 'bundle', icon: '📦', label: 'Bundle download' },
+  { id: 'individual', icon: '📄', label: 'Individual files' },
+];
+
+const LAYOUTS = [
+  { id: 'stacked', icon: '↕', label: 'Stacked' },
+  { id: 'side-by-side', icon: '◧', label: 'Side-by-side' },
+];
+
+// ═══════════════════════════════════════════════════
+// PRESETS
+// ═══════════════════════════════════════════════════
+
+const PRESETS = [
+  {
+    name: 'Preview + zip',
+    state: { ...DEFAULTS, approach: 'bundle', layout: 'stacked', carouselBg: 'subtle', manifestStyle: 'list', btnStyle: 'primary', btnPosition: 'below-manifest', showFileCount: true, showTotalSize: true },
+  },
+  {
+    name: 'Side-by-side bundle',
+    state: { ...DEFAULTS, approach: 'bundle', layout: 'side-by-side', ratio: '60/40', gap: 32, carouselBg: 'subtle', manifestStyle: 'list', btnStyle: 'primary', btnPosition: 'below-manifest', showFileCount: true, showTotalSize: true },
+  },
+  {
+    name: 'Compact pills',
+    state: { ...DEFAULTS, approach: 'bundle', layout: 'stacked', carouselBg: 'cream', manifestStyle: 'pills', btnStyle: 'primary', btnPosition: 'beside-manifest', showFileCount: true, showTotalSize: true },
+  },
+  {
+    name: 'Minimal',
+    state: { ...DEFAULTS, approach: 'bundle', layout: 'stacked', carouselBg: 'subtle', manifestStyle: 'none', btnStyle: 'primary', btnPosition: 'below-manifest', showFileCount: false, showTotalSize: true },
+  },
+  {
+    name: 'Side-by-side outline',
+    state: { ...DEFAULTS, approach: 'bundle', layout: 'side-by-side', ratio: '55/45', gap: 24, carouselBg: 'cream', manifestStyle: 'list', btnStyle: 'outline', btnPosition: 'below-manifest', showFileCount: true, showTotalSize: true },
+  },
+  {
+    name: 'Current (individual)',
+    state: { ...DEFAULTS, approach: 'individual', layout: 'stacked', carouselBg: 'subtle', cardStyle: 'current' },
+  },
+];
+
+// ═══════════════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════════════
+
+function initControls() {
+  // Presets
+  const presetsEl = document.getElementById('presets');
+  PRESETS.forEach((p, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn';
+    btn.textContent = p.name;
+    btn.dataset.index = i;
+    btn.onclick = () => applyPreset(i);
+    presetsEl.appendChild(btn);
+  });
+
+  // Approaches
+  const approachGrid = document.getElementById('approach-grid');
+  APPROACHES.forEach(a => {
+    const card = document.createElement('div');
+    card.className = 'variant-card';
+    card.dataset.id = a.id;
+    card.innerHTML = `<div class="icon">${a.icon}</div><div class="label">${a.label}</div>`;
+    card.onclick = () => { state.approach = a.id; updateAll(); };
+    approachGrid.appendChild(card);
+  });
+
+  // Layouts
+  const layoutGrid = document.getElementById('layout-grid');
+  LAYOUTS.forEach(l => {
+    const card = document.createElement('div');
+    card.className = 'variant-card';
+    card.dataset.id = l.id;
+    card.innerHTML = `<div class="icon">${l.icon}</div><div class="label">${l.label}</div>`;
+    card.onclick = () => { state.layout = l.id; updateAll(); };
+    layoutGrid.appendChild(card);
+  });
+
+  // Selects
+  bindSelect('ratio', 'ratio');
+  bindSelect('gap', 'gap', true);
+  bindSelect('carousel-bg', 'carouselBg');
+  bindSelect('btn-style', 'btnStyle');
+  bindSelect('manifest-style', 'manifestStyle');
+  bindSelect('btn-position', 'btnPosition');
+  bindSelect('card-style', 'cardStyle');
+}
+
+function bindSelect(elId, stateKey, isNum) {
+  document.getElementById(elId).onchange = function() {
+    state[stateKey] = isNum ? +this.value : this.value;
+    updateAll();
+  };
+}
+
+function toggleControl(key) {
+  state[key] = !state[key];
+  const idMap = { showCounter: 'toggle-counter', showFileCount: 'toggle-filecount', showTotalSize: 'toggle-totalsize' };
+  const el = document.getElementById(idMap[key]);
+  if (el) el.classList.toggle('on', state[key]);
+  updateAll();
+}
+
+function setPreviewWidth(w) {
+  previewWidth = w;
+  document.getElementById('preview-context').style.maxWidth = w + 'px';
+  document.querySelectorAll('.width-btn').forEach(b => b.classList.toggle('active', +b.dataset.width === w));
+  updateAll();
+}
+
+function applyPreset(index) {
+  state = { ...PRESETS[index].state };
+  currentSlide = 0;
+  syncControlsToState();
+  updateAll();
+}
+
+function syncControlsToState() {
+  // Selects
+  document.getElementById('ratio').value = state.ratio;
+  document.getElementById('gap').value = state.gap;
+  document.getElementById('carousel-bg').value = state.carouselBg;
+  document.getElementById('btn-style').value = state.btnStyle;
+  document.getElementById('manifest-style').value = state.manifestStyle;
+  document.getElementById('btn-position').value = state.btnPosition;
+  document.getElementById('card-style').value = state.cardStyle;
+
+  // Toggles
+  document.getElementById('toggle-counter').classList.toggle('on', state.showCounter);
+  document.getElementById('toggle-filecount').classList.toggle('on', state.showFileCount);
+  document.getElementById('toggle-totalsize').classList.toggle('on', state.showTotalSize);
+
+  // Approach cards
+  document.querySelectorAll('#approach-grid .variant-card').forEach(c => c.classList.toggle('active', c.dataset.id === state.approach));
+
+  // Layout cards
+  document.querySelectorAll('#layout-grid .variant-card').forEach(c => c.classList.toggle('active', c.dataset.id === state.layout));
+
+  // Conditional sections
+  const isBundle = state.approach === 'bundle';
+  document.getElementById('section-bundle').classList.toggle('disabled', !isBundle);
+  document.getElementById('section-individual').classList.toggle('disabled', isBundle);
+  document.getElementById('section-layout').classList.toggle('disabled', false);
+
+  // Preset buttons
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    const p = PRESETS[+b.dataset.index];
+    b.classList.toggle('active', JSON.stringify(p.state) === JSON.stringify(state));
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// CAROUSEL
+// ═══════════════════════════════════════════════════
+
+function goToSlide(i) {
+  currentSlide = Math.max(0, Math.min(i, SLIDES.length - 1));
+  updateAll();
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER HELPERS
+// ═══════════════════════════════════════════════════
+
+function buildCarouselHtml() {
+  const bgMap = { subtle: 'var(--color-bg-subtle)', cream: 'var(--color-bg-cream)', white: '#fff', none: 'transparent' };
+
+  const slidesHtml = SLIDES.map((s, i) => `
+    <div class="carousel-slide">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;width:100%">
+        <img src="${s.url}" alt="Preview slide ${i + 1}" style="max-width:100%" onerror="this.parentElement.innerHTML='<div style=\\'width:100%;aspect-ratio:4/3;background:#e5e5e5;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px\\'>Slide ${i + 1}</div>'">
+      </div>
+    </div>
+  `).join('');
+
+  let indicatorHtml = '';
+  if (state.showCounter && SLIDES.length > 1) {
+    indicatorHtml = `<div class="carousel-counter">${currentSlide + 1} / ${SLIDES.length}</div>`;
+  }
+
+  return `
+    <div class="carousel-wrap" style="background:${bgMap[state.carouselBg]}">
+      <div class="carousel-viewport">
+        <div class="carousel-track" style="transform:translateX(-${currentSlide * 100}%)">
+          ${slidesHtml}
+        </div>
+      </div>
+      ${currentSlide > 0 ? `<button class="carousel-btn prev" onclick="goToSlide(${currentSlide - 1})">${SVG.chevronL}</button>` : ''}
+      ${currentSlide < SLIDES.length - 1 ? `<button class="carousel-btn next" onclick="goToSlide(${currentSlide + 1})">${SVG.chevronR}</button>` : ''}
+      ${indicatorHtml}
+    </div>
+  `;
+}
+
+function buildDownloadBtnHtml() {
+  const cls = state.btnStyle === 'outline' ? 'dl-btn-outline' : 'dl-btn-primary';
+  let label = 'Download';
+  if (state.showFileCount) label += ` alle ${FILE_COUNT} bestanden`;
+  if (state.showTotalSize) label += ` (${TOTAL_SIZE})`;
+  return `<button class="${cls}">${SVG.download} ${label}</button>`;
+}
+
+function buildManifestHtml() {
+  switch (state.manifestStyle) {
+    case 'list':
+      return `
+        <div class="manifest">
+          <div class="manifest-summary">In deze download:</div>
+          <ul class="manifest-files">
+            ${FILES.map(f => `
+              <li>
+                <span style="width:14px;height:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--color-text-secondary)">${SVG[f.icon] || SVG.doc}</span>
+                <span class="fname">${f.name}</span>
+                <span class="fsize">${f.size}</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `;
+
+    case 'pills': {
+      // Group by extension
+      const groups = {};
+      FILES.forEach(f => { groups[f.ext] = (groups[f.ext] || 0) + 1; });
+      const pills = Object.entries(groups).map(([ext, count]) => {
+        const icon = ext === 'PPTX' ? SVG.pptx : SVG.pdf;
+        return `<span class="manifest-pill"><span style="width:12px;height:12px;display:inline-flex">${icon}</span>${count > 1 ? count + '× ' : ''}${ext}</span>`;
+      }).join('');
+      return `<div class="manifest-pills">${pills}${state.showTotalSize ? `<span class="manifest-pill">${TOTAL_SIZE}</span>` : ''}</div>`;
+    }
+
+    case 'inline':
+      return `<div class="manifest-inline">${FILE_COUNT} bestanden <span class="sep">·</span> 1 PPTX, 2 PDF <span class="sep">·</span> ${TOTAL_SIZE}</div>`;
+
+    case 'none':
+      return '';
+  }
+}
+
+function buildBundlePanelHtml() {
+  const btnHtml = buildDownloadBtnHtml();
+  const manifestHtml = buildManifestHtml();
+
+  if (state.btnPosition === 'beside-manifest') {
+    return `
+      <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:180px">${manifestHtml}</div>
+        <div style="flex-shrink:0;align-self:center">${btnHtml}</div>
+      </div>
+    `;
+  }
+
+  if (state.btnPosition === 'above-manifest') {
+    return `
+      <div style="display:flex;flex-direction:column;gap:16px">
+        ${btnHtml}
+        ${manifestHtml}
+      </div>
+    `;
+  }
+
+  // below-manifest (default)
+  return `
+    <div style="display:flex;flex-direction:column;gap:16px">
+      ${manifestHtml}
+      ${btnHtml}
+    </div>
+  `;
+}
+
+function buildIndividualListHtml() {
+  return FILES.map(f => {
+    let cardBg, dlBtn;
+    switch (state.cardStyle) {
+      case 'current':
+        cardBg = 'background: var(--color-bg-cream);';
+        dlBtn = `<button class="dl-btn-primary-sm">${SVG.download} Download</button>`;
+        break;
+      case 'compact':
+        cardBg = 'background: #fff; border: 1px solid var(--color-border-light);';
+        dlBtn = `<button style="color:var(--color-primary);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer;white-space:nowrap"><span style="width:14px;height:14px;display:inline-flex">${SVG.download}</span> Download</button>`;
+        break;
+      case 'minimal':
+        cardBg = 'background: transparent; border-bottom: 1px solid var(--color-border-light); border-radius: 0;';
+        dlBtn = `<button style="color:var(--color-primary);font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer;white-space:nowrap"><span style="width:14px;height:14px;display:inline-flex">${SVG.download}</span></button>`;
+        break;
+    }
+    const iconBg = state.cardStyle === 'current' ? 'background:#fff;' : 'background:var(--color-bg-cream);';
+    return `
+      <div class="file-card" style="${cardBg}">
+        <div class="file-icon-wrap" style="${iconBg}">
+          <span style="color:var(--color-primary);width:20px;height:20px;display:flex">${SVG[f.icon] || SVG.doc}</span>
+        </div>
+        <div class="file-info">
+          <div class="file-name">${f.name}</div>
+          <div class="file-meta">${f.ext} · ${f.size}</div>
+        </div>
+        ${dlBtn}
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// MAIN RENDER
+// ═══════════════════════════════════════════════════
+
+function updateAll() {
+  syncControlsToState();
+  renderPreview();
+  updatePrompt();
+}
+
+function renderPreview() {
+  const el = document.getElementById('files-preview');
+  const isMobile = previewWidth <= 480;
+  const carouselHtml = buildCarouselHtml();
+
+  if (state.approach === 'individual') {
+    // ── INDIVIDUAL FILES APPROACH ──
+    const isSideBySide = state.layout === 'side-by-side' && !isMobile;
+    const [left, right] = state.ratio.split('/').map(Number);
+    const listHtml = `<div style="display:flex;flex-direction:column;gap:${state.cardStyle === 'minimal' ? '0' : '12'}px">${buildIndividualListHtml()}</div>`;
+
+    if (isSideBySide) {
+      el.innerHTML = `
+        <div class="files-layout side-by-side" style="gap:${state.gap}px">
+          <div class="panel-carousel" style="flex:${left};min-width:0">${carouselHtml}</div>
+          <div class="panel-aside" style="flex:${right};min-width:0">${listHtml}</div>
+        </div>
+      `;
+    } else {
+      el.innerHTML = `
+        <div class="files-layout" style="gap:16px">
+          <div class="panel-carousel">${carouselHtml}</div>
+          <div class="panel-aside">${listHtml}</div>
+        </div>
+      `;
+    }
+    return;
+  }
+
+  // ── BUNDLE APPROACH ──
+  const bundlePanelHtml = buildBundlePanelHtml();
+  const isSideBySide = state.layout === 'side-by-side' && !isMobile;
+  const [left, right] = state.ratio.split('/').map(Number);
+
+  if (isSideBySide) {
+    el.innerHTML = `
+      <div class="files-layout side-by-side" style="gap:${state.gap}px">
+        <div class="panel-carousel" style="flex:${left};min-width:0">
+          ${carouselHtml}
+        </div>
+        <div class="panel-aside" style="flex:${right};min-width:0">
+          <div class="bundle-card">
+            ${bundlePanelHtml}
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    // Stacked
+    el.innerHTML = `
+      <div class="files-layout" style="gap:16px">
+        <div class="panel-carousel">${carouselHtml}</div>
+        <div class="panel-aside">${bundlePanelHtml}</div>
+      </div>
+    `;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// PROMPT
+// ═══════════════════════════════════════════════════
+
+function updatePrompt() {
+  const parts = [];
+
+  if (state.approach === 'bundle') {
+    parts.push(`**Approach: Bundle download** — The preview carousel is the hero. Users browse the preview to decide whether to download. A single "Download all" button provides a zip of all files. No individual file downloads.`);
+
+    const layoutNames = { stacked: 'stacked (carousel above download panel)', 'side-by-side': 'side-by-side (carousel left, download card right)' };
+    parts.push(`Layout: **${layoutNames[state.layout]}**.`);
+    if (state.layout === 'side-by-side') parts.push(`Column ratio: **${state.ratio}**, gap: **${state.gap}px**.`);
+
+    const bgNames = { subtle: 'subtle gray', cream: 'cream', white: 'white', none: 'transparent' };
+    parts.push(`Carousel background: ${bgNames[state.carouselBg]}.`);
+
+    const btnNames = { primary: 'filled primary orange', outline: 'outline primary orange' };
+    parts.push(`Download button: ${btnNames[state.btnStyle]}.`);
+    if (state.showFileCount) parts.push(`Button label includes file count.`);
+    if (state.showTotalSize) parts.push(`Button label includes total download size.`);
+
+    const manifestNames = { list: 'file list with names and sizes', pills: 'grouped type pills (e.g. "1× PPTX, 2× PDF")', inline: 'inline summary text', none: 'none (no contents manifest)' };
+    parts.push(`Contents manifest: ${manifestNames[state.manifestStyle]}.`);
+    if (state.manifestStyle !== 'none') {
+      const posNames = { 'below-manifest': 'below the manifest', 'above-manifest': 'above the manifest', 'beside-manifest': 'beside the manifest (horizontal row)' };
+      parts.push(`Button position: ${posNames[state.btnPosition]}.`);
+    }
+
+    parts.push(`\nIf there is only one file, skip the bundle and show a direct download button instead.`);
+    parts.push(`Mobile: stack to single column, carousel on top, download panel below.`);
+  } else {
+    parts.push(`**Approach: Individual file downloads** — Current pattern with carousel preview and separate download button per file.`);
+    const layoutNames = { stacked: 'stacked (carousel above file list)', 'side-by-side': 'side-by-side (carousel left, files right)' };
+    parts.push(`Layout: **${layoutNames[state.layout]}**.`);
+    if (state.layout === 'side-by-side') parts.push(`Column ratio: **${state.ratio}**, gap: **${state.gap}px**.`);
+
+    const cardNames = { current: 'cream background, icon, full primary button', compact: 'white with border, text-link download', minimal: 'borderless with bottom dividers' };
+    parts.push(`File card style: ${cardNames[state.cardStyle]}.`);
+  }
+
+  document.getElementById('prompt-output').textContent = parts.join('\n');
+}
+
+function copyPrompt() {
+  const text = document.getElementById('prompt-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy prompt'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════
+
+initControls();
+applyPreset(0);
+</script>
+</body>
+</html>

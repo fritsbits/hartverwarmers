@@ -327,33 +327,21 @@
     margin-bottom: var(--space-md);
   }
 
-  /* DIAMANT badge */
-  .diamant-badge {
-    @apply inline-flex items-center justify-center w-12 h-12 rounded-full text-white text-lg font-bold shrink-0;
-    font-family: var(--font-heading);
-    background-color: var(--color-primary);
-  }
-
-  .diamant-badge-sm {
-    @apply inline-flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-bold shrink-0;
-    font-family: var(--font-heading);
-    background-color: var(--color-primary);
-  }
-
-  .diamant-badge-sm-inactive {
-    @apply inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold shrink-0;
-    font-family: var(--font-heading);
-    background-color: var(--color-bg-subtle);
+  /* Diamond indicator — gem icon + label pill */
+  .diamond-indicator {
+    @apply inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full font-medium;
+    font-size: 15px;
+    background-color: #FDF3EE;
     color: var(--color-text-secondary);
   }
 
-  /* Diamond indicator */
-  .diamond-indicator {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium;
-    background-color: #FDF3EE;
-    color: var(--color-primary);
-  }
 
+  /* Field tag — small inline label placed next to form field labels */
+  .field-tag {
+    @apply inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium leading-none;
+    background: var(--color-bg-white);
+    color: var(--color-text-secondary);
+  }
 
   /* Primary color utilities (for Flux compatibility) */
   .text-primary {
@@ -432,14 +420,14 @@
     border: 1px solid var(--color-border-light);
   }
 
-  /* DIAMANT pill — compact goal link */
+  /* DIAMANT pill — compact goal link with gem icon */
   .diamant-pill {
     @apply inline-flex items-center rounded-full font-semibold no-underline;
     gap: 6px;
-    padding: 5px 12px 5px 8px;
+    padding: 5px 12px 5px 6px;
     font-family: var(--font-body);
     font-size: 13px;
-    background: #FEF8F4;
+    background: var(--color-bg-subtle);
     color: #231E1A;
     transition: all 0.15s ease;
   }
@@ -454,43 +442,11 @@
     color: #B0A89F;
   }
 
-  /* DIAMANT letter — diamond-shaped indicator inside pill */
-  .diamant-letter {
-    @apply inline-flex items-center justify-center shrink-0;
-    width: 18px;
-    height: 18px;
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 11px;
-    background: #E8764B;
-    color: #FFFFFF;
-    line-height: 1;
-    border-radius: 3px;
-    transform: rotate(45deg);
-  }
-
-  .diamant-letter span {
-    transform: rotate(-45deg);
-    display: block;
-  }
-
-  .diamant-letter-inactive {
-    background: #F5F0EC;
-    color: #B0A89F;
-  }
-
   /* DIAMANT pill — small variant for meta strip */
   .diamant-pill-sm {
     gap: 5px;
-    padding: 3px 9px 3px 6px;
+    padding: 3px 9px 3px 4px;
     font-size: 12px;
-  }
-
-  .diamant-letter-sm {
-    width: 15px;
-    height: 15px;
-    font-size: 9px;
-    border-radius: 2.5px;
   }
 
   /* Meta group — icon + text metadata rows (counts, durations, author) */

@@ -34,8 +34,13 @@
                     <flux:breadcrumbs.item>{{ $fiche->title }}</flux:breadcrumbs.item>
                 </flux:breadcrumbs>
                 @auth
-                    @if(auth()->user()->isAdmin())
-                        <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2">
+                        @can('update', $fiche)
+                            <flux:button variant="ghost" size="sm" icon="pencil-square" href="{{ route('fiches.edit', $fiche) }}">
+                                Bewerken
+                            </flux:button>
+                        @endcan
+                        @if(auth()->user()->isAdmin())
                             <form action="{{ route('fiches.toggleDiamond', [$initiative, $fiche]) }}" method="POST">
                                 @csrf
                                 <flux:button type="submit" :variant="$fiche->has_diamond ? 'primary' : 'ghost'" icon="sparkles" size="sm">
@@ -45,8 +50,8 @@
                             <flux:modal.trigger name="delete-fiche">
                                 <flux:button variant="danger" size="sm" icon="trash">Verwijderen</flux:button>
                             </flux:modal.trigger>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
                 @endauth
             </div>
 
@@ -93,6 +98,7 @@
                                 </div>
                             @endif
 
+                            @feature('diamant-goals')
                             @if($goalTags->isNotEmpty())
                                 <div class="flex items-start gap-3">
                                     <div class="w-10 h-10 rounded-lg bg-[var(--color-bg-subtle)] flex items-center justify-center shrink-0">
@@ -110,7 +116,7 @@
                                             @foreach($facets as $slug => $facet)
                                                 @if(in_array($slug, $activeGoalSlugs))
                                                     <a href="{{ route('goals.show', $slug) }}" class="diamant-pill diamant-pill-sm">
-                                                        <span class="diamant-letter diamant-letter-sm"><span>{{ $facet['letter'] }}</span></span>
+                                                        <x-diamant-gem :letter="$facet['letter']" size="xxs" />
                                                         {{ $facet['keyword'] }}
                                                     </a>
                                                 @endif
@@ -119,6 +125,7 @@
                                     </div>
                                 </div>
                             @endif
+                            @endfeature
                         </div>
                     @endif
 
@@ -137,7 +144,7 @@
                                 $sectionTitles = collect($fiche->materials_meta)->pluck('label')->merge($sectionTitles);
                             }
                         @endphp
-                        <div x-data="{ open: false }" class="mt-8 rounded-xl border border-[var(--color-border-light)] transition-all duration-200 hover:-translate-y-0.5" :class="!open && 'hover:border-[var(--color-border-hover)]'">
+                        <div x-data="{ open: false }" class="mt-8 rounded-xl border border-[var(--color-border-light)] transition-all duration-200" :class="open ? 'bg-white shadow-card' : 'hover:-translate-y-0.5 hover:bg-white hover:shadow-card hover:border-[var(--color-border-hover)]'">
                             <button @click="open = !open" class="w-full text-left px-5 py-4 flex items-center gap-4 cursor-pointer group">
                                 {{-- Clipboard icon in subtle circle --}}
                                 <div class="w-12 h-12 rounded-full bg-[var(--color-bg-subtle)] flex items-center justify-center shrink-0">
@@ -155,21 +162,17 @@
                             </button>
 
                             <div x-show="open" x-collapse x-cloak>
-                                <div class="px-5 pb-6">
-                                    @foreach($fiche->materials_meta as $meta)
-                                        <div class="flex items-baseline gap-2 mb-4">
-                                            <span class="font-heading text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wide">{{ $meta['label'] }}:</span>
-                                            <span class="leading-relaxed">{{ $meta['value'] }}</span>
-                                        </div>
-                                    @endforeach
-
-                                    @if($fiche->materials_meta && $fiche->practical_sections)
-                                        <hr class="border-[var(--color-border-light)] my-2">
-                                    @endif
-
+                                <div class="px-5 pb-6 border-t border-[var(--color-border-light)]">
                                     <div class="divide-y divide-[var(--color-border-light)]">
+                                        @foreach($fiche->materials_meta as $meta)
+                                            <div class="pt-5 {{ !$loop->last || $fiche->practical_sections ? 'pb-5' : '' }}">
+                                                <h3 class="font-heading text-lg font-bold mb-3" style="color: var(--color-primary)">{{ $meta['label'] }}</h3>
+                                                <div class="practical-content">{{ $meta['value'] }}</div>
+                                            </div>
+                                        @endforeach
+
                                         @foreach($fiche->practical_sections as $section)
-                                            <div class="{{ !$loop->first ? 'pt-5' : '' }} {{ !$loop->last ? 'pb-5' : '' }}">
+                                            <div class="pt-5 {{ !$loop->last ? 'pb-5' : '' }}">
                                                 <h3 class="font-heading text-lg font-bold mb-3" style="color: var(--color-primary)">{{ $section['title'] }}</h3>
                                                 <div class="practical-content">
                                                     {!! $section['content'] !!}
@@ -262,39 +265,62 @@
                             Bestanden
                         </span>
 
-                        <x-file-preview-carousel :files="$fiche->files" />
+                        @php
+                            $fileCount = $fiche->files->count();
+                            $uniqueTypes = $fiche->files->map->typeLabel()->unique();
+                            $downloadTitle = match (true) {
+                                $fileCount === 1 => 'Download ' . $uniqueTypes->first(),
+                                $uniqueTypes->count() === 1 => 'Download ' . $fileCount . ' ' . Str::lower($uniqueTypes->first()) . '-bestanden',
+                                default => 'Download materiaal',
+                            };
+                            $totalSize = $fiche->files->sum('size_bytes');
+                            $totalMb = $totalSize / (1024 * 1024);
+                            $totalFormatted = $totalMb >= 1
+                                ? number_format($totalMb, 1) . ' MB'
+                                : number_format($totalSize / 1024, 0) . ' KB';
+                            $sizeLabel = $fileCount === 1
+                                ? $fiche->files->first()->formattedSize()
+                                : $totalFormatted;
+                        @endphp
 
-                        <div class="space-y-3 mt-4">
-                            @foreach($fiche->files as $file)
-                                <div class="flex items-center gap-4 bg-[var(--color-bg-cream)] rounded-xl p-4">
+                        {{-- Header row: title + pills left, download button right --}}
+                        <div class="flex flex-wrap items-start justify-between gap-4 mt-1 mb-4">
+                            <div>
+                                <h2>{{ $downloadTitle }}</h2>
+                                @if($fileCount > 1)
                                     @php
-                                        $icon = match(true) {
-                                            str_contains($file->mime_type, 'pdf') => 'document-text',
-                                            str_contains($file->mime_type, 'image') => 'photo',
-                                            str_contains($file->mime_type, 'word') || str_contains($file->mime_type, 'document') => 'document',
-                                            str_contains($file->mime_type, 'presentation') || str_contains($file->mime_type, 'powerpoint') => 'presentation-chart-bar',
-                                            str_contains($file->mime_type, 'spreadsheet') || str_contains($file->mime_type, 'excel') => 'table-cells',
-                                            default => 'document',
-                                        };
-                                        $extension = strtoupper(pathinfo($file->original_filename, PATHINFO_EXTENSION));
-                                        $sizeMb = $file->size_bytes / (1024 * 1024);
-                                        $sizeFormatted = $sizeMb >= 1
-                                            ? number_format($sizeMb, 1) . ' MB'
-                                            : number_format($file->size_bytes / 1024, 0) . ' KB';
+                                        $grouped = $fiche->files->groupBy(fn ($f) => strtoupper(pathinfo($f->original_filename, PATHINFO_EXTENSION)));
                                     @endphp
-                                    <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center shrink-0">
-                                        <flux:icon :name="$icon" class="w-5 h-5" style="color: var(--color-primary)" />
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        @foreach($grouped as $ext => $group)
+                                            <flux:tooltip position="top">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-bg-subtle)] text-sm text-[var(--color-text-secondary)] font-medium cursor-default">
+                                                    {{ $group->count() > 1 ? $group->count() . '× ' : '' }}{{ $ext }}
+                                                </span>
+                                                <flux:tooltip.content class="max-w-xs">
+                                                    {{ $group->pluck('original_filename')->join(', ') }}
+                                                </flux:tooltip.content>
+                                            </flux:tooltip>
+                                        @endforeach
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="font-medium truncate">{{ $file->original_filename }}</p>
-                                        <p class="text-sm text-[var(--color-text-secondary)]">{{ $extension }} · {{ $sizeFormatted }}</p>
-                                    </div>
-                                    <flux:button variant="primary" href="{{ Storage::url($file->path) }}" target="_blank" icon="arrow-down-tray" size="sm">
-                                        Download
-                                    </flux:button>
-                                </div>
-                            @endforeach
+                                @endif
+                            </div>
+
+                            <flux:button variant="primary" icon="arrow-down-tray"
+                                href="{{ route('fiches.download', [$initiative, $fiche]) }}">
+                                Download
+                                <span class="text-xs font-normal text-white/70">({{ $sizeLabel }})</span>
+                            </flux:button>
                         </div>
+
+                        @if($fiche->files->contains(fn ($f) => $f->hasPreviewImages()))
+                            @php
+                                $carouselSizeFormatted = $totalMb >= 1
+                                    ? number_format($totalMb, 0) . ' MB'
+                                    : number_format($totalSize / 1024, 0) . ' KB';
+                            @endphp
+                            <x-file-preview-carousel :files="$fiche->files" :download-url="route('fiches.download', [$initiative, $fiche])" download-label="Download" :download-size="$carouselSizeFormatted" />
+                        @endif
                     </div>
                 @endif
 

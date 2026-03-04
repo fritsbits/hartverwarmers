@@ -162,7 +162,7 @@
                     @if($slug !== $facet['slug'])
                         <a href="{{ route('goals.show', $slug) }}"
                            class="flex items-center gap-4 p-4 rounded-xl hover:bg-[var(--color-bg-subtle)] transition-colors">
-                            <span class="text-2xl font-bold shrink-0" style="font-family: var(--font-heading); color: var(--color-primary)">{{ $item['letter'] }}</span>
+                            <x-diamant-gem :letter="$item['letter']" size="md" />
                             <div class="flex-1 min-w-0">
                                 <span class="font-semibold text-[var(--color-text-primary)]">{{ $item['keyword'] }}</span>
                                 <span class="text-[var(--color-text-secondary)]"> &middot; {{ $item['tagline'] }}</span>

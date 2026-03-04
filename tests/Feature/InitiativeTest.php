@@ -7,6 +7,7 @@ use App\Models\Initiative;
 use App\Models\Like;
 use App\Models\Tag;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -24,67 +25,72 @@ class InitiativeTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee($published->title);
         $response->assertDontSee($unpublished->title);
+        $response->assertViewHas('initiatives', fn ($initiatives) => $initiatives instanceof Collection);
     }
 
-    public function test_initiatives_index_filters_by_tag(): void
+    public function test_initiatives_index_orders_alphabetically(): void
     {
-        $tag = Tag::factory()->theme()->create();
-        $tagged = Initiative::factory()->published()->create();
-        $tagged->tags()->attach($tag);
-        $untagged = Initiative::factory()->published()->create();
+        Initiative::factory()->published()->create(['title' => 'Zingen met bewoners']);
+        Initiative::factory()->published()->create(['title' => 'Aardbei plukken']);
+        Initiative::factory()->published()->create(['title' => 'Muziektherapie']);
 
-        $response = $this->get(route('initiatives.index', ['tag' => $tag->slug]));
+        $response = $this->get(route('initiatives.index'));
 
         $response->assertStatus(200);
-        $response->assertSee($tagged->title);
-        $response->assertDontSee($untagged->title);
+        $titles = $response->viewData('initiatives')->pluck('title')->values()->all();
+        $this->assertEquals(['Aardbei plukken', 'Muziektherapie', 'Zingen met bewoners'], $titles);
     }
 
-    public function test_initiatives_index_filters_by_search(): void
+    public function test_initiatives_index_passes_goal_data(): void
     {
-        $matching = Initiative::factory()->published()->create(['title' => 'Muziektherapie voor senioren']);
-        $nonMatching = Initiative::factory()->published()->create(['title' => 'Wandelen in het park']);
-
-        $response = $this->get(route('initiatives.index', ['search' => 'Muziek']));
+        $response = $this->get(route('initiatives.index'));
 
         $response->assertStatus(200);
-        $response->assertSee($matching->title);
-        $response->assertDontSee($nonMatching->title);
+        $response->assertViewHas('goals');
+        $goals = $response->viewData('goals');
+        $this->assertCount(7, $goals);
+        $this->assertArrayHasKey('slug', $goals[0]);
+        $this->assertArrayHasKey('tagSlug', $goals[0]);
+        $this->assertArrayHasKey('letter', $goals[0]);
+        $this->assertArrayHasKey('keyword', $goals[0]);
+        $this->assertArrayHasKey('description', $goals[0]);
     }
 
-    public function test_initiatives_index_search_and_tag_combined(): void
+    public function test_initiatives_index_eager_loads_goal_tags(): void
     {
-        $tag = Tag::factory()->theme()->create();
-        $matchesBoth = Initiative::factory()->published()->create(['title' => 'Muziektherapie']);
-        $matchesBoth->tags()->attach($tag);
-        $matchesSearchOnly = Initiative::factory()->published()->create(['title' => 'Muziekles']);
-        $matchesTagOnly = Initiative::factory()->published()->create(['title' => 'Wandelen']);
-        $matchesTagOnly->tags()->attach($tag);
+        $initiative = Initiative::factory()->published()->create();
+        $goalTag = Tag::factory()->goal()->create(['slug' => 'doel-doen']);
+        $themeTag = Tag::factory()->theme()->create();
+        $initiative->tags()->attach([$goalTag->id, $themeTag->id]);
 
-        $response = $this->get(route('initiatives.index', ['search' => 'Muziek', 'tag' => $tag->slug]));
+        $response = $this->get(route('initiatives.index'));
 
-        $response->assertStatus(200);
-        $response->assertSee($matchesBoth->title);
-        $response->assertDontSee($matchesSearchOnly->title);
-        $response->assertDontSee($matchesTagOnly->title);
+        $loadedTags = $response->viewData('initiatives')->first()->tags;
+        $this->assertTrue($loadedTags->contains('id', $goalTag->id));
+        $this->assertFalse($loadedTags->contains('id', $themeTag->id));
     }
 
-    public function test_initiatives_index_search_matches_description(): void
+    public function test_initiatives_index_includes_published_fiche_count(): void
     {
-        $matching = Initiative::factory()->published()->create([
-            'title' => 'Activiteit A',
-            'description' => 'Een leuke knutselmiddag voor bewoners',
-        ]);
-        $nonMatching = Initiative::factory()->published()->create([
-            'title' => 'Activiteit B',
-            'description' => 'Wandelen door de tuin',
-        ]);
+        $initiative = Initiative::factory()->published()->create();
+        Fiche::factory()->published()->count(3)->create(['initiative_id' => $initiative->id]);
+        Fiche::factory()->create(['initiative_id' => $initiative->id, 'published' => false]);
 
-        $response = $this->get(route('initiatives.index', ['search' => 'knutsel']));
+        $response = $this->get(route('initiatives.index'));
+
+        $this->assertEquals(3, $response->viewData('initiatives')->first()->fiches_count);
+    }
+
+    public function test_initiatives_index_returns_all_without_pagination(): void
+    {
+        Initiative::factory()->published()->count(15)->create();
+
+        $response = $this->get(route('initiatives.index'));
 
         $response->assertStatus(200);
-        $response->assertSee($matching->title);
-        $response->assertDontSee($nonMatching->title);
+        $initiatives = $response->viewData('initiatives');
+        $this->assertInstanceOf(Collection::class, $initiatives);
+        $this->assertCount(15, $initiatives);
     }
 
     public function test_initiative_show_displays_published_initiative(): void
@@ -431,5 +437,21 @@ class InitiativeTest extends TestCase
             'commentable_id' => $initiative->id,
             'body' => 'Geweldig initiatief!',
         ]);
+    }
+
+    public function test_thumbnail_url_derives_from_image_path(): void
+    {
+        $initiative = Initiative::factory()->published()->create([
+            'image' => '/storage/initiatives/bingo.webp',
+        ]);
+
+        $this->assertEquals('/storage/initiatives/bingo-thumb.webp', $initiative->thumbnailUrl());
+    }
+
+    public function test_thumbnail_url_returns_null_when_no_image(): void
+    {
+        $initiative = Initiative::factory()->published()->create(['image' => null]);
+
+        $this->assertNull($initiative->thumbnailUrl());
     }
 }

@@ -22,12 +22,13 @@ class FileFactory extends Factory
         ];
     }
 
-    public function withPreviews(int $count = 3): static
+    public function withPreviews(int $count = 3, ?int $totalSlides = null): static
     {
         return $this->state(fn () => [
             'preview_images' => collect(range(1, $count))
                 ->map(fn ($i) => 'file-previews/'.fake()->randomNumber(3).'/slide-'.str_pad($i, 3, '0', STR_PAD_LEFT).'.jpg')
                 ->all(),
+            'total_slides' => $totalSlides ?? $count,
         ]);
     }
 

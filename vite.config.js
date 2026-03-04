@@ -7,15 +7,8 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
+            detectTls: '26hartverwarmers.test',
         }),
         tailwindcss(),
     ],
-    server: {
-        host: 'localhost',
-        port: 5173,
-        strictPort: true,
-        hmr: {
-            host: 'localhost',
-        },
-    },
 });

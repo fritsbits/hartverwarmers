@@ -255,6 +255,24 @@
 
 **When NOT to use:** Don't use for DIAMANT goals — those have their own dedicated badge components (.diamant-badge variants).
 
+## Form Labels
+
+### Field Tag
+
+**Class:** `.field-tag`
+
+**When to use:** Small inline label placed next to form field labels to indicate status or requirements (e.g. "Verplicht", "Optioneel", "Nieuw"). White background with text-secondary color. Place inside `<flux:label>` after the label text.
+
+**HTML pattern:**
+
+```html
+<flux:label class="text-base font-heading font-bold">
+    Titel <span class="field-tag ml-1">Verplicht</span>
+</flux:label>
+```
+
+**When NOT to use:** Don't use for large status indicators or badges — use `<flux:badge>` instead. Don't use outside of form contexts.
+
 ## Cards
 
 ### Content Card
@@ -381,6 +399,7 @@
 | DIAMANT Badge (Inactive) | `.diamant-badge-sm-inactive` | Greyed-out DIAMANT letter badge for goals NOT associated with the current initiative | Don't use standalone — always display alongside active  |
 | Diamond Indicator | `.diamond-indicator` | Pill-shaped badge with light orange background showing DIAMANT goal association | Don't use in compact lists — too wide |
 | Flux Badge | `<flux:badge>` | General-purpose tag/status badge | Don't use for DIAMANT goals — those have their own dedicated badge components ( |
+| Field Tag | `.field-tag` | Small inline label next to form field labels (e.g. "Verplicht", "Optioneel") | Don't use for large status indicators — use `<flux:badge>` |
 | Content Card | `.content-card` | Clickable content card with hover lift effect | Don't use for static/non-clickable content — use flux:card instead |
 | Flux Card | `<flux:card>` | Static content container | Don't use for browsable content grids — use  |
 | Quote Card | `.quote-card` | Full-orange card for displaying inspirational quotes on goal detail pages | Don't use for general content — only for quotes/testimonials |

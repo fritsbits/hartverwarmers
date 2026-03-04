@@ -7,10 +7,7 @@
 
 <div {{ $attributes->merge(['class' => 'flex items-center gap-2']) }}>
     @foreach($facets as $slug => $facet)
-        @if(in_array($slug, $activeGoalSlugs))
-            <span class="diamant-badge-sm" title="{{ $facet['keyword'] }}">{{ $facet['letter'] }}</span>
-        @else
-            <span class="diamant-badge-sm-inactive" title="{{ $facet['keyword'] }}">{{ $facet['letter'] }}</span>
-        @endif
+        <x-diamant-gem :letter="$facet['letter']" size="sm"
+            :active="in_array($slug, $activeGoalSlugs)" :title="$facet['keyword']" />
     @endforeach
 </div>

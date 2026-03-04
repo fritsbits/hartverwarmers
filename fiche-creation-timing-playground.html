@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiche Creation Flow — Timing Playground</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700" rel="stylesheet">
+<style>
+  :root {
+    --color-primary: #E8764B;
+    --color-primary-light: #F0A07A;
+    --color-primary-dark: #C95E35;
+    --color-bg-subtle: #F5F0EC;
+    --color-bg-cream: #FEF8F4;
+    --color-text-primary: #231E1A;
+    --color-text-secondary: #756C65;
+    --color-border-light: #EBE4DE;
+    --color-success: #4CAF50;
+    --color-success-light: #E8F5E9;
+    --font-heading: 'Aleo', serif;
+    --font-body: 'Fira Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--color-text-primary);
+    background: var(--color-bg-subtle);
+    min-height: 100vh;
+  }
+
+  /* ── Top bar ── */
+  .top-bar {
+    background: white;
+    border-bottom: 1px solid var(--color-border-light);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .top-bar h1 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    color: var(--color-primary);
+  }
+  .top-bar .subtitle {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin-left: 12px;
+  }
+  .play-controls {
+    display: flex;
+    gap: 8px;
+  }
+  .btn {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border-light);
+    background: white;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--color-bg-subtle); }
+  .btn-primary {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+  .btn-primary:hover { background: var(--color-primary-dark); }
+
+  /* ── Layout ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 53px);
+  }
+
+  /* ── Controls panel ── */
+  .controls {
+    background: white;
+    border-right: 1px solid var(--color-border-light);
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 53px);
+    position: sticky;
+    top: 53px;
+  }
+  .control-section {
+    margin-bottom: 24px;
+  }
+  .control-section h3 {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--color-text-primary);
+  }
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .preset-btn {
+    font-family: var(--font-body);
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--color-border-light);
+    background: var(--color-bg-cream);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .preset-btn:hover, .preset-btn.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  .slider-group {
+    margin-bottom: 14px;
+  }
+  .slider-group label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+  }
+  .slider-group label span.val {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--color-primary);
+    height: 4px;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+  .toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle .slider {
+    position: absolute;
+    inset: 0;
+    background: var(--color-border-light);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .toggle .slider::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    top: 2px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .toggle input:checked + .slider { background: var(--color-primary); }
+  .toggle input:checked + .slider::before { transform: translateX(16px); }
+
+  .radio-group {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .radio-pill {
+    font-size: 11px;
+    padding: 4px 10px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 14px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--font-body);
+    color: var(--color-text-secondary);
+  }
+  .radio-pill.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+
+  /* ── Preview area ── */
+  .preview-area {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .device-frame {
+    width: 420px;
+    min-height: 700px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── Wizard header ── */
+  .wizard-header {
+    padding: 16px 20px 12px;
+    background: white;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+  .wizard-header h2 {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .step-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-border-light);
+    transition: all 0.3s;
+  }
+  .step-dot.active { background: var(--color-primary); width: 24px; border-radius: 4px; }
+  .step-dot.done { background: var(--color-success); }
+  .step-connector {
+    flex: 1;
+    height: 2px;
+    background: var(--color-border-light);
+  }
+
+  /* ── Processing strip ── */
+  .processing-strip {
+    padding: 10px 16px;
+    background: var(--color-bg-cream);
+    border-bottom: 1px solid var(--color-border-light);
+    display: none;
+    transition: all 0.3s;
+  }
+  .processing-strip.visible { display: block; }
+  .processing-strip.position-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-bottom: none;
+    border-top: 1px solid var(--color-border-light);
+    border-radius: 0 0 24px 24px;
+    z-index: 10;
+  }
+  .processing-strip.style-card {
+    margin: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--color-border-light);
+    background: white;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .processing-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .processing-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    transition: all 0.3s;
+  }
+  .processing-step .icon {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .processing-step .spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--color-border-light);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .processing-step .check {
+    color: var(--color-success);
+    font-size: 16px;
+    line-height: 1;
+  }
+  .processing-step.done { color: var(--color-success); }
+  .processing-step.waiting { opacity: 0.4; }
+
+  .preview-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    background: var(--color-bg-subtle);
+    margin-left: auto;
+    overflow: hidden;
+    display: none;
+    animation: fadeScale 0.3s ease;
+  }
+  .preview-thumb.visible { display: block; }
+  .preview-thumb-inner {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+  }
+  @keyframes fadeScale {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── Wizard content ── */
+  .wizard-content {
+    padding: 20px;
+    min-height: 500px;
+  }
+
+  /* Step 1: Upload */
+  .upload-zone {
+    border: 2px dashed var(--color-border-light);
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--color-bg-cream);
+  }
+  .upload-zone:hover {
+    border-color: var(--color-primary);
+    background: #FEF2EC;
+  }
+  .upload-zone .upload-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+  .upload-zone p {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+  }
+  .upload-zone .hint {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    opacity: 0.6;
+  }
+  .upload-progress {
+    display: none;
+    margin-top: 16px;
+  }
+  .upload-progress.visible { display: block; }
+  .progress-bar {
+    height: 4px;
+    background: var(--color-border-light);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  .upload-filename {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Step 2: Details */
+  .form-group {
+    margin-bottom: 16px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text-primary);
+    background: white;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .form-input:focus { border-color: var(--color-primary); }
+  textarea.form-input { resize: vertical; min-height: 72px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .theme-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .theme-pill {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--color-border-light);
+    background: white;
+    cursor: pointer;
+    transition: all 0.25s;
+    font-family: var(--font-body);
+    color: var(--color-text-secondary);
+    position: relative;
+  }
+  .theme-pill:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .theme-pill.selected {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+  }
+  .theme-pill.auto-detected {
+    animation: var(--theme-animation, pillFade) 0.5s ease;
+  }
+  .theme-pill .badge {
+    display: none;
+    font-size: 10px;
+    background: var(--color-success-light);
+    color: var(--color-success);
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-left: 4px;
+    font-weight: 600;
+  }
+  .theme-pill.show-badge .badge { display: inline; }
+
+  @keyframes pillFade {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes pillPulse {
+    0% { box-shadow: 0 0 0 0 rgba(232, 118, 75, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(232, 118, 75, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(232, 118, 75, 0); }
+  }
+  @keyframes pillSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Step 3: Review */
+  .review-section {
+    margin-bottom: 16px;
+  }
+  .review-section h4 {
+    font-family: var(--font-heading);
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .review-value {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    padding: 8px 12px;
+    background: var(--color-bg-cream);
+    border-radius: 8px;
+  }
+  .tag-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .tag-chip {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 14px;
+    background: var(--color-bg-cream);
+    border: 1px solid var(--color-border-light);
+    color: var(--color-text-secondary);
+    opacity: 0;
+    animation: tagAppear 0.3s ease forwards;
+  }
+  @keyframes tagAppear {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .review-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .review-actions .btn { flex: 1; padding: 10px; text-align: center; font-size: 14px; }
+
+  /* ── Prompt output ── */
+  .prompt-output {
+    width: 420px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .prompt-output h3 {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .prompt-output .copy-btn {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--color-border-light);
+    background: white;
+    cursor: pointer;
+    font-family: var(--font-body);
+    color: var(--color-text-secondary);
+  }
+  .prompt-output .copy-btn:hover { background: var(--color-bg-subtle); }
+  .prompt-text {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    white-space: pre-wrap;
+    background: var(--color-bg-cream);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-light);
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  /* ── Simulation status ── */
+  .sim-status {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: var(--color-bg-subtle);
+    color: var(--color-text-secondary);
+    z-index: 5;
+  }
+  .sim-status.running { background: #FFF3E0; color: #E65100; }
+
+  /* ── Typing cursor ── */
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+  .typing-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 14px;
+    background: var(--color-primary);
+    animation: blink 0.8s ease infinite;
+    vertical-align: text-bottom;
+    margin-left: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div style="display:flex;align-items:baseline;">
+    <h1>Fiche Creation Flow</h1>
+    <span class="subtitle">Timing Playground</span>
+  </div>
+  <div class="play-controls">
+    <button class="btn" id="resetBtn">Reset</button>
+    <button class="btn btn-primary" id="playBtn">&#9654; Afspelen</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- ── Controls ── -->
+  <div class="controls">
+
+    <div class="control-section">
+      <h3>Presets</h3>
+      <div class="presets">
+        <button class="preset-btn" data-preset="fast">Snelle verwerking</button>
+        <button class="preset-btn" data-preset="slow">Trage verwerking</button>
+        <button class="preset-btn" data-preset="user-faster">Gebruiker is sneller</button>
+        <button class="preset-btn" data-preset="all-at-once">Alles tegelijk</button>
+      </div>
+    </div>
+
+    <div class="control-section">
+      <h3>Timing</h3>
+      <div class="slider-group">
+        <label>Upload duur <span class="val" id="uploadVal">1.5s</span></label>
+        <input type="range" id="uploadDuration" min="0.5" max="5" step="0.5" value="1.5">
+      </div>
+      <div class="slider-group">
+        <label>Preview generatie <span class="val" id="previewVal">3s</span></label>
+        <input type="range" id="previewDuration" min="1" max="10" step="0.5" value="3">
+      </div>
+      <div class="slider-group">
+        <label>Inhoudsanalyse <span class="val" id="analysisVal">5s</span></label>
+        <input type="range" id="analysisDuration" min="2" max="15" step="0.5" value="5">
+      </div>
+      <div class="slider-group">
+        <label>Themaherkenning <span class="val" id="themeDetectVal">3s</span></label>
+        <input type="range" id="themeDetectDuration" min="1" max="8" step="0.5" value="3">
+      </div>
+    </div>
+
+    <div class="control-section">
+      <h3>Verwerkingsstrip</h3>
+      <div class="toggle-row">
+        <span>Positie</span>
+        <div class="radio-group">
+          <span class="radio-pill active" data-group="stripPos" data-value="top">Boven</span>
+          <span class="radio-pill" data-group="stripPos" data-value="bottom">Onder</span>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <span>Stijl</span>
+        <div class="radio-group">
+          <span class="radio-pill active" data-group="stripStyle" data-value="inline">Inline stappen</span>
+          <span class="radio-pill" data-group="stripStyle" data-value="card">Compacte kaart</span>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <span>Toon preview thumbnail</span>
+        <label class="toggle">
+          <input type="checkbox" id="showPreviewThumb" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="control-section">
+      <h3>Themaherkenning UX</h3>
+      <div class="toggle-row">
+        <span>Animatie</span>
+        <div class="radio-group">
+          <span class="radio-pill active" data-group="themeAnim" data-value="fade">Fade</span>
+          <span class="radio-pill" data-group="themeAnim" data-value="pulse">Pulse</span>
+          <span class="radio-pill" data-group="themeAnim" data-value="slide">Slide</span>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <span>Als gebruiker al koos</span>
+        <div class="radio-group">
+          <span class="radio-pill active" data-group="themeConflict" data-value="badge">Bevestig-badge</span>
+          <span class="radio-pill" data-group="themeConflict" data-value="ignore">Negeren</span>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <span>Label stijl</span>
+        <div class="radio-group">
+          <span class="radio-pill active" data-group="themeLabel" data-value="select">Selecteer</span>
+          <span class="radio-pill" data-group="themeLabel" data-value="badge">"Herkend als" badge</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-section">
+      <h3>Flow</h3>
+      <div class="toggle-row">
+        <span>Auto-advance na upload</span>
+        <label class="toggle">
+          <input type="checkbox" id="autoAdvance" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="slider-group">
+        <label>Afspeelsnelheid <span class="val" id="speedVal">1x</span></label>
+        <input type="range" id="playbackSpeed" min="1" max="5" step="0.5" value="1">
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Preview ── -->
+  <div class="preview-area">
+
+    <div class="device-frame" id="device">
+      <span class="sim-status" id="simStatus">Klaar om af te spelen</span>
+
+      <div class="wizard-header">
+        <h2>Nieuwe fiche</h2>
+        <div class="step-dots">
+          <div class="step-dot active" id="dot1"></div>
+          <div class="step-connector"></div>
+          <div class="step-dot" id="dot2"></div>
+          <div class="step-connector"></div>
+          <div class="step-dot" id="dot3"></div>
+        </div>
+      </div>
+
+      <div class="processing-strip" id="processingStrip">
+        <div class="processing-steps">
+          <div class="processing-step waiting" id="procUpload">
+            <div class="icon"><div class="spinner" style="display:none"></div><span class="check" style="display:none">&#10003;</span></div>
+            <span class="text">Bestand uploaden</span>
+            <div class="preview-thumb" id="previewThumb"><div class="preview-thumb-inner">&#9654;</div></div>
+          </div>
+          <div class="processing-step waiting" id="procPreview">
+            <div class="icon"><div class="spinner" style="display:none"></div><span class="check" style="display:none">&#10003;</span></div>
+            <span class="text">Preview genereren</span>
+          </div>
+          <div class="processing-step waiting" id="procAnalysis">
+            <div class="icon"><div class="spinner" style="display:none"></div><span class="check" style="display:none">&#10003;</span></div>
+            <span class="text">Inhoud analyseren</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-content" id="wizardContent">
+        <!-- Content rendered by JS -->
+      </div>
+    </div>
+
+    <div class="prompt-output">
+      <h3>Implementatie-prompt <button class="copy-btn" id="copyPrompt">Kopieer</button></h3>
+      <div class="prompt-text" id="promptText">Pas instellingen aan en speel de simulatie af om een implementatie-prompt te genereren.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── State ──
+const themes = [
+  'Muziek', 'Bewegen', 'Natuur', 'Koken', 'Creatief', 'Herinneringen',
+  'Seizoenen', 'Dieren', 'Tuin', 'Voorlezen', 'Spelletjes', 'Zintuigen'
+];
+const detectedThemeIndex = 4; // "Creatief"
+const suggestedTags = ['ouderen', 'groepsactiviteit', 'creativiteit', 'knutselen', 'zintuiglijk', 'lente'];
+
+let simRunning = false;
+let simTimers = [];
+
+// ── Settings getters ──
+function getSettings() {
+  return {
+    uploadDuration: parseFloat(document.getElementById('uploadDuration').value),
+    previewDuration: parseFloat(document.getElementById('previewDuration').value),
+    analysisDuration: parseFloat(document.getElementById('analysisDuration').value),
+    themeDetectDuration: parseFloat(document.getElementById('themeDetectDuration').value),
+    stripPosition: getRadioValue('stripPos'),
+    stripStyle: getRadioValue('stripStyle'),
+    showPreviewThumb: document.getElementById('showPreviewThumb').checked,
+    themeAnimation: getRadioValue('themeAnim'),
+    themeConflict: getRadioValue('themeConflict'),
+    themeLabel: getRadioValue('themeLabel'),
+    autoAdvance: document.getElementById('autoAdvance').checked,
+    playbackSpeed: parseFloat(document.getElementById('playbackSpeed').value),
+  };
+}
+
+function getRadioValue(group) {
+  const active = document.querySelector(`.radio-pill[data-group="${group}"].active`);
+  return active ? active.dataset.value : null;
+}
+
+// ── Slider value displays ──
+document.querySelectorAll('input[type="range"]').forEach(el => {
+  el.addEventListener('input', () => {
+    const id = el.id;
+    const map = {
+      uploadDuration: 'uploadVal',
+      previewDuration: 'previewVal',
+      analysisDuration: 'analysisVal',
+      themeDetectDuration: 'themeDetectVal',
+      playbackSpeed: 'speedVal',
+    };
+    const target = document.getElementById(map[id]);
+    if (target) {
+      target.textContent = id === 'playbackSpeed' ? el.value + 'x' : el.value + 's';
+    }
+    updatePrompt();
+  });
+});
+
+// ── Radio pills ──
+document.querySelectorAll('.radio-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const group = pill.dataset.group;
+    document.querySelectorAll(`.radio-pill[data-group="${group}"]`).forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    updatePrompt();
+  });
+});
+
+// ── Toggles ──
+document.querySelectorAll('.toggle input').forEach(t => {
+  t.addEventListener('change', updatePrompt);
+});
+
+// ── Presets ──
+const presets = {
+  fast: { uploadDuration: 0.5, previewDuration: 1, analysisDuration: 2, themeDetectDuration: 1, autoAdvance: true, playbackSpeed: 2 },
+  slow: { uploadDuration: 3, previewDuration: 8, analysisDuration: 12, themeDetectDuration: 6, autoAdvance: false, playbackSpeed: 1 },
+  'user-faster': { uploadDuration: 1, previewDuration: 6, analysisDuration: 10, themeDetectDuration: 5, autoAdvance: true, playbackSpeed: 1 },
+  'all-at-once': { uploadDuration: 0.5, previewDuration: 1, analysisDuration: 1.5, themeDetectDuration: 1, autoAdvance: true, playbackSpeed: 1 },
+};
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const p = presets[btn.dataset.preset];
+    if (p) {
+      setSlider('uploadDuration', p.uploadDuration, 'uploadVal', 's');
+      setSlider('previewDuration', p.previewDuration, 'previewVal', 's');
+      setSlider('analysisDuration', p.analysisDuration, 'analysisVal', 's');
+      setSlider('themeDetectDuration', p.themeDetectDuration, 'themeDetectVal', 's');
+      setSlider('playbackSpeed', p.playbackSpeed, 'speedVal', 'x');
+      document.getElementById('autoAdvance').checked = p.autoAdvance;
+      updatePrompt();
+    }
+  });
+});
+
+function setSlider(id, val, labelId, suffix) {
+  const el = document.getElementById(id);
+  el.value = val;
+  document.getElementById(labelId).textContent = val + suffix;
+}
+
+// ── Simulation helpers ──
+function delay(seconds) {
+  const s = getSettings();
+  const ms = (seconds / s.playbackSpeed) * 1000;
+  return new Promise(resolve => {
+    const t = setTimeout(resolve, ms);
+    simTimers.push(t);
+  });
+}
+
+function setProcessingStep(id, state) {
+  const el = document.getElementById(id);
+  const spinner = el.querySelector('.spinner');
+  const check = el.querySelector('.check');
+  el.classList.remove('waiting', 'done');
+
+  if (state === 'active') {
+    spinner.style.display = 'block';
+    check.style.display = 'none';
+  } else if (state === 'done') {
+    spinner.style.display = 'none';
+    check.style.display = 'inline';
+    el.classList.add('done');
+  } else {
+    spinner.style.display = 'none';
+    check.style.display = 'none';
+    el.classList.add('waiting');
+  }
+}
+
+function setStep(n) {
+  [1, 2, 3].forEach(i => {
+    const dot = document.getElementById('dot' + i);
+    dot.classList.remove('active', 'done');
+    if (i < n) dot.classList.add('done');
+    if (i === n) dot.classList.add('active');
+  });
+}
+
+// ── Render steps ──
+function renderStep1() {
+  return `
+    <div class="upload-zone" id="uploadZone">
+      <div class="upload-icon">&#128196;</div>
+      <p>Sleep je bestand hierheen</p>
+      <p class="hint">PDF, PowerPoint of afbeelding</p>
+    </div>
+    <div class="upload-progress" id="uploadProgress">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="upload-filename">&#128196; kerstactiviteit-knutselen.pdf</div>
+    </div>
+  `;
+}
+
+function renderStep2() {
+  const s = getSettings();
+  const animClass = { fade: 'pillFade', pulse: 'pillPulse', slide: 'pillSlide' }[s.themeAnimation] || 'pillFade';
+
+  let pillsHtml = themes.map((t, i) => {
+    return `<span class="theme-pill" data-index="${i}" id="themePill${i}">${t}<span class="badge">Herkend</span></span>`;
+  }).join('');
+
+  return `
+    <div class="form-group">
+      <label>Titel</label>
+      <input class="form-input" id="simTitle" value="" readonly>
+    </div>
+    <div class="form-group">
+      <label>Beschrijving</label>
+      <textarea class="form-input" id="simDesc" readonly></textarea>
+    </div>
+    <div class="form-group">
+      <label>Thema</label>
+      <div class="theme-pills" id="themePills">${pillsHtml}</div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Duur</label>
+        <select class="form-input" id="simDuration">
+          <option value="">Kies...</option>
+          <option>15 min</option>
+          <option>30 min</option>
+          <option selected>45 min</option>
+          <option>60 min</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Groepsgrootte</label>
+        <select class="form-input" id="simGroup">
+          <option value="">Kies...</option>
+          <option>1-3</option>
+          <option selected>4-8</option>
+          <option>8+</option>
+        </select>
+      </div>
+    </div>
+  `;
+}
+
+function renderStep3() {
+  return `
+    <div class="review-section">
+      <h4>Titel</h4>
+      <div class="review-value">Kerstactiviteit knutselen</div>
+    </div>
+    <div class="review-section">
+      <h4>Beschrijving</h4>
+      <div class="review-value">Een gezellige knutselactiviteit voor de kerstperiode met eenvoudige materialen.</div>
+    </div>
+    <div class="review-section">
+      <h4>Thema</h4>
+      <div class="review-value">Creatief &middot; 45 min &middot; 4-8 personen</div>
+    </div>
+    <div class="review-section">
+      <h4>Voorgestelde tags</h4>
+      <div class="tag-suggestions" id="tagSuggestions"></div>
+    </div>
+    <div class="review-actions">
+      <button class="btn">Concept opslaan</button>
+      <button class="btn btn-primary">Publiceren</button>
+    </div>
+  `;
+}
+
+// ── Typing simulation ──
+async function simulateTyping(elementId, text, charDelay) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  for (let i = 0; i < text.length; i++) {
+    if (!simRunning) return;
+    el.value += text[i];
+    await delay(charDelay);
+  }
+}
+
+// ── Main simulation ──
+async function runSimulation() {
+  if (simRunning) return;
+  simRunning = true;
+  const status = document.getElementById('simStatus');
+  status.textContent = 'Simulatie loopt...';
+  status.classList.add('running');
+
+  const s = getSettings();
+  const strip = document.getElementById('processingStrip');
+  const content = document.getElementById('wizardContent');
+
+  // Reset
+  strip.classList.remove('visible', 'position-bottom', 'style-card');
+  setProcessingStep('procUpload', 'waiting');
+  setProcessingStep('procPreview', 'waiting');
+  setProcessingStep('procAnalysis', 'waiting');
+  document.getElementById('previewThumb').classList.remove('visible');
+  setStep(1);
+
+  // Apply strip settings
+  if (s.stripPosition === 'bottom') strip.classList.add('position-bottom');
+  if (s.stripStyle === 'card') strip.classList.add('style-card');
+
+  // ── STEP 1: Upload ──
+  content.innerHTML = renderStep1();
+  await delay(0.8); // brief pause before "clicking"
+
+  if (!simRunning) return;
+
+  // Show upload progress
+  const progress = document.getElementById('uploadProgress');
+  progress.classList.add('visible');
+  document.getElementById('uploadZone').style.borderColor = 'var(--color-primary)';
+  document.getElementById('uploadZone').style.background = '#FEF2EC';
+
+  // Show processing strip
+  strip.classList.add('visible');
+  setProcessingStep('procUpload', 'active');
+
+  // Animate progress bar
+  const fill = document.getElementById('progressFill');
+  const uploadMs = (s.uploadDuration / s.playbackSpeed) * 1000;
+  const steps = 20;
+  for (let i = 1; i <= steps; i++) {
+    if (!simRunning) return;
+    fill.style.width = (i / steps * 100) + '%';
+    await new Promise(r => { const t = setTimeout(r, uploadMs / steps); simTimers.push(t); });
+  }
+
+  // Upload done
+  setProcessingStep('procUpload', 'done');
+  setProcessingStep('procPreview', 'active');
+
+  // Start preview & analysis in parallel
+  let previewDone = false;
+  let analysisDone = false;
+
+  const previewTimer = delay(s.previewDuration).then(() => {
+    if (!simRunning) return;
+    previewDone = true;
+    setProcessingStep('procPreview', 'done');
+    if (s.showPreviewThumb) {
+      document.getElementById('previewThumb').classList.add('visible');
+    }
+    setProcessingStep('procAnalysis', 'active');
+  });
+
+  // Auto-advance to step 2
+  if (s.autoAdvance) {
+    await delay(0.5);
+    if (!simRunning) return;
+    goToStep2(content, s);
+  } else {
+    // Wait a moment then show a "Volgende" hint
+    await delay(s.uploadDuration + 1);
+    if (!simRunning) return;
+    goToStep2(content, s);
+  }
+
+  await previewTimer;
+  if (!simRunning) return;
+
+  // Analysis runs after preview
+  await delay(s.analysisDuration);
+  if (!simRunning) return;
+  analysisDone = true;
+  setProcessingStep('procAnalysis', 'done');
+
+  // Theme detection
+  await delay(s.themeDetectDuration);
+  if (!simRunning) return;
+
+  // Apply theme detection
+  applyThemeDetection(s);
+
+  // Wait a beat then go to step 3
+  await delay(1.5);
+  if (!simRunning) return;
+  goToStep3(content, s);
+
+  status.textContent = 'Simulatie afgerond';
+  status.classList.remove('running');
+  simRunning = false;
+}
+
+function goToStep2(content, s) {
+  setStep(2);
+  content.innerHTML = renderStep2();
+
+  // Start typing simulation
+  simulateTyping('simTitle', 'Kerstactiviteit knutselen', 0.04);
+  delay(0.3).then(() => {
+    if (simRunning) {
+      simulateTyping('simDesc', 'Een gezellige knutselactiviteit voor de kerstperiode met eenvoudige materialen.', 0.02);
+    }
+  });
+}
+
+function applyThemeDetection(s) {
+  const pill = document.getElementById('themePill' + detectedThemeIndex);
+  if (!pill) return;
+
+  const animMap = { fade: 'pillFade', pulse: 'pillPulse', slide: 'pillSlide' };
+  const animName = animMap[s.themeAnimation] || 'pillFade';
+
+  pill.classList.add('selected', 'auto-detected');
+  pill.style.animationName = animName;
+  pill.style.animationDuration = '0.5s';
+
+  if (s.themeLabel === 'badge') {
+    pill.classList.add('show-badge');
+  }
+
+  // Pulse animation special case
+  if (s.themeAnimation === 'pulse') {
+    pill.style.animation = `pillPulse 0.6s ease 2, none`;
+    setTimeout(() => { pill.style.animation = ''; }, 1300);
+  }
+}
+
+function goToStep3(content, s) {
+  setStep(3);
+  content.innerHTML = renderStep3();
+
+  // Hide processing strip
+  document.getElementById('processingStrip').classList.remove('visible');
+
+  // Animate tag suggestions appearing
+  const container = document.getElementById('tagSuggestions');
+  suggestedTags.forEach((tag, i) => {
+    setTimeout(() => {
+      if (!container) return;
+      const chip = document.createElement('span');
+      chip.className = 'tag-chip';
+      chip.textContent = tag;
+      chip.style.animationDelay = (i * 0.1) + 's';
+      container.appendChild(chip);
+    }, i * 200 / s.playbackSpeed);
+  });
+}
+
+// ── Reset ──
+function resetSimulation() {
+  simRunning = false;
+  simTimers.forEach(clearTimeout);
+  simTimers = [];
+
+  const strip = document.getElementById('processingStrip');
+  strip.classList.remove('visible', 'position-bottom', 'style-card');
+  setProcessingStep('procUpload', 'waiting');
+  setProcessingStep('procPreview', 'waiting');
+  setProcessingStep('procAnalysis', 'waiting');
+  document.getElementById('previewThumb').classList.remove('visible');
+  setStep(1);
+
+  document.getElementById('wizardContent').innerHTML = renderStep1();
+
+  const status = document.getElementById('simStatus');
+  status.textContent = 'Klaar om af te spelen';
+  status.classList.remove('running');
+}
+
+// ── Prompt generation ──
+function updatePrompt() {
+  const s = getSettings();
+  const posLabel = s.stripPosition === 'top' ? 'bovenaan (persistent)' : 'onderaan (floating)';
+  const styleLabel = s.stripStyle === 'inline' ? 'inline stap-indicatoren die afvinken bij voltooiing' : 'compacte kaart met voortgangsindicatoren';
+  const animLabel = { fade: 'fade-in', pulse: 'pulse-animatie', slide: 'slide-in van onder' }[s.themeAnimation] || 'fade-in';
+  const conflictLabel = s.themeConflict === 'badge' ? "toon een subtiele 'Herkend' bevestigingsbadge in plaats van te overschrijven" : 'negeer de suggestie en laat de keuze van de gebruiker staan';
+  const labelLabel = s.themeLabel === 'badge' ? "met een 'Herkend als: X' badge" : 'door het thema-pill te selecteren';
+  const autoLabel = s.autoAdvance ? 'Automatisch doorsturen naar stap 2 na upload.' : 'Toon een "Volgende" knop na upload.';
+  const thumbLabel = s.showPreviewThumb ? ' Toon een preview-thumbnail in de strip wanneer de preview klaar is.' : '';
+
+  const prompt = `Implementeer de fiche-creatie wizard met een verwerkingsstrip ${posLabel} die 3 stappen toont (upload, preview generatie, inhoudsanalyse). Gebruik ${styleLabel}. ${autoLabel} Themaherkenning moet het herkende thema-pill ${animLabel} na ${s.themeDetectDuration}s. Als de gebruiker al een thema koos, ${conflictLabel}. Toon het resultaat ${labelLabel}.${thumbLabel}
+
+Timing: upload ${s.uploadDuration}s, preview ${s.previewDuration}s, analyse ${s.analysisDuration}s, themaherkenning ${s.themeDetectDuration}s.`;
+
+  document.getElementById('promptText').textContent = prompt;
+}
+
+// ── Copy prompt ──
+document.getElementById('copyPrompt').addEventListener('click', () => {
+  const text = document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyPrompt');
+    btn.textContent = 'Gekopieerd!';
+    setTimeout(() => { btn.textContent = 'Kopieer'; }, 1500);
+  });
+});
+
+// ── Play / Reset buttons ──
+document.getElementById('playBtn').addEventListener('click', () => {
+  resetSimulation();
+  setTimeout(() => runSimulation(), 100);
+});
+document.getElementById('resetBtn').addEventListener('click', resetSimulation);
+
+// ── Init ──
+resetSimulation();
+updatePrompt();
+</script>
+
+</body>
+</html>

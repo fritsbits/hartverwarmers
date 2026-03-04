@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hartverwarmers Design System — Rule Editor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ui-bg: #f8f6f3;
+    --ui-surface: #ffffff;
+    --ui-surface-alt: #f0ede8;
+    --ui-border: #e0d9d0;
+    --ui-border-focus: #E8764B;
+    --ui-text: #1F1F1F;
+    --ui-text-dim: #6F6F6F;
+    --ui-accent: #E8764B;
+    --ui-accent-hover: #D4683F;
+    --ui-accent-light: #FDF3EE;
+    --ui-green: #3a9a5c;
+    --ui-green-light: #edf7f0;
+    --ui-red: #c94444;
+    --ui-red-light: #fdf0f0;
+
+    /* Hartverwarmers design tokens */
+    --hv-primary: #E8764B;
+    --hv-primary-hover: #D4683F;
+    --hv-secondary: #4CB7C5;
+    --hv-yellow: #F4C44E;
+    --hv-purple: #B57BB3;
+    --hv-text-primary: #1F1F1F;
+    --hv-text-secondary: #6F6F6F;
+    --hv-bg-white: #FFFFFF;
+    --hv-bg-subtle: #F5F0EC;
+    --hv-bg-cream: #FEF8F4;
+    --hv-bg-accent-light: #FDF3EE;
+    --hv-border-light: #EBE4DE;
+    --hv-border-hover: #DDD5CD;
+    --hv-radius-sm: 6px;
+    --hv-radius-md: 12px;
+    --hv-radius-full: 9999px;
+    --hv-font-heading: 'Inter', system-ui, sans-serif;
+    --hv-font-body: 'Inter', system-ui, sans-serif;
+  }
+
+  html { font-size: 15px; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--ui-bg);
+    color: var(--ui-text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ===== TOP BAR ===== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--ui-surface);
+    border-bottom: 1px solid var(--ui-border);
+    flex-shrink: 0;
+    gap: 16px;
+  }
+  .topbar-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--ui-accent);
+    white-space: nowrap;
+  }
+  .topbar-title span { color: var(--ui-text-dim); font-weight: 400; font-size: 0.85rem; margin-left: 8px; }
+  .topbar-controls { display: flex; gap: 12px; align-items: center; }
+  .toggle-group {
+    display: flex;
+    background: var(--ui-surface-alt);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .toggle-btn {
+    padding: 5px 14px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--ui-text-dim);
+    transition: all 0.15s;
+  }
+  .toggle-btn.active {
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .toggle-btn:hover:not(.active) { color: var(--ui-text); }
+
+  /* ===== MAIN LAYOUT ===== */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background: var(--ui-surface);
+    border-right: 1px solid var(--ui-border);
+    overflow-y: auto;
+    padding: 12px 0;
+  }
+  .sidebar-group-label {
+    padding: 10px 16px 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ui-text-dim);
+  }
+  .sidebar-item {
+    padding: 7px 16px 7px 24px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--ui-text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.1s;
+  }
+  .sidebar-item:hover { background: var(--ui-surface-alt); }
+  .sidebar-item.active { background: var(--ui-accent-light); color: var(--ui-accent); font-weight: 600; }
+  .sidebar-item .rule-indicator {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .sidebar-item .rule-indicator.has-rule { background: var(--ui-green); }
+  .sidebar-item .rule-indicator.no-rule { background: var(--ui-border); }
+
+  /* ===== MAIN CONTENT ===== */
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 32px;
+  }
+
+  /* ===== CATALOG VIEW ===== */
+  .component-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .component-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .component-class {
+    font-size: 0.85rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--ui-accent);
+    background: var(--ui-accent-light);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .component-category {
+    font-size: 0.75rem;
+    color: var(--ui-text-dim);
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ui-text-dim);
+    margin: 20px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--ui-border);
+  }
+
+  /* Preview area */
+  .preview-wrapper {
+    border: 1px solid var(--ui-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .preview-area {
+    padding: 32px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .preview-area.bg-white { background: #FFFFFF; }
+  .preview-area.bg-cream { background: #FEF8F4; }
+  .preview-area.bg-subtle { background: #F5F0EC; }
+
+  /* Code block */
+  .code-block {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre;
+    max-height: 200px;
+  }
+
+  /* Locations */
+  .locations-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .location-tag {
+    font-size: 0.75rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    background: var(--ui-surface-alt);
+    padding: 3px 10px;
+    border-radius: 4px;
+    color: var(--ui-text-dim);
+  }
+
+  /* Rule editors */
+  .rule-editor {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .rule-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .rule-box label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .rule-box label .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .rule-box.when-use label .dot { background: var(--ui-green); }
+  .rule-box.when-not label .dot { background: var(--ui-red); }
+  .rule-box textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px 12px;
+    border: 1px solid var(--ui-border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    resize: vertical;
+    background: var(--ui-surface);
+    color: var(--ui-text);
+    transition: border-color 0.15s;
+  }
+  .rule-box textarea:focus {
+    outline: none;
+    border-color: var(--ui-border-focus);
+    box-shadow: 0 0 0 3px rgba(232,118,75,0.1);
+  }
+  .rule-box textarea::placeholder { color: #bbb; }
+  .rule-box.when-use textarea { background: var(--ui-green-light); }
+  .rule-box.when-not textarea { background: var(--ui-red-light); }
+
+  /* ===== REVIEW ALL VIEW ===== */
+  .review-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .review-table th {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ui-text-dim);
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--ui-border);
+    position: sticky;
+    top: 0;
+    background: var(--ui-bg);
+    z-index: 1;
+  }
+  .review-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--ui-border);
+    vertical-align: top;
+    font-size: 0.85rem;
+  }
+  .review-table tr:hover td { background: var(--ui-surface); }
+  .review-table .comp-name {
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    color: var(--ui-accent);
+  }
+  .review-table .comp-name:hover { text-decoration: underline; }
+  .review-table .comp-class {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.75rem;
+    color: var(--ui-text-dim);
+  }
+  .review-table textarea {
+    width: 100%;
+    min-height: 50px;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    resize: vertical;
+    background: transparent;
+    color: var(--ui-text);
+    transition: all 0.15s;
+  }
+  .review-table textarea:focus {
+    outline: none;
+    border-color: var(--ui-border-focus);
+    background: var(--ui-surface);
+    box-shadow: 0 0 0 2px rgba(232,118,75,0.1);
+  }
+  .review-table textarea.use-rule { background: var(--ui-green-light); }
+  .review-table textarea.not-rule { background: var(--ui-red-light); }
+  .review-group-header td {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ui-accent);
+    padding-top: 18px !important;
+    background: transparent !important;
+    border-bottom: none;
+  }
+
+  /* ===== EXPORT BAR ===== */
+  .export-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--ui-surface);
+    border-top: 1px solid var(--ui-border);
+    flex-shrink: 0;
+    gap: 12px;
+  }
+  .export-stats {
+    font-size: 0.8rem;
+    color: var(--ui-text-dim);
+  }
+  .export-stats strong { color: var(--ui-text); }
+  .export-btns { display: flex; gap: 8px; }
+  .export-btn {
+    padding: 7px 18px;
+    border: 1px solid var(--ui-border);
+    background: var(--ui-surface);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--ui-text);
+    transition: all 0.15s;
+  }
+  .export-btn:hover { border-color: var(--ui-accent); color: var(--ui-accent); }
+  .export-btn.primary {
+    background: var(--ui-accent);
+    color: white;
+    border-color: var(--ui-accent);
+  }
+  .export-btn.primary:hover { background: var(--ui-accent-hover); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+    padding: 10px 20px;
+    background: #1e1e2e;
+    color: white;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Markdown preview modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: auto; }
+  .modal {
+    background: var(--ui-surface);
+    border-radius: 16px;
+    width: 80%;
+    max-width: 900px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--ui-border);
+  }
+  .modal-header h3 { font-size: 1rem; font-weight: 600; }
+  .modal-close {
+    background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--ui-text-dim);
+    padding: 4px 8px; border-radius: 4px;
+  }
+  .modal-close:hover { background: var(--ui-surface-alt); }
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .modal-body pre {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--ui-text);
+  }
+
+  /* Color swatches */
+  .color-swatch-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .color-swatch {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    border: 1px solid var(--ui-border);
+    flex-shrink: 0;
+  }
+  .color-info .color-hex {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.9rem;
+  }
+  .color-info .color-var {
+    font-size: 0.8rem;
+    color: var(--ui-text-dim);
+  }
+
+  /* Typography previews */
+  .typo-preview { color: var(--hv-text-primary); }
+  .typo-preview h1 { font-family: var(--hv-font-heading); font-weight: 900; font-size: 2.5rem; line-height: 1.25; }
+  .typo-preview h2 { font-family: var(--hv-font-heading); font-weight: 900; font-size: 2rem; line-height: 1.25; }
+  .typo-preview h3 { font-family: var(--hv-font-heading); font-weight: 900; font-size: 1.5rem; line-height: 1.25; }
+  .typo-preview h4 { font-family: var(--hv-font-heading); font-weight: 700; font-size: 1.25rem; line-height: 1.25; }
+
+  /* Hidden */
+  .hidden { display: none !important; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--ui-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ui-text-dim); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-title">
+    Hartverwarmers Design System <span>Rule Editor</span>
+  </div>
+  <div class="topbar-controls">
+    <div class="toggle-group" id="bgToggle">
+      <button class="toggle-btn active" data-bg="bg-white">White</button>
+      <button class="toggle-btn" data-bg="bg-cream">Cream</button>
+      <button class="toggle-btn" data-bg="bg-subtle">Subtle</button>
+    </div>
+    <div class="toggle-group" id="viewToggle">
+      <button class="toggle-btn active" data-view="catalog">Catalog</button>
+      <button class="toggle-btn" data-view="review">Review All</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar"></div>
+
+  <!-- CONTENT -->
+  <div class="main-content" id="mainContent"></div>
+</div>
+
+<!-- EXPORT BAR -->
+<div class="export-bar">
+  <div class="export-stats" id="exportStats"></div>
+  <div class="export-btns">
+    <button class="export-btn" onclick="showPreview()">Preview Markdown</button>
+    <button class="export-btn" onclick="copyMarkdown()">Copy Markdown</button>
+    <button class="export-btn primary" onclick="downloadMarkdown()">Download .md</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closePreview(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>DESIGN_SYSTEM.md Preview</h3>
+      <button class="modal-close" onclick="closePreview()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <pre id="modalContent"></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================================
+// COMPONENT DATA
+// ============================================================================
+const COMPONENTS = [
+  // --- COLORS ---
+  { id: 'color-primary', name: 'Primary', category: 'Colors', cssClass: '--color-primary', hex: '#E8764B',
+    cssDefinition: '--color-primary: #E8764B;',
+    locations: ['All buttons', 'Links', 'Badges', 'Section labels'],
+    defaultRule: 'The main brand color. Use for primary CTAs, active states, links, and brand-identifying elements.',
+    antiPattern: 'Don\'t use for large background fills — it\'s too intense. Use --color-bg-accent-light or --color-bg-cream for tinted backgrounds.' },
+
+  { id: 'color-primary-hover', name: 'Primary Hover', category: 'Colors', cssClass: '--color-primary-hover', hex: '#D4683F',
+    cssDefinition: '--color-primary-hover: #D4683F;',
+    locations: ['btn-pill:hover', 'cta-link:hover'],
+    defaultRule: 'Hover/pressed state for primary-colored elements. Always pair with --color-primary as the base state.',
+    antiPattern: 'Never use as a standalone color — only as a hover/active variant of primary.' },
+
+  { id: 'color-secondary', name: 'Secondary (Teal)', category: 'Colors', cssClass: '--color-secondary', hex: '#4CB7C5',
+    cssDefinition: '--color-secondary: #4CB7C5;',
+    locations: ['Illustrative use'],
+    defaultRule: 'Accent color for illustrative/decorative elements, secondary badges, or visual variety alongside primary.',
+    antiPattern: 'Don\'t use for CTAs or interactive elements — primary orange owns the action color.' },
+
+  { id: 'color-yellow', name: 'Accent Yellow', category: 'Colors', cssClass: '--color-accent-yellow', hex: '#F4C44E',
+    cssDefinition: '--color-accent-yellow: #F4C44E;',
+    locations: ['Illustrative use'],
+    defaultRule: 'Warm accent for decorative elements, highlights, or DIAMANT-related visual accents.',
+    antiPattern: 'Don\'t use for text (poor contrast on light backgrounds) or primary CTAs.' },
+
+  { id: 'color-purple', name: 'Accent Purple', category: 'Colors', cssClass: '--color-accent-purple', hex: '#B57BB3',
+    cssDefinition: '--color-accent-purple: #B57BB3;',
+    locations: ['Illustrative use'],
+    defaultRule: 'Soft accent for decorative variety. Use sparingly alongside teal and yellow for visual richness.',
+    antiPattern: 'Don\'t use as a primary action color. Keep it decorative only.' },
+
+  { id: 'color-bg-subtle', name: 'Background Subtle', category: 'Colors', cssClass: '--color-bg-subtle', hex: '#F5F0EC',
+    cssDefinition: '--color-bg-subtle: #F5F0EC;',
+    locations: ['question-row', 'diamant-badge-sm-inactive', 'Section backgrounds'],
+    defaultRule: 'Warm neutral background for alternating sections, inactive states, and subtle containers (e.g. question rows).',
+    antiPattern: 'Don\'t use for card backgrounds — cards should be white. This is for full-width section bands or inset containers.' },
+
+  { id: 'color-bg-cream', name: 'Background Cream', category: 'Colors', cssClass: '--color-bg-cream', hex: '#FEF8F4',
+    cssDefinition: '--color-bg-cream: #FEF8F4;',
+    locations: ['Page backgrounds', 'Hero sections'],
+    defaultRule: 'Warmest background tone. Use for hero sections or full-page backgrounds to create a cozy, warm feel.',
+    antiPattern: 'Don\'t nest cream backgrounds inside cream sections — use white or subtle for contrast.' },
+
+  // --- TYPOGRAPHY ---
+  { id: 'typo-h1', name: 'Heading 1', category: 'Typography', cssClass: 'h1',
+    cssDefinition: 'h1 {\n  font-family: Alan Sans;\n  font-weight: 900 (Black);\n  font-size: 2.5rem;\n  line-height: 1.25;\n}',
+    locations: ['intro-block h1', 'goals/show hero', 'Page titles'],
+    defaultRule: 'Main page title. One per page only. Use inside .intro-block for index pages, or standalone for detail page heroes.',
+    antiPattern: 'Never use more than one h1 per page. Don\'t use for section headings within a page — use h2 or h3.',
+    preview: 'heading' },
+
+  { id: 'typo-h2', name: 'Heading 2', category: 'Typography', cssClass: 'h2',
+    cssDefinition: 'h2 {\n  font-family: Alan Sans;\n  font-weight: 900 (Black);\n  font-size: 2rem;\n  line-height: 1.25;\n}',
+    locations: ['Section headings throughout'],
+    defaultRule: 'Major section heading within a page. Use for top-level content divisions (e.g. "Initiatieven", "Doelen").',
+    antiPattern: 'Don\'t use for card titles or minor sub-sections — use h3 or h4 instead.',
+    preview: 'heading' },
+
+  { id: 'typo-h3', name: 'Heading 3', category: 'Typography', cssClass: 'h3',
+    cssDefinition: 'h3 {\n  font-family: Alan Sans;\n  font-weight: 900 (Black);\n  font-size: 1.5rem;\n  line-height: 1.25;\n}',
+    locations: ['Sub-sections', 'Card group headings'],
+    defaultRule: 'Sub-section heading. Use for content groupings within a section, or as titles for card groups.',
+    antiPattern: 'Don\'t use inside cards — card titles should use h4 or .card-title.',
+    preview: 'heading' },
+
+  { id: 'typo-h4', name: 'Heading 4', category: 'Typography', cssClass: 'h4',
+    cssDefinition: 'h4 {\n  font-family: Alan Sans;\n  font-weight: 700 (Bold);\n  font-size: 1.25rem;\n  line-height: 1.25;\n}',
+    locations: ['Card titles', 'Sidebar headings'],
+    defaultRule: 'Smallest heading level. Use for card titles, sidebar section headings, and minor content labels.',
+    antiPattern: 'Don\'t use for page-level or section-level headings — use h2 or h3.',
+    preview: 'heading' },
+
+  { id: 'typo-section-label', name: 'Section Label', category: 'Typography', cssClass: '.section-label',
+    cssDefinition: '.section-label {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.5rem;\n  font-size: 0.75rem;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.08em;\n  color: var(--color-primary);\n}',
+    locations: ['goals/index', 'home', 'initiatives/show'],
+    defaultRule: 'Eyebrow label that sits above a heading to categorize the section. Always pair with a heading below it. Use the orange primary color.',
+    antiPattern: 'Don\'t use standalone without a heading. Don\'t use for navigation or metadata — only for section categorization.' },
+
+  { id: 'typo-text-meta', name: 'Text Meta', category: 'Typography', cssClass: '.text-meta',
+    cssDefinition: '.text-meta {\n  font-weight: 300 (Light);\n  color: var(--color-text-secondary);\n}',
+    locations: ['Not currently used in blade templates — available as utility'],
+    defaultRule: 'Light, muted text for metadata (dates, counts, author names, secondary information).',
+    antiPattern: 'Don\'t use for primary content or actionable text — it\'s deliberately de-emphasized.' },
+
+  { id: 'typo-intro-block', name: 'Intro Block', category: 'Typography', cssClass: '.intro-block',
+    cssDefinition: '.intro-block {\n  text-align: center;\n  max-width: 800px;\n  margin: 0 auto;\n  padding: 4rem 1.5rem;\n}\n.intro-block p {\n  font-size: 1.125rem;\n  font-weight: 300;\n  color: var(--color-text-secondary);\n}',
+    locations: ['goals/index', 'initiatives/index', 'contributors/index', 'themes/index'],
+    defaultRule: 'Centered hero/intro area at top of index pages. Contains h1 + descriptive paragraph. Max-width 800px keeps text readable.',
+    antiPattern: 'Don\'t use on detail/show pages — those have their own hero layouts. Don\'t put multiple intro-blocks on one page.' },
+
+  // --- BUTTONS ---
+  { id: 'btn-pill', name: 'Pill Button', category: 'Buttons', cssClass: '.btn-pill',
+    cssDefinition: '.btn-pill {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  padding: 0.625rem 1.5rem;\n  font-weight: 600;\n  color: white;\n  background: var(--color-primary);\n  border-radius: 9999px;\n}\n.btn-pill:hover {\n  background: var(--color-primary-hover);\n  box-shadow: md;\n}',
+    locations: ['nav.blade.php', 'goals/show', 'initiatives/show'],
+    defaultRule: 'The brand\'s signature CTA button — fully rounded, warm orange, white text. Use for primary page-level actions: "Bekijk uitwerkingen", "Deel je ervaring". Conveys warmth and approachability.',
+    antiPattern: 'Don\'t use for form submissions (use flux:button). Don\'t use for secondary/ghost actions. Don\'t use more than one per visible section.' },
+
+  { id: 'btn-flux-primary', name: 'Flux Button (Primary)', category: 'Buttons', cssClass: '<flux:button variant="primary">',
+    cssDefinition: '<flux:button variant="primary">Label</flux:button>\n\nRendered by Flux UI — uses accent color scale.\nSquared corners (Flux default radius).',
+    locations: ['auth/', 'profile/', 'fiches/show', 'initiatives/index', 'livewire/'],
+    defaultRule: 'Standard form submit button. Use for all form submissions (login, register, save profile, post comment). Squared corners signal "system action" vs pill\'s "brand CTA".',
+    antiPattern: 'Don\'t use for page-level marketing CTAs — use .btn-pill. Don\'t use where a text link (cta-link) would suffice.' },
+
+  { id: 'btn-flux-ghost', name: 'Flux Button (Ghost)', category: 'Buttons', cssClass: '<flux:button variant="ghost">',
+    cssDefinition: '<flux:button variant="ghost">Label</flux:button>\n\nTransparent background, text-only.\nHover shows subtle background.',
+    locations: ['Navigation', 'Toolbar actions', 'Cancel buttons'],
+    defaultRule: 'Low-emphasis action button. Use for secondary actions: cancel, dismiss, toggle filters, toolbar icons.',
+    antiPattern: 'Don\'t use for primary actions — too subtle. Don\'t use for CTAs that need visual prominence.' },
+
+  { id: 'btn-flux-danger', name: 'Flux Button (Danger)', category: 'Buttons', cssClass: '<flux:button variant="danger">',
+    cssDefinition: '<flux:button variant="danger">Label</flux:button>\n\nRed background for destructive actions.',
+    locations: ['profile/ (delete actions)', 'admin actions'],
+    defaultRule: 'Destructive action button. Use only for irreversible or dangerous actions: delete account, remove content.',
+    antiPattern: 'Don\'t use for non-destructive actions. Always pair with a confirmation dialog.' },
+
+  { id: 'btn-flux-sm', name: 'Flux Button (Small)', category: 'Buttons', cssClass: '<flux:button size="sm">',
+    cssDefinition: '<flux:button variant="primary" size="sm">Label</flux:button>\n\nSmaller padding and font size.',
+    locations: ['Inline actions', 'Table rows', 'Card footers'],
+    defaultRule: 'Compact button for inline or tight-space contexts: table actions, card footers, tag chips with actions.',
+    antiPattern: 'Don\'t use for page-level CTAs — too small to notice. Use regular size for standalone buttons.' },
+
+  // --- LINKS ---
+  { id: 'link-cta', name: 'CTA Link', category: 'Links', cssClass: '.cta-link',
+    cssDefinition: '.cta-link {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.25rem;\n  font-weight: 600;\n  color: var(--color-primary);\n}\n.cta-link::after { content: "→"; }\n.cta-link:hover { gap: 0.5rem; }',
+    locations: ['initiative-card', 'fiche-card', 'nav', 'goals/show', 'home', 'initiatives/show'],
+    defaultRule: 'Text link with animated arrow (→). The default way to say "see more" or "read more". Use inside cards, at end of sections, or as secondary navigation prompts.',
+    antiPattern: 'Don\'t use for form actions or button-like interactions. Don\'t use for navigation menu items (those are plain links). Don\'t add your own arrow — the ::after pseudo-element adds it automatically.' },
+
+  { id: 'link-nav', name: 'Nav Link', category: 'Links', cssClass: 'Plain <a> / flux:navlist',
+    cssDefinition: 'Standard anchor link or <flux:navlist.item>.\nNo decoration, hover underline or color shift.',
+    locations: ['nav.blade.php', 'Footer', 'Breadcrumbs'],
+    defaultRule: 'Standard navigation link. Use for menus, breadcrumbs, footer links, and any navigational context.',
+    antiPattern: 'Don\'t add arrows or extra decoration — keep it clean. Use .cta-link instead if you want a "read more" prompt.' },
+
+  // --- BADGES ---
+  { id: 'badge-diamant', name: 'DIAMANT Badge', category: 'Badges', cssClass: '.diamant-badge',
+    cssDefinition: '.diamant-badge {\n  width: 3rem; height: 3rem;\n  border-radius: 50%;\n  color: white;\n  font-size: 1.125rem;\n  font-weight: 700;\n  font-family: Alan Sans;\n  background: var(--color-primary);\n}',
+    locations: ['goals/index', 'goals/show'],
+    defaultRule: 'Large circular badge showing a single DIAMANT letter (D, I, A, M, A, N, T). Use on goal index/overview pages where goals are displayed prominently.',
+    antiPattern: 'Don\'t use inline with text — too large. Use .diamant-badge-sm for compact contexts.' },
+
+  { id: 'badge-diamant-sm', name: 'DIAMANT Badge (Small)', category: 'Badges', cssClass: '.diamant-badge-sm',
+    cssDefinition: '.diamant-badge-sm {\n  width: 2rem; height: 2rem;\n  border-radius: 50%;\n  color: white;\n  font-size: 0.875rem;\n  font-weight: 700;\n  font-family: Alan Sans;\n  background: var(--color-primary);\n}',
+    locations: ['home', 'initiatives/show'],
+    defaultRule: 'Compact DIAMANT letter badge. Use inline alongside initiative titles or in compact goal references within cards.',
+    antiPattern: 'Don\'t use on goal overview pages where the large badge gives better visual hierarchy.' },
+
+  { id: 'badge-diamant-sm-inactive', name: 'DIAMANT Badge (Inactive)', category: 'Badges', cssClass: '.diamant-badge-sm-inactive',
+    cssDefinition: '.diamant-badge-sm-inactive {\n  width: 2rem; height: 2rem;\n  border-radius: 50%;\n  font-size: 0.875rem;\n  font-weight: 700;\n  font-family: Alan Sans;\n  background: var(--color-bg-subtle);\n  color: var(--color-text-secondary);\n}',
+    locations: ['initiatives/show'],
+    defaultRule: 'Greyed-out DIAMANT letter badge for goals NOT associated with the current initiative. Shows the full DIAMANT spectrum with active/inactive distinction.',
+    antiPattern: 'Don\'t use standalone — always display alongside active .diamant-badge-sm badges to create the full D-I-A-M-A-N-T row.' },
+
+  { id: 'badge-diamond-indicator', name: 'Diamond Indicator', category: 'Badges', cssClass: '.diamond-indicator',
+    cssDefinition: '.diamond-indicator {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.375rem;\n  padding: 0.25rem 0.75rem;\n  border-radius: 9999px;\n  font-size: 0.875rem;\n  font-weight: 500;\n  background: #FDF3EE;\n  color: var(--color-primary);\n}',
+    locations: ['initiatives/show', 'fiches/show'],
+    defaultRule: 'Pill-shaped badge with light orange background showing DIAMANT goal association. Displays goal name as readable text (not just a letter). Use in detail pages where context is needed.',
+    antiPattern: 'Don\'t use in compact lists — too wide. Use .diamant-badge-sm for letter-only indicators.' },
+
+  { id: 'badge-flux', name: 'Flux Badge', category: 'Badges', cssClass: '<flux:badge>',
+    cssDefinition: '<flux:badge color="...">Label</flux:badge>\n\nStandard Flux UI badge component.\nAvailable colors: zinc, red, orange, amber, etc.',
+    locations: ['Tags', 'Status indicators', 'Filters'],
+    defaultRule: 'General-purpose tag/status badge. Use for content tags (themes, seasons, target groups), status indicators, and filter chips.',
+    antiPattern: 'Don\'t use for DIAMANT goals — those have their own dedicated badge components (.diamant-badge variants).' },
+
+  // --- CARDS ---
+  { id: 'card-content', name: 'Content Card', category: 'Cards', cssClass: '.content-card',
+    cssDefinition: '.content-card {\n  background: white;\n  border-radius: 12px;\n  border: 1px solid var(--color-border-light);\n  overflow: hidden;\n}\n.content-card:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 4px 16px rgba(60,40,20,0.10);\n  border-color: var(--color-border-hover);\n}',
+    locations: ['goals/index'],
+    defaultRule: 'Clickable content card with hover lift effect. Use for browsable content grids: goal cards, initiative cards, theme cards. Always wrap in an <a> tag.',
+    antiPattern: 'Don\'t use for static/non-clickable content — use flux:card instead. Don\'t nest interactive elements inside.' },
+
+  { id: 'card-flux', name: 'Flux Card', category: 'Cards', cssClass: '<flux:card>',
+    cssDefinition: '<flux:card>\n  Content here\n</flux:card>\n\nStandard Flux UI card with padding and border.',
+    locations: ['Profile sections', 'Form containers', 'Detail page sections'],
+    defaultRule: 'Static content container. Use for form wrappers, profile sections, settings panels — any grouped content that is NOT clickable as a unit.',
+    antiPattern: 'Don\'t use for browsable content grids — use .content-card for clickable cards with hover effects.' },
+
+  { id: 'card-quote', name: 'Quote Card', category: 'Cards', cssClass: '.quote-card',
+    cssDefinition: '.quote-card {\n  border-radius: 0.75rem;\n  padding: 1.5rem;\n  color: white;\n  background: var(--color-primary);\n}',
+    locations: ['goals/show'],
+    defaultRule: 'Full-orange card for displaying inspirational quotes on goal detail pages. White text on orange background.',
+    antiPattern: 'Don\'t use for general content — only for quotes/testimonials. One per page maximum.' },
+
+  { id: 'card-practice', name: 'Practice Card', category: 'Cards', cssClass: '.practice-card',
+    cssDefinition: '.practice-card {\n  border-radius: 0.75rem;\n  overflow: hidden;\n  background: white;\n  border: 1px solid var(--color-border-light);\n}',
+    locations: ['goals/show'],
+    defaultRule: 'Card for displaying practice examples on goal detail pages. Similar to content-card but without hover effects — for reading, not navigating.',
+    antiPattern: 'Don\'t add hover effects. Don\'t use outside of goal detail pages.' },
+
+  // --- LAYOUT ---
+  { id: 'layout-question-row', name: 'Question Row', category: 'Layout', cssClass: '.question-row',
+    cssDefinition: '.question-row {\n  display: flex;\n  align-items: flex-start;\n  gap: 1rem;\n  padding: 1.25rem;\n  border-radius: 0.75rem;\n  background: var(--color-bg-subtle);\n}',
+    locations: ['goals/show'],
+    defaultRule: 'Row layout for reflection questions on goal detail pages. Subtle background with question badge + text. Stack vertically for multiple questions.',
+    antiPattern: 'Don\'t use for FAQ-style content with expandable answers — this is for simple question display only.' },
+
+  { id: 'layout-question-badge', name: 'Question Badge', category: 'Layout', cssClass: '.question-badge',
+    cssDefinition: '.question-badge {\n  width: 2rem; height: 2rem;\n  border-radius: 50%;\n  font-weight: 700;\n  font-family: Alan Sans;\n  color: var(--color-primary);\n  background: var(--color-bg-accent-light);\n}',
+    locations: ['goals/show'],
+    defaultRule: 'Circle badge showing "?" inside a question-row. Light orange background with orange text. Always pair with .question-row.',
+    antiPattern: 'Don\'t use standalone — always within a .question-row container.' },
+];
+
+// ============================================================================
+// STATE
+// ============================================================================
+let currentView = 'catalog';
+let currentBg = 'bg-white';
+let selectedId = COMPONENTS[0].id;
+
+// Load saved rules from localStorage
+const STORAGE_KEY = 'hv-design-rules';
+function loadRules() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    COMPONENTS.forEach(c => {
+      if (saved[c.id]) {
+        c.rule = saved[c.id].rule ?? '';
+        c.antiPatternEdited = saved[c.id].antiPattern ?? '';
+      }
+    });
+  } catch(e) {}
+}
+function saveRules() {
+  const data = {};
+  COMPONENTS.forEach(c => {
+    data[c.id] = {
+      rule: c.rule ?? '',
+      antiPattern: c.antiPatternEdited ?? ''
+    };
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  updateStats();
+}
+function getRule(c) { return c.rule || c.defaultRule; }
+function getAntiPattern(c) { return c.antiPatternEdited || c.antiPattern; }
+
+loadRules();
+
+// ============================================================================
+// SIDEBAR
+// ============================================================================
+function renderSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const groups = {};
+  COMPONENTS.forEach(c => {
+    if (!groups[c.category]) groups[c.category] = [];
+    groups[c.category].push(c);
+  });
+
+  let html = '';
+  for (const [group, items] of Object.entries(groups)) {
+    html += `<div class="sidebar-group-label">${group}</div>`;
+    items.forEach(c => {
+      const hasRule = (c.rule && c.rule.trim()) || (c.antiPatternEdited && c.antiPatternEdited.trim());
+      html += `<div class="sidebar-item ${c.id === selectedId ? 'active' : ''}" data-id="${c.id}">
+        <span>${c.name}</span>
+        <span class="rule-indicator ${hasRule ? 'has-rule' : 'no-rule'}"></span>
+      </div>`;
+    });
+  }
+  sidebar.innerHTML = html;
+
+  sidebar.querySelectorAll('.sidebar-item').forEach(el => {
+    el.addEventListener('click', () => {
+      selectedId = el.dataset.id;
+      if (currentView === 'review') {
+        currentView = 'catalog';
+        updateViewToggle();
+      }
+      renderSidebar();
+      renderMain();
+    });
+  });
+}
+
+// ============================================================================
+// PREVIEW RENDERERS
+// ============================================================================
+function renderPreview(comp) {
+  const id = comp.id;
+
+  // Colors
+  if (id.startsWith('color-')) {
+    return `<div class="color-swatch-row">
+      <div class="color-swatch" style="background:${comp.hex}"></div>
+      <div class="color-info">
+        <div class="color-hex">${comp.hex}</div>
+        <div class="color-var">${comp.cssClass}</div>
+      </div>
+    </div>`;
+  }
+
+  // Typography
+  if (id === 'typo-h1') return `<div class="typo-preview"><h1>Samen werken aan warmte</h1></div>`;
+  if (id === 'typo-h2') return `<div class="typo-preview"><h2>Ontdek initiatieven</h2></div>`;
+  if (id === 'typo-h3') return `<div class="typo-preview"><h3>Praktijkvoorbeelden</h3></div>`;
+  if (id === 'typo-h4') return `<div class="typo-preview"><h4>Over dit initiatief</h4></div>`;
+  if (id === 'typo-section-label') return `<div style="color:var(--hv-primary);font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;display:inline-flex;align-items:center;gap:0.5rem;">&#9830; Doelen</div>`;
+  if (id === 'typo-text-meta') return `<div style="font-weight:300;color:var(--hv-text-secondary);">Geplaatst op 26 feb 2026 &bull; 3 reacties</div>`;
+  if (id === 'typo-intro-block') return `<div style="text-align:center;max-width:600px;">
+    <div style="font-family:var(--hv-font-heading);font-weight:900;font-size:2rem;line-height:1.25;margin-bottom:0.75rem;color:var(--hv-text-primary);">Alle initiatieven</div>
+    <div style="font-size:1.05rem;font-weight:300;color:var(--hv-text-secondary);line-height:1.6;">Ontdek hartverwarmende activiteiten voor ouderen in de zorg, gedeeld door activiteitenbegeleiders uit heel Nederland.</div>
+  </div>`;
+
+  // Buttons
+  if (id === 'btn-pill') return `<a href="#" onclick="return false" style="display:inline-flex;align-items:center;justify-content:center;padding:0.625rem 1.5rem;font-weight:600;color:white;background:var(--hv-primary);border-radius:9999px;text-decoration:none;font-family:inherit;font-size:1rem;transition:all 0.2s;" onmouseover="this.style.background='var(--hv-primary-hover)';this.style.boxShadow='0 4px 12px rgba(60,40,20,0.15)'" onmouseout="this.style.background='var(--hv-primary)';this.style.boxShadow='none'">Bekijk uitwerkingen</a>`;
+  if (id === 'btn-flux-primary') return `<button style="display:inline-flex;align-items:center;justify-content:center;padding:0.5rem 1rem;font-weight:600;color:white;background:var(--hv-primary);border-radius:8px;border:none;font-family:inherit;font-size:0.875rem;cursor:pointer;">Opslaan</button>`;
+  if (id === 'btn-flux-ghost') return `<button style="display:inline-flex;align-items:center;justify-content:center;padding:0.5rem 1rem;font-weight:500;color:var(--hv-text-primary);background:transparent;border-radius:8px;border:none;font-family:inherit;font-size:0.875rem;cursor:pointer;" onmouseover="this.style.background='var(--hv-bg-subtle)'" onmouseout="this.style.background='transparent'">Annuleren</button>`;
+  if (id === 'btn-flux-danger') return `<button style="display:inline-flex;align-items:center;justify-content:center;padding:0.5rem 1rem;font-weight:600;color:white;background:#dc2626;border-radius:8px;border:none;font-family:inherit;font-size:0.875rem;cursor:pointer;">Verwijderen</button>`;
+  if (id === 'btn-flux-sm') return `<button style="display:inline-flex;align-items:center;justify-content:center;padding:0.25rem 0.75rem;font-weight:600;color:white;background:var(--hv-primary);border-radius:6px;border:none;font-family:inherit;font-size:0.8rem;cursor:pointer;">Bewerken</button>`;
+
+  // Links
+  if (id === 'link-cta') return `<a href="#" onclick="return false" style="display:inline-flex;align-items:center;gap:0.25rem;font-weight:600;color:var(--hv-primary);text-decoration:none;font-family:inherit;transition:all 0.2s;" onmouseover="this.style.gap='0.5rem'" onmouseout="this.style.gap='0.25rem'">Lees meer <span style="transition:transform 0.2s;">→</span></a>`;
+  if (id === 'link-nav') return `<div style="display:flex;gap:24px;"><a href="#" onclick="return false" style="color:var(--hv-text-primary);text-decoration:none;font-weight:500;font-family:inherit;" onmouseover="this.style.color='var(--hv-primary)'" onmouseout="this.style.color='var(--hv-text-primary)'">Initiatieven</a><a href="#" onclick="return false" style="color:var(--hv-text-secondary);text-decoration:none;font-weight:400;font-family:inherit;" onmouseover="this.style.color='var(--hv-primary)'" onmouseout="this.style.color='var(--hv-text-secondary)'">Doelen</a><a href="#" onclick="return false" style="color:var(--hv-text-secondary);text-decoration:none;font-weight:400;font-family:inherit;" onmouseover="this.style.color='var(--hv-primary)'" onmouseout="this.style.color='var(--hv-text-secondary)'">Bijdragers</a></div>`;
+
+  // Badges
+  if (id === 'badge-diamant') return `<div style="display:flex;gap:8px;">${'DIAMANT'.split('').map(l => `<div style="width:3rem;height:3rem;border-radius:50%;color:white;font-size:1.125rem;font-weight:700;font-family:var(--hv-font-heading);background:var(--hv-primary);display:flex;align-items:center;justify-content:center;">${l}</div>`).join('')}</div>`;
+  if (id === 'badge-diamant-sm') return `<div style="display:flex;gap:6px;">${'DIAMANT'.split('').map(l => `<div style="width:2rem;height:2rem;border-radius:50%;color:white;font-size:0.875rem;font-weight:700;font-family:var(--hv-font-heading);background:var(--hv-primary);display:flex;align-items:center;justify-content:center;">${l}</div>`).join('')}</div>`;
+  if (id === 'badge-diamant-sm-inactive') return `<div style="display:flex;gap:6px;">${'DIAMANT'.split('').map((l,i) => {
+    const active = i === 0 || i === 3;
+    return active
+      ? `<div style="width:2rem;height:2rem;border-radius:50%;color:white;font-size:0.875rem;font-weight:700;font-family:var(--hv-font-heading);background:var(--hv-primary);display:flex;align-items:center;justify-content:center;">${l}</div>`
+      : `<div style="width:2rem;height:2rem;border-radius:50%;color:var(--hv-text-secondary);font-size:0.875rem;font-weight:700;font-family:var(--hv-font-heading);background:var(--hv-bg-subtle);display:flex;align-items:center;justify-content:center;">${l}</div>`;
+  }).join('')}</div>`;
+  if (id === 'badge-diamond-indicator') return `<div style="display:inline-flex;align-items:center;gap:0.375rem;padding:0.25rem 0.75rem;border-radius:9999px;font-size:0.875rem;font-weight:500;background:#FDF3EE;color:var(--hv-primary);">&#9830; Doen</div>`;
+  if (id === 'badge-flux') return `<div style="display:flex;gap:6px;flex-wrap:wrap;">
+    <span style="display:inline-flex;padding:0.15rem 0.6rem;border-radius:9999px;font-size:0.8rem;font-weight:500;background:#f4f4f5;color:#3f3f46;">Muziek</span>
+    <span style="display:inline-flex;padding:0.15rem 0.6rem;border-radius:9999px;font-size:0.8rem;font-weight:500;background:#FDF3EE;color:var(--hv-primary);">Herfst</span>
+    <span style="display:inline-flex;padding:0.15rem 0.6rem;border-radius:9999px;font-size:0.8rem;font-weight:500;background:#dbeafe;color:#1d4ed8;">Bewegen</span>
+  </div>`;
+
+  // Cards
+  if (id === 'card-content') return `<div style="background:white;border-radius:12px;border:1px solid var(--hv-border-light);overflow:hidden;width:280px;transition:all 0.2s;cursor:pointer;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 16px rgba(60,40,20,0.10)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+    <div style="height:120px;background:linear-gradient(135deg,var(--hv-bg-cream),var(--hv-bg-subtle));display:flex;align-items:center;justify-content:center;color:var(--hv-text-secondary);font-size:0.8rem;">Image</div>
+    <div style="padding:1.25rem;">
+      <div style="font-family:var(--hv-font-heading);font-size:1.15rem;font-weight:700;margin-bottom:0.5rem;color:var(--hv-text-primary);">Muziek & Bewegen</div>
+      <div style="color:var(--hv-text-secondary);font-size:0.9rem;margin-bottom:0.75rem;">Een activiteit die ouderen samenbrengt door muziek.</div>
+    </div>
+  </div>`;
+  if (id === 'card-flux') return `<div style="background:white;border-radius:12px;border:1px solid var(--hv-border-light);padding:1.5rem;width:320px;">
+    <div style="font-family:var(--hv-font-heading);font-weight:700;font-size:1.1rem;margin-bottom:0.75rem;">Profiel instellingen</div>
+    <div style="color:var(--hv-text-secondary);font-size:0.9rem;">Statische container voor formulieren en instellingen.</div>
+  </div>`;
+  if (id === 'card-quote') return `<div style="border-radius:0.75rem;padding:1.5rem;color:white;background:var(--hv-primary);width:320px;">
+    <div style="font-family:var(--hv-font-heading);font-size:3rem;line-height:1;opacity:0.3;">&ldquo;</div>
+    <div style="font-size:1rem;line-height:1.6;margin:0.5rem 0;">Elke ontmoeting is een kans om warmte te delen.</div>
+    <div style="font-size:0.8rem;opacity:0.7;margin-top:0.5rem;">&mdash; Activiteitenbegeleider</div>
+  </div>`;
+  if (id === 'card-practice') return `<div style="border-radius:0.75rem;overflow:hidden;background:white;border:1px solid var(--hv-border-light);width:320px;">
+    <div style="height:80px;background:linear-gradient(135deg,#FEF8F4,#F5F0EC);"></div>
+    <div style="padding:1.25rem;">
+      <div style="font-family:var(--hv-font-heading);font-weight:700;font-size:1rem;margin-bottom:0.5rem;">Wandelen met verhalen</div>
+      <div style="color:var(--hv-text-secondary);font-size:0.85rem;">Bewoners delen herinneringen tijdens een wandeling door de tuin.</div>
+    </div>
+  </div>`;
+
+  // Layout
+  if (id === 'layout-question-row') return `<div style="display:flex;align-items:flex-start;gap:1rem;padding:1.25rem;border-radius:0.75rem;background:var(--hv-bg-subtle);width:400px;">
+    <div style="width:2rem;height:2rem;border-radius:50%;font-weight:700;font-family:var(--hv-font-heading);color:var(--hv-primary);background:#FDF3EE;display:flex;align-items:center;justify-content:center;flex-shrink:0;">?</div>
+    <div style="color:var(--hv-text-primary);font-size:0.95rem;line-height:1.5;">Hoe kan je bewoners helpen om zelf keuzes te maken in hun dagelijkse routine?</div>
+  </div>`;
+  if (id === 'layout-question-badge') return `<div style="display:flex;gap:12px;align-items:center;">
+    <div style="width:2rem;height:2rem;border-radius:50%;font-weight:700;font-family:var(--hv-font-heading);color:var(--hv-primary);background:#FDF3EE;display:flex;align-items:center;justify-content:center;">?</div>
+    <span style="color:var(--hv-text-secondary);font-size:0.85rem;">Used inside .question-row</span>
+  </div>`;
+
+  return '<div style="color:var(--hv-text-secondary);">No preview available</div>';
+}
+
+// ============================================================================
+// CATALOG VIEW
+// ============================================================================
+function renderCatalog() {
+  const comp = COMPONENTS.find(c => c.id === selectedId);
+  if (!comp) return;
+
+  const rule = getRule(comp);
+  const anti = getAntiPattern(comp);
+
+  document.getElementById('mainContent').innerHTML = `
+    <div class="component-header">
+      <span class="component-name">${comp.name}</span>
+      <span class="component-class">${escHtml(comp.cssClass)}</span>
+    </div>
+    <div class="component-category">${comp.category}</div>
+
+    <div class="section-title">Preview</div>
+    <div class="preview-wrapper">
+      <div class="preview-area ${currentBg}" id="previewArea">
+        ${renderPreview(comp)}
+      </div>
+    </div>
+
+    <div class="section-title">CSS / Code</div>
+    <div class="code-block">${escHtml(comp.cssDefinition)}</div>
+
+    <div class="section-title">Codebase Locations</div>
+    <div class="locations-list">
+      ${comp.locations.map(l => `<span class="location-tag">${escHtml(l)}</span>`).join('')}
+    </div>
+
+    <div class="section-title">Usage Rules</div>
+    <div class="rule-editor">
+      <div class="rule-box when-use">
+        <label><span class="dot"></span> When to use</label>
+        <textarea id="ruleUse" placeholder="When should this component be used?">${escHtml(rule)}</textarea>
+      </div>
+      <div class="rule-box when-not">
+        <label><span class="dot"></span> When NOT to use</label>
+        <textarea id="ruleNot" placeholder="When should this component NOT be used?">${escHtml(anti)}</textarea>
+      </div>
+    </div>
+  `;
+
+  // Bind save on input
+  document.getElementById('ruleUse').addEventListener('input', (e) => {
+    comp.rule = e.target.value;
+    saveRules();
+    renderSidebar();
+  });
+  document.getElementById('ruleNot').addEventListener('input', (e) => {
+    comp.antiPatternEdited = e.target.value;
+    saveRules();
+    renderSidebar();
+  });
+}
+
+// ============================================================================
+// REVIEW ALL VIEW
+// ============================================================================
+function renderReview() {
+  const groups = {};
+  COMPONENTS.forEach(c => {
+    if (!groups[c.category]) groups[c.category] = [];
+    groups[c.category].push(c);
+  });
+
+  let html = `<table class="review-table">
+    <thead><tr>
+      <th style="width:180px;">Component</th>
+      <th style="width:45%;">When to use</th>
+      <th style="width:45%;">When NOT to use</th>
+    </tr></thead>
+    <tbody>`;
+
+  for (const [group, items] of Object.entries(groups)) {
+    html += `<tr class="review-group-header"><td colspan="3">${group}</td></tr>`;
+    items.forEach(c => {
+      html += `<tr>
+        <td>
+          <div class="comp-name" data-id="${c.id}">${c.name}</div>
+          <div class="comp-class">${escHtml(c.cssClass)}</div>
+        </td>
+        <td><textarea class="use-rule" data-id="${c.id}" data-field="rule">${escHtml(getRule(c))}</textarea></td>
+        <td><textarea class="not-rule" data-id="${c.id}" data-field="anti">${escHtml(getAntiPattern(c))}</textarea></td>
+      </tr>`;
+    });
+  }
+
+  html += '</tbody></table>';
+  document.getElementById('mainContent').innerHTML = html;
+
+  // Bind interactions
+  document.querySelectorAll('.review-table .comp-name').forEach(el => {
+    el.addEventListener('click', () => {
+      selectedId = el.dataset.id;
+      currentView = 'catalog';
+      updateViewToggle();
+      renderSidebar();
+      renderMain();
+    });
+  });
+
+  document.querySelectorAll('.review-table textarea').forEach(el => {
+    el.addEventListener('input', () => {
+      const comp = COMPONENTS.find(c => c.id === el.dataset.id);
+      if (!comp) return;
+      if (el.dataset.field === 'rule') comp.rule = el.value;
+      else comp.antiPatternEdited = el.value;
+      saveRules();
+      renderSidebar();
+    });
+  });
+}
+
+// ============================================================================
+// RENDER MAIN
+// ============================================================================
+function renderMain() {
+  if (currentView === 'catalog') renderCatalog();
+  else renderReview();
+}
+
+// ============================================================================
+// TOGGLES
+// ============================================================================
+document.getElementById('bgToggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('.toggle-btn');
+  if (!btn) return;
+  document.querySelectorAll('#bgToggle .toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentBg = btn.dataset.bg;
+  const area = document.getElementById('previewArea');
+  if (area) {
+    area.className = 'preview-area ' + currentBg;
+  }
+});
+
+document.getElementById('viewToggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('.toggle-btn');
+  if (!btn) return;
+  currentView = btn.dataset.view;
+  updateViewToggle();
+  renderMain();
+});
+
+function updateViewToggle() {
+  document.querySelectorAll('#viewToggle .toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === currentView);
+  });
+}
+
+// ============================================================================
+// STATS
+// ============================================================================
+function updateStats() {
+  const total = COMPONENTS.length;
+  const withRules = COMPONENTS.filter(c => (c.rule && c.rule.trim()) || (c.antiPatternEdited && c.antiPatternEdited.trim())).length;
+  document.getElementById('exportStats').innerHTML = `<strong>${withRules}</strong> of ${total} components have custom rules`;
+}
+
+// ============================================================================
+// MARKDOWN EXPORT
+// ============================================================================
+function generateMarkdown() {
+  const groups = {};
+  COMPONENTS.forEach(c => {
+    if (!groups[c.category]) groups[c.category] = [];
+    groups[c.category].push(c);
+  });
+
+  let md = `# Hartverwarmers Design System\n\n`;
+  md += `> Component usage rules for consistent UI across the platform.\n`;
+  md += `> Generated from the Design System Rule Editor playground.\n\n`;
+
+  for (const [group, items] of Object.entries(groups)) {
+    md += `## ${group}\n\n`;
+    items.forEach(c => {
+      md += `### ${c.name}\n\n`;
+      md += `**Class:** \`${c.cssClass}\`\n\n`;
+      md += `**When to use:** ${getRule(c)}\n\n`;
+      md += `**When NOT to use:** ${getAntiPattern(c)}\n\n`;
+    });
+  }
+
+  // Quick reference table
+  md += `## Quick Reference\n\n`;
+  md += `| Component | Class | Use for | Don't use for |\n`;
+  md += `|-----------|-------|---------|---------------|\n`;
+  COMPONENTS.forEach(c => {
+    const rule = getRule(c).split('.')[0].replace(/\|/g, '/');
+    const anti = getAntiPattern(c).split('.')[0].replace(/\|/g, '/');
+    md += `| ${c.name} | \`${c.cssClass}\` | ${rule} | ${anti} |\n`;
+  });
+
+  return md;
+}
+
+function showPreview() {
+  document.getElementById('modalContent').textContent = generateMarkdown();
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closePreview(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+function copyMarkdown() {
+  navigator.clipboard.writeText(generateMarkdown()).then(() => {
+    showToast('Markdown copied to clipboard');
+  });
+}
+
+function downloadMarkdown() {
+  const blob = new Blob([generateMarkdown()], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'DESIGN_SYSTEM.md';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Downloaded DESIGN_SYSTEM.md');
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ============================================================================
+// UTILS
+// ============================================================================
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Keyboard: Escape to close modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closePreview();
+});
+
+// ============================================================================
+// INIT
+// ============================================================================
+renderSidebar();
+renderMain();
+updateStats();
+</script>
+</body>
+</html>
