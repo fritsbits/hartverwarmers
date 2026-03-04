@@ -442,10 +442,10 @@ class InitiativeTest extends TestCase
     public function test_thumbnail_url_derives_from_image_path(): void
     {
         $initiative = Initiative::factory()->published()->create([
-            'image' => '/storage/initiatives/bingo.webp',
+            'image' => '/img/initiatives/bingo.webp',
         ]);
 
-        $this->assertEquals('/storage/initiatives/bingo-thumb.webp', $initiative->thumbnailUrl());
+        $this->assertEquals('/img/initiatives/bingo-thumb.webp', $initiative->thumbnailUrl());
     }
 
     public function test_thumbnail_url_returns_null_when_no_image(): void
