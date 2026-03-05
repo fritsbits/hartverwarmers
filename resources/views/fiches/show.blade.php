@@ -137,12 +137,9 @@
                     @endif
 
                     {{-- Practical information — expandable --}}
-                    @if($fiche->practical_sections || $fiche->materials_meta)
+                    @if($fiche->practical_sections)
                         @php
                             $sectionTitles = collect($fiche->practical_sections)->pluck('title');
-                            if ($fiche->materials_meta) {
-                                $sectionTitles = collect($fiche->materials_meta)->pluck('label')->merge($sectionTitles);
-                            }
                         @endphp
                         <div x-data="{ open: false }" class="mt-8 rounded-xl border border-[var(--color-border-light)] transition-all duration-200" :class="open ? 'bg-white shadow-card' : 'hover:-translate-y-0.5 hover:bg-white hover:shadow-card hover:border-[var(--color-border-hover)]'">
                             <button @click="open = !open" class="w-full text-left px-5 py-4 flex items-center gap-4 cursor-pointer group">
@@ -164,13 +161,6 @@
                             <div x-show="open" x-collapse x-cloak>
                                 <div class="px-5 pb-6 border-t border-[var(--color-border-light)]">
                                     <div class="divide-y divide-[var(--color-border-light)]">
-                                        @foreach($fiche->materials_meta as $meta)
-                                            <div class="pt-5 {{ !$loop->last || $fiche->practical_sections ? 'pb-5' : '' }}">
-                                                <h3 class="font-heading text-lg font-bold mb-3" style="color: var(--color-primary)">{{ $meta['label'] }}</h3>
-                                                <div class="practical-content">{{ $meta['value'] }}</div>
-                                            </div>
-                                        @endforeach
-
                                         @foreach($fiche->practical_sections as $section)
                                             <div class="pt-5 {{ !$loop->last ? 'pb-5' : '' }}">
                                                 <h3 class="font-heading text-lg font-bold mb-3" style="color: var(--color-primary)">{{ $section['title'] }}</h3>

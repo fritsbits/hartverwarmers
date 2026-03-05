@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Features\DiamantGoals;
+use App\Features\WizardDevMode;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Laravel\Pennant\Feature;
@@ -19,6 +20,11 @@ class FeatureController extends Controller
             'class' => DiamantGoals::class,
             'label' => 'DIAMANT-doelen',
             'description' => 'Toont de zeven DIAMANT-doelstellingen in navigatie, homepagina, fiches en formulieren.',
+        ],
+        'wizard-dev-mode' => [
+            'class' => WizardDevMode::class,
+            'label' => 'Wizard Dev Mode',
+            'description' => 'Laat admins direct naar elke stap van de fiche-wizard springen met vooraf ingevulde testdata.',
         ],
     ];
 

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playground: Vergelijkbare Activiteiten — Finale versie</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700" rel="stylesheet">
+    <style>
+        /* ========== Design tokens ========== */
+        :root {
+            --color-primary: #E8764B;
+            --color-text-primary: #231E1A;
+            --color-text-secondary: #756C65;
+            --color-bg-white: #FFFFFF;
+            --color-bg-cream: #FEF8F4;
+            --color-border-light: #EBE4DE;
+            --font-heading: 'Aleo', system-ui, serif;
+            --font-body: 'Fira Sans', system-ui, sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-body);
+            font-weight: 400;
+            color: var(--color-text-primary);
+            background: var(--color-bg-cream);
+            line-height: 1.6;
+        }
+
+        .page-header {
+            background: var(--color-bg-white);
+            border-bottom: 1px solid var(--color-border-light);
+            padding: 1.5rem 2rem;
+        }
+        .page-header h1 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.75rem;
+        }
+        .page-header p {
+            color: var(--color-text-secondary);
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Field */
+        .field-col label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+        .field-col .subtitle {
+            font-size: 0.9rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.75rem;
+        }
+        .field-col input[type="text"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            border: 1px solid var(--color-border-light);
+            border-radius: 8px;
+            background: var(--color-bg-white);
+            color: var(--color-text-primary);
+            outline: none;
+        }
+
+        /* Similar fiches tip — matches app.css .similar-fiches-tip */
+        .similar-fiches-tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            background: var(--color-bg-cream);
+            border-left: 4px solid var(--color-primary);
+            color: var(--color-text-secondary);
+            font-size: 0.9375rem;
+        }
+        .similar-fiches-tip p {
+            margin: 0;
+            line-height: 1.5;
+        }
+        .similar-fiches-tip p + p {
+            margin-top: 0.25rem;
+        }
+        .similar-fiches-tip .tip-icon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            color: var(--color-primary);
+            margin-top: 1px;
+        }
+
+        /* Demo panels */
+        .demo-panel {
+            background: var(--color-bg-white);
+            border: 1px solid var(--color-border-light);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .demo-panel h2 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .demo-panel .demo-desc {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-header">
+    <h1>Vergelijkbare Activiteiten — Finale versie</h1>
+    <p>Crème-paneel met linkerborder, sparkles-icoon, vlakke tekst zonder bold/emphasis.</p>
+</div>
+
+<div class="container">
+
+    <!-- Multiple results -->
+    <div class="demo-panel">
+        <h2>Meerdere resultaten (33 fiches)</h2>
+        <p class="demo-desc">Standaard: meerdere vergelijkbare fiches gevonden.</p>
+
+        <div class="field-col">
+            <label>Titel</label>
+            <p class="subtitle">Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</p>
+            <input type="text" value="Bingo" readonly>
+
+            <div class="similar-fiches-tip">
+                <span class="tip-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                    </svg>
+                </span>
+                <div>
+                    <p>Er bestaan al 33 bingo-fiches, waaronder Muziekbingo, Dierenbingo en Voelbingo.</p>
+                    <p>Wat maakt jouw activiteit uniek?</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Single result -->
+    <div class="demo-panel">
+        <h2>Enkelvoud (1 fiche)</h2>
+        <p class="demo-desc">Wanneer er precies 1 vergelijkbare fiche bestaat.</p>
+
+        <div class="field-col">
+            <label>Titel</label>
+            <p class="subtitle">Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</p>
+            <input type="text" value="Voelbingo" readonly>
+
+            <div class="similar-fiches-tip">
+                <span class="tip-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
+                    </svg>
+                </span>
+                <div>
+                    <p>Er bestaat al 1 voelbingo-fiche: Voelbingo voor gevorderden.</p>
+                    <p>Wat maakt jouw activiteit uniek?</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

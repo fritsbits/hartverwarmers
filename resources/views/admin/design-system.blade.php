@@ -141,12 +141,27 @@
 
                         <h3 class="mb-4">Flux Buttons</h3>
                         <p class="text-meta mb-4">Gebruik <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">&lt;flux:button&gt;</code> voor formulieracties. Variant <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">primary</code> voor hoofdactie, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">ghost</code> voor secundair.</p>
-                        <div class="flex flex-wrap items-center gap-4 mb-4 p-6 rounded-xl bg-[var(--color-bg-cream)]">
-                            <flux:button variant="primary">Opslaan</flux:button>
-                            <flux:button variant="filled">Filled</flux:button>
-                            <flux:button variant="ghost">Annuleren</flux:button>
-                            <flux:button variant="danger">Verwijderen</flux:button>
-                            <flux:button variant="primary" size="sm">Klein</flux:button>
+                        <div class="flex flex-wrap items-center gap-6 mb-4 p-6 rounded-xl bg-[var(--color-bg-cream)]">
+                            <div class="text-center">
+                                <flux:button variant="primary">Opslaan</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Primary</p>
+                            </div>
+                            <div class="text-center">
+                                <flux:button variant="filled">Filled</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Filled</p>
+                            </div>
+                            <div class="text-center">
+                                <flux:button variant="ghost">Annuleren</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Ghost</p>
+                            </div>
+                            <div class="text-center">
+                                <flux:button variant="danger">Verwijderen</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Danger</p>
+                            </div>
+                            <div class="text-center">
+                                <flux:button variant="primary" size="sm">Klein</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Primary sm</p>
+                            </div>
                         </div>
                         <details class="mb-8">
                             <summary class="text-sm font-semibold text-[var(--color-text-secondary)] cursor-pointer">Toon markup</summary>
@@ -234,17 +249,20 @@
 
                         <h3 class="mb-4">DIAMANT pills</h3>
                         <p class="text-meta mb-4">Compacte doellinks met gem-icoon. Actief en inactief.</p>
-                        <div class="flex flex-wrap items-center gap-2 mb-4 p-6 rounded-xl bg-[var(--color-bg-cream)]">
+                        <div class="flex flex-wrap items-end gap-2 mb-4 p-6 rounded-xl bg-[var(--color-bg-cream)]">
                             @foreach(array_slice(array_values($facets), 0, 3) as $facet)
                                 <span class="diamant-pill">
                                     <x-diamant-gem :letter="$facet['letter']" size="xxs" />
                                     {{ $facet['keyword'] }}
                                 </span>
                             @endforeach
-                            <span class="diamant-pill diamant-pill-inactive">
-                                <x-diamant-gem letter="N" size="xxs" :active="false" />
-                                Normalisatie
-                            </span>
+                            <div class="text-center">
+                                <span class="diamant-pill diamant-pill-inactive">
+                                    <x-diamant-gem letter="N" size="xxs" :active="false" />
+                                    Normalisatie
+                                </span>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Inactief</p>
+                            </div>
                         </div>
                         <details class="mb-8">
                             <summary class="text-sm font-semibold text-[var(--color-text-secondary)] cursor-pointer">Toon markup</summary>
@@ -293,8 +311,14 @@
                         <h3 class="mb-4">Initiative Card</h3>
                         <p class="text-meta mb-4">Klikbare kaart voor initiatieven. Gebruikt <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">&lt;x-initiative-card&gt;</code>.</p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-4">
-                            <x-initiative-card :initiative="$initiative" />
-                            <x-initiative-card :initiative="$initiative" :showFicheCount="true" />
+                            <div class="text-center">
+                                <x-initiative-card :initiative="$initiative" />
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Standaard</p>
+                            </div>
+                            <div class="text-center">
+                                <x-initiative-card :initiative="$initiative" :showFicheCount="true" />
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Met fiche-teller</p>
+                            </div>
                         </div>
                         <details class="mb-8">
                             <summary class="text-sm font-semibold text-[var(--color-text-secondary)] cursor-pointer">Toon markup</summary>
@@ -305,8 +329,14 @@
                         <h3 class="mb-4">Fiche Card</h3>
                         <p class="text-meta mb-4">Klikbare kaart voor fiches. Toont auteur, optioneel tags en diamond badge.</p>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-4">
-                            <x-fiche-card :fiche="$fiche" />
-                            <x-fiche-card :fiche="$fiche" :showDiamond="true" />
+                            <div class="text-center">
+                                <x-fiche-card :fiche="$fiche" />
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Standaard</p>
+                            </div>
+                            <div class="text-center">
+                                <x-fiche-card :fiche="$fiche" :showDiamond="true" />
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Met diamond</p>
+                            </div>
                         </div>
                         <details class="mb-8">
                             <summary class="text-sm font-semibold text-[var(--color-text-secondary)] cursor-pointer">Toon markup</summary>
@@ -507,8 +537,11 @@
 
                         <h3 class="mb-4">Flux formulierelementen</h3>
                         <p class="text-meta mb-4">Alle formuliervelden gebruiken <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">&lt;flux:*&gt;</code> componenten.</p>
-                        <div class="max-w-lg space-y-4 mb-4 p-6 rounded-xl bg-[var(--color-bg-cream)]">
-                            <flux:input label="Naam" placeholder="Maria Janssen" />
+                        <div class="max-w-lg space-y-4 mb-4 p-6 rounded-xl bg-white border border-zinc-200">
+                            <flux:field>
+                                <flux:label>Naam <span class="field-tag ml-1">Verplicht</span></flux:label>
+                                <flux:input placeholder="Maria Janssen" />
+                            </flux:field>
                             <flux:input label="E-mail" type="email" placeholder="maria@voorbeeld.nl" />
                             <flux:textarea label="Beschrijving" placeholder="Beschrijf het initiatief..." rows="3" />
                             <flux:select label="Rol" placeholder="Kies een rol...">
@@ -523,7 +556,10 @@
                         </div>
                         <details>
                             <summary class="text-sm font-semibold text-[var(--color-text-secondary)] cursor-pointer">Toon markup</summary>
-                            <pre class="mt-2 p-4 bg-zinc-50 rounded-lg text-sm overflow-x-auto"><code>&lt;flux:input label="Naam" placeholder="..." /&gt;
+                            <pre class="mt-2 p-4 bg-zinc-50 rounded-lg text-sm overflow-x-auto"><code>&lt;flux:field&gt;
+    &lt;flux:label&gt;Naam &lt;span class="field-tag ml-1"&gt;Verplicht&lt;/span&gt;&lt;/flux:label&gt;
+    &lt;flux:input placeholder="..." /&gt;
+&lt;/flux:field&gt;
 &lt;flux:textarea label="Beschrijving" rows="3" /&gt;
 &lt;flux:select label="Rol"&gt;
     &lt;flux:select.option value="contributor"&gt;Bijdrager&lt;/flux:select.option&gt;

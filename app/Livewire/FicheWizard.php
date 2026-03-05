@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Features\WizardDevMode;
 use App\Jobs\GenerateFilePreview;
 use App\Jobs\ProcessFicheUploads;
 use App\Models\Fiche;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Pennant\Feature;
+use Livewire\Attributes\Session;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -20,6 +22,24 @@ use Livewire\WithFileUploads;
 class FicheWizard extends Component
 {
     use WithFileUploads;
+
+    /** Dutch stop words — filler words that don't help topic matching */
+    private const STOP_WORDS = [
+        // Articles & demonstratives
+        'een', 'het', 'die', 'dat', 'deze',
+        // Prepositions
+        'met', 'van', 'voor', 'aan', 'uit', 'naar', 'bij', 'over', 'door', 'via', 'tot',
+        // Conjunctions
+        'maar',
+        // Pronouns & possessives
+        'jouw', 'mijn', 'ons', 'onze', 'zijn', 'haar', 'hun',
+        // Adverbs & particles
+        'ook', 'nog', 'wel', 'niet', 'meer', 'alle',
+        // Common adjectives (noise in filenames)
+        'nieuwe', 'eigen', 'grote',
+    ];
+
+    public bool $devMode = false;
 
     public int $currentStep = 1;
 
@@ -35,8 +55,10 @@ class FicheWizard extends Component
     public array $uploads = [];
 
     /** @var array<int, array{id: int, name: string, size: int, type: string}> */
+    #[Session(key: 'fiche-wizard.uploadedFiles')]
     public array $uploadedFiles = [];
 
+    #[Session(key: 'fiche-wizard.previewFileId')]
     public ?int $previewFileId = null;
 
     public bool $showPreviewFileModal = false;
@@ -52,31 +74,42 @@ class FicheWizard extends Component
 
     public bool $processingStale = false;
 
+    // Step 4 — Celebration (after publish)
+    public ?int $publishedFicheId = null;
+
+    public ?string $publishedFicheUrl = null;
+
     // Step 2 — Details (user's original input, never overwritten by AI)
+    #[Session(key: 'fiche-wizard.title')]
     #[Validate('required|string|max:255', message: [
         'required' => 'Geef je activiteit een titel.',
         'max' => 'De titel mag maximaal 255 tekens bevatten.',
     ])]
     public string $title = '';
 
-    #[Validate('nullable|string|max:5000', message: [
+    #[Session(key: 'fiche-wizard.description')]
+    #[Validate('required|string|max:5000', message: [
+        'required' => 'Geef een beschrijving van je activiteit.',
         'max' => 'De beschrijving mag maximaal 5000 tekens bevatten.',
     ])]
     public string $description = '';
 
-    public string $materialsText = '';
-
+    #[Session(key: 'fiche-wizard.duration')]
     public string $duration = '';
 
+    #[Session(key: 'fiche-wizard.groupSize')]
     public string $groupSize = '';
 
     // Step 3 — Review
+    #[Session(key: 'fiche-wizard.selectedInitiativeId')]
     public ?int $selectedInitiativeId = null;
 
     /** @var array<int, int> */
+    #[Session(key: 'fiche-wizard.selectedThemeTags')]
     public array $selectedThemeTags = [];
 
     /** @var array<int, int> */
+    #[Session(key: 'fiche-wizard.selectedGoalTags')]
     public array $selectedGoalTags = [];
 
     /** @var array<int, int> AI-suggested tag IDs for "Aanbevolen" display */
@@ -100,8 +133,6 @@ class FicheWizard extends Component
 
     public ?string $aiProcess = null;
 
-    public ?string $aiMaterials = null;
-
     public ?string $aiDuration = null;
 
     public ?string $aiGroupSize = null;
@@ -110,18 +141,92 @@ class FicheWizard extends Component
     public array $matchedInitiatives = [];
 
     // User's final values for content fields (step 3)
+    #[Session(key: 'fiche-wizard.preparation')]
     public string $preparation = '';
 
+    #[Session(key: 'fiche-wizard.inventory')]
     public string $inventory = '';
 
+    #[Session(key: 'fiche-wizard.process')]
     public string $process = '';
 
     /** @var array<string> Fields where the user dismissed the AI suggestion */
     public array $dismissedSuggestions = [];
 
+    /** @var array<string> Fields where the user applied the AI suggestion */
+    public array $appliedSuggestions = [];
+
+    /** @var array{count: int, keyword: string, examples: array<string>}|array{} */
+    public array $similarFiches = [];
+
     // Full AI results (stored for saveFiche)
     /** @var array<string, mixed>|null */
     public ?array $aiAnalysis = null;
+
+    public function mount(): void
+    {
+        $this->devMode = auth()->user()?->isAdmin() && Feature::for(null)->active(WizardDevMode::class);
+
+        // Validate restored file references from session (files may have been deleted or claimed)
+        if (! empty($this->uploadedFiles)) {
+            $validFileIds = File::whereIn('id', collect($this->uploadedFiles)->pluck('id'))
+                ->whereNull('fiche_id')
+                ->pluck('id')
+                ->toArray();
+
+            $this->uploadedFiles = array_values(
+                array_filter($this->uploadedFiles, fn ($f) => in_array($f['id'], $validFileIds))
+            );
+
+            if ($this->previewFileId && ! in_array($this->previewFileId, $validFileIds)) {
+                $this->previewFileId = ! empty($this->uploadedFiles) ? $this->uploadedFiles[0]['id'] : null;
+            }
+        }
+    }
+
+    public function updatedTitle(): void
+    {
+        $this->findSimilarFiches();
+    }
+
+    public function findSimilarFiches(): void
+    {
+        $words = collect(explode(' ', Str::lower(trim($this->title))))
+            ->map(fn (string $w) => trim($w))
+            ->filter(fn (string $w) => Str::length($w) >= 3 && ! in_array($w, self::STOP_WORDS))
+            ->values();
+
+        if ($words->isEmpty()) {
+            $this->similarFiches = [];
+
+            return;
+        }
+
+        $query = Fiche::published()->where(function ($q) use ($words) {
+            foreach ($words as $word) {
+                $q->orWhere('title', 'LIKE', "%{$word}%");
+            }
+        });
+
+        $count = $query->count();
+
+        if ($count === 0) {
+            $this->similarFiches = [];
+
+            return;
+        }
+
+        $examples = (clone $query)->take(3)->pluck('title')->all();
+
+        // Display keyword: longest word is most likely the topic
+        $keyword = $words->sortByDesc(fn (string $w) => Str::length($w))->first();
+
+        $this->similarFiches = [
+            'count' => $count,
+            'keyword' => $keyword,
+            'examples' => $examples,
+        ];
+    }
 
     public function updatedUploads(): void
     {
@@ -161,6 +266,7 @@ class FicheWizard extends Component
         if ($this->title === '' && ! empty($this->uploadedFiles)) {
             $name = pathinfo($this->uploadedFiles[0]['name'], PATHINFO_FILENAME);
             $this->title = ucfirst(trim(preg_replace('/\s+/', ' ', str_replace(['-', '_', '.'], ' ', $name))));
+            $this->findSimilarFiches();
         }
 
         if ($isFirstUploadBatch && ! empty($newFileIds)) {
@@ -229,6 +335,7 @@ class FicheWizard extends Component
 
     public function submitStep1(): void
     {
+        $this->findSimilarFiches();
         $this->currentStep = 2;
     }
 
@@ -294,6 +401,16 @@ class FicheWizard extends Component
     {
         if ($step < $this->currentStep) {
             $this->currentStep = $step;
+
+            return;
+        }
+
+        if ($this->devMode && $step > $this->currentStep) {
+            $this->fillDevData($step);
+            if ($step >= 2) {
+                $this->findSimilarFiches();
+            }
+            $this->currentStep = $step;
         }
     }
 
@@ -322,15 +439,19 @@ class FicheWizard extends Component
             'preparation' => ['ai' => 'aiPreparation', 'user' => 'preparation'],
             'inventory' => ['ai' => 'aiInventory', 'user' => 'inventory'],
             'process' => ['ai' => 'aiProcess', 'user' => 'process'],
-            'materials' => ['ai' => 'aiMaterials', 'user' => 'materialsText'],
         ];
 
         if (isset($map[$field]) && $this->{$map[$field]['ai']} !== null) {
-            $this->{$map[$field]['user']} = $this->{$map[$field]['ai']};
+            $currentValue = trim($this->{$map[$field]['user']});
+            $aiValue = $this->{$map[$field]['ai']};
+
+            $this->{$map[$field]['user']} = $currentValue !== ''
+                ? $currentValue."\n".$aiValue
+                : $aiValue;
         }
 
-        if (! in_array($field, $this->dismissedSuggestions)) {
-            $this->dismissedSuggestions[] = $field;
+        if (! in_array($field, $this->appliedSuggestions)) {
+            $this->appliedSuggestions[] = $field;
         }
     }
 
@@ -386,6 +507,76 @@ class FicheWizard extends Component
         }
     }
 
+    /**
+     * Fill dummy data for dev mode when jumping forward to a step.
+     */
+    private function fillDevData(int $targetStep): void
+    {
+        $this->processingComplete = true;
+        $this->processingStep = 'done';
+
+        if ($targetStep >= 2) {
+            if ($this->title === '') {
+                $this->title = "Muziekbingo met schlagers uit de jaren '60";
+            }
+            if ($this->description === '') {
+                $this->description = 'Een gezellige muziekbingo waarbij bewoners bekende schlagers herkennen. Ideaal voor groepen met verschillende niveaus van cognitieve mogelijkheden.';
+            }
+            if ($this->duration === '') {
+                $this->duration = '45 min';
+            }
+            if ($this->groupSize === '') {
+                $this->groupSize = '6-12';
+            }
+
+            if (empty($this->selectedThemeTags)) {
+                $this->selectedThemeTags = Tag::where('type', 'theme')
+                    ->whereIn('slug', ['muziek', 'spelletjes', 'gezelschap'])
+                    ->pluck('id')
+                    ->toArray();
+            }
+
+            if (empty($this->selectedGoalTags)) {
+                $this->selectedGoalTags = Tag::where('type', 'goal')
+                    ->whereIn('slug', ['doel-doen', 'doel-inclusief'])
+                    ->pluck('id')
+                    ->toArray();
+            }
+
+            if (empty($this->matchedInitiatives)) {
+                $initiatives = Initiative::published()
+                    ->orderBy('title')
+                    ->limit(3)
+                    ->get(['id', 'title']);
+
+                $this->matchedInitiatives = $initiatives->map(fn ($i) => [
+                    'id' => $i->id,
+                    'title' => $i->title,
+                    'reason' => 'Dev mode — voorbeeld',
+                ])->toArray();
+
+                if ($this->selectedInitiativeId === null && $this->matchedInitiatives) {
+                    $this->selectedInitiativeId = $this->matchedInitiatives[0]['id'];
+                }
+            }
+        }
+
+        if ($targetStep >= 3) {
+            if ($this->aiPreparation === null) {
+                $this->aiPreparation = '<ul><li>Print de bingokaarten uit op A4-formaat (grote letters).</li><li>Test de muziekinstallatie en controleer het volume.</li><li>Leg stiften of fiches klaar bij elke plaats.</li><li>Zet de stoelen in een halve cirkel zodat iedereen de quizmaster kan zien.</li></ul>';
+            }
+            if ($this->aiInventory === null) {
+                $this->aiInventory = '<ul><li>Bingokaarten (1 per deelnemer + reserve)</li><li>Stiften of bingofiches</li><li>Muziekinstallatie met speaker</li><li>Playlist met 30 schlagers uit de jaren \'60</li><li>Prijsjes voor de winnaars</li></ul>';
+            }
+            if ($this->aiProcess === null) {
+                $this->aiProcess = '<ol><li>Verwelkom de deelnemers en leg de spelregels uit.</li><li>Deel de bingokaarten en stiften uit.</li><li>Speel telkens een fragment van 15-20 seconden.</li><li>Geef bewoners tijd om het lied te herkennen en af te vinken.</li><li>Wie een rij vol heeft roept "Bingo!" — controleer de kaart.</li><li>Speel door tot er een winnaar is, eventueel meerdere rondes.</li><li>Sluit af met een favoriet lied dat iedereen meezingt.</li></ol>';
+            }
+            if ($this->aiDescription === null) {
+                $this->aiDescription = '<p>Een interactieve muziekbingo waarbij bewoners bekende schlagers uit de jaren \'60 herkennen. De activiteit stimuleert het langetermijngeheugen en brengt veel gezelligheid.</p>';
+            }
+        }
+    }
+
     private function clearAiSuggestions(): void
     {
         $this->aiTitle = null;
@@ -393,7 +584,6 @@ class FicheWizard extends Component
         $this->aiPreparation = null;
         $this->aiInventory = null;
         $this->aiProcess = null;
-        $this->aiMaterials = null;
         $this->aiDuration = null;
         $this->aiGroupSize = null;
         $this->matchedInitiatives = [];
@@ -401,21 +591,21 @@ class FicheWizard extends Component
         $this->suggestedThemeTagIds = [];
         $this->suggestedGoalTagIds = [];
         $this->dismissedSuggestions = [];
+        $this->appliedSuggestions = [];
     }
 
     /**
      * Content fields for step 3 — editable with side-by-side AI suggestions.
      *
-     * @return array<int, array{field: string, label: string, description: string, placeholder: string, userProp: string, aiProp: string, rows: int}>
+     * @return array<int, array{field: string, label: string, description: string, placeholder: string, userProp: string, aiProp: string, rows: int, required: bool}>
      */
     private function getContentFields(): array
     {
         return [
-            ['field' => 'description', 'label' => 'Beschrijving', 'description' => 'Wat is je bedoeling met deze activiteit? Voor wie is ze bedoeld?', 'placeholder' => 'bijv. Een interactieve quiz waarbij bewoners liedjes herkennen.', 'userProp' => 'description', 'aiProp' => 'aiDescription', 'rows' => 4],
-            ['field' => 'preparation', 'label' => 'Voorbereiding', 'description' => 'Wat moet er klaargezet of voorbereid worden?', 'placeholder' => 'bijv. Print de bingokaarten uit en test het geluid.', 'userProp' => 'preparation', 'aiProp' => 'aiPreparation', 'rows' => 4],
-            ['field' => 'inventory', 'label' => 'Benodigdheden', 'description' => 'Welke materialen heb je nodig?', 'placeholder' => 'bijv. Bingokaarten, stiften, muziekinstallatie.', 'userProp' => 'inventory', 'aiProp' => 'aiInventory', 'rows' => 4],
-            ['field' => 'process', 'label' => 'Werkwijze', 'description' => 'Beschrijf stap voor stap hoe de activiteit verloopt.', 'placeholder' => 'bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment...', 'userProp' => 'process', 'aiProp' => 'aiProcess', 'rows' => 6],
-            ['field' => 'materials', 'label' => 'Materiaal', 'description' => 'Welk materiaal lever je bij deze fiche?', 'placeholder' => 'bijv. Bingokaarten, muzieklijst', 'userProp' => 'materialsText', 'aiProp' => 'aiMaterials', 'rows' => 3],
+            ['field' => 'description', 'label' => 'Beschrijving', 'description' => 'Wat is je bedoeling met deze activiteit? Voor wie is ze bedoeld?', 'placeholder' => 'bijv. Een interactieve quiz waarbij bewoners liedjes herkennen.', 'userProp' => 'description', 'aiProp' => 'aiDescription', 'rows' => 4, 'required' => true],
+            ['field' => 'preparation', 'label' => 'Voorbereiding', 'description' => 'Wat moet er klaargezet of voorbereid worden?', 'placeholder' => 'bijv. Print de bingokaarten uit en test het geluid.', 'userProp' => 'preparation', 'aiProp' => 'aiPreparation', 'rows' => 4, 'required' => false],
+            ['field' => 'inventory', 'label' => 'Benodigdheden', 'description' => 'Welke materialen heb je nodig?', 'placeholder' => 'bijv. Bingokaarten, stiften, muziekinstallatie.', 'userProp' => 'inventory', 'aiProp' => 'aiInventory', 'rows' => 4, 'required' => false],
+            ['field' => 'process', 'label' => 'Werkwijze', 'description' => 'Beschrijf stap voor stap hoe de activiteit verloopt.', 'placeholder' => 'bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment...', 'userProp' => 'process', 'aiProp' => 'aiProcess', 'rows' => 6, 'required' => false],
         ];
     }
 
@@ -430,20 +620,11 @@ class FicheWizard extends Component
             $this->aiPreparation = self::markdownToHtml($analysis['preparation'] ?? null);
             $this->aiInventory = self::markdownToHtml($analysis['inventory'] ?? null);
             $this->aiProcess = self::markdownToHtml($analysis['process'] ?? null);
-            $this->aiMaterials = $analysis['materials_list'] ?? null;
             $this->aiDuration = $analysis['duration_estimate'] ?? null;
             $this->aiGroupSize = $analysis['group_size_estimate'] ?? null;
 
             $this->matchGoalTags($analysis['suggested_goals'] ?? []);
             $this->matchThemeTags($analysis['suggested_themes'] ?? []);
-        }
-
-        // Auto-fill step 2 fields from AI when empty
-        if ($this->duration === '' && $this->aiDuration) {
-            $this->duration = $this->aiDuration;
-        }
-        if ($this->groupSize === '' && $this->aiGroupSize) {
-            $this->groupSize = $this->aiGroupSize;
         }
 
         $matchedInitiativeData = $status['matched_initiatives'] ?? null;
@@ -515,10 +696,11 @@ class FicheWizard extends Component
     {
         $this->validate([
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string|max:5000',
+            'description' => 'required|string|max:5000',
         ], [
             'title.required' => 'Geef je activiteit een titel.',
             'title.max' => 'De titel mag maximaal 255 tekens bevatten.',
+            'description.required' => 'Geef een beschrijving van je activiteit.',
             'description.max' => 'De beschrijving mag maximaal 5000 tekens bevatten.',
         ]);
 
@@ -528,7 +710,6 @@ class FicheWizard extends Component
             'preparation' => $this->preparation,
             'inventory' => $this->inventory,
             'process' => $this->process,
-            'materials' => $this->materialsText,
             'duration' => $this->duration,
             'group_size' => $this->groupSize,
         ]);
@@ -562,16 +743,38 @@ class FicheWizard extends Component
             return;
         }
 
-        $this->dispatch('fiche-saved');
+        $this->clearWizardSession();
 
         $route = $fiche->initiative
             ? route('fiches.show', [$fiche->initiative, $fiche])
             : route('home');
 
-        $message = $published ? 'Fiche gepubliceerd!' : 'Fiche opgeslagen als concept.';
+        if ($published) {
+            $this->publishedFicheId = $fiche->id;
+            $this->publishedFicheUrl = $route;
+            $this->currentStep = 4;
+
+            return;
+        }
 
         $this->redirect($route, navigate: false);
-        session()->flash('success', $message);
+        session()->flash('success', 'Fiche opgeslagen als concept.');
+    }
+
+    private function clearWizardSession(): void
+    {
+        $this->title = '';
+        $this->description = '';
+        $this->preparation = '';
+        $this->inventory = '';
+        $this->process = '';
+        $this->duration = '';
+        $this->groupSize = '';
+        $this->selectedInitiativeId = null;
+        $this->selectedThemeTags = [];
+        $this->selectedGoalTags = [];
+        $this->uploadedFiles = [];
+        $this->previewFileId = null;
     }
 
     private function generateUniqueSlug(string $title): string

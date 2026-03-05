@@ -15,7 +15,7 @@
 
 
 </head>
-<body class="font-body antialiased min-h-screen bg-[var(--color-bg-base)]">
+<body class="font-body antialiased min-h-screen flex flex-col bg-[var(--color-bg-base)]">
     <!-- Navigation -->
     <x-nav />
 
@@ -34,7 +34,7 @@
     @endif
 
     <!-- Main Content -->
-    <main>
+    <main class="flex-1">
         @isset($breadcrumbs)
             <div class="max-w-6xl mx-auto px-6 pt-8">
                 <div class="flex items-center justify-between">
@@ -58,10 +58,9 @@
     </main>
 
     <!-- Footer -->
-    <footer class="mt-16">
-        
+    <footer>
         <!-- Bottom Footer -->
-        <div class="bg-[var(--color-bg-base)] border-t border-[var(--color-border-light)]">
+        <div class="border-t border-[var(--color-border-light)]">
             <div class="max-w-6xl mx-auto px-6 py-6">
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm text-[var(--color-text-secondary)]">
                     <span>&copy; {{ date('Y') }} Hartverwarmers</span>

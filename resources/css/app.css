@@ -338,8 +338,9 @@
 
   /* Field tag — small inline label placed next to form field labels */
   .field-tag {
-    @apply inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium leading-none;
-    background: var(--color-bg-white);
+    @apply inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium leading-none uppercase;
+    font-family: var(--font-body);
+    background: var(--color-bg-subtle);
     color: var(--color-text-secondary);
   }
 
@@ -513,11 +514,180 @@
   .practical-content a:hover {
     text-decoration-color: var(--color-primary);
   }
+
+  /* Similar fiches tip — cream panel with left border */
+  .similar-fiches-tip {
+    @apply flex items-start gap-3 p-4 rounded-xl;
+    background: var(--color-bg-cream);
+    border-left: 4px solid var(--color-primary);
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+  }
+
+  .similar-fiches-tip p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .similar-fiches-tip p + p {
+    margin-top: 0.25rem;
+  }
+
+  .similar-fiches-tip-icon {
+    @apply shrink-0;
+    width: 20px;
+    height: 20px;
+    color: var(--color-primary);
+    margin-top: 1px;
+  }
+
+  /* Wizard — decorative illustration (partially off-screen left) */
+  .wizard-illustration {
+    position: absolute;
+    top: -4rem;
+    left: -24rem;
+    width: 25rem;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    z-index: -1;
+    opacity: 1;
+  }
+
+  /* Wizard — step container with illustration */
+  .wizard-step-illustrated {
+    position: relative;
+    z-index: 0;
+  }
+
+  /* Wizard — lead paragraph (intro text below step heading) */
+  .wizard-lead {
+    font-size: 1.125rem;
+    font-weight: var(--font-weight-light);
+    color: var(--color-text-secondary);
+  }
+
+  /* Wizard — confetti celebration animation */
+  .wizard-confetti {
+    @apply absolute inset-0 overflow-hidden pointer-events-none;
+  }
+
+  .wizard-confetti-particle {
+    @apply absolute w-2 h-2 rounded-full;
+    top: -10px;
+    animation: confettiFall linear forwards;
+  }
+
+  .wizard-confetti-particle:nth-child(3n+1) { background: var(--color-primary); }
+  .wizard-confetti-particle:nth-child(3n+2) { background: var(--color-secondary); }
+  .wizard-confetti-particle:nth-child(3n)   { background: var(--color-yellow); }
+
+  .wizard-confetti-particle:nth-child(1)  { left: 5%;  animation-duration: 2.8s; animation-delay: 0.0s; }
+  .wizard-confetti-particle:nth-child(2)  { left: 12%; animation-duration: 3.2s; animation-delay: 0.3s; }
+  .wizard-confetti-particle:nth-child(3)  { left: 18%; animation-duration: 2.5s; animation-delay: 0.1s; }
+  .wizard-confetti-particle:nth-child(4)  { left: 25%; animation-duration: 3.5s; animation-delay: 0.5s; }
+  .wizard-confetti-particle:nth-child(5)  { left: 32%; animation-duration: 2.9s; animation-delay: 0.2s; }
+  .wizard-confetti-particle:nth-child(6)  { left: 38%; animation-duration: 3.1s; animation-delay: 0.7s; }
+  .wizard-confetti-particle:nth-child(7)  { left: 44%; animation-duration: 2.6s; animation-delay: 0.4s; }
+  .wizard-confetti-particle:nth-child(8)  { left: 50%; animation-duration: 3.3s; animation-delay: 0.1s; }
+  .wizard-confetti-particle:nth-child(9)  { left: 56%; animation-duration: 2.7s; animation-delay: 0.6s; }
+  .wizard-confetti-particle:nth-child(10) { left: 62%; animation-duration: 3.0s; animation-delay: 0.3s; }
+  .wizard-confetti-particle:nth-child(11) { left: 68%; animation-duration: 2.4s; animation-delay: 0.8s; }
+  .wizard-confetti-particle:nth-child(12) { left: 73%; animation-duration: 3.4s; animation-delay: 0.2s; }
+  .wizard-confetti-particle:nth-child(13) { left: 78%; animation-duration: 2.8s; animation-delay: 0.5s; }
+  .wizard-confetti-particle:nth-child(14) { left: 83%; animation-duration: 3.1s; animation-delay: 0.0s; }
+  .wizard-confetti-particle:nth-child(15) { left: 88%; animation-duration: 2.6s; animation-delay: 0.4s; }
+  .wizard-confetti-particle:nth-child(16) { left: 92%; animation-duration: 3.3s; animation-delay: 0.7s; }
+  .wizard-confetti-particle:nth-child(17) { left: 8%;  animation-duration: 3.0s; animation-delay: 0.9s; }
+  .wizard-confetti-particle:nth-child(18) { left: 35%; animation-duration: 2.5s; animation-delay: 1.0s; }
+  .wizard-confetti-particle:nth-child(19) { left: 60%; animation-duration: 3.2s; animation-delay: 0.8s; }
+  .wizard-confetti-particle:nth-child(20) { left: 95%; animation-duration: 2.9s; animation-delay: 0.6s; }
+
+  .wizard-confetti-particle:nth-child(odd) { width: 6px; height: 6px; }
+  .wizard-confetti-particle:nth-child(even) { width: 8px; height: 8px; border-radius: 2px; }
 }
 
 /* ==========================================================================
    Responsive Typography
    ========================================================================== */
+
+/* ==========================================================================
+   Form Typography — Increase Flux UI form sizes ~20% (14px → 17px)
+   Outside @layer to beat Tailwind utility classes including sm:text-sm.
+   ========================================================================== */
+
+[data-flux-label] {
+    font-size: 1.0625rem;
+}
+
+[data-flux-input] input {
+    font-size: 1.0625rem;
+}
+
+[data-flux-textarea] {
+    font-size: 1.0625rem;
+}
+
+select[data-flux-select-native] {
+    font-size: 1.0625rem;
+}
+
+[data-flux-select-button] {
+    font-size: 1.0625rem;
+}
+
+[data-flux-description] {
+    font-size: 0.9375rem;
+}
+
+/* Wizard form — larger heading-style labels + tighter help text */
+.wizard-form [data-flux-label] {
+    font-size: 1.1875rem;
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-bold);
+}
+
+.wizard-form [data-flux-description] {
+    font-weight: var(--font-weight-light);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+/* Wizard form — tighter gap between label and description */
+.wizard-form [data-flux-label] + [data-flux-description] {
+    margin-top: -0.25rem;
+}
+
+/* Wizard form — footer bar (full-width, cream-to-white gradient) */
+.wizard-form-footer {
+    border-top: 1px solid var(--color-border-light);
+    background: white;
+}
+
+/* ==========================================================================
+   File Upload Dropzone — larger icon, bigger copy, white background
+   ========================================================================== */
+
+[data-flux-file-upload-dropzone] {
+    background-color: white;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+[data-flux-file-upload-dropzone]:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--color-border-hover);
+}
+
+[data-flux-file-upload-dropzone] > div:first-child svg {
+    width: 3.75em;
+    height: 3.75em;
+    color: var(--color-primary);
+}
+
+[data-flux-file-upload-dropzone] .text-sm.font-medium {
+    font-size: 1.1375rem;
+}
 
 /* ==========================================================================
    Search Command Palette — orange-branded, prominent overlay
@@ -559,8 +729,52 @@ dialog[data-modal="search"]::backdrop {
 }
 
 /* ==========================================================================
+   Initiative Radio Cards — bigger text, full-width cards
+   ========================================================================== */
+
+.initiative-cards {
+    gap: 0.5rem;
+}
+
+.initiative-cards [data-flux-radio-cards] {
+    padding: 0.75rem 1rem;
+}
+
+.initiative-cards [data-flux-heading] {
+    font-size: 1rem;
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-bold);
+}
+
+.initiative-cards [data-flux-subheading] {
+    font-size: 0.9375rem;
+}
+
+/* Match editor text to other form fields (17px). Must be in @layer base so
+   !important wins over Flux's sm:**:text-sm! in @layer utilities (CSS cascade
+   layers reverse !important priority — earlier layers beat later ones). */
+@layer base {
+    [data-flux-editor] [data-slot="content"] {
+        font-size: 1.0625rem !important;
+        line-height: 1.625 !important;
+    }
+}
+
+/* ==========================================================================
    Responsive Typography
    ========================================================================== */
+
+/* Wizard confetti fall animation */
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(calc(100vh)) rotate(720deg);
+  }
+}
 
 /* Kudos floating heart animation */
 @keyframes kudosFloat {

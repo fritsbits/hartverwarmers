@@ -15,6 +15,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Pennant\Feature;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -258,7 +259,6 @@ class FicheWizardTest extends TestCase
                 'preparation' => 'AI voorbereiding',
                 'inventory' => 'AI benodigdheden',
                 'process' => 'AI werkwijze',
-                'materials_list' => 'Materialen',
                 'duration_estimate' => '30 min',
                 'group_size_estimate' => '4-8',
                 'suggested_goals' => [],
@@ -296,7 +296,7 @@ class FicheWizardTest extends TestCase
             ->assertSet('processingComplete', true);
     }
 
-    public function test_apply_suggestion_copies_ai_value_and_dismisses(): void
+    public function test_apply_suggestion_appends_ai_value_to_empty_field(): void
     {
         $user = User::factory()->create();
 
@@ -305,7 +305,31 @@ class FicheWizardTest extends TestCase
             ->set('aiDescription', '<p>AI beschrijving</p>')
             ->call('applySuggestion', 'description')
             ->assertSet('description', '<p>AI beschrijving</p>')
-            ->assertSet('dismissedSuggestions', ['description']);
+            ->assertSet('appliedSuggestions', ['description']);
+    }
+
+    public function test_apply_suggestion_appends_to_existing_content(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('description', '<p>Mijn tekst</p>')
+            ->set('aiDescription', '<p>AI beschrijving</p>')
+            ->call('applySuggestion', 'description')
+            ->assertSet('description', "<p>Mijn tekst</p>\n<p>AI beschrijving</p>")
+            ->assertSet('appliedSuggestions', ['description']);
+    }
+
+    public function test_apply_suggestion_does_not_dismiss_card(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('aiDescription', '<p>AI beschrijving</p>')
+            ->call('applySuggestion', 'description')
+            ->assertSet('dismissedSuggestions', []);
     }
 
     public function test_dismiss_suggestion_hides_ai_card(): void
@@ -318,7 +342,7 @@ class FicheWizardTest extends TestCase
             ->assertSet('dismissedSuggestions', ['description']);
     }
 
-    public function test_apply_suggestion_does_not_duplicate_dismissed(): void
+    public function test_apply_suggestion_does_not_duplicate_applied(): void
     {
         $user = User::factory()->create();
 
@@ -327,7 +351,7 @@ class FicheWizardTest extends TestCase
             ->set('aiPreparation', '<p>AI voorbereiding</p>')
             ->call('applySuggestion', 'preparation')
             ->call('applySuggestion', 'preparation')
-            ->assertSet('dismissedSuggestions', ['preparation']);
+            ->assertSet('appliedSuggestions', ['preparation']);
     }
 
     public function test_apply_suggestion_ignores_null_ai_value(): void
@@ -340,7 +364,7 @@ class FicheWizardTest extends TestCase
             ->set('aiDescription', null)
             ->call('applySuggestion', 'description')
             ->assertSet('description', 'Mijn tekst')
-            ->assertSet('dismissedSuggestions', ['description']);
+            ->assertSet('appliedSuggestions', ['description']);
     }
 
     public function test_publish_saves_field_values_directly(): void
@@ -367,7 +391,7 @@ class FicheWizardTest extends TestCase
         ]);
     }
 
-    public function test_publish_after_apply_saves_ai_value(): void
+    public function test_publish_after_apply_saves_appended_value(): void
     {
         Storage::fake('public');
         $user = User::factory()->create();
@@ -385,7 +409,7 @@ class FicheWizardTest extends TestCase
 
         $this->assertDatabaseHas('fiches', [
             'title' => 'Mijn titel',
-            'description' => '<p>AI beschrijving</p>',
+            'description' => "Mijn beschrijving\n<p>AI beschrijving</p>",
             'user_id' => $user->id,
             'published' => true,
         ]);
@@ -437,6 +461,51 @@ class FicheWizardTest extends TestCase
         $this->assertDatabaseHas('fiches', [
             'title' => 'Concept fiche',
             'user_id' => $user->id,
+            'published' => false,
+        ]);
+    }
+
+    public function test_publish_shows_celebration_step_4(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('title', 'Mijn feestelijke fiche')
+            ->set('description', 'Test celebration')
+            ->set('selectedInitiativeId', $initiative->id)
+            ->call('publish');
+
+        $component->assertSet('currentStep', 4)
+            ->assertNotDispatched('redirect');
+
+        $this->assertNotNull($component->get('publishedFicheId'));
+        $this->assertNotNull($component->get('publishedFicheUrl'));
+
+        $fiche = Fiche::where('title', 'Mijn feestelijke fiche')->first();
+        $this->assertNotNull($fiche);
+        $this->assertTrue($fiche->published);
+        $this->assertEquals($fiche->id, $component->get('publishedFicheId'));
+    }
+
+    public function test_save_draft_redirects_instead_of_step_4(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('title', 'Concept zonder celebration')
+            ->set('description', 'Draft test')
+            ->set('selectedInitiativeId', $initiative->id)
+            ->call('saveDraft')
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('fiches', [
+            'title' => 'Concept zonder celebration',
             'published' => false,
         ]);
     }
@@ -592,6 +661,8 @@ class FicheWizardTest extends TestCase
 
     public function test_suggested_tags_shown_as_recommended_on_step2(): void
     {
+        Feature::define('diamant-goals', true);
+
         $user = User::factory()->create();
 
         $themeTag = Tag::factory()->theme()->create();
@@ -656,7 +727,6 @@ class FicheWizardTest extends TestCase
                 'preparation' => "- Stap 1\n- Stap 2\n- Stap 3",
                 'inventory' => 'Een **mooie** beschrijving',
                 'process' => '',
-                'materials_list' => '',
                 'duration_estimate' => '',
                 'group_size_estimate' => '',
                 'suggested_goals' => [],
@@ -688,7 +758,6 @@ class FicheWizardTest extends TestCase
                 'preparation' => 'Test <script>alert("xss")</script>',
                 'inventory' => '',
                 'process' => '',
-                'materials_list' => '',
                 'duration_estimate' => '',
                 'group_size_estimate' => '',
                 'suggested_goals' => [],
@@ -834,6 +903,36 @@ class FicheWizardTest extends TestCase
             ->assertSet('currentStep', 3);
     }
 
+    public function test_description_is_required_for_publish(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('title', 'Een titel')
+            ->set('description', '')
+            ->set('selectedInitiativeId', $initiative->id)
+            ->call('publish')
+            ->assertHasErrors(['description' => 'required']);
+    }
+
+    public function test_description_is_required_for_draft(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('title', 'Een titel')
+            ->set('description', '')
+            ->set('selectedInitiativeId', $initiative->id)
+            ->call('saveDraft')
+            ->assertHasErrors(['description' => 'required']);
+    }
+
     public function test_suggested_tags_are_auto_selected_from_processing(): void
     {
         $user = User::factory()->create();
@@ -854,7 +953,6 @@ class FicheWizardTest extends TestCase
                 'preparation' => '',
                 'inventory' => '',
                 'process' => '',
-                'materials_list' => '',
                 'duration_estimate' => '',
                 'group_size_estimate' => '',
                 'suggested_goals' => ['doen'],
@@ -944,7 +1042,6 @@ class FicheWizardTest extends TestCase
             ->set('aiPreparation', '<p>Voorbereiding</p>')
             ->set('aiInventory', '<p>Inventaris</p>')
             ->set('aiProcess', '<p>Werkwijze</p>')
-            ->set('aiMaterials', 'Materialen')
             ->set('aiDuration', '30 minuten')
             ->set('aiGroupSize', '10-15')
             ->set('matchedInitiatives', [['id' => 1, 'title' => 'Init', 'reason' => 'Match']])
@@ -963,7 +1060,6 @@ class FicheWizardTest extends TestCase
         $this->assertNull($component->get('aiPreparation'));
         $this->assertNull($component->get('aiInventory'));
         $this->assertNull($component->get('aiProcess'));
-        $this->assertNull($component->get('aiMaterials'));
         $this->assertNull($component->get('aiDuration'));
         $this->assertNull($component->get('aiGroupSize'));
         $this->assertEmpty($component->get('matchedInitiatives'));
@@ -1066,7 +1162,7 @@ class FicheWizardTest extends TestCase
         $component->assertSee('Preview');
     }
 
-    public function test_processing_progress_visible_in_sidebar_on_step1(): void
+    public function test_processing_progress_visible_inline_after_upload(): void
     {
         Queue::fake();
         Storage::fake('public');
@@ -1078,9 +1174,10 @@ class FicheWizardTest extends TestCase
 
         $component->assertSet('currentStep', 1);
         $component->assertSet('processingStep', 'extracting');
-        $component->assertSee('Verwerking');
+        $component->assertSee('Upload');
         $component->assertSee('Tekst uitlezen');
-        $component->assertSee('Suggesties genereren');
+        $component->assertSee('Suggesties');
+        $component->assertDontSee('Verwerking');
     }
 
     public function test_restore_uploaded_files_sets_preview_file_id(): void
@@ -1272,5 +1369,439 @@ class FicheWizardTest extends TestCase
 
         $this->assertEquals($file1->id, $component->get('previewFileId'));
         $this->assertCount(2, $component->get('uploadedFiles'));
+    }
+
+    // ==========================================
+    // Dev Mode Tests
+    // ==========================================
+
+    public function test_dev_mode_disabled_blocks_forward_navigation(): void
+    {
+        $user = User::factory()->admin()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->assertSet('devMode', false)
+            ->call('goToStep', 3)
+            ->assertSet('currentStep', 1);
+    }
+
+    public function test_dev_mode_admin_can_jump_to_step3(): void
+    {
+        Feature::define('wizard-dev-mode', true);
+
+        $user = User::factory()->admin()->create();
+        Tag::factory()->create(['type' => 'theme', 'slug' => 'muziek', 'name' => 'Muziek']);
+        Tag::factory()->create(['type' => 'goal', 'slug' => 'doel-doen', 'name' => 'Doen']);
+        Initiative::factory()->published()->create();
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->assertSet('devMode', true)
+            ->call('goToStep', 3)
+            ->assertSet('currentStep', 3)
+            ->assertSet('processingComplete', true)
+            ->assertSet('processingStep', 'done');
+
+        $this->assertNotEmpty($component->get('title'));
+        $this->assertNotEmpty($component->get('description'));
+        $this->assertNotNull($component->get('aiPreparation'));
+        $this->assertNotNull($component->get('aiProcess'));
+        $this->assertNotNull($component->get('selectedInitiativeId'));
+        $this->assertNotEmpty($component->get('matchedInitiatives'));
+    }
+
+    public function test_dev_mode_non_admin_still_blocked(): void
+    {
+        Feature::define('wizard-dev-mode', true);
+
+        $user = User::factory()->create(['role' => 'contributor']);
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->assertSet('devMode', false)
+            ->call('goToStep', 3)
+            ->assertSet('currentStep', 1);
+    }
+
+    public function test_dev_mode_does_not_overwrite_existing_input(): void
+    {
+        Feature::define('wizard-dev-mode', true);
+
+        $user = User::factory()->admin()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Mijn eigen titel')
+            ->set('description', 'Mijn beschrijving')
+            ->call('goToStep', 2)
+            ->assertSet('title', 'Mijn eigen titel')
+            ->assertSet('description', 'Mijn beschrijving');
+    }
+
+    public function test_dev_mode_jump_to_step2(): void
+    {
+        Feature::define('wizard-dev-mode', true);
+
+        $user = User::factory()->admin()->create();
+        Initiative::factory()->published()->create();
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->call('goToStep', 2)
+            ->assertSet('currentStep', 2)
+            ->assertSet('processingComplete', true);
+
+        $this->assertNotEmpty($component->get('matchedInitiatives'));
+        $this->assertNull($component->get('aiPreparation'));
+    }
+
+    // ==========================================
+    // Session Persistence Tests
+    // ==========================================
+
+    public function test_session_cleared_after_publish(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $file = File::factory()->create(['fiche_id' => null]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Publiceer test')
+            ->set('description', 'Test beschrijving')
+            ->set('currentStep', 3)
+            ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
+            ->call('publish');
+
+        // Properties are reset to defaults after save
+        $component->assertSet('title', '')
+            ->assertSet('description', '')
+            ->assertSet('uploadedFiles', [])
+            ->assertSet('previewFileId', null);
+    }
+
+    public function test_session_cleared_after_save_draft(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $file = File::factory()->create(['fiche_id' => null]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Concept test')
+            ->set('description', 'Test beschrijving')
+            ->set('currentStep', 3)
+            ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
+            ->call('saveDraft');
+
+        // Properties are reset to defaults after save
+        $component->assertSet('title', '')
+            ->assertSet('description', '')
+            ->assertSet('uploadedFiles', []);
+    }
+
+    public function test_session_restore_filters_deleted_files(): void
+    {
+        $user = User::factory()->create();
+        $existingFile = File::factory()->create(['fiche_id' => null]);
+        $deletedFileId = 99999;
+
+        session([
+            'fiche-wizard.uploadedFiles' => [
+                ['id' => $existingFile->id, 'name' => $existingFile->original_filename, 'size' => $existingFile->size_bytes, 'type' => 'PDF'],
+                ['id' => $deletedFileId, 'name' => 'deleted.pdf', 'size' => 1000, 'type' => 'PDF'],
+            ],
+            'fiche-wizard.previewFileId' => $existingFile->id,
+        ]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class);
+
+        $uploadedFiles = $component->get('uploadedFiles');
+        $this->assertCount(1, $uploadedFiles);
+        $this->assertEquals($existingFile->id, $uploadedFiles[0]['id']);
+    }
+
+    public function test_session_restore_filters_claimed_files(): void
+    {
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->create();
+        $claimedFile = File::factory()->create(['fiche_id' => $fiche->id]);
+        $unclaimedFile = File::factory()->create(['fiche_id' => null]);
+
+        session([
+            'fiche-wizard.uploadedFiles' => [
+                ['id' => $claimedFile->id, 'name' => $claimedFile->original_filename, 'size' => $claimedFile->size_bytes, 'type' => 'PDF'],
+                ['id' => $unclaimedFile->id, 'name' => $unclaimedFile->original_filename, 'size' => $unclaimedFile->size_bytes, 'type' => 'PDF'],
+            ],
+            'fiche-wizard.previewFileId' => $unclaimedFile->id,
+        ]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class);
+
+        $uploadedFiles = $component->get('uploadedFiles');
+        $this->assertCount(1, $uploadedFiles);
+        $this->assertEquals($unclaimedFile->id, $uploadedFiles[0]['id']);
+    }
+
+    public function test_stale_preview_file_falls_back(): void
+    {
+        $user = User::factory()->create();
+        $validFile = File::factory()->create(['fiche_id' => null]);
+        $deletedFileId = 99999;
+
+        session([
+            'fiche-wizard.uploadedFiles' => [
+                ['id' => $validFile->id, 'name' => $validFile->original_filename, 'size' => $validFile->size_bytes, 'type' => 'PDF'],
+                ['id' => $deletedFileId, 'name' => 'deleted.pdf', 'size' => 1000, 'type' => 'PDF'],
+            ],
+            'fiche-wizard.previewFileId' => $deletedFileId,
+        ]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class);
+
+        $this->assertEquals($validFile->id, $component->get('previewFileId'));
+    }
+
+    public function test_draft_banner_no_longer_shown(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->assertDontSee('Er is een eerder ingevuld concept gevonden');
+    }
+
+    // ==========================================
+    // Similar Fiches Tests
+    // ==========================================
+
+    public function test_similar_fiches_found_by_title_match(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Fiche::factory()->published()->create(['title' => 'Muziekbingo', 'initiative_id' => $initiative->id]);
+        Fiche::factory()->published()->create(['title' => 'Dierenbingo', 'initiative_id' => $initiative->id]);
+        Fiche::factory()->published()->create(['title' => 'Voelbingo', 'initiative_id' => $initiative->id]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Bingo');
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertEquals(3, $similarFiches['count']);
+        $this->assertCount(3, $similarFiches['examples']);
+        $this->assertEquals('bingo', $similarFiches['keyword']);
+    }
+
+    public function test_similar_fiches_empty_for_short_title(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'ab')
+            ->assertSet('similarFiches', []);
+    }
+
+    public function test_similar_fiches_empty_for_no_match(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Xyzzyblargh')
+            ->assertSet('similarFiches', []);
+    }
+
+    public function test_similar_fiches_excludes_unpublished(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Fiche::factory()->published()->create(['title' => 'Muziekbingo', 'initiative_id' => $initiative->id]);
+        Fiche::factory()->create(['title' => 'Dierenbingo', 'initiative_id' => $initiative->id, 'published' => false]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Bingo');
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertEquals(1, $similarFiches['count']);
+    }
+
+    public function test_similar_fiches_singular_text_for_one_result(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Fiche::factory()->published()->create(['title' => 'Muziekbingo', 'initiative_id' => $initiative->id]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Bingo');
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertEquals(1, $similarFiches['count']);
+        $this->assertCount(1, $similarFiches['examples']);
+    }
+
+    public function test_similar_fiches_limits_examples_to_three(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        for ($i = 1; $i <= 5; $i++) {
+            Fiche::factory()->published()->create(['title' => "Bingo variant {$i}", 'initiative_id' => $initiative->id]);
+        }
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Bingo');
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertEquals(5, $similarFiches['count']);
+        $this->assertCount(3, $similarFiches['examples']);
+    }
+
+    public function test_similar_fiches_triggered_from_filename_autotitle(): void
+    {
+        Queue::fake();
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Fiche::factory()->published()->create(['title' => 'Muziekbingo', 'initiative_id' => $initiative->id]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('uploads', [UploadedFile::fake()->create('muziekbingo.pdf', 100, 'application/pdf')]);
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertNotEmpty($similarFiches);
+        $this->assertGreaterThanOrEqual(1, $similarFiches['count']);
+    }
+
+    public function test_similar_fiches_tip_visible_in_step2(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Fiche::factory()->published()->create(['title' => 'Muziekbingo', 'initiative_id' => $initiative->id]);
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 2)
+            ->set('title', 'Bingo')
+            ->assertSeeHtml('Er bestaat al <strong>1 bingo-fiche</strong>');
+    }
+
+    public function test_similar_fiches_tip_hidden_when_no_results(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 2)
+            ->set('title', 'Xyzzyblargh')
+            ->assertDontSee('Er bestaan al')
+            ->assertDontSee('Er bestaat al');
+    }
+
+    public function test_similar_fiches_word_based_search_finds_matches_for_multi_word_title(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Fiche::factory()->published()->create(['title' => 'Muziekquiz', 'initiative_id' => $initiative->id]);
+        Fiche::factory()->published()->create(['title' => 'Pubquiz jaren 60', 'initiative_id' => $initiative->id]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Mijn quiz');
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertEquals(2, $similarFiches['count']);
+        $this->assertEquals('quiz', $similarFiches['keyword']);
+    }
+
+    public function test_similar_fiches_filters_dutch_stop_words(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Fiche::factory()->published()->create(['title' => 'Wandeling door het park', 'initiative_id' => $initiative->id]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Mijn nieuwe wandeling');
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertEquals(1, $similarFiches['count']);
+        $this->assertEquals('wandeling', $similarFiches['keyword']);
+    }
+
+    public function test_similar_fiches_empty_when_only_stop_words(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Mijn eigen nieuwe')
+            ->assertSet('similarFiches', []);
+    }
+
+    public function test_similar_fiches_picks_longest_word_as_keyword(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Fiche::factory()->published()->create(['title' => 'Muziekbingo met slagermuziek', 'initiative_id' => $initiative->id]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Leuke muziekbingo');
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertNotEmpty($similarFiches);
+        $this->assertEquals('muziekbingo', $similarFiches['keyword']);
+    }
+
+    public function test_similar_fiches_filters_words_shorter_than_three_characters(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Fiche::factory()->published()->create(['title' => 'Bingo op woensdag', 'initiative_id' => $initiative->id]);
+
+        // "Op" (2 chars) and "de" (2 chars) should be filtered, only "bingo" remains
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Op de bingo');
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertNotEmpty($similarFiches);
+        $this->assertEquals('bingo', $similarFiches['keyword']);
+    }
+
+    public function test_similar_fiches_populated_on_submit_step1(): void
+    {
+        $user = User::factory()->create();
+        Fiche::factory()->count(2)->create(['title' => 'Bingo avond', 'published' => true]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Bingo')
+            ->call('submitStep1');
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertNotEmpty($similarFiches);
+        $this->assertEquals(2, $similarFiches['count']);
+        $this->assertEquals('bingo', $similarFiches['keyword']);
+        $component->assertSet('currentStep', 2);
     }
 }

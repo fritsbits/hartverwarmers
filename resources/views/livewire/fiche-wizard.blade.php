@@ -1,189 +1,138 @@
-<div
-    x-data="{
-        storageKey: 'fiche-wizard-draft',
-        hasDraft: false,
-        init() {
-            const saved = localStorage.getItem(this.storageKey);
-            if (saved) {
-                try {
-                    const draft = JSON.parse(saved);
-                    if (draft.title || draft.description || (draft.fileIds && draft.fileIds.length)) {
-                        this.hasDraft = true;
-                    }
-                } catch (e) {
-                    localStorage.removeItem(this.storageKey);
-                }
-            }
-            this.startAutoSave();
-        },
-        saveDraft() {
-            const draft = {
-                title: $wire.title,
-                description: $wire.description,
-                preparation: $wire.preparation,
-                inventory: $wire.inventory,
-                process: $wire.process,
-                materialsText: $wire.materialsText,
-                duration: $wire.duration,
-                groupSize: $wire.groupSize,
-                selectedThemeTags: $wire.selectedThemeTags,
-                selectedGoalTags: $wire.selectedGoalTags,
-                selectedInitiativeId: $wire.selectedInitiativeId,
-                currentStep: $wire.currentStep,
-                fileIds: ($wire.uploadedFiles || []).map(f => f.id),
-                previewFileId: $wire.previewFileId,
-                savedAt: Date.now(),
-            };
-            if (draft.title || draft.description || draft.fileIds.length) {
-                localStorage.setItem(this.storageKey, JSON.stringify(draft));
-            }
-        },
-        restoreDraft() {
-            const saved = localStorage.getItem(this.storageKey);
-            if (!saved) return;
-            try {
-                const draft = JSON.parse(saved);
-                $wire.title = draft.title || '';
-                $wire.description = draft.description || '';
-                $wire.preparation = draft.preparation || '';
-                $wire.inventory = draft.inventory || '';
-                $wire.process = draft.process || '';
-                $wire.materialsText = draft.materialsText || '';
-                $wire.duration = draft.duration || '';
-                $wire.groupSize = draft.groupSize || '';
-                $wire.selectedThemeTags = draft.selectedThemeTags || [];
-                $wire.selectedGoalTags = draft.selectedGoalTags || [];
-                $wire.selectedInitiativeId = draft.selectedInitiativeId || null;
-                if (draft.fileIds && draft.fileIds.length) {
-                    $wire.restoreUploadedFiles(draft.fileIds, draft.previewFileId || draft.mainFileId || null);
-                }
-            } catch (e) {
-                console.error('Failed to restore draft:', e);
-            }
-            this.hasDraft = false;
-        },
-        dismissDraft() {
-            localStorage.removeItem(this.storageKey);
-            this.hasDraft = false;
-        },
-        startAutoSave() {
-            setInterval(() => this.saveDraft(), 30000);
-            window.addEventListener('beforeunload', () => this.saveDraft());
-        },
-    }"
-    @fiche-saved.window="localStorage.removeItem(storageKey)"
->
-    {{-- Restore draft banner --}}
-    <template x-if="hasDraft">
-        <div class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                </svg>
-                <p class="text-sm text-amber-800">Er is een eerder ingevuld concept gevonden. Wil je dit herstellen?</p>
+<div>
+    {{-- HERO (cream bg) --}}
+    <section class="bg-[var(--color-bg-cream)]">
+        <div class="max-w-6xl mx-auto px-6 pt-6">
+            <span class="section-label section-label-hero">Nieuwe fiche</span>
+            <div class="flex items-baseline gap-3">
+                <h1 class="text-5xl mt-1">Nieuwe fiche toevoegen</h1>
+                @if($devMode)
+                    <span class="text-xs text-amber-600 font-medium whitespace-nowrap">DEV MODE</span>
+                @endif
             </div>
-            <div class="flex gap-2 shrink-0">
-                <flux:button variant="primary" size="sm" x-on:click="restoreDraft()">Herstellen</flux:button>
-                <flux:button variant="ghost" size="sm" x-on:click="dismissDraft()">Negeren</flux:button>
-            </div>
-        </div>
-    </template>
 
-    {{-- Progress bar --}}
-    <div class="mb-10">
-        <div class="flex items-center justify-between">
-            @foreach([1 => 'Bestanden', 2 => 'Details', 3 => 'Inhoud'] as $step => $label)
-                <div class="flex items-center {{ $step < 3 ? 'flex-1' : '' }}">
-                    <button
-                        wire:click="goToStep({{ $step }})"
-                        @class([
-                            'flex items-center justify-center w-10 h-10 rounded-full text-sm font-bold transition-colors shrink-0',
-                            'bg-[var(--color-primary)] text-white' => $currentStep === $step,
-                            'bg-[var(--color-primary)]/20 text-[var(--color-primary)]' => $currentStep > $step,
-                            'bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)]' => $currentStep < $step,
-                            'cursor-pointer' => $currentStep > $step,
-                            'cursor-default' => $currentStep <= $step,
-                        ])
-                        @disabled($currentStep <= $step)
-                    >
-                        @if($currentStep > $step)
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                            </svg>
-                        @else
-                            {{ $step }}
-                        @endif
-                    </button>
-                    <span @class([
-                        'ml-2 text-sm font-medium whitespace-nowrap',
-                        'text-[var(--color-primary)]' => $currentStep >= $step,
-                        'text-[var(--color-text-secondary)]' => $currentStep < $step,
-                    ])>{{ $label }}</span>
-                    @if($step < 3)
-                        <div @class([
-                            'flex-1 h-0.5 mx-4 rounded',
-                            'bg-[var(--color-primary)]/30' => $currentStep > $step,
-                            'bg-[var(--color-border-light)]' => $currentStep <= $step,
-                        ])></div>
-                    @endif
+            {{-- Progress bar --}}
+            <div class="mt-2 bg-white rounded-2xl shadow-md px-4 py-3 relative z-10 translate-y-1/2">
+                <div class="flex items-center justify-between">
+                    @foreach([1 => ['Bestanden', 'opladen'], 2 => ['Kerngegevens', 'invullen'], 3 => ['Fiche', 'uitwerken'], 4 => ['Resultaat', 'bewonderen']] as $step => $label)
+                        <div class="flex items-center {{ $step < 4 ? 'flex-1' : '' }}">
+                            <button
+                                wire:click="goToStep({{ $step }})"
+                                @class([
+                                    'group flex items-center gap-2',
+                                    'cursor-pointer' => $currentStep > $step || ($devMode && $step <= 3),
+                                    'cursor-default' => ($currentStep <= $step && !$devMode) || $step === 4,
+                                ])
+                                @disabled(($currentStep <= $step && !$devMode) || $step === 4)
+                            >
+                                <span @class([
+                                    'flex items-center justify-center w-[30px] h-[30px] rounded-full text-sm font-bold transition-colors shrink-0',
+                                    'bg-[var(--color-primary)] text-white' => $currentStep === $step,
+                                    'bg-[var(--color-primary)]/20 text-[var(--color-primary)] group-hover:bg-[var(--color-primary)]/40' => $currentStep > $step,
+                                    'bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)]' => $currentStep < $step,
+                                ])>
+                                    @if($currentStep > $step)
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                        </svg>
+                                    @elseif($step === 4 && $currentStep === 4)
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                                        </svg>
+                                    @else
+                                        {{ $step }}
+                                    @endif
+                                </span>
+                                <span @class([
+                                    'max-sm:hidden text-sm font-semibold leading-tight transition-colors',
+                                    'text-[var(--color-primary)] group-hover:text-[var(--color-primary-hover)]' => $currentStep >= $step,
+                                    'text-[var(--color-text-secondary)]' => $currentStep < $step,
+                                ])>{{ $label[0] }}</span>
+                            </button>
+                            @if($step < 4)
+                                <div class="flex-1 mx-4 h-0.5 rounded bg-[var(--color-border-light)] relative overflow-hidden">
+                                    <div @class([
+                                        'absolute inset-y-0 left-0 rounded bg-[var(--color-primary)]/30 transition-all duration-500 ease-out',
+                                        'w-full' => $currentStep > $step,
+                                        'w-0' => $currentStep <= $step,
+                                    ])></div>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
+            </div>
         </div>
-    </div>
+    </section>
 
-    {{-- Two-column grid: main + sidebar --}}
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8" @if(!$processingComplete && $processingStep !== 'idle') wire:poll.2s="checkProcessing" @endif>
-        {{-- Main content area --}}
-        <div class="min-w-0">
+    {{-- FORM CONTENT (white bg) --}}
+    <section class="overflow-x-hidden">
+        <div class="wizard-form max-w-6xl mx-auto px-6 pt-16 pb-12" @if(!$processingComplete && $processingStep !== 'idle') wire:poll.2s="checkProcessing" @endif>
 
             {{-- ============================================== --}}
             {{-- Step 1: Bestanden                              --}}
             {{-- ============================================== --}}
-            <div x-show="$wire.currentStep === 1" x-cloak>
-                <h2 class="text-3xl mb-2">Upload je bestanden</h2>
-                <p class="text-[var(--color-text-secondary)] mb-8">Upload je bestanden — we analyseren de tekst van alle bestanden met AI.</p>
+            <div x-show="$wire.currentStep === 1" x-cloak class="wizard-step-illustrated">
+                <img src="{{ asset('images/wizard/bestanden-uploaden.png') }}" alt="" aria-hidden="true" class="wizard-illustration hidden lg:block">
+                <div class="relative mb-0">
+                    <h2 class="relative z-10 text-3xl">Upload je bestanden</h2>
+                </div>
+                <p class="wizard-lead mb-8 relative z-10">Upload je bestanden — we analyseren de tekst en doen suggesties</p>
 
-                <div class="space-y-6">
+                <div class="space-y-10 relative z-10">
                     <flux:field>
-                        <flux:label class="text-base font-heading font-bold">Bestanden</flux:label>
-
-                        <flux:file-upload wire:model="uploads" multiple>
-                            <flux:file-upload.dropzone
-                                heading="Sleep bestanden hierheen of klik om te bladeren"
-                                text="PDF, PPTX, DOCX, afbeeldingen — max 50MB per bestand"
-                                with-progress
-                            />
-                        </flux:file-upload>
-                        <flux:error name="uploads" />
-                        <flux:error name="uploads.*" />
-
-                        @if(!empty($uploadedFiles))
-                            <div class="mt-3 flex flex-col gap-2">
-                                @foreach($uploadedFiles as $file)
-                                    <flux:file-item
-                                        :heading="$file['name']"
-                                        :size="$file['size']"
-                                        wire:key="file-{{ $file['id'] }}"
-                                    >
-                                        <x-slot name="actions">
-                                            @if($file['id'] === $previewFileId)
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    </svg>
-                                                    Preview
-                                                </span>
-                                            @endif
-                                            <flux:file-item.remove
-                                                wire:click="removeFile({{ $file['id'] }})"
-                                                aria-label="Verwijder {{ $file['name'] }}"
-                                            />
-                                        </x-slot>
-                                    </flux:file-item>
-                                @endforeach
+                        <div @class([
+                            'grid gap-6',
+                            'grid-cols-1' => empty($uploadedFiles),
+                            'grid-cols-1 lg:grid-cols-2' => !empty($uploadedFiles),
+                        ])>
+                            {{-- Left: drop zone --}}
+                            <div>
+                                <flux:file-upload wire:model="uploads" multiple>
+                                    <flux:file-upload.dropzone
+                                        heading="Sleep bestanden hierheen of klik om te bladeren"
+                                        text="PDF, PPTX, DOCX, afbeeldingen — max 50MB per bestand"
+                                        with-progress
+                                    />
+                                </flux:file-upload>
+                                <flux:error name="uploads" />
+                                <flux:error name="uploads.*" />
                             </div>
-                        @endif
+
+                            {{-- Right: file list --}}
+                            @if(!empty($uploadedFiles))
+                                <div>
+                                    <flux:label>Bestanden</flux:label>
+                                    <div class="mt-2 flex flex-col gap-2">
+                                        @foreach($uploadedFiles as $file)
+                                            <flux:file-item
+                                                :heading="$file['name']"
+                                                :size="$file['size']"
+                                                wire:key="file-{{ $file['id'] }}"
+                                            >
+                                                <x-slot name="actions">
+                                                    @if($file['id'] === $previewFileId)
+                                                        <flux:tooltip position="top">
+                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                </svg>
+                                                                Preview
+                                                            </span>
+                                                            <flux:tooltip.content>Dit bestand krijgt automatisch een voorvertoning.</flux:tooltip.content>
+                                                        </flux:tooltip>
+                                                    @endif
+                                                    <flux:file-item.remove
+                                                        wire:click="removeFile({{ $file['id'] }})"
+                                                        aria-label="Verwijder {{ $file['name'] }}"
+                                                    />
+                                                </x-slot>
+                                            </flux:file-item>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
                     </flux:field>
                 </div>
 
@@ -207,59 +156,49 @@
                     </div>
                 </flux:modal>
 
-                <div class="flex justify-end mt-8">
-                    <flux:button variant="primary" wire:click="submitStep1" icon-trailing="arrow-right">
-                        {{ empty($uploadedFiles) ? 'Verder zonder bestand' : 'Volgende' }}
-                    </flux:button>
-                </div>
             </div>
 
             {{-- ============================================== --}}
             {{-- Step 2: Details                                --}}
             {{-- ============================================== --}}
-            <div x-show="$wire.currentStep === 2" x-cloak>
-                {{-- Mobile processing banner --}}
-                @if($processingStep !== 'idle' && $processingStep !== 'done' && $processingStep !== 'failed' && $processingStep !== 'skipped' && !$processingComplete)
-                    <div class="lg:hidden mb-6 p-3 rounded-xl border bg-[var(--color-primary)]/5 border-[var(--color-primary)]/20">
-                        <div class="flex items-center gap-2 text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)] animate-spin shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" />
-                            </svg>
-                            <span class="text-[var(--color-primary)] font-medium">
-                                @if($processingStep === 'extracting') Tekst uitlezen...
-                                @elseif($processingStep === 'analyzing') Suggesties genereren...
-                                @endif
-                            </span>
-                            @if($processingStale)
-                                <flux:button size="xs" variant="ghost" wire:click="skipProcessing" class="ml-auto">Overslaan</flux:button>
-                            @endif
-                        </div>
-                    </div>
-                @elseif($processingComplete && $processingStep === 'done')
-                    <div class="lg:hidden mb-6 p-3 rounded-xl border bg-green-50 border-green-200">
-                        <div class="flex items-center gap-2 text-sm text-green-700 font-medium">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Analyse voltooid — suggesties staan klaar!
-                        </div>
-                    </div>
-                @endif
+            <div x-show="$wire.currentStep === 2" x-cloak class="wizard-step-illustrated">
+                <img src="{{ asset('images/wizard/kernideeen-verzamelen.png') }}" alt="" aria-hidden="true" class="wizard-illustration hidden lg:block">
+                <div class="relative mb-0">
+                    <h2 class="relative z-10 text-3xl">Kerngegevens</h2>
+                </div>
+                <p class="wizard-lead mb-8 relative z-10">Vul de kerngegevens in terwijl we je bestanden analyseren</p>
 
-                <h2 class="text-3xl mb-2">Details</h2>
-                <p class="text-[var(--color-text-secondary)] mb-8">Vul de kerngegevens in terwijl we je bestanden analyseren.</p>
-
-                <div class="space-y-6">
+                <div class="space-y-10 relative z-10">
                     {{-- Title --}}
-                    <flux:field>
-                        <flux:label class="text-base font-heading font-bold">Titel <span class="field-tag ml-1">Verplicht</span></flux:label>
-                        <flux:description>Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
-                        <flux:input wire:model="title" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
-                        <flux:error name="title" />
-                    </flux:field>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                        <div>
+                            <flux:field>
+                                <flux:label>Titel <span class="field-tag ml-1">Verplicht</span></flux:label>
+                                <flux:description>Geef een specifieke titel aan je activiteit.</flux:description>
+                                <flux:input wire:model.live.debounce.500ms="title" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
+                                <flux:error name="title" />
+                            </flux:field>
+                        </div>
+
+                        @if(!empty($similarFiches))
+                            <div>
+                                <div class="similar-fiches-tip">
+                                    <flux:icon.sparkles class="similar-fiches-tip-icon" />
+                                    <div>
+                                        @if($similarFiches['count'] === 1)
+                                            <p>Er bestaat al <strong>1 {{ $similarFiches['keyword'] }}-fiche</strong>: {{ $similarFiches['examples'][0] }}.</p>
+                                        @else
+                                            <p>Er bestaan al <strong>{{ $similarFiches['count'] }} {{ $similarFiches['keyword'] }}-fiches</strong>, waaronder {{ implode(', ', array_slice($similarFiches['examples'], 0, -1)) }} en {{ end($similarFiches['examples']) }}.</p>
+                                        @endif
+                                        <p>Wat maakt jouw activiteit uniek?</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
 
                     {{-- Duration & Group size --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                         <flux:field>
                             <flux:label>Duur</flux:label>
                             <flux:input wire:model="duration" placeholder="bijv. 30 min" />
@@ -271,12 +210,10 @@
                         </flux:field>
                     </div>
 
-                    <hr class="border-[var(--color-border-light)]">
-
                     {{-- DIAMANT goals --}}
                     @feature('diamant-goals')
                     <flux:field>
-                        <flux:label class="text-base font-heading font-bold">DIAMANT-doelen</flux:label>
+                        <flux:label>DIAMANT-doelen</flux:label>
                         <flux:description>Welke doelen van het DIAMANT-model worden aangesproken?</flux:description>
 
                         @if(!empty($suggestedGoalTagIds))
@@ -343,126 +280,84 @@
                     </flux:field>
                     @endfeature
 
-                    {{-- Theme tags --}}
-                    <flux:field>
-                        <flux:label class="text-base font-heading font-bold">Thema's</flux:label>
-                        <flux:description>Selecteer de thema's die bij deze activiteit passen.</flux:description>
-
-                        @if(!empty($suggestedThemeTagIds))
-                            <div class="text-xs font-semibold text-[var(--color-primary)] mt-2 mb-1 uppercase tracking-wider">Aanbevolen</div>
-                        @endif
-                        <div class="flex flex-wrap gap-2 mt-1">
-                            @foreach($allThemeTags as $tag)
-                                @php $isSuggested = in_array($tag->id, $suggestedThemeTagIds); @endphp
-
-                                @if($isSuggested)
-                                    <label wire:key="theme-{{ $tag->id }}" @class([
-                                        'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm cursor-pointer transition-colors border',
-                                        'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' => in_array($tag->id, $selectedThemeTags),
-                                        'bg-[var(--color-primary)]/10 border-[var(--color-primary)]/30 hover:border-[var(--color-primary)] text-[var(--color-primary)]' => !in_array($tag->id, $selectedThemeTags),
-                                    ])>
-                                        <input type="checkbox" wire:model.live="selectedThemeTags" value="{{ $tag->id }}" class="sr-only">
-                                        {{ $tag->name }}
-                                    </label>
-                                @endif
-                            @endforeach
-                        </div>
-
-                        @if(!empty($suggestedThemeTagIds))
-                            <button wire:click="$toggle('showMoreThemeTags')" class="mt-2 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] underline">
-                                {{ $showMoreThemeTags ? 'Minder tonen' : 'Alle thema\'s tonen' }}
-                            </button>
-                        @endif
-
-                        @if($showMoreThemeTags || empty($suggestedThemeTagIds))
-                            @if(!empty($suggestedThemeTagIds))
-                                <div class="text-xs font-semibold text-[var(--color-text-secondary)] mt-3 mb-1 uppercase tracking-wider">Overige thema's</div>
-                            @endif
-                            <div class="flex flex-wrap gap-2 mt-1">
-                                @foreach($allThemeTags as $tag)
-                                    @if(!in_array($tag->id, $suggestedThemeTagIds))
-                                        <label wire:key="theme-more-{{ $tag->id }}" @class([
-                                            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm cursor-pointer transition-colors border',
-                                            'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' => in_array($tag->id, $selectedThemeTags),
-                                            'bg-white border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] text-[var(--color-text-secondary)]' => !in_array($tag->id, $selectedThemeTags),
-                                        ])>
-                                            <input type="checkbox" wire:model.live="selectedThemeTags" value="{{ $tag->id }}" class="sr-only">
-                                            {{ $tag->name }}
-                                        </label>
-                                    @endif
-                                @endforeach
-                            </div>
-                        @endif
-                    </flux:field>
-
-                    <hr class="border-[var(--color-border-light)]">
+                    {{-- Theme tags (hidden from UI — suggestions still applied automatically) --}}
 
                     {{-- Initiative linking --}}
                     <div class="space-y-4">
                         <flux:field>
-                            <flux:label class="text-base font-heading font-bold">Gekoppeld initiatief</flux:label>
-                            <flux:description>Optioneel — koppel deze fiche aan een initiatief.</flux:description>
+                            <flux:label>Gekoppeld initiatief</flux:label>
+                            <flux:description>Optioneel — koppel deze fiche aan een initiatief</flux:description>
 
-                            {{-- AI-matched initiatives --}}
+                            {{-- Inline processing indicator --}}
+                            @if(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'skipped')
+                                @php
+                                    $step2InlineSteps = [
+                                        ['label' => 'Upload', 'done' => true, 'active' => false],
+                                        ['label' => 'Tekst uitlezen', 'done' => in_array($processingStep, ['analyzing', 'done', 'failed']), 'active' => $processingStep === 'extracting'],
+                                        ['label' => 'Suggesties', 'done' => in_array($processingStep, ['done', 'failed']), 'active' => $processingStep === 'analyzing'],
+                                    ];
+                                @endphp
+                                <div class="mt-3 mb-4 flex items-center gap-3 text-sm text-[var(--color-text-secondary)]">
+                                    @foreach($step2InlineSteps as $stepInfo)
+                                        <span class="flex items-center gap-1.5 {{ $stepInfo['done'] ? 'text-[var(--color-primary)]' : ($stepInfo['active'] ? 'text-[var(--color-text-secondary)]' : 'text-[var(--color-text-secondary)]/50') }}">
+                                            @if($stepInfo['done'])
+                                                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="currentColor"/><path d="M7.5 12.5L10.5 15.5L16.5 9.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            @elseif($stepInfo['active'])
+                                                <svg class="w-4 h-4 shrink-0 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" /></svg>
+                                            @else
+                                                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg>
+                                            @endif
+                                            {{ $stepInfo['label'] }}
+                                        </span>
+                                    @endforeach
+                                    @if($processingStale)
+                                        <button wire:click="skipProcessing" class="text-xs underline text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">Overslaan</button>
+                                    @endif
+                                </div>
+                            @endif
+
+                            {{-- Matched initiatives --}}
                             @if(!empty($matchedInitiatives))
                                 <div class="mt-3 mb-4">
                                     <div class="text-xs font-semibold text-[var(--color-primary)] mb-2 uppercase tracking-wider flex items-center gap-1">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                                         </svg>
-                                        Voorgesteld door AI
+                                        Voorgesteld
                                     </div>
-                                    <div class="space-y-2">
+                                    <flux:radio.group wire:model.live="selectedInitiativeId" variant="cards" class="initiative-cards max-sm:flex-col">
                                         @foreach($matchedInitiatives as $match)
-                                            <label wire:key="match-{{ $match['id'] }}" class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:-translate-y-0.5 {{ $selectedInitiativeId === $match['id'] ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5 shadow-sm' : 'border-[var(--color-border-light)] hover:border-[var(--color-border-hover)]' }}">
-                                                <input type="radio" wire:model.live="selectedInitiativeId" value="{{ $match['id'] }}" class="mt-1 accent-[var(--color-primary)]">
-                                                <div>
-                                                    <div class="font-heading font-bold text-sm">{{ $match['title'] }}</div>
-                                                    @if($match['reason'])
-                                                        <p class="text-xs text-[var(--color-text-secondary)] mt-0.5">{{ $match['reason'] }}</p>
-                                                    @endif
-                                                </div>
-                                            </label>
+                                            <flux:radio wire:key="match-{{ $match['id'] }}" :value="$match['id']" :label="$match['title']" :description="$match['reason']" />
                                         @endforeach
-                                    </div>
+                                    </flux:radio.group>
                                 </div>
                             @endif
 
-                            <flux:select wire:model.live="selectedInitiativeId" placeholder="Selecteer een initiatief...">
-                                <flux:select.option value="">Geen initiatief</flux:select.option>
-                                @foreach($allInitiatives as $initiative)
-                                    <flux:select.option :value="$initiative->id">{{ $initiative->title }}</flux:select.option>
-                                @endforeach
-                            </flux:select>
+                            {{-- Initiative dropdown hidden — suggestions should suffice --}}
                         </flux:field>
                     </div>
                 </div>
 
-                <div class="flex justify-between mt-8">
-                    <flux:button variant="ghost" wire:click="goToStep(1)" icon="arrow-left">
-                        Vorige
-                    </flux:button>
-                    <flux:button variant="primary" wire:click="submitStep2" icon-trailing="arrow-right">
-                        Volgende
-                    </flux:button>
-                </div>
             </div>
 
             {{-- ============================================== --}}
             {{-- Step 3: Inhoud                                 --}}
             {{-- ============================================== --}}
-            <div x-show="$wire.currentStep === 3" x-cloak>
-                <h2 class="text-3xl mb-2">Inhoud</h2>
-                <p class="text-[var(--color-text-secondary)] mb-8">Schrijf de inhoud van je fiche, of neem de AI-suggesties over.</p>
+            <div x-show="$wire.currentStep === 3" x-cloak class="wizard-step-illustrated">
+                <img src="{{ asset('images/wizard/schrijven-en-componeren.png') }}" alt="" aria-hidden="true" class="wizard-illustration hidden lg:block">
+                <div class="relative mb-0">
+                    <h2 class="relative z-10 text-3xl">Fiche uitwerken</h2>
+                </div>
+                <p class="wizard-lead mb-8 relative z-10">Schrijf de inhoud van je fiche, of neem de suggesties over</p>
 
-                {{-- AI still processing banner --}}
+                {{-- Still processing banner --}}
                 @if(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'failed' && $processingStep !== 'skipped')
                     <div class="mb-6 p-3 rounded-xl border bg-[var(--color-primary)]/5 border-[var(--color-primary)]/20">
                         <div class="flex items-center gap-2 text-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)] animate-spin shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" />
                             </svg>
-                            <span class="text-[var(--color-primary)] font-medium">AI-suggesties worden gegenereerd...</span>
+                            <span class="text-[var(--color-primary)] font-medium">Suggesties worden gegenereerd...</span>
                             @if($processingStale)
                                 <flux:button size="xs" variant="ghost" wire:click="skipProcessing" class="ml-auto">Overslaan</flux:button>
                             @endif
@@ -470,54 +365,57 @@
                     </div>
                 @endif
 
-                <div class="space-y-8">
+                <div class="space-y-9">
                     @foreach($contentFields as $index => $field)
                         @php
                             $hasAiSuggestion = $this->{$field['aiProp']} !== null && !in_array($field['field'], $dismissedSuggestions);
+                            $isApplied = in_array($field['field'], $appliedSuggestions);
                         @endphp
 
                         <div wire:key="content-{{ $field['field'] }}">
-                            <h4 class="font-heading font-bold text-base mb-1">{{ $field['label'] }}</h4>
-                            <p class="text-sm text-[var(--color-text-secondary)] mb-3">{{ $field['description'] }}</p>
+                            <flux:label>{{ $field['label'] }} @if($field['required'] ?? false)<span class="field-tag ml-1">Verplicht</span>@endif</flux:label>
+                            <flux:description>{{ $field['description'] }}</flux:description>
 
-                            <div class="grid grid-cols-1 {{ $hasAiSuggestion ? 'md:grid-cols-2' : '' }} gap-4">
+                            <div class="grid grid-cols-1 {{ $hasAiSuggestion ? 'lg:grid-cols-12' : '' }} gap-8">
                                 {{-- User's editable field --}}
-                                <div>
-                                    @if($hasAiSuggestion)
-                                        <div class="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)] mb-2">Jouw versie</div>
-                                    @endif
-                                    <flux:textarea
+                                <div class="{{ $hasAiSuggestion ? 'lg:col-span-8' : '' }}">
+                                    <flux:editor
                                         wire:model="{{ $field['userProp'] }}"
-                                        rows="{{ $field['rows'] }}"
+                                        toolbar="bold | bullet ordered | link"
                                         placeholder="{{ $field['placeholder'] }}"
-                                        class="text-sm"
                                     />
                                 </div>
 
-                                {{-- AI suggestion --}}
+                                {{-- Suggestion --}}
                                 @if($hasAiSuggestion)
-                                    <div>
-                                        <div class="text-xs font-semibold uppercase tracking-wider text-[var(--color-primary)] mb-2 flex items-center gap-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                                            </svg>
-                                            AI-suggestie
+                                    <div class="lg:col-span-4 flex gap-2.5 bg-white py-4 pl-2 pr-4 text-sm text-[var(--color-text-primary)]/70">
+                                        <flux:icon.sparkles class="w-5 h-5 shrink-0 text-[var(--color-primary)] mt-0.5" />
+                                        <div class="min-w-0">
+                                        <div class="text-xs font-semibold text-[var(--color-text-secondary)] mb-3 uppercase tracking-wider">Suggestie</div>
+                                        <div class="prose prose-sm max-w-none [&_strong]:text-[var(--color-text-primary)]/80">{!! $this->{$field['aiProp']} !!}</div>
+                                        <div class="mt-3">
+                                            @if($isApplied)
+                                                <span class="inline-flex items-center gap-1 h-7 px-2 text-xs font-medium text-[var(--color-text-secondary)]">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                                    </svg>
+                                                    Toegevoegd
+                                                </span>
+                                            @else
+                                                <flux:button size="xs" variant="filled" x-on:click="let y = window.scrollY; $wire.applySuggestion('{{ $field['field'] }}').then(() => { requestAnimationFrame(() => window.scrollTo(0, y)) })">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                                                    </svg>
+                                                    Toevoegen
+                                                </flux:button>
+                                            @endif
                                         </div>
-                                        <div class="p-4 rounded-lg border-2 border-dashed border-[var(--color-primary)]/30 bg-[var(--color-bg-cream)] text-sm">
-                                            <div class="prose prose-sm max-w-none">{!! $this->{$field['aiProp']} !!}</div>
-                                            <div class="flex gap-2 mt-3">
-                                                <flux:button size="xs" variant="primary" wire:click="applySuggestion('{{ $field['field'] }}')">
-                                                    Overnemen
-                                                </flux:button>
-                                                <flux:button size="xs" variant="ghost" wire:click="dismissSuggestion('{{ $field['field'] }}')">
-                                                    Negeren
-                                                </flux:button>
-                                            </div>
                                         </div>
                                     </div>
                                 @endif
                             </div>
 
+                            <flux:error :name="$field['field']" />
                         </div>
                     @endforeach
                 </div>
@@ -531,7 +429,106 @@
                     </div>
                 @enderror
 
-                <div class="flex justify-between mt-8 pt-6 border-t border-[var(--color-border-light)]">
+            </div>
+
+            {{-- ============================================== --}}
+            {{-- Step 4: Resultaat bewonderen (celebration)     --}}
+            {{-- ============================================== --}}
+            <div x-show="$wire.currentStep === 4" x-cloak class="wizard-step-illustrated"
+                x-init="$watch('$wire.currentStep', value => {
+                    if (value === 4 && $wire.publishedFicheUrl) {
+                        setTimeout(() => window.location.href = $wire.publishedFicheUrl, 5000);
+                    }
+                })"
+            >
+                <img src="{{ asset('images/wizard/resultaten-bekijken.png') }}" alt="" aria-hidden="true" class="wizard-illustration hidden lg:block">
+                <div class="relative mb-2">
+                    <h2 class="relative z-10 text-3xl">Resultaat bewonderen</h2>
+                </div>
+
+                <div class="relative overflow-hidden rounded-2xl bg-[var(--color-bg-cream)] border border-[var(--color-border-light)] px-8 py-16 mt-8 text-center">
+                    {{-- Confetti --}}
+                    <div class="wizard-confetti" aria-hidden="true">
+                        @for($i = 1; $i <= 20; $i++)
+                            <span class="wizard-confetti-particle"></span>
+                        @endfor
+                    </div>
+
+                    {{-- Heart icon --}}
+                    <div class="relative mx-auto mb-6 w-24 h-24 flex items-center justify-center">
+                        <div class="absolute inset-0 rounded-full bg-[var(--color-primary)]/10 animate-pulse"></div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14 text-[var(--color-primary)]" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                        </svg>
+                    </div>
+
+                    <h3 class="text-3xl mb-3">Prachtig werk!</h3>
+                    <p class="text-lg text-[var(--color-text-secondary)] font-light max-w-md mx-auto mb-8">
+                        Je fiche is gepubliceerd en staat klaar voor alle collega's. Bedankt voor je warme bijdrage!
+                    </p>
+
+                    <a href="{{ $publishedFicheUrl }}" class="btn-pill">
+                        Bekijk je fiche &rarr;
+                    </a>
+
+                    <p class="mt-6 text-sm text-[var(--color-text-secondary)]/60">
+                        Je wordt automatisch doorgestuurd...
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Full-width cream footer band --}}
+        <div class="wizard-form-footer" x-show="$wire.currentStep < 4" x-cloak>
+            <div class="max-w-6xl mx-auto px-6 py-5">
+                {{-- Step 1 footer --}}
+                <div x-show="$wire.currentStep === 1" class="flex items-center justify-between">
+                    {{-- Inline processing indicator --}}
+                    <div>
+                        @if(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'skipped')
+                            @php
+                                $inlineSteps = [
+                                    ['label' => 'Upload', 'done' => true, 'active' => false],
+                                    ['label' => 'Tekst uitlezen', 'done' => in_array($processingStep, ['analyzing', 'done', 'failed']), 'active' => $processingStep === 'extracting'],
+                                    ['label' => 'Suggesties', 'done' => in_array($processingStep, ['done', 'failed']), 'active' => $processingStep === 'analyzing'],
+                                ];
+                            @endphp
+                            <div class="flex items-center gap-3 text-sm text-[var(--color-text-secondary)]">
+                                @foreach($inlineSteps as $stepInfo)
+                                    <span class="flex items-center gap-1.5 {{ $stepInfo['done'] ? 'text-[var(--color-primary)]' : ($stepInfo['active'] ? 'text-[var(--color-text-secondary)]' : 'text-[var(--color-text-secondary)]/50') }}">
+                                        @if($stepInfo['done'])
+                                            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="currentColor"/><path d="M7.5 12.5L10.5 15.5L16.5 9.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        @elseif($stepInfo['active'])
+                                            <svg class="w-4 h-4 shrink-0 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" /></svg>
+                                        @else
+                                            <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg>
+                                        @endif
+                                        {{ $stepInfo['label'] }}
+                                    </span>
+                                @endforeach
+                                @if($processingStale)
+                                    <button wire:click="skipProcessing" class="text-xs underline text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">Overslaan</button>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                    <flux:button variant="primary" wire:click="submitStep1" icon-trailing="arrow-right">
+                        {{ empty($uploadedFiles) ? 'Verder zonder bestand' : 'Volgende' }}
+                    </flux:button>
+                </div>
+
+                {{-- Step 2 footer --}}
+                <div x-show="$wire.currentStep === 2" class="flex justify-between">
+                    <flux:button variant="ghost" wire:click="goToStep(1)" icon="arrow-left">
+                        Vorige
+                    </flux:button>
+                    <flux:button variant="primary" wire:click="submitStep2" icon-trailing="arrow-right">
+                        Volgende
+                    </flux:button>
+                </div>
+
+                {{-- Step 3 footer --}}
+                <div x-show="$wire.currentStep === 3" class="flex justify-between">
                     <flux:button variant="ghost" wire:click="goToStep(2)" icon="arrow-left">
                         Vorige
                     </flux:button>
@@ -546,97 +543,5 @@
                 </div>
             </div>
         </div>
-
-        {{-- AI Sidebar (desktop only) --}}
-        <div class="hidden lg:block">
-            <div class="sticky top-24">
-                <div class="rounded-xl border border-[var(--color-border-light)] bg-white p-5">
-                    {{-- Idle — no file yet --}}
-                    @if($processingStep === 'idle')
-                        <div class="flex items-center gap-2 mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                            </svg>
-                            <h3 class="font-heading font-bold text-base">AI-assistent</h3>
-                        </div>
-                        <p class="text-sm text-[var(--color-text-secondary)] leading-relaxed">
-                            Na het uploaden analyseren we je bestanden automatisch. We herkennen tekst, genereren previews en doen een AI-analyse om je fiche te verrijken met suggesties.
-                        </p>
-
-                    {{-- Processing in progress --}}
-                    @elseif(!$processingComplete)
-                        <div class="flex items-center gap-2 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-                            </svg>
-                            <h3 class="font-heading font-bold text-base">Verwerking</h3>
-                        </div>
-
-                        @php
-                            $sidebarSteps = [
-                                'upload' => ['label' => 'Upload', 'done' => true],
-                                'extracting' => ['label' => 'Tekst uitlezen', 'done' => in_array($processingStep, ['analyzing', 'done', 'failed']), 'active' => $processingStep === 'extracting'],
-                                'suggesting' => ['label' => 'Suggesties genereren', 'done' => in_array($processingStep, ['done', 'failed']), 'active' => $processingStep === 'analyzing'],
-                            ];
-                        @endphp
-
-                        <div class="space-y-3">
-                            @foreach($sidebarSteps as $key => $stepInfo)
-                                <div class="flex items-center gap-3" wire:key="sidebar-{{ $key }}">
-                                    @if($stepInfo['done'] ?? false)
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-green-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    @elseif($stepInfo['active'] ?? false)
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[var(--color-primary)] animate-spin shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" />
-                                        </svg>
-                                    @else
-                                        <div class="w-5 h-5 rounded-full border-2 border-[var(--color-border-light)] shrink-0"></div>
-                                    @endif
-                                    <span @class([
-                                        'text-sm font-medium',
-                                        'text-green-700' => $stepInfo['done'] ?? false,
-                                        'text-[var(--color-primary)]' => $stepInfo['active'] ?? false,
-                                        'text-[var(--color-text-secondary)]' => !($stepInfo['done'] ?? false) && !($stepInfo['active'] ?? false),
-                                    ])>{{ $stepInfo['label'] }}</span>
-                                </div>
-                            @endforeach
-                        </div>
-
-                        @if($processingStale)
-                            <div class="mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                                <p class="text-xs text-amber-800 mb-2">Analyse duurt langer dan verwacht. Start de queue worker in een terminal met: <code class="bg-amber-100 px-1 rounded font-mono">composer run dev</code></p>
-                                <flux:button size="xs" variant="ghost" wire:click="skipProcessing" class="w-full">
-                                    Overslaan en doorgaan
-                                </flux:button>
-                            </div>
-                        @endif
-
-                    {{-- Done --}}
-                    @elseif($processingComplete && $processingStep === 'done')
-                        <div class="text-center py-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-green-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <h3 class="font-heading font-bold text-base text-green-700">Analyse voltooid!</h3>
-                            <p class="text-sm text-[var(--color-text-secondary)] mt-1">Suggesties staan klaar bij de inhoudsvelden.</p>
-                        </div>
-
-                    {{-- Failed or skipped --}}
-                    @elseif($processingComplete)
-                        <div class="text-center py-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-amber-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                            </svg>
-                            <h3 class="font-heading font-bold text-base text-amber-700">
-                                {{ $processingStep === 'skipped' ? 'Analyse overgeslagen' : 'Analyse niet gelukt' }}
-                            </h3>
-                            <p class="text-sm text-[var(--color-text-secondary)] mt-1">Je kunt je fiche handmatig invullen.</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
+    </section>
 </div>

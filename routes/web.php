@@ -47,8 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/initiatieven/{initiative:slug}/comment', [CommentController::class, 'storeForInitiative'])->name('initiatives.comment');
 
     // Fiche creation & editing
-    Route::get('/uitwerkingen/nieuw', [FicheController::class, 'create'])->name('fiches.create');
-    Route::get('/uitwerkingen/{fiche:slug}/bewerken', [FicheController::class, 'edit'])->name('fiches.edit');
+    Route::get('/fiches/nieuw', [FicheController::class, 'create'])->name('fiches.create');
+    Route::get('/fiches/{fiche:slug}/bewerken', [FicheController::class, 'edit'])->name('fiches.edit');
 
     // Admin actions
     Route::middleware('admin')->group(function () {
@@ -79,6 +79,10 @@ Route::middleware(EnsureFeaturesAreActive::using('diamant-goals'))->group(functi
 Route::get('/{slug}', [ContentController::class, 'content'])
     ->where('slug', '(lessenreeks|wonen-en-leven).*')
     ->name('content');
+
+// Legacy redirects (old /uitwerkingen URLs → /fiches)
+Route::redirect('/uitwerkingen/nieuw', '/fiches/nieuw', 301);
+Route::get('/uitwerkingen/{slug}/bewerken', fn (string $slug) => redirect("/fiches/{$slug}/bewerken", 301));
 
 // Breeze auth routes
 require __DIR__.'/auth.php';

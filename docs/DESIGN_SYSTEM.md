@@ -195,6 +195,16 @@
 
 **When NOT to use:** Don't use for page-level CTAs — too small to notice. Use regular size for standalone buttons.
 
+### Flux Button Variants Quick Reference
+
+| Variant | Markup | Use for |
+|---------|--------|---------|
+| **Primary** | `<flux:button variant="primary">` | Main form actions (save, submit, confirm) |
+| **Filled** | `<flux:button variant="filled">` | Secondary emphasis actions |
+| **Ghost** | `<flux:button variant="ghost">` | Low-emphasis actions (cancel, dismiss, filters) |
+| **Danger** | `<flux:button variant="danger">` | Destructive actions (delete, remove) — always pair with confirmation |
+| **Primary sm** | `<flux:button variant="primary" size="sm">` | Compact contexts (table rows, card footers) |
+
 ## Links
 
 ### CTA Link
@@ -261,7 +271,7 @@
 
 **Class:** `.field-tag`
 
-**When to use:** Small inline label placed next to form field labels to indicate status or requirements (e.g. "Verplicht", "Optioneel", "Nieuw"). White background with text-secondary color. Place inside `<flux:label>` after the label text.
+**When to use:** Small inline label placed next to form field labels to indicate status or requirements (e.g. "Verplicht", "Optioneel", "Nieuw"). Cream background with text-secondary color. Place inside `<flux:label>` after the label text.
 
 **HTML pattern:**
 
@@ -272,6 +282,31 @@
 ```
 
 **When NOT to use:** Don't use for large status indicators or badges — use `<flux:badge>` instead. Don't use outside of form contexts.
+
+### Form Section Spacing
+
+**Class:** `space-y-8` (32px)
+
+**When to use:** Consistent vertical spacing between form sections/field groups in wizard and multi-section forms. Use `space-y-8` on the wrapping container instead of `<hr>` dividers between sections.
+
+**When NOT to use:** Don't use `<hr>` elements between form sections — rely on generous whitespace (32px) for visual separation. Don't use smaller spacing like `space-y-4` or `space-y-6` for top-level form sections.
+
+### Wizard Form Footer
+
+**Class:** `.wizard-form-footer`
+
+**When to use:** Action bar at the bottom of each wizard step. Provides cream background, top border, and negative margins to bleed into the container padding — creating a full-width footer that visually anchors the form.
+
+**HTML pattern:**
+
+```html
+<div class="wizard-form-footer mt-8 flex justify-between">
+    <flux:button variant="ghost" icon="arrow-left">Vorige</flux:button>
+    <flux:button variant="primary" icon-trailing="arrow-right">Volgende</flux:button>
+</div>
+```
+
+**When NOT to use:** Don't use for inline button groups within the form content. Only use at the very bottom of a wizard step.
 
 ## Cards
 

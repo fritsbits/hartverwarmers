@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playground — Wizard Stepper</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700" rel="stylesheet">
+<style>
+:root {
+  --color-primary: #E8764B;
+  --color-primary-hover: #D4683F;
+  --color-text-primary: #231E1A;
+  --color-text-secondary: #756C65;
+  --color-bg-white: #FFFFFF;
+  --color-bg-subtle: #F5F0EC;
+  --color-bg-cream: #FEF8F4;
+  --color-bg-accent-light: #FDF3EE;
+  --color-border-light: #EBE4DE;
+  --font-heading: 'Aleo', system-ui, serif;
+  --font-body: 'Fira Sans', system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --shadow-card: 0 2px 8px rgba(60,40,20,0.05);
+  --transition-fast: 0.2s ease;
+
+  /* Tweakable */
+  --stepper-shape: tab-bar;
+  --stepper-radius: 16px;
+  --stepper-padding-x: 24px;
+  --stepper-padding-y: 12px;
+  --stepper-offset-y: 0px;
+  --stepper-bg: var(--color-bg-white);
+  --stepper-shadow: 0 -2px 12px rgba(60,40,20,0.04);
+  --stepper-border: none;
+  --stepper-gap: 0px;
+  --header-pb: 12px;
+  --title-size: 2.5rem;
+  --title-mb: 16px;
+  --dot-size: 36px;
+  --dot-font: 13px;
+  --label-size: 13px;
+  --sublabel-size: 11px;
+  --line-thickness: 2px;
+  --content-pt: 32px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { font-family: var(--font-body); font-size: 16px; color: var(--color-text-primary); background: var(--color-bg-subtle); height: 100%; }
+h1,h2,h3,h4,h5,h6 { font-family: var(--font-heading); font-weight: 700; line-height: 1.25; }
+
+/* === Playground Layout === */
+.playground { display: flex; height: 100vh; overflow: hidden; }
+
+/* === Sidebar === */
+.sidebar {
+  width: 320px; min-width: 320px; background: var(--color-bg-white);
+  border-right: 1px solid var(--color-border-light); overflow-y: auto;
+  padding: 20px; transition: margin-left 0.25s ease; flex-shrink: 0;
+}
+.sidebar.collapsed { margin-left: -320px; }
+.sidebar-toggle {
+  position: fixed; top: 12px; left: 12px; z-index: 100;
+  width: 36px; height: 36px; border-radius: 8px;
+  border: 1px solid var(--color-border-light); background: var(--color-bg-white);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--color-text-secondary); box-shadow: var(--shadow-card);
+}
+.sidebar h3 { font-size: 18px; margin-bottom: 16px; color: var(--color-primary); }
+.ctrl-section { margin-bottom: 20px; border-bottom: 1px solid var(--color-border-light); padding-bottom: 16px; }
+.ctrl-section:last-child { border-bottom: none; }
+.ctrl-section summary {
+  font-family: var(--font-body); font-weight: 600; font-size: 13px;
+  text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);
+  cursor: pointer; padding: 4px 0; user-select: none;
+}
+.ctrl-section[open] summary { color: var(--color-primary); }
+.ctrl-group { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.ctrl-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ctrl-row label { font-size: 12px; color: var(--color-text-secondary); white-space: nowrap; }
+.ctrl-row select, .ctrl-row input[type="range"] { flex: 1; max-width: 160px; }
+select { font-family: var(--font-body); font-size: 12px; padding: 4px 6px; border: 1px solid var(--color-border-light); border-radius: 6px; background: var(--color-bg-white); }
+input[type="range"] { accent-color: var(--color-primary); }
+.range-val { font-size: 11px; color: var(--color-text-secondary); min-width: 32px; text-align: right; font-variant-numeric: tabular-nums; }
+.preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
+.preset-btn {
+  font-family: var(--font-body); font-size: 12px; font-weight: 600;
+  padding: 6px 10px; border-radius: 6px; border: 1px solid var(--color-border-light);
+  background: var(--color-bg-white); cursor: pointer; transition: all var(--transition-fast);
+  color: var(--color-text-primary);
+}
+.preset-btn:hover { border-color: var(--color-primary); background: var(--color-bg-accent-light); }
+.preset-btn.active { border-color: var(--color-primary); background: var(--color-primary); color: white; }
+.ctrl-check { display: flex; align-items: center; gap: 6px; }
+.ctrl-check input[type="checkbox"] { accent-color: var(--color-primary); }
+.ctrl-check label { font-size: 12px; color: var(--color-text-secondary); }
+
+/* === Preview === */
+.preview { flex: 1; overflow-y: auto; background: var(--color-bg-subtle); }
+
+/* === Fake Navbar === */
+.fake-nav {
+  background: var(--color-bg-white); border-bottom: 1px solid var(--color-border-light);
+  padding: 12px 32px; display: flex; align-items: center; gap: 24px;
+}
+.fake-nav .logo { font-family: var(--font-heading); font-size: 18px; color: var(--color-primary); display: flex; align-items: center; gap: 6px; }
+.fake-nav .logo svg { width: 22px; height: 22px; fill: var(--color-primary); }
+.fake-nav .nav-links { display: flex; gap: 20px; font-size: 14px; color: var(--color-text-secondary); }
+
+/* === Hero Section (cream bg) === */
+.hero {
+  background: var(--color-bg-cream);
+  padding: 24px 32px var(--header-pb) 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-inner { max-width: 900px; margin: 0 auto; }
+
+.hero h1 { font-size: var(--title-size); margin-bottom: var(--title-mb); }
+
+/* === Stepper Container === */
+.stepper-wrap {
+  position: relative;
+  z-index: 2;
+}
+
+/* Shape: tab-bar — white rounded box behind steps */
+.stepper-wrap[data-shape="tab-bar"] {
+  background: var(--stepper-bg);
+  border-radius: var(--stepper-radius) var(--stepper-radius) 0 0;
+  padding: var(--stepper-padding-y) var(--stepper-padding-x);
+  box-shadow: var(--stepper-shadow);
+  margin-top: var(--stepper-offset-y);
+  margin-bottom: calc(-1 * var(--stepper-padding-y));
+  position: relative;
+}
+
+/* Shape: floating — floats over the boundary */
+.stepper-wrap[data-shape="floating"] {
+  background: var(--stepper-bg);
+  border-radius: var(--stepper-radius);
+  padding: var(--stepper-padding-y) var(--stepper-padding-x);
+  box-shadow: var(--stepper-shadow);
+  margin-bottom: calc(-1 * var(--stepper-padding-y) - 8px);
+  position: relative;
+  z-index: 10;
+}
+
+/* Shape: pill — pill shape behind steps */
+.stepper-wrap[data-shape="pill"] {
+  background: var(--stepper-bg);
+  border-radius: 999px;
+  padding: var(--stepper-padding-y) var(--stepper-padding-x);
+  box-shadow: var(--stepper-shadow);
+  margin-bottom: calc(-1 * var(--stepper-padding-y) - 4px);
+  position: relative;
+  z-index: 10;
+}
+
+/* Shape: underline — just a bottom border */
+.stepper-wrap[data-shape="underline"] {
+  padding: var(--stepper-padding-y) 0;
+  border-bottom: 2px solid var(--color-border-light);
+}
+
+/* Shape: none — no background shape, inline in cream */
+.stepper-wrap[data-shape="none"] {
+  padding: var(--stepper-padding-y) 0;
+}
+
+/* Shape: inset — recessed into the cream */
+.stepper-wrap[data-shape="inset"] {
+  background: rgba(0,0,0,0.03);
+  border-radius: var(--stepper-radius);
+  padding: var(--stepper-padding-y) var(--stepper-padding-x);
+  margin-bottom: 0;
+}
+
+/* === Stepper === */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--stepper-gap);
+}
+
+.step-item { display: flex; align-items: center; flex: 1; }
+.step-item:last-child { flex: 0; }
+
+.step-dot {
+  width: var(--dot-size); height: var(--dot-size); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-heading); font-weight: 700; font-size: var(--dot-font);
+  transition: all var(--transition-fast); flex-shrink: 0;
+}
+
+.step-dot.active { background: var(--color-primary); color: white; }
+.step-dot.done { background: rgba(232,118,75,0.15); color: var(--color-primary); }
+.step-dot.future { background: var(--color-bg-subtle); color: var(--color-text-secondary); }
+
+.step-text { margin-left: 8px; flex-shrink: 0; }
+.step-text .step-name { display: block; font-size: var(--label-size); font-weight: 600; line-height: 1.2; }
+.step-text .step-sub { display: block; font-size: var(--sublabel-size); font-weight: 300; line-height: 1.2; opacity: 0.7; }
+
+.step-text.active-text { color: var(--color-primary); }
+.step-text.done-text { color: var(--color-primary); }
+.step-text.future-text { color: var(--color-text-secondary); }
+
+.step-line {
+  flex: 1; height: var(--line-thickness); margin: 0 12px;
+  background: var(--color-border-light); border-radius: 1px;
+  position: relative; overflow: hidden;
+}
+.step-line .step-line-fill {
+  position: absolute; inset: 0; left: 0; border-radius: 1px;
+  background: rgba(232,118,75,0.3); transition: width 0.5s ease-out;
+}
+.step-line .step-line-fill.filled { width: 100%; }
+.step-line .step-line-fill.empty { width: 0%; }
+
+/* === Content Section === */
+.content-section {
+  background: var(--color-bg-white);
+  min-height: 400px;
+  position: relative;
+}
+
+.content-inner {
+  max-width: 900px; margin: 0 auto;
+  padding: var(--content-pt) 32px 48px 32px;
+}
+
+/* Decorative blob */
+.deco-blob {
+  position: absolute; top: 40px; left: -20px; width: 80px; height: 120px;
+  opacity: 0.15;
+}
+
+.content-inner h2 { font-size: 1.75rem; margin-bottom: 8px; }
+.content-inner .subtitle { color: var(--color-text-secondary); font-size: 15px; margin-bottom: 24px; }
+
+/* Upload zone placeholder */
+.upload-zone {
+  border: 2px dashed var(--color-border-light); border-radius: 12px;
+  padding: 48px; text-align: center; color: var(--color-text-secondary);
+}
+.upload-zone .upload-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
+.upload-zone .upload-text { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.upload-zone .upload-hint { font-size: 13px; margin-top: 4px; }
+
+/* Footer */
+.wizard-footer {
+  display: flex; justify-content: flex-end; align-items: center;
+  margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--color-border-light);
+}
+.footer-btn {
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  padding: 10px 20px; border-radius: 8px; cursor: pointer;
+  transition: all var(--transition-fast); display: inline-flex;
+  align-items: center; gap: 6px; border: none;
+  background: var(--color-primary); color: white;
+}
+.footer-btn:hover { background: var(--color-primary-hover); }
+
+/* Step selector for preview */
+.step-selector { display: flex; gap: 4px; margin-top: 8px; }
+.step-selector button {
+  font-family: var(--font-body); font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 4px; border: 1px solid var(--color-border-light);
+  background: var(--color-bg-white); cursor: pointer; color: var(--color-text-secondary);
+}
+.step-selector button.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('collapsed')" title="Toggle sidebar">☰</button>
+
+<div class="playground">
+  <!-- === SIDEBAR === -->
+  <div class="sidebar">
+    <h3>Stepper Playground</h3>
+
+    <!-- Presets -->
+    <div class="ctrl-section">
+      <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.05em;color:var(--color-text-secondary);margin-bottom:8px;">Presets</div>
+      <div class="preset-grid">
+        <button class="preset-btn active" data-preset="tab-bar">Tab bar</button>
+        <button class="preset-btn" data-preset="floating">Floating</button>
+        <button class="preset-btn" data-preset="pill">Pill</button>
+        <button class="preset-btn" data-preset="inset">Inset</button>
+        <button class="preset-btn" data-preset="underline">Underline</button>
+        <button class="preset-btn" data-preset="current">Huidig</button>
+      </div>
+    </div>
+
+    <!-- Active step -->
+    <details class="ctrl-section" open>
+      <summary>Active step</summary>
+      <div class="ctrl-group">
+        <div class="step-selector" id="step-selector">
+          <button class="active" data-step="1">Step 1</button>
+          <button data-step="2">Step 2</button>
+          <button data-step="3">Step 3</button>
+          <button data-step="4">Step 4</button>
+        </div>
+      </div>
+    </details>
+
+    <!-- Shape -->
+    <details class="ctrl-section" open>
+      <summary>Shape</summary>
+      <div class="ctrl-group">
+        <div class="ctrl-row">
+          <label>Shape type</label>
+          <select id="ctrl-shape">
+            <option value="tab-bar">Tab bar</option>
+            <option value="floating">Floating card</option>
+            <option value="pill">Pill</option>
+            <option value="inset">Inset</option>
+            <option value="underline">Underline</option>
+            <option value="none">None (current)</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label>Corner radius</label>
+          <input type="range" id="ctrl-radius" min="0" max="32" value="16" step="2">
+          <span class="range-val" id="val-radius">16px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Padding X</label>
+          <input type="range" id="ctrl-pad-x" min="0" max="40" value="24" step="4">
+          <span class="range-val" id="val-pad-x">24px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Padding Y</label>
+          <input type="range" id="ctrl-pad-y" min="4" max="24" value="12" step="2">
+          <span class="range-val" id="val-pad-y">12px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Background</label>
+          <select id="ctrl-stepper-bg">
+            <option value="white">White</option>
+            <option value="cream">Cream</option>
+            <option value="subtle">Subtle gray</option>
+            <option value="frost">Frosted glass</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label>Shadow</label>
+          <select id="ctrl-shadow">
+            <option value="subtle">Subtle</option>
+            <option value="medium">Medium</option>
+            <option value="strong">Strong</option>
+            <option value="none">None</option>
+            <option value="inner">Inner shadow</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label>Border</label>
+          <select id="ctrl-border">
+            <option value="none">None</option>
+            <option value="light">Light</option>
+            <option value="medium">Medium</option>
+            <option value="primary-subtle">Primary subtle</option>
+          </select>
+        </div>
+      </div>
+    </details>
+
+    <!-- Header -->
+    <details class="ctrl-section" open>
+      <summary>Header</summary>
+      <div class="ctrl-group">
+        <div class="ctrl-row">
+          <label>Title size</label>
+          <input type="range" id="ctrl-title-size" min="1.5" max="3.5" value="2.5" step="0.25">
+          <span class="range-val" id="val-title-size">2.5rem</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Title bottom margin</label>
+          <input type="range" id="ctrl-title-mb" min="4" max="32" value="16" step="4">
+          <span class="range-val" id="val-title-mb">16px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Header bottom padding</label>
+          <input type="range" id="ctrl-header-pb" min="0" max="40" value="12" step="4">
+          <span class="range-val" id="val-header-pb">12px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Content top padding</label>
+          <input type="range" id="ctrl-content-pt" min="16" max="56" value="32" step="4">
+          <span class="range-val" id="val-content-pt">32px</span>
+        </div>
+      </div>
+    </details>
+
+    <!-- Step dots -->
+    <details class="ctrl-section">
+      <summary>Step dots</summary>
+      <div class="ctrl-group">
+        <div class="ctrl-row">
+          <label>Dot size</label>
+          <input type="range" id="ctrl-dot-size" min="28" max="44" value="36" step="2">
+          <span class="range-val" id="val-dot-size">36px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Dot font size</label>
+          <input type="range" id="ctrl-dot-font" min="10" max="16" value="13" step="1">
+          <span class="range-val" id="val-dot-font">13px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Label size</label>
+          <input type="range" id="ctrl-label-size" min="10" max="16" value="13" step="1">
+          <span class="range-val" id="val-label-size">13px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Sub-label size</label>
+          <input type="range" id="ctrl-sublabel-size" min="9" max="13" value="11" step="1">
+          <span class="range-val" id="val-sublabel-size">11px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Line thickness</label>
+          <input type="range" id="ctrl-line-thick" min="1" max="4" value="2" step="1">
+          <span class="range-val" id="val-line-thick">2px</span>
+        </div>
+        <div class="ctrl-check">
+          <input type="checkbox" id="ctrl-show-sublabel" checked>
+          <label for="ctrl-show-sublabel">Show sub-labels</label>
+        </div>
+        <div class="ctrl-check">
+          <input type="checkbox" id="ctrl-show-check" checked>
+          <label for="ctrl-show-check">Checkmark for done steps</label>
+        </div>
+      </div>
+    </details>
+
+    <!-- Separator -->
+    <details class="ctrl-section">
+      <summary>Separator</summary>
+      <div class="ctrl-group">
+        <div class="ctrl-row">
+          <label>Separator style</label>
+          <select id="ctrl-separator">
+            <option value="none">None (seamless)</option>
+            <option value="line">Thin line</option>
+            <option value="shadow">Drop shadow</option>
+          </select>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- === PREVIEW === -->
+  <div class="preview">
+    <!-- Fake nav -->
+    <div class="fake-nav">
+      <div class="logo">
+        <svg viewBox="0 0 24 24"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>
+        hartverwarmers
+      </div>
+      <div class="nav-links">
+        <span>Alle initiatieven</span>
+        <span>Tools & inspiratie</span>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero" id="hero">
+      <div class="hero-inner">
+        <h1 id="title">Nieuwe fiche toevoegen</h1>
+
+        <!-- Stepper -->
+        <div class="stepper-wrap" id="stepper-wrap" data-shape="tab-bar">
+          <div class="stepper" id="stepper">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Separator -->
+    <div id="separator"></div>
+
+    <!-- Content -->
+    <div class="content-section" id="content-section">
+      <div class="content-inner" id="content-inner">
+        <!-- Step 1 content -->
+        <div id="step-content-1">
+          <h2>Upload je bestanden</h2>
+          <p class="subtitle">Upload je bestanden — we analyseren de tekst en doen suggesties.</p>
+          <div class="upload-zone">
+            <div class="upload-icon">&#8679;</div>
+            <div class="upload-text">Sleep bestanden hierheen of klik om te bladeren</div>
+            <div class="upload-hint">PDF, PPTX, DOCX, afbeeldingen — max 50MB per bestand</div>
+          </div>
+          <div class="wizard-footer">
+            <button class="footer-btn">Verder zonder bestand &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Step 2 content -->
+        <div id="step-content-2" style="display:none;">
+          <h2>Kerngegevens</h2>
+          <p class="subtitle">Vul de basisgegevens van je fiche in.</p>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Titel</label>
+              <input type="text" style="width:100%;padding:8px 12px;border:1px solid var(--color-border-light);border-radius:8px;font-family:var(--font-body);font-size:14px;" placeholder="bijv. Muziekbingo voor bewoners">
+            </div>
+            <div>
+              <label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Initiatief</label>
+              <select style="width:100%;padding:8px 12px;border:1px solid var(--color-border-light);border-radius:8px;font-family:var(--font-body);font-size:14px;">
+                <option>Kies een initiatief...</option>
+              </select>
+            </div>
+          </div>
+          <div class="wizard-footer">
+            <button class="footer-btn">Verder &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Step 3 content -->
+        <div id="step-content-3" style="display:none;">
+          <h2>Inhoud</h2>
+          <p class="subtitle">Schrijf de inhoud van je fiche, of neem de suggesties over.</p>
+          <div style="border:2px dashed var(--color-border-light);border-radius:12px;padding:32px;text-align:center;color:var(--color-text-secondary);">
+            Stap 3 inhoud (zie step3 playground)
+          </div>
+          <div class="wizard-footer">
+            <button class="footer-btn">Publiceer</button>
+          </div>
+        </div>
+
+        <!-- Step 4 content -->
+        <div id="step-content-4" style="display:none;">
+          <div style="text-align:center;padding:48px 0;">
+            <div style="font-size:48px;margin-bottom:12px;">&#10084;</div>
+            <h2>Gelukt!</h2>
+            <p class="subtitle">Je fiche is gepubliceerd.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const steps = [
+  { num: 1, name: 'Bestanden', sub: 'opladen' },
+  { num: 2, name: 'Kerngegevens', sub: 'invullen' },
+  { num: 3, name: 'Fiche', sub: 'uitwerken' },
+  { num: 4, name: 'Resultaat', sub: 'bewonderen' },
+];
+
+let activeStep = 1;
+let showSublabel = true;
+let showCheck = true;
+
+function renderStepper() {
+  const container = document.getElementById('stepper');
+  container.innerHTML = steps.map((s, i) => {
+    const state = s.num < activeStep ? 'done' : s.num === activeStep ? 'active' : 'future';
+    const textClass = state + '-text';
+    const lineFill = s.num < activeStep ? 'filled' : 'empty';
+
+    let dotContent = s.num;
+    if (state === 'done' && showCheck) {
+      dotContent = '<svg xmlns="http://www.w3.org/2000/svg" style="width:60%;height:60%;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>';
+    } else if (state === 'active' && s.num === 4) {
+      dotContent = '<svg xmlns="http://www.w3.org/2000/svg" style="width:55%;height:55%;" fill="currentColor" viewBox="0 0 24 24"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>';
+    }
+
+    const sublabelHtml = showSublabel ? `<span class="step-sub">${s.sub}</span>` : '';
+    const lineHtml = i < steps.length - 1
+      ? `<div class="step-line"><div class="step-line-fill ${lineFill}"></div></div>`
+      : '';
+
+    return `<div class="step-item">
+      <div class="step-dot ${state}">${dotContent}</div>
+      <div class="step-text ${textClass}">
+        <span class="step-name">${s.name}</span>
+        ${sublabelHtml}
+      </div>
+      ${lineHtml}
+    </div>`;
+  }).join('');
+}
+
+// Step selector
+document.querySelectorAll('#step-selector button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    activeStep = parseInt(btn.dataset.step);
+    document.querySelectorAll('#step-selector button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderStepper();
+    // Show correct content
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById('step-content-' + i).style.display = i === activeStep ? '' : 'none';
+    }
+  });
+});
+
+// Presets
+const presets = {
+  'tab-bar': {
+    'ctrl-shape': 'tab-bar', 'ctrl-radius': 16, 'ctrl-pad-x': 24, 'ctrl-pad-y': 12,
+    'ctrl-stepper-bg': 'white', 'ctrl-shadow': 'subtle', 'ctrl-border': 'none',
+    'ctrl-title-size': 2.5, 'ctrl-title-mb': 16, 'ctrl-header-pb': 12, 'ctrl-content-pt': 32,
+    'ctrl-dot-size': 36, 'ctrl-dot-font': 13, 'ctrl-label-size': 13, 'ctrl-sublabel-size': 11,
+    'ctrl-line-thick': 2, 'ctrl-show-sublabel': true, 'ctrl-show-check': true,
+    'ctrl-separator': 'none'
+  },
+  'floating': {
+    'ctrl-shape': 'floating', 'ctrl-radius': 14, 'ctrl-pad-x': 28, 'ctrl-pad-y': 14,
+    'ctrl-stepper-bg': 'white', 'ctrl-shadow': 'medium', 'ctrl-border': 'none',
+    'ctrl-title-size': 2.5, 'ctrl-title-mb': 20, 'ctrl-header-pb': 24, 'ctrl-content-pt': 36,
+    'ctrl-dot-size': 36, 'ctrl-dot-font': 13, 'ctrl-label-size': 13, 'ctrl-sublabel-size': 11,
+    'ctrl-line-thick': 2, 'ctrl-show-sublabel': true, 'ctrl-show-check': true,
+    'ctrl-separator': 'none'
+  },
+  'pill': {
+    'ctrl-shape': 'pill', 'ctrl-radius': 999, 'ctrl-pad-x': 32, 'ctrl-pad-y': 10,
+    'ctrl-stepper-bg': 'white', 'ctrl-shadow': 'subtle', 'ctrl-border': 'none',
+    'ctrl-title-size': 2.25, 'ctrl-title-mb': 16, 'ctrl-header-pb': 20, 'ctrl-content-pt': 32,
+    'ctrl-dot-size': 32, 'ctrl-dot-font': 12, 'ctrl-label-size': 12, 'ctrl-sublabel-size': 10,
+    'ctrl-line-thick': 2, 'ctrl-show-sublabel': false, 'ctrl-show-check': true,
+    'ctrl-separator': 'none'
+  },
+  'inset': {
+    'ctrl-shape': 'inset', 'ctrl-radius': 12, 'ctrl-pad-x': 20, 'ctrl-pad-y': 12,
+    'ctrl-stepper-bg': 'subtle', 'ctrl-shadow': 'inner', 'ctrl-border': 'none',
+    'ctrl-title-size': 2.5, 'ctrl-title-mb': 16, 'ctrl-header-pb': 16, 'ctrl-content-pt': 32,
+    'ctrl-dot-size': 36, 'ctrl-dot-font': 13, 'ctrl-label-size': 13, 'ctrl-sublabel-size': 11,
+    'ctrl-line-thick': 2, 'ctrl-show-sublabel': true, 'ctrl-show-check': true,
+    'ctrl-separator': 'line'
+  },
+  'underline': {
+    'ctrl-shape': 'underline', 'ctrl-radius': 0, 'ctrl-pad-x': 0, 'ctrl-pad-y': 12,
+    'ctrl-stepper-bg': 'white', 'ctrl-shadow': 'none', 'ctrl-border': 'none',
+    'ctrl-title-size': 2.5, 'ctrl-title-mb': 12, 'ctrl-header-pb': 8, 'ctrl-content-pt': 32,
+    'ctrl-dot-size': 36, 'ctrl-dot-font': 13, 'ctrl-label-size': 13, 'ctrl-sublabel-size': 11,
+    'ctrl-line-thick': 2, 'ctrl-show-sublabel': true, 'ctrl-show-check': true,
+    'ctrl-separator': 'line'
+  },
+  'current': {
+    'ctrl-shape': 'none', 'ctrl-radius': 0, 'ctrl-pad-x': 0, 'ctrl-pad-y': 8,
+    'ctrl-stepper-bg': 'white', 'ctrl-shadow': 'none', 'ctrl-border': 'none',
+    'ctrl-title-size': 3, 'ctrl-title-mb': 24, 'ctrl-header-pb': 28, 'ctrl-content-pt': 48,
+    'ctrl-dot-size': 40, 'ctrl-dot-font': 14, 'ctrl-label-size': 14, 'ctrl-sublabel-size': 12,
+    'ctrl-line-thick': 2, 'ctrl-show-sublabel': true, 'ctrl-show-check': true,
+    'ctrl-separator': 'line'
+  }
+};
+
+function applyPreset(name) {
+  const p = presets[name];
+  if (!p) return;
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset === name));
+  for (const [id, val] of Object.entries(p)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (el.type === 'checkbox') el.checked = val;
+    else if (el.type === 'range') el.value = val;
+    else el.value = val;
+  }
+  applyAll();
+}
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+});
+
+const shadowMap = {
+  subtle: '0 -2px 12px rgba(60,40,20,0.04)',
+  medium: '0 2px 16px rgba(60,40,20,0.08)',
+  strong: '0 4px 24px rgba(60,40,20,0.12)',
+  none: 'none',
+  inner: 'inset 0 1px 4px rgba(60,40,20,0.06)'
+};
+
+const bgMap = {
+  white: 'var(--color-bg-white)',
+  cream: 'var(--color-bg-cream)',
+  subtle: 'var(--color-bg-subtle)',
+  frost: 'rgba(255,255,255,0.85)'
+};
+
+const borderMap = {
+  none: 'none',
+  light: '1px solid var(--color-border-light)',
+  medium: '1px solid var(--color-border-hover)',
+  'primary-subtle': '1px solid rgba(232,118,75,0.2)'
+};
+
+function applyAll() {
+  const root = document.documentElement.style;
+  const shape = document.getElementById('ctrl-shape').value;
+  const radius = document.getElementById('ctrl-radius').value;
+  const padX = document.getElementById('ctrl-pad-x').value;
+  const padY = document.getElementById('ctrl-pad-y').value;
+  const stepperBg = document.getElementById('ctrl-stepper-bg').value;
+  const shadow = document.getElementById('ctrl-shadow').value;
+  const border = document.getElementById('ctrl-border').value;
+  const titleSize = document.getElementById('ctrl-title-size').value;
+  const titleMb = document.getElementById('ctrl-title-mb').value;
+  const headerPb = document.getElementById('ctrl-header-pb').value;
+  const contentPt = document.getElementById('ctrl-content-pt').value;
+  const dotSize = document.getElementById('ctrl-dot-size').value;
+  const dotFont = document.getElementById('ctrl-dot-font').value;
+  const labelSize = document.getElementById('ctrl-label-size').value;
+  const sublabelSize = document.getElementById('ctrl-sublabel-size').value;
+  const lineThick = document.getElementById('ctrl-line-thick').value;
+  showSublabel = document.getElementById('ctrl-show-sublabel').checked;
+  showCheck = document.getElementById('ctrl-show-check').checked;
+  const separator = document.getElementById('ctrl-separator').value;
+
+  root.setProperty('--stepper-radius', radius + 'px');
+  root.setProperty('--stepper-padding-x', padX + 'px');
+  root.setProperty('--stepper-padding-y', padY + 'px');
+  root.setProperty('--stepper-bg', bgMap[stepperBg] || bgMap.white);
+  root.setProperty('--stepper-shadow', shadowMap[shadow] || 'none');
+  root.setProperty('--title-size', titleSize + 'rem');
+  root.setProperty('--title-mb', titleMb + 'px');
+  root.setProperty('--header-pb', headerPb + 'px');
+  root.setProperty('--content-pt', contentPt + 'px');
+  root.setProperty('--dot-size', dotSize + 'px');
+  root.setProperty('--dot-font', dotFont + 'px');
+  root.setProperty('--label-size', labelSize + 'px');
+  root.setProperty('--sublabel-size', sublabelSize + 'px');
+  root.setProperty('--line-thickness', lineThick + 'px');
+
+  // Shape
+  document.getElementById('stepper-wrap').dataset.shape = shape;
+
+  // Border on stepper-wrap
+  const wrap = document.getElementById('stepper-wrap');
+  wrap.style.border = borderMap[border] || 'none';
+
+  // Frost backdrop
+  if (stepperBg === 'frost') {
+    wrap.style.backdropFilter = 'blur(12px)';
+    wrap.style.webkitBackdropFilter = 'blur(12px)';
+  } else {
+    wrap.style.backdropFilter = '';
+    wrap.style.webkitBackdropFilter = '';
+  }
+
+  // Shadow override for inset
+  if (shape === 'inset') {
+    wrap.style.boxShadow = shadowMap[shadow] || shadowMap.inner;
+  } else {
+    wrap.style.boxShadow = '';
+  }
+
+  // Separator
+  const sep = document.getElementById('separator');
+  if (separator === 'line') {
+    sep.style.cssText = 'height:1px;background:var(--color-border-light);';
+  } else if (separator === 'shadow') {
+    sep.style.cssText = 'height:0;box-shadow:0 2px 8px rgba(60,40,20,0.06);position:relative;z-index:0;';
+  } else {
+    sep.style.cssText = '';
+  }
+
+  // Range value displays
+  document.getElementById('val-radius').textContent = radius + 'px';
+  document.getElementById('val-pad-x').textContent = padX + 'px';
+  document.getElementById('val-pad-y').textContent = padY + 'px';
+  document.getElementById('val-title-size').textContent = titleSize + 'rem';
+  document.getElementById('val-title-mb').textContent = titleMb + 'px';
+  document.getElementById('val-header-pb').textContent = headerPb + 'px';
+  document.getElementById('val-content-pt').textContent = contentPt + 'px';
+  document.getElementById('val-dot-size').textContent = dotSize + 'px';
+  document.getElementById('val-dot-font').textContent = dotFont + 'px';
+  document.getElementById('val-label-size').textContent = labelSize + 'px';
+  document.getElementById('val-sublabel-size').textContent = sublabelSize + 'px';
+  document.getElementById('val-line-thick').textContent = lineThick + 'px';
+
+  renderStepper();
+}
+
+// Bind controls
+document.querySelectorAll('.sidebar select, .sidebar input[type="range"], .sidebar input[type="checkbox"]').forEach(el => {
+  el.addEventListener('input', () => {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    applyAll();
+  });
+});
+
+// Initial render
+renderStepper();
+applyAll();
+</script>
+</body>
+</html>

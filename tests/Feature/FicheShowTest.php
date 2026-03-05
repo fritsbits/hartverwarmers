@@ -96,7 +96,6 @@ class FicheShowTest extends TestCase
             'materials' => [
                 'duration' => '45 minuten',
                 'group_size' => '6-8 personen',
-                'materials' => 'Papier, verf, penselen',
             ],
         ]);
 
@@ -105,7 +104,6 @@ class FicheShowTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('45 minuten');
         $response->assertSee('6-8 personen');
-        $response->assertSee('Papier, verf, penselen');
     }
 
     public function test_fiche_show_displays_files(): void
@@ -232,13 +230,12 @@ class FicheShowTest extends TestCase
         $response->assertDontSee('Praktische informatie');
     }
 
-    public function test_fiche_show_displays_materials_meta_in_practical_section(): void
+    public function test_fiche_show_displays_practical_sections_without_materials_meta(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create([
             'initiative_id' => $initiative->id,
             'materials' => [
-                'materials' => 'Papier, verf, penselen',
                 'preparation' => '<p>Leg alles klaar.</p>',
             ],
             'practical_tips' => null,
@@ -248,9 +245,8 @@ class FicheShowTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Praktische informatie');
-        $response->assertSee('Materiaal');
-        $response->assertSee('Papier, verf, penselen');
         $response->assertSee('Voorbereiding');
+        $response->assertDontSee('Materiaal');
     }
 
     public function test_fiche_show_displays_file_preview_carousel_when_files_exist(): void

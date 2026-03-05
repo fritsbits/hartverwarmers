@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playground — Step 3 Inhoud</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700" rel="stylesheet">
+<style>
+/* === Design Tokens (from app.css) === */
+:root {
+  --color-primary: #E8764B;
+  --color-primary-hover: #D4683F;
+  --color-secondary: #4CB7C5;
+  --color-yellow: #F4C44E;
+  --color-text-primary: #231E1A;
+  --color-text-secondary: #756C65;
+  --color-bg-white: #FFFFFF;
+  --color-bg-subtle: #F5F0EC;
+  --color-bg-base: #FFFFFF;
+  --color-bg-cream: #FEF8F4;
+  --color-bg-accent-light: #FDF3EE;
+  --color-border-light: #EBE4DE;
+  --color-border-hover: #DDD5CD;
+  --font-heading: 'Aleo', system-ui, serif;
+  --font-body: 'Fira Sans', system-ui, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-full: 9999px;
+  --shadow-card: 0 2px 8px rgba(60,40,20,0.05);
+  --shadow-card-hover: 0 4px 16px rgba(60,40,20,0.10);
+  --transition-fast: 0.2s ease;
+
+  /* Playground tweakable vars */
+  --sb-border-style: dashed;
+  --sb-border-width: 2px;
+  --sb-border-color: rgba(232,118,75,0.3);
+  --sb-bg: var(--color-bg-cream);
+  --sb-radius: 8px;
+  --sb-padding: 16px;
+  --sb-label-size: 12px;
+  --sb-content-size: 14px;
+  --sb-h4-size: 16px;
+  --sb-col-gap: 16px;
+  --sb-group-gap: 32px;
+  --sb-btn-size: 12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-text-primary);
+  background: var(--color-bg-subtle);
+  height: 100%;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+/* === Layout === */
+.playground {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* === Sidebar === */
+.sidebar {
+  width: 320px;
+  min-width: 320px;
+  background: var(--color-bg-white);
+  border-right: 1px solid var(--color-border-light);
+  overflow-y: auto;
+  padding: 20px;
+  transition: margin-left 0.25s ease;
+  flex-shrink: 0;
+}
+
+.sidebar.collapsed {
+  margin-left: -320px;
+}
+
+.sidebar-toggle {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-light);
+  background: var(--color-bg-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--color-text-secondary);
+  box-shadow: var(--shadow-card);
+}
+
+.sidebar h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--color-primary);
+}
+
+.ctrl-section {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 16px;
+}
+
+.ctrl-section:last-child { border-bottom: none; }
+
+.ctrl-section summary {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+}
+
+.ctrl-section[open] summary { color: var(--color-primary); }
+
+.ctrl-group {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ctrl-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ctrl-row label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.ctrl-row select, .ctrl-row input[type="range"], .ctrl-row input[type="color"] {
+  flex: 1;
+  max-width: 160px;
+}
+
+select {
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 4px 6px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  background: var(--color-bg-white);
+}
+
+input[type="range"] {
+  accent-color: var(--color-primary);
+}
+
+input[type="color"] {
+  width: 32px;
+  height: 28px;
+  border: 1px solid var(--color-border-light);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 1px;
+}
+
+/* Preset buttons */
+.preset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.preset-btn {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-light);
+  background: var(--color-bg-white);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--color-text-primary);
+}
+
+.preset-btn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-bg-accent-light);
+}
+
+.preset-btn.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: white;
+}
+
+/* Checkbox row */
+.ctrl-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ctrl-check input[type="checkbox"] {
+  accent-color: var(--color-primary);
+}
+
+.ctrl-check label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+/* Range value display */
+.range-val {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  min-width: 32px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* === Preview Panel === */
+.preview {
+  flex: 1;
+  overflow-y: auto;
+  padding: 40px;
+  background: var(--color-bg-white);
+}
+
+.preview-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Step indicator */
+.step-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.step-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 14px;
+  border: 2px solid var(--color-border-light);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-white);
+}
+
+.step-dot.done {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.step-dot.active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-bg-accent-light);
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--color-border-light);
+  max-width: 40px;
+}
+
+.step-line.done { background: var(--color-primary); }
+
+/* Processing banner */
+.processing-banner {
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(232,118,75,0.2);
+  background: rgba(232,118,75,0.05);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.processing-banner svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-primary);
+  animation: spin 1.5s linear infinite;
+  flex-shrink: 0;
+}
+
+.processing-banner span {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Content fields */
+.content-fields {
+  display: flex;
+  flex-direction: column;
+}
+
+.field-group h4 {
+  font-size: var(--sb-h4-size);
+  margin-bottom: 4px;
+}
+
+.field-desc {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sb-col-gap);
+}
+
+/* Column labels */
+.col-label {
+  font-size: var(--sb-label-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}
+
+.col-label.suggestion {
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Label style variants */
+.col-label.style-uppercase-wide {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.col-label.style-uppercase {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.col-label.style-title-case {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: calc(var(--sb-label-size) + 1px);
+}
+
+.col-label.style-hidden {
+  display: none;
+}
+
+/* Sparkle icon */
+.sparkle-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Dot icon */
+.dot-icon {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* Textarea */
+.fake-textarea {
+  width: 100%;
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-white);
+  resize: vertical;
+  line-height: 1.5;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.fake-textarea:focus {
+  border-color: var(--color-primary);
+}
+
+/* Suggestion box */
+.suggestion-box {
+  padding: var(--sb-padding);
+  border-radius: var(--sb-radius);
+  background: var(--sb-bg);
+  font-size: var(--sb-content-size);
+  transition: all var(--transition-fast);
+}
+
+/* Border treatments */
+.suggestion-box[data-border="dashed"] {
+  border: var(--sb-border-width) dashed var(--sb-border-color);
+}
+
+.suggestion-box[data-border="solid"] {
+  border: var(--sb-border-width) solid var(--sb-border-color);
+}
+
+.suggestion-box[data-border="dotted"] {
+  border: var(--sb-border-width) dotted var(--sb-border-color);
+}
+
+.suggestion-box[data-border="none"] {
+  border: none;
+}
+
+.suggestion-box[data-border="left-accent"] {
+  border: none;
+  border-left: 3px solid var(--color-primary);
+}
+
+.suggestion-box[data-border="shadow"] {
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-card);
+}
+
+/* Prose inside suggestion */
+.suggestion-prose {
+  line-height: 1.6;
+}
+
+.suggestion-prose p {
+  margin: 0.5em 0;
+}
+
+.suggestion-prose p:first-child { margin-top: 0; }
+
+.suggestion-prose ul, .suggestion-prose ol {
+  margin: 0.5em 0;
+  padding-left: 1.25em;
+}
+
+.suggestion-prose li {
+  margin: 0.25em 0;
+}
+
+.suggestion-prose strong {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* Suggestion text color variants */
+.suggestion-box.text-muted .suggestion-prose {
+  color: rgba(35, 30, 26, 0.7);
+}
+.suggestion-box.text-muted .suggestion-prose strong {
+  color: rgba(35, 30, 26, 0.8);
+}
+.suggestion-box.text-light .suggestion-prose {
+  color: rgba(35, 30, 26, 0.5);
+}
+.suggestion-box.text-light .suggestion-prose strong {
+  color: rgba(35, 30, 26, 0.6);
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn {
+  font-family: var(--font-body);
+  font-size: var(--sb-btn-size);
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+  line-height: 1.4;
+}
+
+/* Button size variants */
+.btn.size-xs { font-size: 12px; padding: 4px 10px; }
+.btn.size-sm { font-size: 13px; padding: 6px 14px; }
+.btn.size-md { font-size: 14px; padding: 8px 16px; }
+
+/* Overnemen variants */
+.btn-apply.style-primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-apply.style-primary:hover { background: var(--color-primary-hover); }
+
+.btn-apply.style-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+}
+
+.btn-apply.style-outline:hover { background: rgba(232,118,75,0.08); }
+
+.btn-apply.style-soft {
+  background: rgba(232,118,75,0.12);
+  color: var(--color-primary);
+}
+
+.btn-apply.style-soft:hover { background: rgba(232,118,75,0.2); }
+
+.btn-apply.style-pill {
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--radius-full);
+}
+
+.btn-apply.style-pill:hover { background: var(--color-primary-hover); }
+
+/* Negeren variants */
+.btn-dismiss.style-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-light);
+}
+
+.btn-dismiss.style-ghost:hover { background: var(--color-bg-subtle); }
+
+.btn-dismiss.style-text-only {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: none;
+}
+
+.btn-dismiss.style-text-only:hover { color: var(--color-text-primary); }
+
+.btn-dismiss.style-outline {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1.5px solid var(--color-border-light);
+}
+
+.btn-dismiss.style-outline:hover { border-color: var(--color-border-hover); }
+
+/* Footer */
+.wizard-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.footer-btn {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.footer-btn.ghost {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+}
+
+.footer-btn.ghost:hover { color: var(--color-text-primary); }
+
+.footer-btn.primary {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+}
+
+.footer-btn.primary:hover { background: var(--color-primary-hover); }
+
+/* Export section */
+.export-box {
+  margin-top: 10px;
+  position: relative;
+}
+
+.export-pre {
+  font-family: 'Fira Code', monospace, monospace;
+  font-size: 11px;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 10px 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 200px;
+  overflow-y: auto;
+  color: var(--color-text-primary);
+}
+
+.copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border-light);
+  background: var(--color-bg-white);
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.copy-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.copy-btn.copied { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+</style>
+</head>
+<body>
+
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('collapsed')" title="Toggle sidebar">☰</button>
+
+<div class="playground">
+  <!-- === SIDEBAR === -->
+  <div class="sidebar">
+    <h3>Step 3 Playground</h3>
+
+    <!-- Presets -->
+    <div class="ctrl-section">
+      <div style="font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.05em;color:var(--color-text-secondary);margin-bottom:8px;">Presets</div>
+      <div class="preset-grid">
+        <button class="preset-btn" data-preset="huidig">Huidig</button>
+        <button class="preset-btn active" data-preset="fluister">Fluister</button>
+        <button class="preset-btn" data-preset="zijlijn">Zijlijn</button>
+        <button class="preset-btn" data-preset="dimmed">Dimmed</button>
+      </div>
+    </div>
+
+    <!-- Suggestie-paneel -->
+    <details class="ctrl-section" open>
+      <summary>Suggestie-paneel</summary>
+      <div class="ctrl-group">
+        <div class="ctrl-row">
+          <label>Border style</label>
+          <select id="ctrl-border-style">
+            <option value="dashed">Dashed</option>
+            <option value="solid">Solid</option>
+            <option value="dotted">Dotted</option>
+            <option value="none">None</option>
+            <option value="left-accent">Left accent</option>
+            <option value="shadow">Shadow</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label>Border width</label>
+          <input type="range" id="ctrl-border-width" min="1" max="4" value="2" step="1">
+          <span class="range-val" id="val-border-width">2px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Border opacity</label>
+          <input type="range" id="ctrl-border-opacity" min="10" max="100" value="30" step="5">
+          <span class="range-val" id="val-border-opacity">30%</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Background</label>
+          <select id="ctrl-bg">
+            <option value="cream">Cream</option>
+            <option value="accent-light">Accent light</option>
+            <option value="white">White</option>
+            <option value="gradient">Warm gradient</option>
+            <option value="subtle">Subtle</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label>Text color</label>
+          <select id="ctrl-text-color">
+            <option value="normal">Normal</option>
+            <option value="muted">Muted (70%)</option>
+            <option value="light">Light (50%)</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label>Border radius</label>
+          <input type="range" id="ctrl-radius" min="0" max="20" value="8" step="2">
+          <span class="range-val" id="val-radius">8px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Padding</label>
+          <input type="range" id="ctrl-padding" min="8" max="28" value="16" step="2">
+          <span class="range-val" id="val-padding">16px</span>
+        </div>
+      </div>
+    </details>
+
+    <!-- Labels -->
+    <details class="ctrl-section" open>
+      <summary>Labels</summary>
+      <div class="ctrl-group">
+        <div class="ctrl-row">
+          <label>"Suggestie" style</label>
+          <select id="ctrl-label-style">
+            <option value="uppercase-wide">UPPERCASE wide</option>
+            <option value="uppercase">UPPERCASE</option>
+            <option value="title-case">Title case</option>
+            <option value="hidden">Hidden</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label>Label size</label>
+          <input type="range" id="ctrl-label-size" min="10" max="16" value="12" step="1">
+          <span class="range-val" id="val-label-size">12px</span>
+        </div>
+        <div class="ctrl-check">
+          <input type="checkbox" id="ctrl-show-jouw" checked>
+          <label for="ctrl-show-jouw">Show "Jouw versie" label</label>
+        </div>
+        <div class="ctrl-row">
+          <label>Icon</label>
+          <select id="ctrl-icon">
+            <option value="sparkle">Sparkle</option>
+            <option value="dot">Dot</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+      </div>
+    </details>
+
+    <!-- Inhoud -->
+    <details class="ctrl-section">
+      <summary>Inhoud</summary>
+      <div class="ctrl-group">
+        <div class="ctrl-row">
+          <label>Content font size</label>
+          <input type="range" id="ctrl-content-size" min="12" max="18" value="14" step="1">
+          <span class="range-val" id="val-content-size">14px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Field label (h4) size</label>
+          <input type="range" id="ctrl-h4-size" min="14" max="22" value="16" step="1">
+          <span class="range-val" id="val-h4-size">16px</span>
+        </div>
+        <div class="ctrl-check">
+          <input type="checkbox" id="ctrl-show-desc" checked>
+          <label for="ctrl-show-desc">Show field descriptions</label>
+        </div>
+      </div>
+    </details>
+
+    <!-- Layout -->
+    <details class="ctrl-section">
+      <summary>Layout</summary>
+      <div class="ctrl-group">
+        <div class="ctrl-row">
+          <label>Column gap</label>
+          <input type="range" id="ctrl-col-gap" min="8" max="32" value="16" step="4">
+          <span class="range-val" id="val-col-gap">16px</span>
+        </div>
+        <div class="ctrl-row">
+          <label>Group spacing</label>
+          <input type="range" id="ctrl-group-gap" min="16" max="48" value="32" step="4">
+          <span class="range-val" id="val-group-gap">32px</span>
+        </div>
+        <div class="ctrl-check">
+          <input type="checkbox" id="ctrl-show-banner" checked>
+          <label for="ctrl-show-banner">Show processing banner</label>
+        </div>
+      </div>
+    </details>
+
+    <!-- Knoppen -->
+    <details class="ctrl-section">
+      <summary>Knoppen</summary>
+      <div class="ctrl-group">
+        <div class="ctrl-row">
+          <label>Button size</label>
+          <select id="ctrl-btn-size">
+            <option value="xs">XS</option>
+            <option value="sm">SM</option>
+            <option value="md">MD</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label>"Overnemen" style</label>
+          <select id="ctrl-apply-style">
+            <option value="primary">Primary (filled)</option>
+            <option value="outline">Outline</option>
+            <option value="soft">Soft</option>
+            <option value="pill">Pill</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <label>"Negeren" style</label>
+          <select id="ctrl-dismiss-style">
+            <option value="ghost">Ghost</option>
+            <option value="text-only">Text only</option>
+            <option value="outline">Outline</option>
+          </select>
+        </div>
+      </div>
+    </details>
+
+    <!-- Export -->
+    <details class="ctrl-section">
+      <summary>Export</summary>
+      <div class="export-box">
+        <pre class="export-pre" id="export-output"></pre>
+        <button class="copy-btn" id="copy-btn" onclick="copyExport()">Copy</button>
+      </div>
+    </details>
+  </div>
+
+  <!-- === PREVIEW === -->
+  <div class="preview">
+    <div class="preview-inner">
+      <!-- Step progress -->
+      <div class="step-bar">
+        <div class="step-dot done">✓</div>
+        <div class="step-line done"></div>
+        <div class="step-dot done">✓</div>
+        <div class="step-line done"></div>
+        <div class="step-dot active">3</div>
+      </div>
+
+      <h2 style="font-size:1.875rem;margin-bottom:8px;">Inhoud</h2>
+      <p style="color:var(--color-text-secondary);margin-bottom:32px;">Schrijf de inhoud van je fiche, of neem de suggesties over.</p>
+
+      <!-- Processing banner -->
+      <div class="processing-banner" id="processing-banner">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183"/>
+        </svg>
+        <span>Suggesties worden gegenereerd...</span>
+      </div>
+
+      <!-- Content fields -->
+      <div class="content-fields" id="content-fields">
+        <!-- Filled by JS -->
+      </div>
+
+      <!-- Footer -->
+      <div class="wizard-footer">
+        <button class="footer-btn ghost">← Vorige</button>
+        <div style="display:flex;gap:12px;">
+          <button class="footer-btn ghost">Opslaan als concept</button>
+          <button class="footer-btn primary">🚀 Publiceer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// === Dummy content ===
+const fields = [
+  {
+    field: 'description',
+    label: 'Beschrijving',
+    description: 'Wat is je bedoeling met deze activiteit? Voor wie is ze bedoeld?',
+    placeholder: 'bijv. Een interactieve quiz waarbij bewoners liedjes herkennen uit hun jeugd en herinneringen ophalen aan vroeger.',
+    rows: 4,
+    suggestion: '<p>Een <strong>interactieve muziekquiz</strong> waarbij bewoners fragmenten van bekende liedjes uit de jaren \'50, \'60 en \'70 beluisteren. Deelnemers proberen het lied te herkennen en delen herinneringen die de muziek oproept.</p><p>Geschikt voor bewoners met en zonder cognitieve beperkingen — muziekherkenning blijft vaak lang behouden.</p>'
+  },
+  {
+    field: 'preparation',
+    label: 'Voorbereiding',
+    description: 'Wat moet er klaargezet of voorbereid worden?',
+    placeholder: 'bijv. Print de bingokaarten uit en test het geluid.',
+    rows: 4,
+    suggestion: '<ul><li>Stel een afspeellijst samen met <strong>15–20 herkenbare fragmenten</strong> (30 seconden per fragment)</li><li>Print de antwoordkaarten uit (grote letters, hoog contrast)</li><li>Test de geluidsinstallatie in de activiteitenruimte</li><li>Zet stoelen in een halve cirkel zodat iedereen de spreker kan zien</li></ul>'
+  },
+  {
+    field: 'inventory',
+    label: 'Benodigdheden',
+    description: 'Welke materialen heb je nodig?',
+    placeholder: 'bijv. Bingokaarten, stiften, muziekinstallatie.',
+    rows: 4,
+    suggestion: '<ul><li>Bluetooth-speaker of muziekinstallatie</li><li>Laptop of tablet met de afspeellijst</li><li>Geprinte antwoordkaarten (A4, grote letters)</li><li>Stiften of potloden</li><li>Kleine prijsjes (bijv. zakje drop, bloemetje)</li></ul>'
+  },
+  {
+    field: 'process',
+    label: 'Werkwijze',
+    description: 'Beschrijf stap voor stap hoe de activiteit verloopt.',
+    placeholder: 'bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment...',
+    rows: 6,
+    suggestion: '<ol><li><strong>Welkom</strong> — Verwelkom de deelnemers en leg kort de spelregels uit</li><li><strong>Opwarmer</strong> — Speel een zeer bekend lied volledig af om de sfeer te zetten</li><li><strong>Quizrondes</strong> — Speel fragmenten van 30 seconden. Deelnemers mogen roepen of schrijven</li><li><strong>Herinneringen delen</strong> — Na elk antwoord: vraag wie een herinnering heeft bij dit lied</li><li><strong>Pauze</strong> — Na 10 fragmenten een drankje en koekje</li><li><strong>Afsluiting</strong> — Speel het populairste lied nogmaals en reik de prijsjes uit</li></ol>'
+  },
+  {
+    field: 'materials',
+    label: 'Materiaal',
+    description: 'Welk materiaal lever je bij deze fiche?',
+    placeholder: 'bijv. Bingokaarten, muzieklijst',
+    rows: 3,
+    suggestion: '<p>Afspeellijst met 20 muziekfragmenten (Spotify-link), printbare antwoordkaarten (PDF), scoreformulier voor de begeleider</p>'
+  }
+];
+
+// === Render fields ===
+function renderFields() {
+  const container = document.getElementById('content-fields');
+  container.innerHTML = fields.map(f => `
+    <div class="field-group">
+      <h4>${f.label}</h4>
+      <p class="field-desc">${f.description}</p>
+      <div class="field-grid">
+        <div>
+          <div class="col-label jouw-label">Jouw versie</div>
+          <textarea class="fake-textarea" rows="${f.rows}" placeholder="${f.placeholder}"></textarea>
+        </div>
+        <div>
+          <div class="col-label suggestion suggestion-label">
+            <span class="icon-slot"></span>
+            <span class="label-text">Suggestie</span>
+          </div>
+          <div class="suggestion-box" data-border="dashed">
+            <div class="suggestion-prose">${f.suggestion}</div>
+            <div class="btn-row">
+              <button class="btn btn-apply">Overnemen</button>
+              <button class="btn btn-dismiss">Negeren</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderFields();
+
+// === Presets ===
+const presets = {
+  huidig: {
+    'ctrl-border-style': 'dashed', 'ctrl-border-width': 2, 'ctrl-border-opacity': 30,
+    'ctrl-bg': 'cream', 'ctrl-radius': 8, 'ctrl-padding': 16, 'ctrl-text-color': 'normal',
+    'ctrl-label-style': 'uppercase-wide', 'ctrl-label-size': 12, 'ctrl-show-jouw': true,
+    'ctrl-icon': 'sparkle', 'ctrl-content-size': 14, 'ctrl-h4-size': 16, 'ctrl-show-desc': true,
+    'ctrl-col-gap': 16, 'ctrl-group-gap': 32, 'ctrl-show-banner': true,
+    'ctrl-btn-size': 'xs', 'ctrl-apply-style': 'primary', 'ctrl-dismiss-style': 'ghost'
+  },
+  fluister: {
+    'ctrl-border-style': 'none', 'ctrl-border-width': 1, 'ctrl-border-opacity': 10,
+    'ctrl-bg': 'subtle', 'ctrl-radius': 8, 'ctrl-padding': 14, 'ctrl-text-color': 'muted',
+    'ctrl-label-style': 'hidden', 'ctrl-label-size': 11, 'ctrl-show-jouw': false,
+    'ctrl-icon': 'none', 'ctrl-content-size': 13, 'ctrl-h4-size': 16, 'ctrl-show-desc': true,
+    'ctrl-col-gap': 16, 'ctrl-group-gap': 28, 'ctrl-show-banner': true,
+    'ctrl-btn-size': 'xs', 'ctrl-apply-style': 'outline', 'ctrl-dismiss-style': 'text-only'
+  },
+  zijlijn: {
+    'ctrl-border-style': 'left-accent', 'ctrl-border-width': 2, 'ctrl-border-opacity': 100,
+    'ctrl-bg': 'white', 'ctrl-radius': 4, 'ctrl-padding': 16, 'ctrl-text-color': 'muted',
+    'ctrl-label-style': 'title-case', 'ctrl-label-size': 11, 'ctrl-show-jouw': true,
+    'ctrl-icon': 'none', 'ctrl-content-size': 14, 'ctrl-h4-size': 16, 'ctrl-show-desc': true,
+    'ctrl-col-gap': 16, 'ctrl-group-gap': 32, 'ctrl-show-banner': true,
+    'ctrl-btn-size': 'xs', 'ctrl-apply-style': 'outline', 'ctrl-dismiss-style': 'text-only'
+  },
+  dimmed: {
+    'ctrl-border-style': 'solid', 'ctrl-border-width': 1, 'ctrl-border-opacity': 10,
+    'ctrl-bg': 'subtle', 'ctrl-radius': 8, 'ctrl-padding': 14, 'ctrl-text-color': 'light',
+    'ctrl-label-style': 'uppercase', 'ctrl-label-size': 10, 'ctrl-show-jouw': true,
+    'ctrl-icon': 'dot', 'ctrl-content-size': 13, 'ctrl-h4-size': 16, 'ctrl-show-desc': true,
+    'ctrl-col-gap': 16, 'ctrl-group-gap': 28, 'ctrl-show-banner': true,
+    'ctrl-btn-size': 'xs', 'ctrl-apply-style': 'soft', 'ctrl-dismiss-style': 'text-only'
+  }
+};
+
+// === Apply preset ===
+function applyPreset(name) {
+  const p = presets[name];
+  if (!p) return;
+
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset === name));
+
+  // Set control values
+  for (const [id, val] of Object.entries(p)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (el.type === 'checkbox') {
+      el.checked = val;
+    } else if (el.type === 'range') {
+      el.value = val;
+    } else {
+      el.value = val;
+    }
+  }
+
+  applyAll();
+}
+
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+});
+
+// === Background map ===
+const bgMap = {
+  cream: 'var(--color-bg-cream)',
+  'accent-light': 'var(--color-bg-accent-light)',
+  white: 'var(--color-bg-white)',
+  gradient: 'linear-gradient(135deg, var(--color-bg-cream) 0%, var(--color-bg-accent-light) 100%)',
+  subtle: 'var(--color-bg-subtle)'
+};
+
+// === Apply all controls ===
+function applyAll() {
+  const root = document.documentElement.style;
+  const borderStyle = document.getElementById('ctrl-border-style').value;
+  const borderWidth = document.getElementById('ctrl-border-width').value;
+  const borderOpacity = document.getElementById('ctrl-border-opacity').value;
+  const bg = document.getElementById('ctrl-bg').value;
+  const radius = document.getElementById('ctrl-radius').value;
+  const padding = document.getElementById('ctrl-padding').value;
+  const labelStyle = document.getElementById('ctrl-label-style').value;
+  const labelSize = document.getElementById('ctrl-label-size').value;
+  const showJouw = document.getElementById('ctrl-show-jouw').checked;
+  const icon = document.getElementById('ctrl-icon').value;
+  const contentSize = document.getElementById('ctrl-content-size').value;
+  const h4Size = document.getElementById('ctrl-h4-size').value;
+  const showDesc = document.getElementById('ctrl-show-desc').checked;
+  const colGap = document.getElementById('ctrl-col-gap').value;
+  const groupGap = document.getElementById('ctrl-group-gap').value;
+  const showBanner = document.getElementById('ctrl-show-banner').checked;
+  const textColor = document.getElementById('ctrl-text-color').value;
+  const btnSize = document.getElementById('ctrl-btn-size').value;
+  const applyStyle = document.getElementById('ctrl-apply-style').value;
+  const dismissStyle = document.getElementById('ctrl-dismiss-style').value;
+
+  // CSS vars
+  root.setProperty('--sb-border-width', borderWidth + 'px');
+  root.setProperty('--sb-border-color', `rgba(232,118,75,${borderOpacity / 100})`);
+  root.setProperty('--sb-radius', radius + 'px');
+  root.setProperty('--sb-padding', padding + 'px');
+  root.setProperty('--sb-label-size', labelSize + 'px');
+  root.setProperty('--sb-content-size', contentSize + 'px');
+  root.setProperty('--sb-h4-size', h4Size + 'px');
+  root.setProperty('--sb-col-gap', colGap + 'px');
+  root.setProperty('--sb-group-gap', groupGap + 'px');
+
+  // Background (handle gradient separately)
+  const bgVal = bgMap[bg] || bgMap.cream;
+  if (bg === 'gradient') {
+    root.setProperty('--sb-bg', 'var(--color-bg-cream)');
+    document.querySelectorAll('.suggestion-box').forEach(el => el.style.background = bgVal);
+  } else {
+    root.setProperty('--sb-bg', bgVal);
+    document.querySelectorAll('.suggestion-box').forEach(el => el.style.background = '');
+  }
+
+  // Border style attribute
+  document.querySelectorAll('.suggestion-box').forEach(el => {
+    el.dataset.border = borderStyle;
+    el.classList.remove('text-muted', 'text-light');
+    if (textColor !== 'normal') el.classList.add('text-' + textColor);
+  });
+
+  // Labels
+  document.querySelectorAll('.suggestion-label').forEach(el => {
+    el.className = 'col-label suggestion suggestion-label style-' + labelStyle;
+  });
+
+  document.querySelectorAll('.jouw-label').forEach(el => {
+    el.style.display = showJouw ? '' : 'none';
+  });
+
+  // Icon
+  document.querySelectorAll('.icon-slot').forEach(slot => {
+    if (icon === 'sparkle') {
+      slot.innerHTML = '<svg class="sparkle-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>';
+    } else if (icon === 'dot') {
+      slot.innerHTML = '<span class="dot-icon"></span>';
+    } else {
+      slot.innerHTML = '';
+    }
+  });
+
+  // Descriptions
+  document.querySelectorAll('.field-desc').forEach(el => {
+    el.style.display = showDesc ? '' : 'none';
+  });
+
+  // Processing banner
+  document.getElementById('processing-banner').style.display = showBanner ? '' : 'none';
+
+  // Group spacing
+  document.getElementById('content-fields').style.gap = groupGap + 'px';
+
+  // Buttons
+  document.querySelectorAll('.btn-apply').forEach(el => {
+    el.className = `btn btn-apply size-${btnSize} style-${applyStyle}`;
+  });
+
+  document.querySelectorAll('.btn-dismiss').forEach(el => {
+    el.className = `btn btn-dismiss size-${btnSize} style-${dismissStyle}`;
+  });
+
+  // Range value displays
+  document.getElementById('val-border-width').textContent = borderWidth + 'px';
+  document.getElementById('val-border-opacity').textContent = borderOpacity + '%';
+  document.getElementById('val-radius').textContent = radius + 'px';
+  document.getElementById('val-padding').textContent = padding + 'px';
+  document.getElementById('val-label-size').textContent = labelSize + 'px';
+  document.getElementById('val-content-size').textContent = contentSize + 'px';
+  document.getElementById('val-h4-size').textContent = h4Size + 'px';
+  document.getElementById('val-col-gap').textContent = colGap + 'px';
+  document.getElementById('val-group-gap').textContent = groupGap + 'px';
+
+  updateExport();
+}
+
+// === Export ===
+function updateExport() {
+  const borderStyle = document.getElementById('ctrl-border-style').value;
+  const borderWidth = document.getElementById('ctrl-border-width').value;
+  const borderOpacity = document.getElementById('ctrl-border-opacity').value;
+  const bg = document.getElementById('ctrl-bg').value;
+  const radius = document.getElementById('ctrl-radius').value;
+  const padding = document.getElementById('ctrl-padding').value;
+  const labelStyle = document.getElementById('ctrl-label-style').value;
+  const labelSize = document.getElementById('ctrl-label-size').value;
+  const icon = document.getElementById('ctrl-icon').value;
+  const textColor = document.getElementById('ctrl-text-color').value;
+  const contentSize = document.getElementById('ctrl-content-size').value;
+  const h4Size = document.getElementById('ctrl-h4-size').value;
+  const btnSize = document.getElementById('ctrl-btn-size').value;
+  const applyBtnStyle = document.getElementById('ctrl-apply-style').value;
+  const dismissBtnStyle = document.getElementById('ctrl-dismiss-style').value;
+  const colGap = document.getElementById('ctrl-col-gap').value;
+  const groupGap = document.getElementById('ctrl-group-gap').value;
+
+  const bgCss = bg === 'gradient'
+    ? 'linear-gradient(135deg, var(--color-bg-cream), var(--color-bg-accent-light))'
+    : bgMap[bg] || 'var(--color-bg-cream)';
+
+  let borderCss = '';
+  switch (borderStyle) {
+    case 'dashed': case 'solid': case 'dotted':
+      borderCss = `border: ${borderWidth}px ${borderStyle} rgba(232,118,75,${borderOpacity/100});`;
+      break;
+    case 'left-accent':
+      borderCss = `border: none;\n  border-left: 3px solid var(--color-primary);`;
+      break;
+    case 'shadow':
+      borderCss = `border: 1px solid var(--color-border-light);\n  box-shadow: var(--shadow-card);`;
+      break;
+    case 'none':
+      borderCss = `border: none;`;
+      break;
+  }
+
+  const css = `/* Suggestion panel */
+.suggestion-box {
+  ${borderCss}
+  background: ${bgCss};
+  border-radius: ${radius}px;
+  padding: ${padding}px;
+  font-size: ${contentSize}px;
+}
+
+/* Text color: ${textColor} */
+/* Label: ${labelStyle}, ${labelSize}px, icon: ${icon} */
+/* Buttons: size=${btnSize}, apply=${applyBtnStyle}, dismiss=${dismissBtnStyle} */
+/* Layout: col-gap=${colGap}px, group-gap=${groupGap}px, h4=${h4Size}px */`;
+
+  document.getElementById('export-output').textContent = css;
+}
+
+function copyExport() {
+  const text = document.getElementById('export-output').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// === Bind all controls ===
+document.querySelectorAll('.sidebar select, .sidebar input[type="range"], .sidebar input[type="checkbox"]').forEach(el => {
+  el.addEventListener('input', () => {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    applyAll();
+  });
+});
+
+// Initial apply — default to Fluister preset
+applyPreset('fluister');
+</script>
+</body>
+</html>
