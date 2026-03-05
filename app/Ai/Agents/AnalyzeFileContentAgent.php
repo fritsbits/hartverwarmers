@@ -46,7 +46,6 @@ class AnalyzeFileContentAgent implements Agent, HasStructuredOutput
             'preparation' => $schema->string()->description('Voorbereidingsstappen in Markdown'),
             'inventory' => $schema->string()->description('Benodigdheden als Markdown-lijst'),
             'process' => $schema->string()->description('Stap-voor-stap werkwijze in Markdown'),
-            'materials_list' => $schema->string()->description('Kommagescheiden lijst van materialen'),
             'duration_estimate' => $schema->string()->description('Geschatte duur, bijv. "30-45 minuten"'),
             'group_size_estimate' => $schema->string()->description('Geschatte groepsgrootte, bijv. "4-8 personen"'),
             'suggested_themes' => $schema->array()->items($schema->string())->description('Voorgestelde thema-slugs ('.Tag::where('type', 'theme')->pluck('slug')->implode(', ').')'),

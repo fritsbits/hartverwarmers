@@ -113,25 +113,6 @@ class Fiche extends Model
     }
 
     /**
-     * Extract the "materials" metadata key for display in the practical info section.
-     *
-     * @return Attribute<array<int, array{label: string, value: string}>, never>
-     */
-    protected function materialsMeta(): Attribute
-    {
-        return Attribute::get(function (): array {
-            $materials = $this->materials ?? [];
-            $meta = [];
-
-            if (! empty($materials['materials'])) {
-                $meta[] = ['label' => 'Materiaal', 'value' => $materials['materials']];
-            }
-
-            return $meta;
-        });
-    }
-
-    /**
      * Wrap bare URLs in anchor tags, skipping URLs already inside href="...".
      */
     private static function autoLinkUrls(string $html): string

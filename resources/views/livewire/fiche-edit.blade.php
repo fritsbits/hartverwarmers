@@ -13,7 +13,7 @@
             <flux:field>
                 <flux:label class="text-base font-heading font-bold">Beschrijving</flux:label>
                 <flux:description class="text-sm">Wat is je bedoeling met deze activiteit? Voor wie is ze bedoeld?</flux:description>
-                <flux:textarea wire:model="description" class="text-base" rows="4" placeholder="bijv. Een interactieve quiz waarbij bewoners liedjes herkennen. Geschikt voor groepen van 8-15 personen." />
+                <flux:editor wire:model="description" toolbar="bold | bullet ordered | link" placeholder="bijv. Een interactieve quiz waarbij bewoners liedjes herkennen. Geschikt voor groepen van 8-15 personen." />
                 <flux:error name="description" />
             </flux:field>
         </div>
@@ -32,19 +32,19 @@
                     <flux:field>
                         <flux:label class="text-base font-heading font-bold">Voorbereiding</flux:label>
                         <flux:description class="text-sm">Wat moet er klaargezet of voorbereid worden?</flux:description>
-                        <flux:textarea wire:model="preparation" class="text-base" rows="4" placeholder="bijv. Print de bingokaarten uit en test het geluid van de muziekinstallatie." />
+                        <flux:editor wire:model="preparation" toolbar="bold | bullet ordered | link" placeholder="bijv. Print de bingokaarten uit en test het geluid van de muziekinstallatie." />
                     </flux:field>
 
                     <flux:field>
                         <flux:label class="text-base font-heading font-bold">Benodigdheden</flux:label>
                         <flux:description class="text-sm">Welke materialen heb je nodig?</flux:description>
-                        <flux:textarea wire:model="inventory" class="text-base" rows="4" placeholder="bijv. Bingokaarten, stiften, muziekinstallatie, prijsjes." />
+                        <flux:editor wire:model="inventory" toolbar="bold | bullet ordered | link" placeholder="bijv. Bingokaarten, stiften, muziekinstallatie, prijsjes." />
                     </flux:field>
 
                     <flux:field>
                         <flux:label class="text-base font-heading font-bold">Werkwijze</flux:label>
                         <flux:description class="text-sm">Beschrijf stap voor stap hoe de activiteit verloopt.</flux:description>
-                        <flux:textarea wire:model="process" class="text-base" rows="6" placeholder="bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment. 3. Laat bewoners het liedje raden..." />
+                        <flux:editor wire:model="process" toolbar="bold | bullet ordered | link" placeholder="bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment. 3. Laat bewoners het liedje raden..." />
                     </flux:field>
                 </div>
             </flux:tab.panel>
@@ -135,16 +135,7 @@
                     </flux:field>
                     @endfeature
 
-                    {{-- Theme tags --}}
-                    <flux:field>
-                        <flux:label class="text-base font-heading font-bold">Thema's</flux:label>
-                        <flux:description class="text-sm">Selecteer de thema's die bij deze activiteit passen.</flux:description>
-                        <flux:checkbox.group wire:model.live="selectedThemeTags" variant="pills">
-                            @foreach($allThemeTags as $tag)
-                                <flux:checkbox :value="$tag->id" :label="$tag->name" wire:key="theme-{{ $tag->id }}" />
-                            @endforeach
-                        </flux:checkbox.group>
-                    </flux:field>
+                    {{-- Theme tags (hidden from UI — suggestions still applied automatically) --}}
 
                     <hr class="border-[var(--color-border-light)]">
 

@@ -58,7 +58,7 @@ Static/semi-static content (tools, workshops, video lessons, roadmap) is stored 
 
 ### Routes
 
-All routes use Dutch URL slugs: `/initiatieven`, `/doelen`, `/bijdragers`, `/themas`, `/uitwerkingen`, `/profiel`. Route names are English: `initiatives.index`, `goals.show`, `contributors.index`, etc.
+All routes use Dutch URL slugs: `/initiatieven`, `/doelen`, `/bijdragers`, `/themas`, `/fiches`, `/profiel`. Route names are English: `initiatives.index`, `goals.show`, `contributors.index`, etc.
 
 ### CSS & Tailwind
 
