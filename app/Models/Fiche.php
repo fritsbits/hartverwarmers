@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Fiche extends Model
 {
@@ -122,6 +123,28 @@ class Fiche extends Model
             '<a href="$1" target="_blank" rel="noopener">$1</a>',
             $html,
         );
+    }
+
+    /**
+     * @return array<int, string> Up to $limit preview image URLs from attached files.
+     */
+    public function cardPreviewImages(int $limit = 3): array
+    {
+        $urls = [];
+
+        foreach ($this->files as $file) {
+            if (! $file->hasPreviewImages()) {
+                continue;
+            }
+            foreach ($file->preview_images as $path) {
+                $urls[] = Storage::url($path);
+                if (count($urls) >= $limit) {
+                    return $urls;
+                }
+            }
+        }
+
+        return $urls;
     }
 
     public function scopePublished($query)

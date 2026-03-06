@@ -4,14 +4,14 @@
         {{-- Top zone: Title + Description (always visible) --}}
         <div class="bg-white rounded-xl border border-[var(--color-border-light)] shadow-[var(--shadow-card)] p-6 space-y-6">
             <flux:field>
-                <flux:label class="text-base font-heading font-bold">Titel</flux:label>
+                <flux:label class="text-base font-body font-bold">Titel</flux:label>
                 <flux:description class="text-sm">Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
                 <flux:input wire:model="title" class="text-base" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
                 <flux:error name="title" />
             </flux:field>
 
             <flux:field>
-                <flux:label class="text-base font-heading font-bold">Beschrijving</flux:label>
+                <flux:label class="text-base font-body font-bold">Beschrijving</flux:label>
                 <flux:description class="text-sm">Wat is je bedoeling met deze activiteit? Voor wie is ze bedoeld?</flux:description>
                 <flux:editor wire:model="description" toolbar="bold | bullet ordered | link" placeholder="bijv. Een interactieve quiz waarbij bewoners liedjes herkennen. Geschikt voor groepen van 8-15 personen." />
                 <flux:error name="description" />
@@ -30,19 +30,19 @@
             <flux:tab.panel name="praktische-informatie">
                 <div class="space-y-6 pt-2">
                     <flux:field>
-                        <flux:label class="text-base font-heading font-bold">Voorbereiding</flux:label>
+                        <flux:label class="text-base font-body font-bold">Voorbereiding</flux:label>
                         <flux:description class="text-sm">Wat moet er klaargezet of voorbereid worden?</flux:description>
                         <flux:editor wire:model="preparation" toolbar="bold | bullet ordered | link" placeholder="bijv. Print de bingokaarten uit en test het geluid van de muziekinstallatie." />
                     </flux:field>
 
                     <flux:field>
-                        <flux:label class="text-base font-heading font-bold">Benodigdheden</flux:label>
+                        <flux:label class="text-base font-body font-bold">Benodigdheden</flux:label>
                         <flux:description class="text-sm">Welke materialen heb je nodig?</flux:description>
                         <flux:editor wire:model="inventory" toolbar="bold | bullet ordered | link" placeholder="bijv. Bingokaarten, stiften, muziekinstallatie, prijsjes." />
                     </flux:field>
 
                     <flux:field>
-                        <flux:label class="text-base font-heading font-bold">Werkwijze</flux:label>
+                        <flux:label class="text-base font-body font-bold">Werkwijze</flux:label>
                         <flux:description class="text-sm">Beschrijf stap voor stap hoe de activiteit verloopt.</flux:description>
                         <flux:editor wire:model="process" toolbar="bold | bullet ordered | link" placeholder="bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment. 3. Laat bewoners het liedje raden..." />
                     </flux:field>
@@ -93,13 +93,13 @@
                 <div class="space-y-6 pt-2">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <flux:field>
-                            <flux:label class="text-base font-heading font-bold">Duur</flux:label>
+                            <flux:label class="text-base font-body font-bold">Duur</flux:label>
                             <flux:description class="text-sm">Hoelang duurt het?</flux:description>
                             <flux:input wire:model="duration" class="text-base" placeholder="bijv. 30 min" />
                         </flux:field>
 
                         <flux:field>
-                            <flux:label class="text-base font-heading font-bold">Groepsgrootte</flux:label>
+                            <flux:label class="text-base font-body font-bold">Groepsgrootte</flux:label>
                             <flux:description class="text-sm">Voor hoeveel personen?</flux:description>
                             <flux:input wire:model="groupSize" class="text-base" placeholder="bijv. 4-8" />
                         </flux:field>
@@ -110,7 +110,7 @@
                     {{-- Goal tags --}}
                     @feature('diamant-goals')
                     <flux:field>
-                        <flux:label class="text-base font-heading font-bold">DIAMANT-doelen</flux:label>
+                        <flux:label class="text-base font-body font-bold">DIAMANT-doelen</flux:label>
                         <flux:description class="text-sm">Welke doelen van het DIAMANT-model worden aangesproken?</flux:description>
                         <div class="flex flex-wrap gap-2 mt-2">
                             @foreach($allGoalTags as $tag)
@@ -141,7 +141,7 @@
 
                     {{-- Initiative --}}
                     <flux:field>
-                        <flux:label class="text-base font-heading font-bold">Gekoppeld initiatief</flux:label>
+                        <flux:label class="text-base font-body font-bold">Gekoppeld initiatief</flux:label>
                         <flux:description class="text-sm">Optioneel — koppel deze fiche aan een initiatief.</flux:description>
                         <flux:select wire:model="selectedInitiativeId" variant="combobox" clearable placeholder="Zoek een initiatief...">
                             <flux:select.option value="">Geen initiatief</flux:select.option>

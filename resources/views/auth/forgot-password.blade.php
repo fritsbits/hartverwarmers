@@ -1,9 +1,9 @@
 <x-guest-layout>
-    <flux:heading size="xl" class="text-center mb-6">Wachtwoord vergeten</flux:heading>
-
-    <flux:text class="mb-4 text-[var(--color-text-secondary)]">
-        Geen probleem. Vul je e-mailadres in en we sturen je een link om je wachtwoord te resetten.
-    </flux:text>
+    <x-slot:header>
+        <span class="section-label section-label-hero">Wachtwoord vergeten</span>
+        <h1 class="text-4xl font-heading font-bold mt-1 mb-4">Geen probleem</h1>
+        <p class="text-lg text-[var(--color-text-secondary)]">Vul je e-mailadres in en we sturen je een link om je wachtwoord te resetten.</p>
+    </x-slot:header>
 
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />

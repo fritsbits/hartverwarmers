@@ -1,4 +1,4 @@
-<x-profile-layout title="Favorieten">
+<x-profile-layout title="Favorieten" description="Bekijk je opgeslagen initiatieven en fiches.">
     @if($fiches->isEmpty())
         <div class="text-center py-12">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-[var(--color-border-light)] mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

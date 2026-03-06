@@ -291,6 +291,68 @@
     font-weight: var(--font-weight-semibold);
   }
 
+  /* Fiche card — preview header with scattered-desk paper stack */
+  .fiche-card-header {
+    position: relative;
+    height: 140px;
+    background: var(--color-bg-subtle);
+    overflow: visible;
+  }
+
+  .fiche-card-body {
+    position: relative;
+    z-index: 10;
+    background: var(--color-bg-white);
+    padding: var(--space-lg);
+  }
+
+  .fiche-paper {
+    position: absolute;
+    width: 55%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    background: white;
+    transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    left: 50%;
+    top: 50%;
+  }
+
+  .fiche-paper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  /* Scattered-desk positions — casual, slightly messy */
+  .fiche-paper-0 {
+    transform: translate(calc(-50% - 20px), calc(-50% + 14px)) rotate(-6deg);
+  }
+
+  .fiche-paper-1 {
+    transform: translate(calc(-50% + 15px), calc(-50% + 18px)) rotate(4deg);
+  }
+
+  .fiche-paper-2 {
+    transform: translate(calc(-50% - 4px), calc(-50% + 20px)) rotate(-1deg);
+  }
+
+  /* Hover — papers tidy up slightly */
+  .fiche-card:hover .fiche-paper-0 {
+    transform: translate(calc(-50% - 10px), calc(-50% + 10px)) rotate(-3deg);
+  }
+
+  .fiche-card:hover .fiche-paper-1 {
+    transform: translate(calc(-50% + 8px), calc(-50% + 14px)) rotate(2deg);
+  }
+
+  .fiche-card:hover .fiche-paper-2 {
+    transform: translate(calc(-50% - 2px), calc(-50% + 16px)) rotate(0deg);
+  }
+
   /* Content card */
   .content-card {
     background: var(--color-bg-white);
@@ -364,7 +426,8 @@
 
   /* Quote paper (goal show hero — ruled-paper style) */
   .quote-paper {
-    @apply relative bg-white rounded-lg shadow-lg;
+    @apply relative bg-white rounded-lg;
+    box-shadow: 8px 12px 30px rgba(120, 90, 60, 0.25);
     padding: 1.75rem 2rem 1.25rem;
     transform: rotate(2.5deg);
     z-index: 1;
@@ -552,6 +615,11 @@
     user-select: none;
     z-index: -1;
     opacity: 1;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
   }
 
   /* Wizard — step container with illustration */

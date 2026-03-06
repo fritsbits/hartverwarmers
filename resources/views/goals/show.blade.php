@@ -63,7 +63,7 @@
                             {{-- Image area --}}
                             <div class="aspect-[16/10]">
                                 @if(!empty($example['image']))
-                                    <img src="{{ $example['image'] }}" alt="{{ $example['name'] }}" class="w-full h-full object-cover">
+                                    <img src="{{ $example['image'] }}" alt="{{ $example['name'] }}" class="w-full h-full object-cover" loading="lazy">
                                 @else
                                     <div class="w-full h-full bg-[var(--color-bg-subtle)] flex items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[var(--color-border-light)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">

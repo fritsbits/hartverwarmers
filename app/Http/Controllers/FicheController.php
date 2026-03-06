@@ -47,7 +47,7 @@ class FicheController extends Controller
             ->where('initiative_id', $initiative->id)
             ->where('id', '!=', $fiche->id)
             ->published()
-            ->with(['user', 'tags'])
+            ->with(['user', 'tags', 'files'])
             ->take(6)
             ->get();
 

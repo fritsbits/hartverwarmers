@@ -152,9 +152,9 @@
         </div>
     </section>
 
+    {{-- Community Stories (hidden for now)
     <hr class="border-[var(--color-border-light)]">
 
-    {{-- Community Stories --}}
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
             <span class="section-label">
@@ -165,7 +165,7 @@
             </span>
             <h2 class="mt-1 mb-4">Vertel, hoe ging het bij jullie?</h2>
 
-            {{-- Existing comments --}}
+            <!-- Existing comments -->
             @if($initiative->comments->isNotEmpty())
                 @foreach($initiative->comments as $comment)
                     <div class="flex gap-4 py-4 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
@@ -188,7 +188,7 @@
                 @endforeach
             @endif
 
-            {{-- Comment form --}}
+            <!-- Comment form -->
             @auth
                 <div class="bg-[var(--color-bg-cream)] rounded-xl p-6 {{ $initiative->comments->isNotEmpty() ? 'mt-8' : '' }}">
                     <div class="flex items-center gap-3 mb-4">
@@ -226,6 +226,7 @@
             @endauth
         </div>
     </section>
+    --}}
 
     {{-- Related Initiatives --}}
     @if($relatedInitiatives->isNotEmpty())

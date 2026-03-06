@@ -2,7 +2,7 @@
     <flux:card class="flex flex-row overflow-hidden">
         <div class="w-2/5 flex-shrink-0">
             <a href="{{ $page['url'] }}">
-                <img src="https://i.ytimg.com/vi/{{ $page['_page']['video']['id'] }}/maxresdefault.jpg" alt="{{ $page['label'] }}" class="w-full h-full object-cover">
+                <img src="https://i.ytimg.com/vi/{{ $page['_page']['video']['id'] }}/maxresdefault.jpg" alt="{{ $page['label'] }}" class="w-full h-full object-cover" loading="lazy">
             </a>
         </div>
         <div class="p-4 flex-1">

@@ -1,6 +1,5 @@
-<x-profile-layout title="Beveiliging">
+<x-profile-layout title="Beveiliging" description="Wijzig je wachtwoord en beveiligingsinstellingen.">
     <flux:card>
-        <flux:heading size="lg" class="mb-6">Wachtwoord wijzigen</flux:heading>
 
         @if(session('status') === 'password-updated')
             <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="mb-6">

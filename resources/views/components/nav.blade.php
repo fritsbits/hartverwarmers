@@ -148,8 +148,10 @@
                         </flux:button>
 
                         <flux:menu>
-                            <flux:menu.item href="{{ route('profile.show') }}" icon="user">Mijn profiel</flux:menu.item>
-                            <flux:menu.item href="{{ route('profile.bookmarks') }}" icon="bookmark">Mijn favorieten</flux:menu.item>
+                            <flux:menu.item href="{{ route('profile.show') }}" icon="user">Profiel</flux:menu.item>
+                            <flux:menu.item href="{{ route('profile.security') }}" icon="lock-closed">Beveiliging</flux:menu.item>
+                            <flux:menu.item href="{{ route('profile.bookmarks') }}" icon="bookmark">Favorieten</flux:menu.item>
+                            <flux:menu.item href="{{ route('profile.fiches') }}" icon="document-text">Fiches</flux:menu.item>
                             @if(auth()->user()->isAdmin())
                                 <flux:menu.separator />
                                 <div class="px-2 py-1.5">

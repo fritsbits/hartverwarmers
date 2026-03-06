@@ -2,7 +2,7 @@
 <flux:card class="overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
     @if(!empty($workshop['preview_image'] ?? $workshop['hero_image'] ?? null))
         <div class="-mx-6 -mt-6 mb-4">
-            <img src="{{ $workshop['preview_image'] ?? $workshop['hero_image'] }}" alt="{{ $workshop['title'] }}" class="w-full aspect-[16/10] object-cover">
+            <img src="{{ $workshop['preview_image'] ?? $workshop['hero_image'] }}" alt="{{ $workshop['title'] }}" class="w-full aspect-[16/10] object-cover" loading="lazy">
         </div>
     @else
         <div class="-mx-6 -mt-6 mb-4 bg-[var(--color-bg-cream)] aspect-[16/10] flex items-center justify-center">

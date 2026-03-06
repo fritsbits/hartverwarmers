@@ -1,5 +1,8 @@
 <x-guest-layout>
-    <flux:heading size="xl" class="text-center mb-6">Wachtwoord resetten</flux:heading>
+    <x-slot:header>
+        <span class="section-label section-label-hero">Reset wachtwoord</span>
+        <h1 class="text-4xl font-heading font-bold mt-1">Kies een nieuw wachtwoord</h1>
+    </x-slot:header>
 
     <form method="POST" action="{{ route('password.store') }}" class="space-y-4">
         @csrf
@@ -30,7 +33,7 @@
 
         <div class="flex items-center justify-end pt-2">
             <flux:button type="submit" variant="primary">
-                Wachtwoord resetten
+                Reset wachtwoord
             </flux:button>
         </div>
     </form>

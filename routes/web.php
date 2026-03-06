@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profiel/avatar', [HvProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
     Route::get('/profiel/beveiliging', [HvProfileController::class, 'security'])->name('profile.security');
     Route::get('/profiel/favorieten', [HvProfileController::class, 'bookmarks'])->name('profile.bookmarks');
+    Route::get('/profiel/fiches', [HvProfileController::class, 'fiches'])->name('profile.fiches');
     Route::post('/fiches/{fiche}/favoriet', [BookmarkController::class, 'toggle'])->name('fiches.bookmark');
     Route::post('/fiches/{fiche}/comment', [CommentController::class, 'store'])->name('fiches.comment');
     Route::post('/initiatieven/{initiative:slug}/comment', [CommentController::class, 'storeForInitiative'])->name('initiatives.comment');
