@@ -86,7 +86,8 @@ class FicheComments extends Component
     #[Computed]
     public function commentCount(): int
     {
-        return $this->fiche->comments()->count();
+        return $this->comments->count()
+            + $this->comments->sum(fn ($c) => $c->replies->count());
     }
 
     public function render()

@@ -1,6 +1,5 @@
-<x-profile-layout title="Mijn profiel">
+<x-profile-layout title="Persoonlijke info" description="Beheer je persoonlijke gegevens en voorkeuren.">
     <flux:card>
-        <flux:heading size="lg" class="mb-6">Persoonlijke gegevens</flux:heading>
 
         {{-- Avatar section --}}
         <livewire:avatar-upload />

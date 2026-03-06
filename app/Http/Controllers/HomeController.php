@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Fiche;
 use App\Models\Initiative;
+use App\Models\Tag;
 use App\Models\User;
 use App\Services\DiamantService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Laravel\Pennant\Feature;
 
@@ -23,17 +25,17 @@ class HomeController extends Controller
 
         $recentFiches = Fiche::query()
             ->published()
-            ->with('initiative', 'user', 'tags')
+            ->with('initiative', 'user', 'tags', 'files')
             ->latest()
             ->take(4)
             ->get();
 
-        $stats = [
+        $stats = Cache::remember('home:stats', 300, fn () => [
             'fiches' => Fiche::published()->count(),
             'contributors' => User::whereHas('fiches')->count(),
             'organisations' => User::whereNotNull('organisation')->distinct('organisation')->count('organisation'),
             'initiatives' => Initiative::where('published', true)->count(),
-        ];
+        ]);
 
         $facets = [];
         $firstFacetSlug = null;
@@ -45,15 +47,12 @@ class HomeController extends Controller
             $firstFacetSlug = array_key_first($facets);
             $firstFacet = $facets[$firstFacetSlug];
 
-            // Count initiatives per goal
-            foreach ($facets as $slug => $facet) {
-                $goalInitiativeCounts[$slug] = Initiative::query()
-                    ->where('published', true)
-                    ->whereHas('tags', function ($q) use ($slug) {
-                        $q->where('slug', 'doel-'.$slug);
-                    })
-                    ->count();
-            }
+            $goalInitiativeCounts = Tag::query()
+                ->where('type', 'goal')
+                ->withCount(['initiatives' => fn ($q) => $q->where('published', true)])
+                ->pluck('initiatives_count', 'slug')
+                ->mapWithKeys(fn ($count, $slug) => [str_replace('doel-', '', $slug) => $count])
+                ->all();
         }
 
         return view('home', [

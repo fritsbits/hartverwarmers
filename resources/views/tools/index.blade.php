@@ -62,7 +62,7 @@
                     <a href="{{ route('tools.show', ['uid' => $tool['uid']]) }}" class="block cursor-pointer">
                         <flux:card class="overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
                             <div class="-mx-6 -mt-6 mb-4">
-                                <img src="{{ $tool['preview_image'] ?? $tool['hero_image'] }}" alt="{{ $tool['title'] }}" class="w-full aspect-[16/10] object-cover">
+                                <img src="{{ $tool['preview_image'] ?? $tool['hero_image'] }}" alt="{{ $tool['title'] }}" class="w-full aspect-[16/10] object-cover" loading="lazy">
                             </div>
                             <flux:heading size="lg" class="font-heading font-bold">{{ $tool['title'] }}</flux:heading>
                             @isset($tool['teaser'])

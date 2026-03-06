@@ -1,9 +1,9 @@
 <x-guest-layout>
-    <flux:heading size="xl" class="text-center mb-6">Bevestig wachtwoord</flux:heading>
-
-    <flux:text class="mb-4 text-[var(--color-text-secondary)]">
-        Dit is een beveiligde zone. Bevestig je wachtwoord om verder te gaan.
-    </flux:text>
+    <x-slot:header>
+        <span class="section-label section-label-hero">Bevestig wachtwoord</span>
+        <h1 class="text-4xl font-heading font-bold mt-1 mb-4">Beveiligde zone</h1>
+        <p class="text-lg text-[var(--color-text-secondary)]">Bevestig je wachtwoord om verder te gaan.</p>
+    </x-slot:header>
 
     <form method="POST" action="{{ route('password.confirm') }}" class="space-y-4">
         @csrf
@@ -17,7 +17,7 @@
 
         <div class="flex justify-end pt-2">
             <flux:button type="submit" variant="primary">
-                Bevestigen
+                Bevestig
             </flux:button>
         </div>
     </form>

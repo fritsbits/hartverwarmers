@@ -53,7 +53,9 @@ class GoalController extends Controller
                 ->limit(6)
                 ->get();
 
-            $facetInitiativeCount = $goalTag->initiatives()->where('published', true)->count();
+            $facetInitiativeCount = $initiatives->count() < 6
+                ? $initiatives->count()
+                : $goalTag->initiatives()->where('published', true)->count();
         }
 
         $totalInitiativeCount = Initiative::where('published', true)->count();

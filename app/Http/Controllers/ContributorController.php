@@ -22,7 +22,7 @@ class ContributorController extends Controller
     public function show(User $user): View
     {
         $user->load(['fiches' => function ($query) {
-            $query->published()->with('initiative', 'tags');
+            $query->published()->with('initiative', 'tags', 'files');
         }]);
 
         return view('contributors.show', [

@@ -5,7 +5,7 @@
                 <div class="w-1/3 flex-shrink-0 {{ !($page['_page']['_published'] ?? true) ? 'grayscale opacity-40' : '' }}">
                     <a href="{{ $page['url'] }}">
                         @if(isset($page['_page']['images'][0]))
-                            <img src="{{ $page['_page']['images'][0]['src'] }}" alt="{{ $page['_page']['images'][0]['alt'] ?? '' }}" class="w-full h-full object-cover">
+                            <img src="{{ $page['_page']['images'][0]['src'] }}" alt="{{ $page['_page']['images'][0]['alt'] ?? '' }}" class="w-full h-full object-cover" loading="lazy">
                         @endif
                     </a>
                 </div>

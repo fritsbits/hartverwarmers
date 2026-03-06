@@ -1,4 +1,4 @@
-@props(['title' => null, 'fullWidth' => false])
+@props(['title' => null, 'fullWidth' => false, 'bgClass' => null])
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -8,7 +8,7 @@
     <title>{{ $title ?? 'Hartverwarmers' }} - Hartverwarmers</title>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
     <link href="https://fonts.bunny.net/css?family=aleo:700|fira-sans:300,400,500,600,700|nanum-pen-script:400&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -34,7 +34,7 @@
     @endif
 
     <!-- Main Content -->
-    <main class="flex-1">
+    <main class="flex-1 {{ $bgClass }}">
         @isset($breadcrumbs)
             <div class="max-w-6xl mx-auto px-6 pt-8">
                 <div class="flex items-center justify-between">

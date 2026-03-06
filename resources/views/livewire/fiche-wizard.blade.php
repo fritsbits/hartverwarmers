@@ -72,7 +72,10 @@
             {{-- Step 1: Bestanden                              --}}
             {{-- ============================================== --}}
             <div x-show="$wire.currentStep === 1" x-cloak class="wizard-step-illustrated">
-                <img src="{{ asset('images/wizard/bestanden-uploaden.png') }}" alt="" aria-hidden="true" class="wizard-illustration hidden lg:block">
+                <picture class="wizard-illustration hidden lg:block">
+                    <source srcset="{{ asset('images/wizard/bestanden-uploaden.webp') }}" type="image/webp">
+                    <img src="{{ asset('images/wizard/bestanden-uploaden.png') }}" alt="" aria-hidden="true" loading="lazy">
+                </picture>
                 <div class="relative mb-0">
                     <h2 class="relative z-10 text-3xl">Upload je bestanden</h2>
                 </div>
@@ -101,7 +104,7 @@
                             {{-- Right: file list --}}
                             @if(!empty($uploadedFiles))
                                 <div>
-                                    <flux:label>Bestanden</flux:label>
+                                    <flux:label class="text-base font-body font-bold">Bestanden</flux:label>
                                     <div class="mt-2 flex flex-col gap-2">
                                         @foreach($uploadedFiles as $file)
                                             <flux:file-item
@@ -162,7 +165,10 @@
             {{-- Step 2: Details                                --}}
             {{-- ============================================== --}}
             <div x-show="$wire.currentStep === 2" x-cloak class="wizard-step-illustrated">
-                <img src="{{ asset('images/wizard/kernideeen-verzamelen.png') }}" alt="" aria-hidden="true" class="wizard-illustration hidden lg:block">
+                <picture class="wizard-illustration hidden lg:block">
+                    <source srcset="{{ asset('images/wizard/kernideeen-verzamelen.webp') }}" type="image/webp">
+                    <img src="{{ asset('images/wizard/kernideeen-verzamelen.png') }}" alt="" aria-hidden="true" loading="lazy">
+                </picture>
                 <div class="relative mb-0">
                     <h2 class="relative z-10 text-3xl">Kerngegevens</h2>
                 </div>
@@ -173,7 +179,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                         <div>
                             <flux:field>
-                                <flux:label>Titel <span class="field-tag ml-1">Verplicht</span></flux:label>
+                                <flux:label class="text-base font-body font-bold">Titel <span class="field-tag ml-1">Verplicht</span></flux:label>
                                 <flux:description>Geef een specifieke titel aan je activiteit.</flux:description>
                                 <flux:input wire:model.live.debounce.500ms="title" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
                                 <flux:error name="title" />
@@ -200,12 +206,12 @@
                     {{-- Duration & Group size --}}
                     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                         <flux:field>
-                            <flux:label>Duur</flux:label>
+                            <flux:label class="text-base font-body font-bold">Duur</flux:label>
                             <flux:input wire:model="duration" placeholder="bijv. 30 min" />
                         </flux:field>
 
                         <flux:field>
-                            <flux:label>Groepsgrootte</flux:label>
+                            <flux:label class="text-base font-body font-bold">Groepsgrootte</flux:label>
                             <flux:input wire:model="groupSize" placeholder="bijv. 4-8" />
                         </flux:field>
                     </div>
@@ -213,7 +219,7 @@
                     {{-- DIAMANT goals --}}
                     @feature('diamant-goals')
                     <flux:field>
-                        <flux:label>DIAMANT-doelen</flux:label>
+                        <flux:label class="text-base font-body font-bold">DIAMANT-doelen</flux:label>
                         <flux:description>Welke doelen van het DIAMANT-model worden aangesproken?</flux:description>
 
                         @if(!empty($suggestedGoalTagIds))
@@ -285,7 +291,7 @@
                     {{-- Initiative linking --}}
                     <div class="space-y-4">
                         <flux:field>
-                            <flux:label>Gekoppeld initiatief</flux:label>
+                            <flux:label class="text-base font-body font-bold">Gekoppeld initiatief</flux:label>
                             <flux:description>Optioneel — koppel deze fiche aan een initiatief</flux:description>
 
                             {{-- Inline processing indicator --}}
@@ -344,7 +350,10 @@
             {{-- Step 3: Inhoud                                 --}}
             {{-- ============================================== --}}
             <div x-show="$wire.currentStep === 3" x-cloak class="wizard-step-illustrated">
-                <img src="{{ asset('images/wizard/schrijven-en-componeren.png') }}" alt="" aria-hidden="true" class="wizard-illustration hidden lg:block">
+                <picture class="wizard-illustration hidden lg:block">
+                    <source srcset="{{ asset('images/wizard/schrijven-en-componeren.webp') }}" type="image/webp">
+                    <img src="{{ asset('images/wizard/schrijven-en-componeren.png') }}" alt="" aria-hidden="true" loading="lazy">
+                </picture>
                 <div class="relative mb-0">
                     <h2 class="relative z-10 text-3xl">Fiche uitwerken</h2>
                 </div>
@@ -373,7 +382,7 @@
                         @endphp
 
                         <div wire:key="content-{{ $field['field'] }}">
-                            <flux:label>{{ $field['label'] }} @if($field['required'] ?? false)<span class="field-tag ml-1">Verplicht</span>@endif</flux:label>
+                            <flux:label class="text-base font-body font-bold">{{ $field['label'] }} @if($field['required'] ?? false)<span class="field-tag ml-1">Verplicht</span>@endif</flux:label>
                             <flux:description>{{ $field['description'] }}</flux:description>
 
                             <div class="grid grid-cols-1 {{ $hasAiSuggestion ? 'lg:grid-cols-12' : '' }} gap-8">
@@ -441,7 +450,10 @@
                     }
                 })"
             >
-                <img src="{{ asset('images/wizard/resultaten-bekijken.png') }}" alt="" aria-hidden="true" class="wizard-illustration hidden lg:block">
+                <picture class="wizard-illustration hidden lg:block">
+                    <source srcset="{{ asset('images/wizard/resultaten-bekijken.webp') }}" type="image/webp">
+                    <img src="{{ asset('images/wizard/resultaten-bekijken.png') }}" alt="" aria-hidden="true" loading="lazy">
+                </picture>
                 <div class="relative mb-2">
                     <h2 class="relative z-10 text-3xl">Resultaat bewonderen</h2>
                 </div>

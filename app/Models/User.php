@@ -26,6 +26,7 @@ class User extends Authenticatable
         'bio',
         'website',
         'linkedin',
+        'fiches_comments_seen_at',
     ];
 
     /**
@@ -40,6 +41,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'fiches_comments_seen_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -82,6 +84,13 @@ class User extends Authenticatable
     public function isCurator(): bool
     {
         return $this->role === 'curator';
+    }
+
+    public function newFicheCommentsCount(): int
+    {
+        return Comment::whereHasMorph('commentable', Fiche::class, fn ($q) => $q->where('user_id', $this->id))
+            ->when($this->fiches_comments_seen_at, fn ($q) => $q->where('comments.created_at', '>', $this->fiches_comments_seen_at))
+            ->count();
     }
 
     public function hasBookmarked(Fiche $fiche): bool

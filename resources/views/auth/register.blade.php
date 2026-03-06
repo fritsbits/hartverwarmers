@@ -1,5 +1,8 @@
 <x-guest-layout>
-    <flux:heading size="xl" class="text-center mb-6">Registreren</flux:heading>
+    <x-slot:header>
+        <span class="section-label section-label-hero">Registreer</span>
+        <h1 class="text-4xl font-heading font-bold mt-1">Maak een account</h1>
+    </x-slot:header>
 
     <form method="POST" action="{{ route('register') }}" class="space-y-4">
         @csrf
@@ -46,7 +49,7 @@
             </flux:link>
 
             <flux:button type="submit" variant="primary">
-                Registreren
+                Registreer
             </flux:button>
         </div>
     </form>

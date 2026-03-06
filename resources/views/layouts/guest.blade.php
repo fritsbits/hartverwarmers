@@ -13,16 +13,30 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </head>
-<body class="font-body antialiased min-h-screen bg-[var(--color-bg-base)]">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-        <div>
-            <a href="/" class="text-2xl font-bold">
-                <span class="text-[var(--color-primary)]">hart</span>verwarmers
-            </a>
+<body class="font-body antialiased min-h-screen bg-[var(--color-bg-cream)]">
+    <div class="min-h-screen lg:grid lg:grid-cols-2">
+        {{-- Left panel: hero image (desktop only) --}}
+        <div class="hidden lg:block lg:relative border-r border-[var(--color-border-light)]">
+            <img
+                src="/images/hero-auth.webp"
+                alt="Welkom bij Hartverwarmers — foto's van lachende bewoners, een kopje koffie en een sleutel"
+                class="absolute inset-0 h-full w-full object-cover"
+            >
         </div>
 
-        <div class="w-full sm:max-w-md mt-6 px-6 py-8 bg-[var(--color-bg-white)] shadow-md rounded-lg">
-            {{ $slot }}
+        {{-- Right panel: hero zone + form zone --}}
+        <div class="flex flex-col min-h-screen">
+            {{-- Hero zone (cream, 1/3 height, content bottom-aligned) --}}
+            <div class="flex flex-col justify-end h-1/3 px-8 pt-8 pb-8 sm:px-12 border-b border-[var(--color-border-light)]">
+                {{ $header }}
+            </div>
+
+            {{-- Form zone (white, 2/3 height, content top-aligned) --}}
+            <div class="bg-[var(--color-bg-white)] h-2/3 px-8 pt-10 sm:px-12">
+                <div class="max-w-lg">
+                    {{ $slot }}
+                </div>
+            </div>
         </div>
     </div>
 

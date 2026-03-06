@@ -29,7 +29,7 @@
                             <flux:card class="hover:shadow-md transition-shadow text-center">
                                 @if($contributor->avatar_path)
                                     <div class="flex justify-center mb-4">
-                                        <img src="{{ Storage::url($contributor->avatar_path) }}" alt="{{ $contributor->full_name }}" class="w-20 h-20 rounded-full object-cover">
+                                        <img src="{{ Storage::url($contributor->avatar_path) }}" alt="{{ $contributor->full_name }}" class="w-20 h-20 rounded-full object-cover" loading="lazy">
                                     </div>
                                 @else
                                     <div class="flex justify-center mb-4">

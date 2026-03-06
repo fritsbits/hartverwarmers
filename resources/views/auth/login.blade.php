@@ -1,5 +1,8 @@
 <x-guest-layout>
-    <flux:heading size="xl" class="text-center mb-6">Inloggen</flux:heading>
+    <x-slot:header>
+        <span class="section-label section-label-hero">Log in</span>
+        <h1 class="text-4xl font-heading font-bold mt-1">Welkom terug</h1>
+    </x-slot:header>
 
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -32,7 +35,7 @@
             @endif
 
             <flux:button type="submit" variant="primary">
-                Inloggen
+                Log in
             </flux:button>
         </div>
 
