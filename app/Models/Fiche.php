@@ -29,6 +29,7 @@ class Fiche extends Model
         'has_diamond',
         'download_count',
         'kudos_count',
+        'featured_month',
     ];
 
     protected function casts(): array
@@ -136,8 +137,11 @@ class Fiche extends Model
             if (! $file->hasPreviewImages()) {
                 continue;
             }
-            foreach ($file->preview_images as $path) {
-                $urls[] = Storage::url($path);
+            $thumbPaths = $file->thumbnailPaths();
+            foreach ($file->preview_images as $index => $path) {
+                $thumbPath = $thumbPaths[$index];
+                $usePath = Storage::disk('public')->exists($thumbPath) ? $thumbPath : $path;
+                $urls[] = Storage::url($usePath);
                 if (count($urls) >= $limit) {
                     return $urls;
                 }
@@ -150,5 +154,10 @@ class Fiche extends Model
     public function scopePublished($query)
     {
         return $query->where('published', true);
+    }
+
+    public function scopeFicheOfMonth($query)
+    {
+        return $query->whereNotNull('featured_month');
     }
 }
