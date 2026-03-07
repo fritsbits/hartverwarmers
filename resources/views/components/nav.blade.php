@@ -13,7 +13,7 @@
                 <!-- Desktop Navigation -->
                 <div class="hidden lg:flex items-center gap-1 ml-10">
                     <a href="{{ route('initiatives.index') }}" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] rounded-lg hover:bg-[var(--color-bg-accent-light)] transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                         </svg>
                         Alle initiatieven
@@ -22,8 +22,13 @@
                     @feature('diamant-goals')
                     <div x-data="{ open: false, timeout: null }" @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 150)" class="relative">
                         <button @click="open = !open" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] rounded-lg hover:bg-[var(--color-bg-accent-light)] transition-colors whitespace-nowrap">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2L22 12L12 22L2 12L12 2Z" />
+                            <svg class="h-4 w-4 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="30,0 70,0 100,35 50,100 0,35" fill="none" stroke="var(--color-primary)" stroke-width="8" stroke-linejoin="round" />
+                                <line x1="0" y1="35" x2="100" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                                <line x1="30" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                                <line x1="70" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                                <line x1="25" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                                <line x1="75" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
                             </svg>
                             Doelen
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 shrink-0 transition-transform" :class="open && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -39,7 +44,7 @@
                             <div class="divide-y divide-[var(--color-border-light)]">
                                 @foreach(config('diamant.facets') as $slug => $item)
                                     <a href="{{ route('goals.show', $slug) }}" class="flex items-center gap-3 w-full px-4 py-3 hover:bg-[var(--color-bg-cream)] transition-colors">
-                                        <span class="text-lg font-bold text-[var(--color-primary)] shrink-0 w-7 text-center" style="font-family: var(--font-heading)">{{ $item['letter'] }}</span>
+                                        <x-diamant-gem :letter="$item['letter']" size="xs" class="shrink-0" />
                                         <div class="flex-1 min-w-0">
                                             <span class="font-semibold text-sm text-[var(--color-text-primary)]">{{ $item['keyword'] }}</span>
                                             <p class="text-xs text-[var(--color-text-secondary)]">{{ $item['ik_wil'] }}</p>
@@ -58,7 +63,7 @@
 
                     <div x-data="{ open: false, timeout: null }" @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 150)" class="relative">
                         <button @click="open = !open" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] rounded-lg hover:bg-[var(--color-bg-accent-light)] transition-colors whitespace-nowrap">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
                             </svg>
                             Tools & inspiratie
@@ -194,7 +199,7 @@
     <div x-cloak x-show="mobileMenuOpen" x-transition class="lg:hidden border-t border-[var(--color-border-light)]">
         <div class="px-2 pt-2 pb-3 space-y-1">
             <a href="{{ route('initiatives.index') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-bg-accent-light)]">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                 </svg>
                 Alle initiatieven
@@ -203,8 +208,13 @@
             <div x-data="{ open: false }" class="border-t border-[var(--color-border-light)] mt-2 pt-2">
                 <button @click="open = !open" class="flex items-center justify-between w-full px-3 py-2 rounded-lg text-base font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)]">
                     <span class="flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L22 12L12 22L2 12L12 2Z" />
+                        <svg class="h-5 w-5 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="30,0 70,0 100,35 50,100 0,35" fill="none" stroke="var(--color-primary)" stroke-width="8" stroke-linejoin="round" />
+                            <line x1="0" y1="35" x2="100" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                            <line x1="30" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                            <line x1="70" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                            <line x1="25" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                            <line x1="75" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
                         </svg>
                         Doelen
                     </span>
@@ -215,7 +225,7 @@
                 <div x-cloak x-show="open" x-transition class="mt-1 space-y-1 pl-3">
                     @foreach(config('diamant.facets') as $slug => $item)
                         <a href="{{ route('goals.show', $slug) }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-bg-cream)]">
-                            <span class="text-base font-bold text-[var(--color-primary)] w-6 text-center" style="font-family: var(--font-heading)">{{ $item['letter'] }}</span>
+                            <x-diamant-gem :letter="$item['letter']" size="xs" class="shrink-0" />
                             <span class="text-sm font-medium text-[var(--color-text-primary)]">{{ $item['keyword'] }}</span>
                         </a>
                     @endforeach
@@ -226,7 +236,7 @@
             <div x-data="{ open: false }" class="border-t border-[var(--color-border-light)] mt-2 pt-2">
                 <button @click="open = !open" class="flex items-center justify-between w-full px-3 py-2 rounded-lg text-base font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-bg-accent-light)]">
                     <span class="flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
                         </svg>
                         Tools & inspiratie

@@ -1,82 +1,135 @@
 <x-layout :title="$facet['keyword'] . ' — DIAMANT-kompas'" :full-width="true">
     {{-- Hero --}}
-    <section class="bg-[var(--color-bg-cream)]">
-        <div class="max-w-6xl mx-auto px-6 pt-8 pb-12">
+    <section class="bg-[var(--color-bg-cream)] border-b border-[var(--color-border-light)]">
+        <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
             <flux:breadcrumbs class="mb-6">
                 <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
                 <flux:breadcrumbs.item href="{{ route('goals.index') }}">DIAMANT-kompas</flux:breadcrumbs.item>
                 <flux:breadcrumbs.item>{{ $facet['keyword'] }}</flux:breadcrumbs.item>
             </flux:breadcrumbs>
 
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-                {{-- Left column --}}
-                <div class="lg:col-span-3">
-                    <span class="section-label section-label-hero">Doelstelling</span>
-                    <h1 class="text-5xl mt-1 mb-6">{{ $facet['keyword'] }}</h1>
+            <div>
+                <span class="section-label section-label-hero">Doelstelling</span>
+                <h1 class="text-5xl mt-1 mb-6">{{ $facet['keyword'] }}</h1>
 
-                    <div class="text-xl leading-relaxed text-[var(--color-text-secondary)]">
-                        <p>{{ $facet['description'] }}</p>
-                    </div>
-                </div>
-
-                {{-- Right column: Quote paper --}}
-                <div class="lg:col-span-2 pt-2">
-                    <div class="relative">
-                        <div class="quote-paper-mark">&ldquo;</div>
-                        <div class="quote-paper">
-                            <p class="quote-ik-wil">{{ $facet['ik_wil'] }}</p>
-                            <p>{{ $facet['quote'] }}</p>
-                        </div>
-                    </div>
-
-                    {{-- Author below the paper --}}
-                    <div class="mt-4 flex items-center gap-3">
-                        @if(!empty($facet['author_image']))
-                            <img src="{{ $facet['author_image'] }}" alt="{{ $facet['author_name'] }}" class="w-10 h-10 rounded-full object-cover">
-                        @endif
-                        <div class="text-sm">
-                            <span class="font-semibold text-[var(--color-text-primary)]">{{ $facet['author_name'] }}</span>
-                            @if(!empty($facet['author_role']))
-                                <span class="text-[var(--color-text-secondary)]"> &middot; {{ $facet['author_role'] }}</span>
-                            @endif
-                        </div>
-                    </div>
+                <div class="text-2xl leading-relaxed font-light text-[var(--color-text-secondary)] lg:w-1/2">
+                    <p>{{ Str::before($facet['description'], '. ') . '.' }}</p>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- In de praktijk --}}
-    @if(!empty($facet['practice_examples']))
-        <hr class="border-[var(--color-border-light)]">
+    {{-- Question + Reframe + Checklist --}}
+    <section class="overflow-visible">
+        <div class="max-w-6xl mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start overflow-visible">
+                {{-- Left: Question, reframe --}}
+                <div>
+                    <span class="section-label">Vraag je af</span>
+                    <h2 class="mt-1 mb-6">{{ $facet['core_question'] }}</h2>
 
-        <section>
-            <div class="max-w-6xl mx-auto px-6 py-16">
-                <h2 class="mb-2">In de praktijk</h2>
-                @if(!empty($facet['practice_subtitle']))
-                    <p class="text-[var(--color-text-secondary)] mb-8">{{ $facet['practice_subtitle'] }}</p>
+                    @if(!empty($facet['quote']))
+                        @php
+                            $parts = explode('Maar:', $facet['quote']);
+                            $niet = trim(str_replace('Niet:', '', $parts[0] ?? ''), ' .');
+                            $maar = trim($parts[1] ?? '');
+                        @endphp
+                        <div class="space-y-3">
+                            <div class="flex items-baseline gap-3">
+                                <span class="w-14 shrink-0 inline-block bg-zinc-100 text-zinc-600 text-sm font-semibold px-2.5 py-0.5 rounded text-center">NIET</span>
+                                <p class="text-xl font-light text-[var(--color-text-secondary)] line-through">{{ ucfirst($niet) }}</p>
+                            </div>
+                            <div class="flex items-baseline gap-3">
+                                <span class="w-14 shrink-0 inline-block bg-[var(--color-bg-accent-light)] text-[var(--color-primary)] text-sm font-semibold px-2.5 py-0.5 rounded text-center">WEL</span>
+                                <p class="text-xl font-light text-[var(--color-text-primary)]">{{ ucfirst($maar) }}</p>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Right: Paper checklist (pulled up into hero) --}}
+                @if(!empty($facet['reflection_questions']))
+                    <div class="hidden lg:block lg:-translate-y-[30%] px-8">
+                        <div class="quote-paper quote-paper-lg">
+                            <span class="checklist-label">Checklist</span>
+                            @foreach($facet['reflection_questions'] as $question)
+                                <div class="checklist-item">
+                                    <span class="question-badge">
+                                        <svg class="w-3.5 h-3.5" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                            <polygon points="30,0 70,0 100,35 50,100 0,35" fill="none" stroke="var(--color-primary)" stroke-width="8" stroke-linejoin="round" />
+                                            <line x1="0" y1="35" x2="100" y2="35" stroke="var(--color-primary)" stroke-width="4" />
+                                            <line x1="30" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" />
+                                            <line x1="70" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" />
+                                            <line x1="25" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" />
+                                            <line x1="75" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" />
+                                        </svg>
+                                    </span>
+                                    <p class="font-body font-light">{{ $question }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Mobile: inline --}}
+                    <div class="lg:hidden px-8">
+                        <div class="quote-paper quote-paper-lg">
+                            <span class="checklist-label">Checklist</span>
+                            @foreach($facet['reflection_questions'] as $question)
+                                <div class="checklist-item">
+                                    <span class="question-badge">
+                                        <svg class="w-3.5 h-3.5" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                            <polygon points="30,0 70,0 100,35 50,100 0,35" fill="none" stroke="var(--color-primary)" stroke-width="8" stroke-linejoin="round" />
+                                            <line x1="0" y1="35" x2="100" y2="35" stroke="var(--color-primary)" stroke-width="4" />
+                                            <line x1="30" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" />
+                                            <line x1="70" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" />
+                                            <line x1="25" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" />
+                                            <line x1="75" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" />
+                                        </svg>
+                                    </span>
+                                    <p class="font-body font-light">{{ $question }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 @endif
+            </div>
+        </div>
+    </section>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    @foreach($facet['practice_examples'] as $example)
-                        <div class="practice-card">
-                            {{-- Image area --}}
-                            <div class="aspect-[16/10]">
+    {{-- Practice Examples (zigzag) — hidden until images are ready --}}
+    @if(false && !empty($facet['practice_examples']))
+        <section class="bg-[var(--color-bg-cream)]">
+            <div class="max-w-6xl mx-auto px-6 py-16">
+                <div class="text-center mb-12">
+                    <span class="section-label">In de praktijk</span>
+                    <h2 class="mt-1 mb-2">Zo herken je het</h2>
+                    @if(!empty($facet['practice_subtitle']))
+                        <p class="text-[var(--color-text-secondary)]">{{ $facet['practice_subtitle'] }}</p>
+                    @endif
+                </div>
+
+                <div class="space-y-12">
+                    @foreach(array_slice($facet['practice_examples'], 0, 2) as $i => $example)
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            {{-- Image --}}
+                            <div class="{{ $i % 2 === 1 ? 'md:order-2' : '' }}">
                                 @if(!empty($example['image']))
-                                    <img src="{{ $example['image'] }}" alt="{{ $example['name'] }}" class="w-full h-full object-cover" loading="lazy">
+                                    <div class="bg-white rounded-xl overflow-hidden aspect-4/3 flex items-center justify-center">
+                                        <img src="{{ $example['image'] }}" alt="{{ $example['name'] }}" class="w-full h-full object-contain">
+                                    </div>
                                 @else
-                                    <div class="w-full h-full bg-[var(--color-bg-subtle)] flex items-center justify-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[var(--color-border-light)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                    <div class="bg-[var(--color-bg-subtle)] rounded-xl aspect-4/3 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-[var(--color-border-light)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
                                         </svg>
                                     </div>
                                 @endif
                             </div>
 
-                            {{-- Card body --}}
-                            <div class="p-5">
-                                <h3 class="text-lg mb-2">{{ $example['role'] }} {{ $example['name'] }}</h3>
-                                <p class="text-sm text-[var(--color-text-secondary)]">{{ $example['story'] }}</p>
+                            {{-- Text --}}
+                            <div class="{{ $i % 2 === 1 ? 'md:order-1' : '' }}">
+                                <h3 class="mb-2">{{ $example['role'] }}</h3>
+                                <p class="text-lg text-[var(--color-text-secondary)] font-light">{{ $example['story'] }}</p>
                             </div>
                         </div>
                     @endforeach
@@ -85,82 +138,36 @@
         </section>
     @endif
 
-    {{-- Vragen voor jezelf --}}
-    @if(!empty($facet['reflection_questions']))
-        <hr class="border-[var(--color-border-light)]">
-
+    {{-- Block 5: Initiatieven --}}
+    @if(!$initiatives->isEmpty())
         <section>
             <div class="max-w-6xl mx-auto px-6 py-16">
-                <h2 class="mb-2">Vragen voor jezelf</h2>
-                @if(!empty($facet['reflection_subtitle']))
-                    <p class="text-[var(--color-text-secondary)] mb-8">{{ $facet['reflection_subtitle'] }}</p>
-                @endif
+                <span class="section-label">Inspiratie</span>
+                <h2 class="mt-1 mb-2">{{ $facet['initiatives_heading'] ?? 'Initiatieven bij deze doelstelling' }}</h2>
+                <p class="text-[var(--color-text-secondary)] mb-8">Gebruik deze als startpunt en pas ze aan voor jouw bewoners.</p>
 
-                <div class="max-w-4xl space-y-3">
-                    @foreach($facet['reflection_questions'] as $question)
-                        <div class="question-row">
-                            <span class="question-badge">?</span>
-                            <p class="text-[var(--color-text-primary)]">{{ $question }}</p>
-                        </div>
-                    @endforeach
-                </div>
-
-                {{-- Tip box --}}
-                @if(!empty($facet['tip_title']))
-                    <div class="max-w-4xl mt-8 bg-[var(--color-bg-cream)] rounded-xl p-6 border border-[var(--color-border-light)]">
-                        <div class="flex items-start gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 mt-0.5 text-[var(--color-accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
-                            </svg>
-                            <div>
-                                <h3 class="text-lg mb-1">{{ $facet['tip_title'] }}</h3>
-                                @if(!empty($facet['tip_text']))
-                                    <p class="text-[var(--color-text-secondary)]">{{ $facet['tip_text'] }}</p>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            </div>
-        </section>
-    @endif
-
-    <hr class="border-[var(--color-border-light)]">
-
-    {{-- Initiatieven --}}
-    <section>
-        <div class="max-w-6xl mx-auto px-6 py-16">
-            <h2 class="mb-2">{{ $facet['initiatives_heading'] ?? 'Initiatieven bij deze doelstelling' }}</h2>
-            <p class="text-[var(--color-text-secondary)] mb-8">Deze initiatieven scoren sterk op het facet {{ $facet['keyword'] }}.</p>
-
-            @if($initiatives->isEmpty())
-                <p class="text-[var(--color-text-secondary)]">Nog geen initiatieven gekoppeld aan deze doelstelling.</p>
-            @else
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($initiatives as $initiative)
                         <x-initiative-card :initiative="$initiative" />
                     @endforeach
                 </div>
-            @endif
-
-            <div class="mt-8 text-center">
-                <flux:button variant="primary" href="{{ route('initiatives.index') }}">
-                    Alle {{ $facetInitiativeCount > 0 ? $facetInitiativeCount : $totalInitiativeCount }} initiatieven{{ $facetInitiativeCount > 0 ? ' voor ' . $facet['keyword'] : '' }} bekijken
-                </flux:button>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
-    <hr class="border-[var(--color-border-light)]">
-
-    {{-- Ontdek de andere doelstellingen --}}
-    <section>
+    {{-- Verwante doelstellingen --}}
+    <section class="bg-[var(--color-bg-cream)]">
         <div class="max-w-6xl mx-auto px-6 py-16">
-            <h2 class="mb-6">Ontdek de andere doelstellingen</h2>
+            <span class="section-label">DIAMANT-kompas</span>
+            <h2 class="mt-1 mb-6">Verwante doelstellingen</h2>
+            @if(!empty($facet['related_facets_text']))
+                <p class="text-lg text-[var(--color-text-secondary)] max-w-3xl mb-8">{!! $facet['related_facets_text'] !!}</p>
+            @endif
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($allFacets as $slug => $item)
-                    @if($slug !== $facet['slug'])
-                        <a href="{{ route('goals.show', $slug) }}"
+                @foreach($facet['related_facets'] ?? [] as $relatedSlug)
+                    @if(isset($allFacets[$relatedSlug]))
+                        @php $item = $allFacets[$relatedSlug]; @endphp
+                        <a href="{{ route('goals.show', $relatedSlug) }}"
                            class="flex items-center gap-4 p-4 rounded-xl hover:bg-[var(--color-bg-subtle)] transition-colors">
                             <x-diamant-gem :letter="$item['letter']" size="md" />
                             <div class="flex-1 min-w-0">
@@ -170,12 +177,6 @@
                         </a>
                     @endif
                 @endforeach
-            </div>
-
-            <div class="mt-8 text-center">
-                <a href="{{ route('initiatives.index') }}" class="cta-link">
-                    Alle {{ $totalInitiativeCount }} initiatieven bekijken
-                </a>
             </div>
         </div>
     </section>

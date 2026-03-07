@@ -127,7 +127,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($initiatives as $initiative)
                         <div x-show="isVisible({{ $initiative->id }})" x-cloak>
-                            <x-initiative-card :initiative="$initiative" :show-fiche-count="true" />
+                            <x-initiative-card :initiative="$initiative" variant="detailed" :show-fiche-count="true" />
                         </div>
                     @endforeach
                 </div>

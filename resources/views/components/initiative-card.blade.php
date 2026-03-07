@@ -1,6 +1,29 @@
-@props(['initiative', 'showFicheCount' => false])
+@props(['initiative', 'variant' => 'compact', 'showFicheCount' => false])
 
 <a href="{{ route('initiatives.show', $initiative) }}" class="block cursor-pointer">
+@if($variant === 'compact')
+<flux:card class="group overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 !p-0">
+    <div class="relative">
+        {{-- Image --}}
+        @if($initiative->image)
+            <img src="{{ $initiative->thumbnailUrl() ?? $initiative->image }}" alt="{{ $initiative->title }}" class="w-full aspect-[16/10] object-cover" loading="lazy">
+        @else
+            <div class="bg-[var(--color-bg-cream)] aspect-[16/10] flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-[var(--color-border-light)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+            </div>
+        @endif
+
+        {{-- Title — compact white label, bottom left --}}
+        <div class="absolute bottom-4 left-4 right-4">
+            <span class="inline font-heading font-bold text-lg leading-tight bg-white px-3 py-1.5 rounded box-decoration-clone text-[var(--color-text-primary)]">
+                {{ $initiative->title }}<span class="text-[var(--color-primary)] ml-1">&rarr;</span>
+            </span>
+        </div>
+    </div>
+</flux:card>
+@else
 <flux:card class="overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
     @if($initiative->image)
         <div class="-mx-6 -mt-6 mb-4">
@@ -14,7 +37,7 @@
         </div>
     @endif
 
-    <flux:heading size="lg" class="font-heading font-bold">{{ $initiative->title }}</flux:heading>
+    <h3 class="font-heading font-bold text-lg">{{ $initiative->title }}</h3>
 
     @if($initiative->description)
         <flux:text class="mt-2 line-clamp-2">
@@ -22,22 +45,10 @@
         </flux:text>
     @endif
 
-    @php
-        $goalTags = $initiative->tags->where('type', 'goal');
-    @endphp
-    @if($goalTags->isNotEmpty())
-        <div class="flex flex-wrap gap-1.5 mt-3">
-            @foreach($goalTags as $tag)
-                @php
-                    $facetSlug = str_replace('doel-', '', $tag->slug);
-                    $facet = app(\App\Services\DiamantService::class)->findBySlug($facetSlug);
-                @endphp
-                @if($facet)
-                    <span class="diamant-pill diamant-pill-sm">
-                        <x-diamant-gem :letter="$facet['letter']" size="xxs" />
-                        {{ $facet['keyword'] }}
-                    </span>
-                @endif
+    @if(!$showFicheCount && $initiative->tags->isNotEmpty())
+        <div class="flex flex-wrap gap-1 mt-3">
+            @foreach($initiative->tags->take(3) as $tag)
+                <flux:badge size="sm" color="zinc">{{ $tag->name }}</flux:badge>
             @endforeach
         </div>
     @endif
@@ -53,4 +64,5 @@
         </span>
     </div>
 </flux:card>
+@endif
 </a>
