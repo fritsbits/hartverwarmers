@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class File extends Model
 {
@@ -32,6 +33,21 @@ class File extends Model
     public function hasPreviewImages(): bool
     {
         return ! empty($this->preview_images);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public function thumbnailPaths(): array
+    {
+        if (! $this->hasPreviewImages()) {
+            return [];
+        }
+
+        return array_map(
+            fn (string $path) => Str::replaceLast('.jpg', '-thumb.jpg', $path),
+            $this->preview_images,
+        );
     }
 
     public function hasExtractedText(): bool

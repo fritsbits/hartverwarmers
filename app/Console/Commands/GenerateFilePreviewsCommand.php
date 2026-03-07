@@ -15,12 +15,17 @@ class GenerateFilePreviewsCommand extends Command
     protected $signature = 'file:generate-previews
         {--file= : Specific file ID}
         {--all : Process all files without previews}
-        {--max-slides=8 : Maximum number of slide previews to generate}';
+        {--max-slides=8 : Maximum number of slide previews to generate}
+        {--thumbnails-only : Generate thumbnails for existing preview images}';
 
     protected $description = 'Generate preview images for uploaded files (PPTX, DOCX, PDF, images)';
 
     public function handle(): int
     {
+        if ($this->option('thumbnails-only')) {
+            return $this->backfillThumbnails();
+        }
+
         $maxSlides = (int) $this->option('max-slides');
 
         if ($this->option('file')) {
@@ -145,6 +150,8 @@ class GenerateFilePreviewsCommand extends Command
         $im->writeImage($absolutePath);
         $im->destroy();
 
+        $this->generateThumbnail($absolutePath);
+
         $file->update(['preview_images' => [$relativePath], 'total_slides' => 1]);
         $this->info('  Generated 1 preview image.');
 
@@ -195,9 +202,56 @@ class GenerateFilePreviewsCommand extends Command
             $im->writeImage($absolutePath);
             $im->destroy();
 
+            $this->generateThumbnail($absolutePath);
+
             $paths[] = $relativePath;
         }
 
         return ['paths' => $paths, 'totalPages' => $totalPages];
+    }
+
+    private function generateThumbnail(string $fullSizePath): void
+    {
+        $thumbPath = preg_replace('/\.jpg$/', '-thumb.jpg', $fullSizePath);
+
+        $im = new Imagick($fullSizePath);
+        $im->resizeImage(400, 0, Imagick::FILTER_LANCZOS, 1);
+        $im->setImageCompressionQuality(80);
+        $im->writeImage($thumbPath);
+        $im->destroy();
+    }
+
+    private function backfillThumbnails(): int
+    {
+        $files = File::whereNotNull('preview_images')->get();
+        $this->info("Checking {$files->count()} files for missing thumbnails...");
+
+        $generated = 0;
+
+        foreach ($files as $file) {
+            foreach ($file->preview_images as $path) {
+                $thumbPath = \Illuminate\Support\Str::replaceLast('.jpg', '-thumb.jpg', $path);
+                $absoluteThumb = Storage::disk('public')->path($thumbPath);
+
+                if (file_exists($absoluteThumb)) {
+                    continue;
+                }
+
+                $absoluteFull = Storage::disk('public')->path($path);
+
+                if (! file_exists($absoluteFull)) {
+                    $this->warn("  Full-size missing: {$path}");
+
+                    continue;
+                }
+
+                $this->generateThumbnail($absoluteFull);
+                $generated++;
+            }
+        }
+
+        $this->info("Generated {$generated} thumbnails.");
+
+        return self::SUCCESS;
     }
 }

@@ -1,4 +1,4 @@
-<x-layout title="Laat je bewoners schitteren" :full-width="true">
+<x-layout title="Laat je bewoners schitteren" description="Hartverwarmers is hét platform voor activiteitenbegeleiders in woonzorgcentra. Ontdek en deel praktijkfiches rond deugddoende activiteiten." :full-width="true">
     <!-- Hero Section -->
     <section class="bg-[var(--color-bg-cream)] text-center">
         <div class="py-20 max-w-3xl mx-auto px-6">
@@ -90,58 +90,68 @@
                         </div>
                     </div>
 
-                    {{-- Right: Diamant van de maand --}}
-                    @if($diamantFiche)
+                    {{-- Right: Fiche van de maand --}}
+                    @if($ficheVanDeMaand)
                         <div class="flex flex-col">
-                            <h3 class="text-lg font-heading font-bold mb-4">Fiche van de maand</h3>
-                            @php $previews = $diamantFiche->cardPreviewImages(3); @endphp
-                            <a href="{{ route('fiches.show', [$diamantFiche->initiative, $diamantFiche]) }}" class="group flex flex-col flex-1 no-underline text-inherit rounded-[var(--radius-sm)] border border-[var(--color-border-light)] bg-[var(--color-bg-white)] overflow-hidden hover:shadow-card-hover hover:-translate-y-0.5 hover:border-[var(--color-border-hover)] transition-all duration-200">
+                            <div class="flex items-baseline justify-between mb-4">
+                                <h3 class="text-lg font-heading font-bold">Fiche van de maand</h3>
+                                <a href="{{ route('fiches.ficheVanDeMaand') }}" class="cta-link text-sm">Alle</a>
+                            </div>
+                            @php $previews = $ficheVanDeMaand->cardPreviewImages(3); @endphp
+                            <div class="group flex flex-row flex-1 rounded-[var(--radius-sm)] border border-[var(--color-border-light)] bg-[var(--color-bg-white)] overflow-hidden hover:shadow-card-hover hover:-translate-y-0.5 hover:border-[var(--color-border-hover)] transition-all duration-200">
+                                {{-- Left: preview --}}
                                 @if(count($previews) > 0)
-                                    <div class="fiche-card-header relative bg-[var(--color-bg-cream)] flex-1" style="overflow: hidden; min-height: 180px;">
+                                    <a href="{{ route('fiches.show', [$ficheVanDeMaand->initiative, $ficheVanDeMaand]) }}" class="relative bg-[var(--color-bg-cream)] shrink-0 w-1/2 min-h-[220px] overflow-hidden block">
                                         @foreach($previews as $i => $url)
                                             <div class="fiche-paper fiche-paper-{{ $i }}" style="z-index: {{ $i + 1 }}">
                                                 <img src="{{ $url }}" alt="" loading="lazy" draggable="false">
                                             </div>
                                         @endforeach
-                                        <div class="absolute top-3.5 left-0 z-10 flex items-center gap-2 pl-3 pr-4 py-1.5 text-sm font-semibold text-white bg-[var(--color-primary)] rounded-r-full shadow-md">
-                                            <x-diamant-gem letter="" size="xxs" :inverted="true" />
+
+                                        {{-- Diamant banner overlay --}}
+                                        <span class="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-white bg-[var(--color-primary)] rounded-full shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z"/></svg>
                                             Diamantje
-                                        </div>
-                                    </div>
+                                        </span>
+                                    </a>
                                 @endif
-                                <div class="px-4 py-4 flex flex-col flex-1">
-                                    <span class="font-body font-bold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors">{{ $diamantFiche->title }}</span>
-                                    <div class="mt-3 flex items-center text-sm">
-                                        @if($diamantFiche->user)
-                                            <div class="flex items-center gap-2.5">
-                                                @if($diamantFiche->user->avatar_path)
-                                                    <img src="{{ Storage::url($diamantFiche->user->avatar_path) }}" alt="{{ $diamantFiche->user->first_name }}" class="w-8 h-8 rounded-full object-cover shrink-0">
+
+                                {{-- Right: info --}}
+                                <div class="flex-1 px-5 py-5 flex flex-col min-w-0">
+                                    <a href="{{ route('fiches.show', [$ficheVanDeMaand->initiative, $ficheVanDeMaand]) }}" class="no-underline text-inherit flex-1 overflow-hidden">
+                                        <span class="font-heading font-bold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors leading-snug">{{ $ficheVanDeMaand->title }}</span>
+
+                                        @if($ficheVanDeMaand->description)
+                                            <p class="text-sm text-[var(--color-text-secondary)] mt-2 leading-relaxed">{{ strip_tags($ficheVanDeMaand->description) }}</p>
+                                        @endif
+                                    </a>
+
+                                    <div class="mt-auto pt-4 border-t border-[var(--color-border-light)] text-sm">
+                                        @if($ficheVanDeMaand->user)
+                                            <div class="flex items-center gap-2 min-w-0">
+                                                @if($ficheVanDeMaand->user->avatar_path)
+                                                    <img src="{{ Storage::url($ficheVanDeMaand->user->avatar_path) }}" alt="{{ $ficheVanDeMaand->user->first_name }}" class="w-6 h-6 rounded-full object-cover shrink-0">
                                                 @else
-                                                    <div class="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-xs font-semibold shrink-0">
-                                                        {{ strtoupper(substr($diamantFiche->user->first_name, 0, 1)) }}
+                                                    <div class="w-6 h-6 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-[10px] font-semibold shrink-0">
+                                                        {{ strtoupper(substr($ficheVanDeMaand->user->first_name, 0, 1)) }}
                                                     </div>
                                                 @endif
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-[var(--color-text-primary)] leading-tight">{{ $diamantFiche->user->full_name }}</span>
-                                                    @if($diamantFiche->user->organisation)
-                                                        <span class="text-xs text-[var(--color-text-secondary)] leading-tight">{{ $diamantFiche->user->organisation }}</span>
-                                                    @endif
-                                                </div>
+                                                <span class="text-xs text-[var(--color-text-secondary)] truncate">{{ $ficheVanDeMaand->user->full_name }}</span>
                                             </div>
                                         @endif
-                                        <span class="ml-auto flex items-center gap-3">
-                                            <span class="fiche-list-kudos @if($diamantFiche->kudos_count > 0) fiche-list-kudos-active @endif">
+                                        <div class="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--color-border-light)]">
+                                            <span class="fiche-list-kudos @if($ficheVanDeMaand->kudos_count > 0) fiche-list-kudos-active @endif">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
-                                                {{ $diamantFiche->kudos_count }}
+                                                {{ $ficheVanDeMaand->kudos_count }}
                                             </span>
                                             <span class="flex items-center gap-1">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z"/></svg>
-                                                {{ $diamantFiche->comments_count }}
+                                                {{ $ficheVanDeMaand->comments_count }}
                                             </span>
-                                        </span>
+                                        </div>
                                     </div>
                                 </div>
-                            </a>
+                            </div>
                         </div>
                     @endif
                 </div>
@@ -189,4 +199,17 @@
         </div>
     </section>
     @endfeature
+
+    <script type="application/ld+json">
+    @php
+        echo json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => 'Hartverwarmers',
+            'url' => route('home'),
+            'logo' => asset('img/favicon.svg'),
+            'description' => 'Hartverwarmers is hét platform voor activiteitenbegeleiders in woonzorgcentra. Ontdek en deel praktijkfiches rond deugddoende activiteiten.',
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    @endphp
+    </script>
 </x-layout>
