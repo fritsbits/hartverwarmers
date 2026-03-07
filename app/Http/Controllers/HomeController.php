@@ -4,16 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Fiche;
 use App\Models\Initiative;
-use App\Models\Tag;
 use App\Models\User;
-use App\Services\DiamantService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
-use Laravel\Pennant\Feature;
 
 class HomeController extends Controller
 {
-    public function __invoke(DiamantService $diamantService): View
+    public function __invoke(): View
     {
         $initiatives = Initiative::query()
             ->where('published', true)
@@ -26,9 +23,18 @@ class HomeController extends Controller
         $recentFiches = Fiche::query()
             ->published()
             ->with('initiative', 'user', 'tags', 'files')
+            ->withCount('comments')
             ->latest()
             ->take(4)
             ->get();
+
+        $diamantFiche = Fiche::query()
+            ->published()
+            ->where('has_diamond', true)
+            ->with('initiative', 'user', 'tags', 'files')
+            ->withCount('comments')
+            ->latest()
+            ->first();
 
         $stats = Cache::remember('home:stats', 300, fn () => [
             'fiches' => Fiche::published()->count(),
@@ -37,31 +43,10 @@ class HomeController extends Controller
             'initiatives' => Initiative::where('published', true)->count(),
         ]);
 
-        $facets = [];
-        $firstFacetSlug = null;
-        $firstFacet = null;
-        $goalInitiativeCounts = [];
-
-        if (Feature::active('diamant-goals')) {
-            $facets = $diamantService->all();
-            $firstFacetSlug = array_key_first($facets);
-            $firstFacet = $facets[$firstFacetSlug];
-
-            $goalInitiativeCounts = Tag::query()
-                ->where('type', 'goal')
-                ->withCount(['initiatives' => fn ($q) => $q->where('published', true)])
-                ->pluck('initiatives_count', 'slug')
-                ->mapWithKeys(fn ($count, $slug) => [str_replace('doel-', '', $slug) => $count])
-                ->all();
-        }
-
         return view('home', [
             'initiatives' => $initiatives,
             'recentFiches' => $recentFiches,
-            'facets' => $facets,
-            'firstFacetSlug' => $firstFacetSlug,
-            'firstFacet' => $firstFacet,
-            'goalInitiativeCounts' => $goalInitiativeCounts,
+            'diamantFiche' => $diamantFiche,
             'stats' => $stats,
         ]);
     }

@@ -342,7 +342,7 @@ class InitiativeTest extends TestCase
         $response = $this->get(route('initiatives.show', $initiative));
 
         $response->assertStatus(200);
-        $response->assertSee("Fiches door collega's", false);
+        $response->assertSee("uitwerkingen door collega's", false);
         $response->assertSee($fiche1->title);
         $response->assertSee($fiche2->title);
         $response->assertDontSee('keer ervaringen gedeeld');
@@ -356,7 +356,7 @@ class InitiativeTest extends TestCase
         $response = $this->get(route('initiatives.show', $initiative));
 
         $response->assertStatus(200);
-        $response->assertSee('Alle 8 fiches tonen');
+        $response->assertSee('+ 2 meer');
     }
 
     public function test_initiative_show_hides_expand_button_when_six_or_fewer_fiches(): void
@@ -367,7 +367,7 @@ class InitiativeTest extends TestCase
         $response = $this->get(route('initiatives.show', $initiative));
 
         $response->assertStatus(200);
-        $response->assertDontSee('fiches tonen');
+        $response->assertDontSee('fiche-list-expand');
     }
 
     public function test_initiative_show_displays_comment_count_when_comments_exist(): void
@@ -398,27 +398,14 @@ class InitiativeTest extends TestCase
         $response->assertSee($related->title);
     }
 
-    public function test_initiative_show_displays_community_section(): void
+    public function test_initiative_show_does_not_display_community_section_when_hidden(): void
     {
         $initiative = Initiative::factory()->published()->create();
 
         $response = $this->get(route('initiatives.show', $initiative));
 
         $response->assertStatus(200);
-        $response->assertSee('Vertel, hoe ging het bij jullie?');
-        $response->assertSee('om je ervaring te delen.');
-    }
-
-    public function test_initiative_show_displays_empty_encouragement_for_authenticated_user(): void
-    {
-        $user = User::factory()->create();
-        $initiative = Initiative::factory()->published()->create();
-
-        $response = $this->actingAs($user)->get(route('initiatives.show', $initiative));
-
-        $response->assertStatus(200);
-        $response->assertSee('Vertel, hoe ging het bij jullie?');
-        $response->assertSee('Wees de eerste die een ervaring deelt.');
+        $response->assertDontSee('Vertel, hoe ging het bij jullie?');
     }
 
     public function test_initiative_comment_store_creates_comment(): void
@@ -437,6 +424,58 @@ class InitiativeTest extends TestCase
             'commentable_id' => $initiative->id,
             'body' => 'Geweldig initiatief!',
         ]);
+    }
+
+    public function test_initiative_show_displays_diamant_analyse_for_known_slug(): void
+    {
+        $initiative = Initiative::factory()->published()->create(['slug' => 'quiz']);
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertSee('Laat het initiatief schitteren');
+        $response->assertSee('Haal meer uit dit initiatief door DIAMANT-principes toe te passen.');
+        $response->assertSee('Doen');
+        $response->assertSee('Bewoners zijn actief bezig met nadenken en overleggen.');
+    }
+
+    public function test_initiative_show_displays_multiple_diamant_goals(): void
+    {
+        $initiative = Initiative::factory()->published()->create(['slug' => 'quiz']);
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertSee('Doen');
+        $response->assertSee('Anderen');
+        $response->assertSee('Talent');
+        $response->assertSee('Inclusief');
+    }
+
+    public function test_initiative_show_hides_diamant_card_for_unknown_slug_without_image(): void
+    {
+        $initiative = Initiative::factory()->published()->create([
+            'slug' => 'onbekend-initiatief',
+            'image' => null,
+        ]);
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Laat het initiatief schitteren');
+    }
+
+    public function test_initiative_show_displays_card_with_image_but_no_analyse(): void
+    {
+        $initiative = Initiative::factory()->published()->create([
+            'slug' => 'onbekend-initiatief',
+            'image' => '/img/initiatives/test.webp',
+        ]);
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertSee('Laat het initiatief schitteren');
     }
 
     public function test_thumbnail_url_derives_from_image_path(): void

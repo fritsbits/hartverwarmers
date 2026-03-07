@@ -32,7 +32,7 @@ class InitiativeController extends Controller
         ]);
     }
 
-    public function show(Initiative $initiative): View
+    public function show(Initiative $initiative, DiamantService $diamant): View
     {
         if (! $initiative->published) {
             abort(404);
@@ -62,9 +62,28 @@ class InitiativeController extends Controller
                 ->get()
             : collect();
 
+        $diamantQuote = config('diamant_quotes.'.$initiative->slug);
+
+        $rawAnalyse = config('diamant_analyse.'.$initiative->slug);
+        $diamantAnalyse = null;
+        if (is_array($rawAnalyse)) {
+            $diamantAnalyse = collect($rawAnalyse)->map(function (array $item) use ($diamant) {
+                $facet = $diamant->findBySlug($item['facet']);
+
+                return [
+                    'facet' => $item['facet'],
+                    'text' => $item['text'],
+                    'keyword' => $facet['keyword'] ?? ucfirst($item['facet']),
+                    'slug' => $facet['slug'] ?? $item['facet'],
+                ];
+            })->all();
+        }
+
         return view('initiatives.show', [
             'initiative' => $initiative,
             'relatedInitiatives' => $relatedInitiatives,
+            'diamantQuote' => $diamantQuote,
+            'diamantAnalyse' => $diamantAnalyse,
         ]);
     }
 

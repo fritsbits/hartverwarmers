@@ -310,6 +310,14 @@
 
 ## Cards
 
+### Fiche List Item
+
+**Class:** `.fiche-list-item` + `.fiche-list-icon` + `.fiche-list-kudos` + `.fiche-list-expand`
+
+**When to use:** Compact card-style rows listing elaborations on initiative detail pages. Each row is a bordered card with file-text icon (tint background), two-row layout (title + author), outline heart kudos, and hover lift shadow.
+
+**When NOT to use:** Don't use for full fiche previews — use `<x-fiche-card>` instead. Don't use outside initiative detail pages.
+
 ### Content Card
 
 **Class:** `.content-card`
@@ -334,21 +342,21 @@
 
 **When NOT to use:** Don't use for general content — only for quotes/testimonials. One per page maximum.
 
-### Practice Card
+### Practice Example (Zigzag)
 
-**Class:** `.practice-card`
+**Pattern:** `grid grid-cols-1 md:grid-cols-2 gap-8 items-center` with alternating `md:order-1`/`md:order-2`
 
-**When to use:** Card for displaying practice examples on goal detail pages. Similar to content-card but without hover effects — for reading, not navigating.
+**When to use:** Zigzag editorial layout for practice examples on goal detail pages. Large rectangular images (aspect-4/3, object-contain, white bg) alternate left/right across two examples. Centered section header above. On mobile: stacks vertically (image on top, text below). Uses `h3` for activity-focused headings.
 
-**When NOT to use:** Don't add hover effects. Don't use outside of goal detail pages.
+**When NOT to use:** Don't use outside of goal detail pages. Don't show more than 2 examples.
 
 ## Layout
 
-### Question Row
+### Reflection Question
 
-**Class:** `.question-row`
+**Pattern:** `flex items-start gap-4` with `.question-badge` + lightweight text
 
-**When to use:** Row layout for reflection questions on goal detail pages. Subtle background with question badge + text. Stack vertically for multiple questions.
+**When to use:** Display reflection questions on goal detail pages. Text is `text-xl font-light` without background blocks. Stack vertically with `space-y-6`.
 
 **When NOT to use:** Don't use for FAQ-style content with expandable answers — this is for simple question display only.
 
@@ -356,9 +364,9 @@
 
 **Class:** `.question-badge`
 
-**When to use:** Circle badge showing "?" inside a question-row. Light orange background with orange text. Always pair with .question-row.
+**When to use:** Circle badge with diamond icon inside a reflection question row. Light orange background with orange text.
 
-**When NOT to use:** Don't use standalone — always within a .question-row container.
+**When NOT to use:** Don't use standalone — always within a reflection question flex container.
 
 ### Page Sections
 
@@ -435,10 +443,11 @@
 | Diamond Indicator | `.diamond-indicator` | Pill-shaped badge with light orange background showing DIAMANT goal association | Don't use in compact lists — too wide |
 | Flux Badge | `<flux:badge>` | General-purpose tag/status badge | Don't use for DIAMANT goals — those have their own dedicated badge components ( |
 | Field Tag | `.field-tag` | Small inline label next to form field labels (e.g. "Verplicht", "Optioneel") | Don't use for large status indicators — use `<flux:badge>` |
+| Fiche List Item | `.fiche-list-item` + `.fiche-list-icon` | Compact card-style elaboration rows on initiative detail pages | Don't use for full fiche previews — use `<x-fiche-card>` |
 | Content Card | `.content-card` | Clickable content card with hover lift effect | Don't use for static/non-clickable content — use flux:card instead |
 | Flux Card | `<flux:card>` | Static content container | Don't use for browsable content grids — use  |
 | Quote Card | `.quote-card` | Full-orange card for displaying inspirational quotes on goal detail pages | Don't use for general content — only for quotes/testimonials |
-| Practice Card | `.practice-card` | Card for displaying practice examples on goal detail pages | Don't add hover effects |
-| Question Row | `.question-row` | Row layout for reflection questions on goal detail pages | Don't use for FAQ-style content with expandable answers — this is for simple question display only |
-| Question Badge | `.question-badge` | Circle badge showing "?" inside a question-row | Don't use standalone — always within a  |
+| Practice Example | Zigzag grid + `md:order-*` | Editorial zigzag layout with large images on goal detail pages | Don't show more than 2 examples |
+| Reflection Question | `flex items-start gap-4` + `.question-badge` | Lightweight text questions on goal detail pages | Don't use for FAQ-style content |
+| Question Badge | `.question-badge` | Circle badge with diamond icon in reflection questions | Don't use standalone |
 | Page Sections | `<section>` + `max-w-6xl mx-auto px-6 py-16` | Full-width page layout with cream hero + white content sections + HR separators | Don't use for pages with clear background alternation already |

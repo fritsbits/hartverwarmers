@@ -424,12 +424,31 @@
     color: var(--color-text-primary);
   }
 
+  /* Polaroid-style photo frame */
+  .photo-polaroid {
+    @apply bg-white rounded-sm;
+    padding: 0.5rem 0.5rem 1.5rem;
+    box-shadow: 8px 12px 30px rgba(120, 90, 60, 0.25);
+    transform: rotate(-2deg);
+  }
+
+  .photo-polaroid img {
+    @apply rounded-sm;
+  }
+
+  .photo-polaroid figcaption {
+    @apply text-xs text-center mt-2;
+    color: var(--color-text-secondary);
+    font-family: 'Nanum Pen Script', cursive;
+    font-size: 1.2rem;
+  }
+
   /* Quote paper (goal show hero — ruled-paper style) */
   .quote-paper {
-    @apply relative bg-white rounded-lg;
+    @apply relative bg-white rounded-none;
     box-shadow: 8px 12px 30px rgba(120, 90, 60, 0.25);
     padding: 1.75rem 2rem 1.25rem;
-    transform: rotate(2.5deg);
+    transform: rotate(-2.5deg);
     z-index: 1;
     background-image: repeating-linear-gradient(
       to bottom,
@@ -447,41 +466,88 @@
     line-height: 32px;
   }
 
-  .quote-paper .quote-ik-wil {
+  .quote-paper-lg {
+    padding: 30px 28px 30px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 29px,
+      color-mix(in srgb, var(--color-primary) 12%, transparent) 29px,
+      color-mix(in srgb, var(--color-primary) 12%, transparent) 30px
+    );
+    background-position: 0 0;
+  }
+
+  .quote-paper-lg .checklist-label {
+    display: block;
+    font-family: 'Nanum Pen Script', cursive;
+    font-size: 1.25rem;
+    letter-spacing: 0.15em;
+    line-height: 30px;
+    padding-top: 0;
+    margin-bottom: 30px;
     color: var(--color-primary);
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .quote-paper-lg .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    line-height: 30px;
+    min-height: 30px;
+    margin-bottom: 30px;
+  }
+
+  .quote-paper-lg .checklist-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .quote-paper-lg .checklist-item p {
+    font-size: 1.3rem;
+    line-height: 30px;
+  }
+
+  .quote-paper-lg .checklist-item .question-badge {
+    flex-shrink: 0;
+  }
+
+  .quote-paper-xl {
+    padding: 2.75rem 3rem 2.5rem;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 43px,
+      color-mix(in srgb, var(--color-primary) 18%, transparent) 43px,
+      color-mix(in srgb, var(--color-primary) 18%, transparent) 44px
+    );
+    background-position: 0 34px;
+  }
+
+  .quote-paper-xl p {
+    font-size: 3.5rem;
+    line-height: 44px;
   }
 
   .quote-paper-mark {
     @apply absolute select-none;
     font-family: 'Garamond', 'Georgia', 'Times New Roman', serif;
-    font-size: 14rem;
+    font-size: 7rem;
     line-height: 0.5;
     top: -0.5rem;
-    right: -0.5rem;
+    left: -0.5rem;
     z-index: 0;
     color: var(--color-primary);
-    opacity: 0.15;
-  }
-
-  /* Question row (goal show reflection) */
-  .question-row {
-    @apply flex items-start gap-4 p-5 rounded-xl;
-    background-color: var(--color-bg-subtle);
+    opacity: 1;
+    transform: rotate(180deg);
   }
 
   .question-badge {
-    @apply inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold shrink-0;
+    @apply inline-flex items-center justify-center w-[30px] h-[30px] rounded-full text-sm font-bold shrink-0;
     font-family: var(--font-heading);
     color: var(--color-primary);
     background-color: var(--color-bg-accent-light);
-  }
-
-  /* Practice card (goal show examples) */
-  .practice-card {
-    @apply rounded-xl overflow-hidden;
-    background: var(--color-bg-white);
-    border: 1px solid var(--color-border-light);
   }
 
   /* DIAMANT pill — compact goal link with gem icon */
@@ -576,6 +642,92 @@
 
   .practical-content a:hover {
     text-decoration-color: var(--color-primary);
+  }
+
+  /* Fiche list item — card-style compact row for initiative detail pages */
+  .fiche-list-item {
+    @apply flex items-center gap-3 no-underline;
+    padding: 16px 12px;
+    background: var(--color-bg-white);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+    color: inherit;
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .fiche-list-item:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-1px);
+    border-color: var(--color-border-hover);
+  }
+
+  .fiche-list-icon {
+    @apply flex items-center justify-center shrink-0;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-accent-light);
+    color: var(--color-text-secondary);
+    transition: color var(--transition-fast), background var(--transition-fast);
+  }
+
+  .fiche-list-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .fiche-list-item:hover .fiche-list-icon {
+    color: var(--color-primary);
+    background: #fde8dc;
+  }
+
+  .fiche-list-kudos {
+    @apply flex items-center gap-1 shrink-0 justify-end;
+    min-width: 36px;
+    font-size: 13px;
+    color: var(--color-border-hover);
+  }
+
+  .fiche-list-kudos svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .fiche-list-kudos-active {
+    color: var(--color-primary);
+  }
+
+  .fiche-list-expand {
+    @apply inline-flex items-center justify-center;
+    background: var(--color-bg-subtle);
+    color: var(--color-text-secondary);
+    padding: 5px 16px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .fiche-list-expand:hover {
+    background: var(--color-border-light);
+    color: var(--color-text-primary);
+  }
+
+  /* DIAMANT accordion — expandable goal items in initiative sidebar */
+  .diamant-accordion-item {
+    background: transparent;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .diamant-accordion-body {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    padding: 0 0 0.5rem;
   }
 
   /* Similar fiches tip — cream panel with left border */
@@ -858,6 +1010,15 @@ dialog[data-modal="search"]::backdrop {
     opacity: 0;
     transform: translateY(-65px) scale(0.8) rotate(5deg);
   }
+}
+
+/* Details arrow rotation */
+details[open] .details-arrow {
+  transform: rotate(90deg);
+}
+
+details summary::-webkit-details-marker {
+  display: none;
 }
 
 @media (max-width: 768px) {
