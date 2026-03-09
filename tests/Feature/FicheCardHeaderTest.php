@@ -15,12 +15,13 @@ class FicheCardHeaderTest extends TestCase
 
     public function test_fiche_card_shows_preview_header_when_files_have_previews(): void
     {
+        $user = User::factory()->create();
         $initiative = Initiative::factory()->create(['published' => true]);
-        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user->id]);
 
         File::factory()->withPreviews(3)->create(['fiche_id' => $fiche->id]);
 
-        $response = $this->get(route('initiatives.show', $initiative));
+        $response = $this->get(route('contributors.show', $user));
 
         $response->assertStatus(200);
         $response->assertSee('fiche-card-header');
@@ -29,12 +30,13 @@ class FicheCardHeaderTest extends TestCase
 
     public function test_fiche_card_hides_header_when_no_preview_images(): void
     {
+        $user = User::factory()->create();
         $initiative = Initiative::factory()->create(['published' => true]);
-        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user->id]);
 
         File::factory()->create(['fiche_id' => $fiche->id, 'preview_images' => null]);
 
-        $response = $this->get(route('initiatives.show', $initiative));
+        $response = $this->get(route('contributors.show', $user));
 
         $response->assertStatus(200);
         $response->assertDontSee('fiche-card-header');
@@ -42,10 +44,11 @@ class FicheCardHeaderTest extends TestCase
 
     public function test_fiche_card_hides_header_when_no_files(): void
     {
+        $user = User::factory()->create();
         $initiative = Initiative::factory()->create(['published' => true]);
-        Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+        Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'user_id' => $user->id]);
 
-        $response = $this->get(route('initiatives.show', $initiative));
+        $response = $this->get(route('contributors.show', $user));
 
         $response->assertStatus(200);
         $response->assertDontSee('fiche-card-header');
@@ -72,13 +75,16 @@ class FicheCardHeaderTest extends TestCase
         $this->assertEmpty($fiche->cardPreviewImages());
     }
 
-    public function test_home_page_shows_fiche_card_header_for_fiches_with_previews(): void
+    public function test_initiative_page_shows_fiche_card_header_for_diamond_fiche_with_previews(): void
     {
         $initiative = Initiative::factory()->create(['published' => true]);
-        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'has_diamond' => true,
+        ]);
         File::factory()->withPreviews(2)->create(['fiche_id' => $fiche->id]);
 
-        $response = $this->get(route('home'));
+        $response = $this->get(route('initiatives.show', $initiative));
 
         $response->assertStatus(200);
         $response->assertSee('fiche-card-header');
