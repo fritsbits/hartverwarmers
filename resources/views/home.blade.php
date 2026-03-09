@@ -91,7 +91,7 @@
                     </div>
 
                     {{-- Right: Fiche van de maand --}}
-                    @if($ficheVanDeMaand)
+                    @if($ficheVanDeMaand ?? null)
                         <div class="flex flex-col">
                             <div class="flex items-baseline justify-between mb-4">
                                 <h3 class="text-lg font-heading font-bold">Fiche van de maand</h3>
