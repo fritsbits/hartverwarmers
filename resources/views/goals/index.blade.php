@@ -1,4 +1,4 @@
-<x-layout title="Doelstellingen — DIAMANT-model" :full-width="true">
+<x-layout title="Doelstellingen — DIAMANT-model" description="Het DIAMANT-model biedt 7 doelstellingen voor deugddoend samenleven in woonzorgcentra: Doen, Inclusief, Autonomie, Mensgericht, Anderen, Normalisatie en Talent." :full-width="true">
     {{-- Hero --}}
     <section class="bg-[var(--color-bg-cream)]">
         <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">

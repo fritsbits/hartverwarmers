@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout title="Log in">
     <x-slot:header>
         <span class="section-label section-label-hero">Log in</span>
         <h1 class="text-4xl font-heading font-bold mt-1">Welkom terug</h1>

@@ -1,4 +1,4 @@
-<x-layout title="Gidsen en tools" :full-width="true">
+<x-layout title="Gidsen en tools" description="Praktische gidsen, workshops en tools om je als activiteitenbegeleider verder te ontwikkelen." :full-width="true">
     {{-- Hero / Intro --}}
     <section class="bg-[var(--color-bg-cream)]">
         <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">

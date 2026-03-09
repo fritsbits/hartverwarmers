@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Fiche;
 use App\Models\Initiative;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -107,6 +108,43 @@ class FicheController extends Controller
 
         return redirect()->route('fiches.show', [$initiative, $fiche])
             ->with('success', "Diamantje {$status} \"{$fiche->title}\".");
+    }
+
+    public function setFicheOfMonth(Initiative $initiative, Fiche $fiche, Request $request): RedirectResponse
+    {
+        $request->validate([
+            'month' => ['required', 'date_format:Y-m'],
+        ]);
+
+        Fiche::query()->where('featured_month', $request->month)->update(['featured_month' => null]);
+
+        $fiche->update(['featured_month' => $request->month]);
+
+        $monthLabel = \Carbon\Carbon::createFromFormat('Y-m', $request->month)->translatedFormat('F Y');
+
+        return redirect()->route('fiches.show', [$initiative, $fiche])
+            ->with('success', "\"{$fiche->title}\" is fiche van de maand voor {$monthLabel}.");
+    }
+
+    public function unsetFicheOfMonth(Initiative $initiative, Fiche $fiche): RedirectResponse
+    {
+        $fiche->update(['featured_month' => null]);
+
+        return redirect()->route('fiches.show', [$initiative, $fiche])
+            ->with('success', "\"{$fiche->title}\" is niet langer fiche van de maand.");
+    }
+
+    public function ficheVanDeMaandArchive(): View
+    {
+        $fiches = Fiche::query()
+            ->published()
+            ->ficheOfMonth()
+            ->with('initiative', 'user', 'tags', 'files')
+            ->withCount('comments')
+            ->orderByDesc('featured_month')
+            ->get();
+
+        return view('fiches.fiche-van-de-maand', ['fiches' => $fiches]);
     }
 
     public function destroy(Initiative $initiative, Fiche $fiche): RedirectResponse

@@ -1,4 +1,4 @@
-<x-profile-layout title="Fiches" description="Bekijk en beheer je fiches en hun statistieken.">
+<x-sidebar-layout title="Fiches" section-label="Profiel" description="Bekijk en beheer je fiches en hun statistieken.">
 
     @if($newCommentsCount > 0)
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-center gap-3">
@@ -109,4 +109,4 @@
             </flux:button>
         </div>
     @endif
-</x-profile-layout>
+</x-sidebar-layout>

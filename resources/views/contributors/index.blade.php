@@ -1,4 +1,4 @@
-<x-layout title="Bijdragers" :full-width="true">
+<x-layout title="Bijdragers" description="Ontmoet de activiteitenbegeleiders die hun praktijkervaring delen op Hartverwarmers." :full-width="true">
     {{-- Hero --}}
     <section class="bg-[var(--color-bg-cream)]">
         <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
@@ -29,7 +29,7 @@
                             <flux:card class="hover:shadow-md transition-shadow text-center">
                                 @if($contributor->avatar_path)
                                     <div class="flex justify-center mb-4">
-                                        <img src="{{ Storage::url($contributor->avatar_path) }}" alt="{{ $contributor->full_name }}" class="w-20 h-20 rounded-full object-cover" loading="lazy">
+                                        <img src="{{ $contributor->avatarUrl() }}" alt="{{ $contributor->full_name }}" class="w-20 h-20 rounded-full object-cover" loading="lazy">
                                     </div>
                                 @else
                                     <div class="flex justify-center mb-4">

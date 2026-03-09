@@ -1,4 +1,4 @@
-<x-layout :title="$initiative->title" :full-width="true">
+<x-layout :title="$initiative->title" :description="$initiative->description ? Str::limit(strip_tags($initiative->description), 160) : 'Bekijk het initiatief ' . $initiative->title . ' op Hartverwarmers.'" :full-width="true">
     @auth
         @if(auth()->user()->isAdmin())
             <flux:modal name="delete-initiative" class="max-w-md">

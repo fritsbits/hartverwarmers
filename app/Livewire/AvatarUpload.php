@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Services\AvatarThumbnailService;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -30,13 +31,16 @@ class AvatarUpload extends Component
         $this->validate();
 
         $user = auth()->user();
+        $thumbnailService = app(AvatarThumbnailService::class);
 
-        // Delete old avatar
+        // Delete old avatar and its thumbnail
         if ($user->avatar_path) {
+            $thumbnailService->delete($user->avatar_path);
             Storage::disk('public')->delete($user->avatar_path);
         }
 
         $path = $this->photo->store('avatars', 'public');
+        $thumbnailService->generate($path);
         $user->update(['avatar_path' => $path]);
 
         $this->existingAvatar = $path;
@@ -51,6 +55,7 @@ class AvatarUpload extends Component
         $user = auth()->user();
 
         if ($user->avatar_path) {
+            app(AvatarThumbnailService::class)->delete($user->avatar_path);
             Storage::disk('public')->delete($user->avatar_path);
             $user->update(['avatar_path' => null]);
         }

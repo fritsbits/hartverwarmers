@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout title="Wachtwoord bevestigen">
     <x-slot:header>
         <span class="section-label section-label-hero">Bevestig wachtwoord</span>
         <h1 class="text-4xl font-heading font-bold mt-1 mb-4">Beveiligde zone</h1>

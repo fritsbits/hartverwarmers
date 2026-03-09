@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout title="Wachtwoord herstellen">
     <x-slot:header>
         <span class="section-label section-label-hero">Reset wachtwoord</span>
         <h1 class="text-4xl font-heading font-bold mt-1">Kies een nieuw wachtwoord</h1>
