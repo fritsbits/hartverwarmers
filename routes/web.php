@@ -98,3 +98,8 @@ Route::get('/uitwerkingen/{slug}/bewerken', fn (string $slug) => redirect("/fich
 
 // Breeze auth routes
 require __DIR__.'/auth.php';
+
+// Preview error pages (remove before deploying)
+Route::get('/preview/404', fn () => response(view('errors.404'), 404));
+Route::get('/preview/403', fn () => response(view('errors.403'), 403));
+Route::get('/preview/500', fn () => response(view('errors.500'), 500));
