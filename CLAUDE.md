@@ -31,6 +31,10 @@ vendor/bin/pint --dirty --format agent
 php artisan migrate:fresh --seed
 ```
 
+## Deployment & Migrations
+
+**Before committing and pushing**, always check for untracked migrations: `git status database/migrations/`. Migrations must be committed together with the code that depends on them (models, controllers, scopes referencing new columns). Never push code that references a column without its migration — this causes production crashes.
+
 ## Architecture
 
 ### Domain Model
