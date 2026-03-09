@@ -18,29 +18,94 @@
 
     <!-- Featured Initiatives -->
     @if($initiatives->isNotEmpty())
-        <section class="bg-[var(--color-bg-base)]">
+        <section class="bg-[var(--color-bg-base)]" x-data="{
+            selectedGoal: '{{ $defaultGoal }}',
+            goals: @js($goals),
+            initiatives: @js($initiatives->map(fn ($i) => [
+                'id' => $i->id,
+                'goalSlugs' => $i->tags->pluck('slug')->values(),
+            ])),
+            headingOpen: false,
+            hoverTimeout: null,
+            openHeading() {
+                clearTimeout(this.hoverTimeout);
+                this.headingOpen = true;
+            },
+            closeHeading() {
+                this.hoverTimeout = setTimeout(() => this.headingOpen = false, 150);
+            },
+            get currentGoal() {
+                return this.goals.find(g => g.tagSlug === this.selectedGoal);
+            },
+            get inspiratie() {
+                return this.currentGoal?.inspiratie ?? '';
+            },
+            _shuffleCache: {},
+            getShuffledIds(goalSlug) {
+                if (this._shuffleCache[goalSlug]) return this._shuffleCache[goalSlug];
+                const matched = this.initiatives.filter(i =>
+                    !goalSlug || i.goalSlugs.includes(goalSlug)
+                );
+                const shuffled = [...matched];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                this._shuffleCache[goalSlug] = shuffled.slice(0, 3).map(i => i.id);
+                return this._shuffleCache[goalSlug];
+            },
+            get filteredIds() {
+                return this.getShuffledIds(this.selectedGoal);
+            },
+            isVisible(id) {
+                return this.filteredIds.includes(id);
+            }
+        }">
             <div class="max-w-6xl mx-auto px-6 py-16">
-                <div class="mb-10">
+                <div class="mb-6">
                     <span class="section-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
-                        </svg>
-                        Ontdek initiatieven
+                        <x-diamant-gem size="xxs" />
+                        Initiatieven per doel
                     </span>
-                    <h2 class="text-3xl">Maak vandaag het verschil</h2>
-                    <p class="text-[var(--color-text-secondary)] mt-2">Blader door activiteiten die werken in woonzorgcentra en laat je inspireren</p>
+                    <div class="flex items-baseline justify-between gap-4">
+                        <h2 class="text-3xl">
+                            Inspiratie om <span class="relative inline" @mouseenter="openHeading()" @mouseleave="closeHeading()">
+                                <span class="italic cursor-pointer transition-colors hover:text-[var(--color-primary)] border-b border-dotted border-[var(--color-border-light)]"
+                                      x-text="inspiratie"></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="inline h-4 w-4 -mt-0.5 ml-0.5 text-[var(--color-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+
+                                <div x-cloak x-show="headingOpen"
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="opacity-0 scale-95"
+                                     x-transition:enter-end="opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="opacity-100 scale-100"
+                                     x-transition:leave-end="opacity-0 scale-95"
+                                     class="absolute left-0 top-full pt-2 z-50">
+                                <div class="bg-white rounded-lg shadow-lg border border-[var(--color-border-light)] py-1 whitespace-nowrap">
+                                    @foreach($goals as $goal)
+                                        <button class="block w-full px-4 py-2 text-left text-base font-heading font-bold hover:bg-[var(--color-bg-cream)] hover:text-[var(--color-primary)] transition-colors cursor-pointer"
+                                                :class="selectedGoal === '{{ $goal['tagSlug'] }}' ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-primary)]'"
+                                                @click="selectedGoal = '{{ $goal['tagSlug'] }}'; headingOpen = false">
+                                            Inspiratie om {{ $goal['inspiratie'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                                </div>
+                            </span>
+                        </h2>
+                        <a href="{{ route('initiatives.index') }}" class="cta-link shrink-0">Alle initiatieven</a>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($initiatives->take(3) as $initiative)
-                        <x-initiative-card :initiative="$initiative" />
+                    @foreach($initiatives as $initiative)
+                        <div x-show="isVisible({{ $initiative->id }})" x-cloak>
+                            <x-initiative-card :initiative="$initiative" />
+                        </div>
                     @endforeach
-                </div>
-
-                <div class="text-center mt-10">
-                    <a href="{{ route('initiatives.index') }}" class="cta-link">
-                        Bekijk alle initiatieven
-                    </a>
                 </div>
             </div>
         </section>
@@ -58,7 +123,6 @@
                         Uitgewerkte fiches
                     </span>
                     <h2 class="text-3xl">Activiteiten gedeeld door collega's</h2>
-                    <p class="text-[var(--color-text-secondary)] mt-2">Kant-en-klare fiches van begeleiders uit andere woonzorgcentra — direct bruikbaar in jouw werking</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -130,7 +194,7 @@
                                         @if($ficheVanDeMaand->user)
                                             <div class="flex items-center gap-2 min-w-0">
                                                 @if($ficheVanDeMaand->user->avatar_path)
-                                                    <img src="{{ Storage::url($ficheVanDeMaand->user->avatar_path) }}" alt="{{ $ficheVanDeMaand->user->first_name }}" class="w-6 h-6 rounded-full object-cover shrink-0">
+                                                    <img src="{{ $ficheVanDeMaand->user->avatarUrl() }}" alt="{{ $ficheVanDeMaand->user->first_name }}" class="w-6 h-6 rounded-full object-cover shrink-0">
                                                 @else
                                                     <div class="w-6 h-6 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-[10px] font-semibold shrink-0">
                                                         {{ strtoupper(substr($ficheVanDeMaand->user->first_name, 0, 1)) }}
