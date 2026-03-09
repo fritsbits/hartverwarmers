@@ -12,7 +12,7 @@
                 <div class="md:w-64 text-center">
                     @if($contributor->avatar_path)
                         <div class="flex justify-center">
-                            <img src="{{ Storage::url($contributor->avatar_path) }}" alt="{{ $contributor->full_name }}" class="w-32 h-32 rounded-full object-cover">
+                            <img src="{{ $contributor->avatarUrl() }}" alt="{{ $contributor->full_name }}" class="w-32 h-32 rounded-full object-cover">
                         </div>
                     @else
                         <div class="flex justify-center">

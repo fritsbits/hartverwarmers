@@ -131,13 +131,12 @@ class GoalTest extends TestCase
         $response->assertDontSee($unpublished->title);
     }
 
-    public function test_goals_show_displays_practice_section(): void
+    public function test_goals_show_hides_practice_section_when_disabled(): void
     {
         $response = $this->get(route('goals.show', 'talent'));
 
         $response->assertStatus(200);
-        $response->assertSee('Zo herken je het');
-        $response->assertSee('Herkenbare momenten uit het dagelijks leven.');
+        $response->assertDontSee('Zo herken je het');
     }
 
     public function test_goals_show_displays_checklist(): void
@@ -164,7 +163,6 @@ class GoalTest extends TestCase
         $response = $this->get(route('goals.show', 'talent'));
 
         $response->assertStatus(200);
-        $response->assertSee('In de praktijk');
         $response->assertSee('Checklist');
         $response->assertSee('DIAMANT-kompas');
         $response->assertDontSee('Vragen voor jezelf');
@@ -187,15 +185,12 @@ class GoalTest extends TestCase
         $response->assertSee('Wat kan deze persoon ons brengen');
     }
 
-    public function test_goals_show_displays_practice_example_names_and_roles(): void
+    public function test_goals_show_hides_practice_examples_when_disabled(): void
     {
         $response = $this->get(route('goals.show', 'talent'));
 
         $response->assertStatus(200);
-        $response->assertSee('Frans');
-        $response->assertSee('Hij leest voor met zijn heldere stem');
-        $response->assertSee('Wiske');
-        $response->assertSee('Ze neemt de leiding bij het zingen');
+        $response->assertDontSee('Hij leest voor met zijn heldere stem');
     }
 
     public function test_goals_show_limits_initiatives_to_six(): void
@@ -261,13 +256,11 @@ class GoalTest extends TestCase
         $response->assertSee('/doelen/mensgericht', false);
     }
 
-    public function test_goals_show_limits_practice_examples_to_two(): void
+    public function test_goals_show_hides_practice_examples_limit_when_disabled(): void
     {
         $response = $this->get(route('goals.show', 'talent'));
 
         $response->assertStatus(200);
-        $response->assertSee('Frans');
-        $response->assertSee('Wiske');
-        $response->assertDontSee('Tuinier Meneer Peeters');
+        $response->assertDontSee('Frans');
     }
 }

@@ -4,8 +4,9 @@
             <div class="flex items-center">
                 <!-- Logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-2.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-[var(--color-primary)]" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 shrink-0" viewBox="0 0 100 100">
+                        <path d="M20,5 L2,36 L50,97 L98,36 L80,5 L50,22 Z" fill="#e8764b"/>
+                        <line x1="2" y1="36" x2="98" y2="36" stroke="rgba(255,255,255,0.2)" stroke-width="2.5" stroke-linecap="round"/><line x1="14" y1="51.25" x2="86" y2="51.25" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="5" x2="50" y2="22" stroke="rgba(255,255,255,0.2)" stroke-width="1.75" stroke-linecap="round"/><line x1="80" y1="5" x2="50" y2="22" stroke="rgba(255,255,255,0.2)" stroke-width="1.75" stroke-linecap="round"/><line x1="50" y1="22" x2="50" y2="97" stroke="rgba(255,255,255,0.2)" stroke-width="1.75" stroke-linecap="round"/><path d="M29.6,10.4 L17.4,45.8 L50.0,83.3 L82.6,45.8 L70.4,10.4 L50.0,34.0 Z" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2.5" stroke-linejoin="round"/>
                     </svg>
                     <span class="font-heading text-xl font-bold tracking-tight"><span class="sm:hidden">HVW</span><span class="hidden sm:inline">hartverwarmers</span></span>
                 </a>
@@ -142,7 +143,7 @@
                         <flux:button variant="ghost" icon-trailing="chevron-down">
                             <div class="flex items-center gap-2">
                                 @if(auth()->user()->avatar_path)
-                                    <img src="{{ Storage::url(auth()->user()->avatar_path) }}" alt="{{ auth()->user()->first_name }}" class="w-8 h-8 rounded-full object-cover">
+                                    <img src="{{ auth()->user()->avatarUrl() }}" alt="{{ auth()->user()->first_name }}" class="w-8 h-8 rounded-full object-cover">
                                 @else
                                     <div class="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-sm font-semibold">
                                         {{ substr(auth()->user()->first_name, 0, 1) }}

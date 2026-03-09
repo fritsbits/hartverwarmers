@@ -45,4 +45,11 @@ class FicheFactory extends Factory
             'has_diamond' => true,
         ]);
     }
+
+    public function ficheOfMonth(?string $month = null): static
+    {
+        return $this->state(fn () => [
+            'featured_month' => $month ?? now()->format('Y-m'),
+        ]);
+    }
 }

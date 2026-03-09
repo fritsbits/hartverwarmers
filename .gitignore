@@ -25,3 +25,7 @@ Homestead.yaml
 Thumbs.db
 /scripts
 /test-results
+*-playground.html
+login-desktop.png
+register-desktop.png
+wizard-step2*.png

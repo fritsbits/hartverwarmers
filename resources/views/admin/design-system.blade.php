@@ -1,23 +1,7 @@
-<x-layout title="Design Systeem" :full-width="true">
-
-    {{-- Hero --}}
-    <section class="bg-[var(--color-bg-cream)]">
-        <div class="max-w-6xl mx-auto px-6 pt-8 pb-12">
-            <flux:breadcrumbs class="mb-6">
-                <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
-                <flux:breadcrumbs.item>Design Systeem</flux:breadcrumbs.item>
-            </flux:breadcrumbs>
-            <span class="section-label section-label-hero">Patroonbibliotheek</span>
-            <h1 class="mt-1">Design Systeem</h1>
-            <p class="mt-3 text-lg text-[var(--color-text-secondary)]">Alle visuele bouwstenen van Hartverwarmers — levend, altijd actueel.</p>
-        </div>
-    </section>
-    <hr class="border-[var(--color-border-light)]">
+<x-sidebar-layout title="Design Systeem" section-label="Patroonbibliotheek" description="Alle visuele bouwstenen van Hartverwarmers — levend, altijd actueel.">
 
     {{-- Main content: TOC sidebar + demos --}}
-    <section>
-        <div class="max-w-6xl mx-auto px-6 py-16">
-            <div class="flex gap-12">
+    <div class="flex gap-12">
 
                 {{-- Sticky TOC sidebar (desktop only) --}}
                 <nav class="hidden lg:block w-56 shrink-0" aria-label="Inhoudsopgave">
@@ -838,7 +822,5 @@
 
                 </div>
             </div>
-        </div>
-    </section>
 
-</x-layout>
+</x-sidebar-layout>

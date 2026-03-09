@@ -1,4 +1,4 @@
-<x-layout title="Initiatieven" :full-width="true">
+<x-layout title="Initiatieven" description="Blader door alle initiatieven op Hartverwarmers. Van muziek tot beweging, van natuur tot koken — ontdek activiteiten voor jouw woonzorgcentrum." :full-width="true">
     <div x-data="{
         search: '',
         selectedGoals: [],

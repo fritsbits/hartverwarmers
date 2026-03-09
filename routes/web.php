@@ -11,10 +11,14 @@ use App\Http\Controllers\GoalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InitiativeController;
 use App\Http\Controllers\ProfileController as HvProfileController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\ToolsInspirationController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
+
+// Sitemap
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
 // Home
 Route::get('/', HomeController::class)->name('home');
@@ -23,7 +27,8 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/initiatieven', [InitiativeController::class, 'index'])->name('initiatives.index');
 Route::get('/initiatieven/{initiative:slug}', [InitiativeController::class, 'show'])->name('initiatives.show');
 
-// Fiches (nested under initiative)
+// Fiches
+Route::get('/fiches-van-de-maand', [FicheController::class, 'ficheVanDeMaandArchive'])->name('fiches.ficheVanDeMaand');
 Route::get('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'show'])->name('fiches.show');
 Route::get('/initiatieven/{initiative:slug}/{fiche:slug}/download', [FicheController::class, 'downloadFiles'])->name('fiches.download');
 
@@ -58,6 +63,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/features/{feature}/toggle', [FeatureController::class, 'toggle'])->name('admin.features.toggle');
         Route::delete('/initiatieven/{initiative:slug}', [InitiativeController::class, 'destroy'])->name('initiatives.destroy');
         Route::post('/initiatieven/{initiative:slug}/{fiche:slug}/diamant', [FicheController::class, 'toggleDiamond'])->name('fiches.toggleDiamond');
+        Route::post('/initiatieven/{initiative:slug}/{fiche:slug}/fiche-van-de-maand', [FicheController::class, 'setFicheOfMonth'])->name('fiches.setFicheOfMonth');
+        Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}/fiche-van-de-maand', [FicheController::class, 'unsetFicheOfMonth'])->name('fiches.unsetFicheOfMonth');
         Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'destroy'])->name('fiches.destroy');
     });
 });
@@ -80,6 +87,10 @@ Route::middleware(EnsureFeaturesAreActive::using('diamant-goals'))->group(functi
 Route::get('/{slug}', [ContentController::class, 'content'])
     ->where('slug', '(lessenreeks|wonen-en-leven).*')
     ->name('content');
+
+// Legal pages
+Route::view('/privacybeleid', 'legal.privacy')->name('legal.privacy');
+Route::view('/gebruiksvoorwaarden', 'legal.terms')->name('legal.terms');
 
 // Legacy redirects (old /uitwerkingen URLs → /fiches)
 Route::redirect('/uitwerkingen/nieuw', '/fiches/nieuw', 301);

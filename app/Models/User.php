@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -27,6 +28,7 @@ class User extends Authenticatable
         'website',
         'linkedin',
         'fiches_comments_seen_at',
+        'terms_accepted_at',
     ];
 
     /**
@@ -42,6 +44,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'fiches_comments_seen_at' => 'datetime',
+            'terms_accepted_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -49,6 +52,24 @@ class User extends Authenticatable
     protected function fullName(): Attribute
     {
         return Attribute::get(fn () => "{$this->first_name} {$this->last_name}");
+    }
+
+    /**
+     * Get the URL for the user's avatar thumbnail (or full-size fallback).
+     */
+    public function avatarUrl(): ?string
+    {
+        if (! $this->avatar_path) {
+            return null;
+        }
+
+        $thumbPath = preg_replace('/\.(jpe?g|png|webp)$/i', '-thumb.webp', $this->avatar_path);
+
+        if (Storage::disk('public')->exists($thumbPath)) {
+            return Storage::url($thumbPath);
+        }
+
+        return Storage::url($this->avatar_path);
     }
 
     public function initiatives(): HasMany

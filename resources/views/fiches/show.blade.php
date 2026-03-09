@@ -1,4 +1,4 @@
-<x-layout :title="$fiche->title" :full-width="true">
+<x-layout :title="$fiche->title" :description="$fiche->description ? Str::limit(strip_tags($fiche->description), 160) : 'Praktijkfiche: ' . $fiche->title . ' — een uitgewerkte activiteit op Hartverwarmers.'" :full-width="true">
     @auth
         @if(auth()->user()->isAdmin())
             <flux:modal name="delete-fiche" class="max-w-md">
@@ -22,10 +22,83 @@
         @endif
     @endauth
 
+    {{-- Admin bar --}}
+    @auth
+        @if(auth()->user()->isAdmin())
+            <div x-data="{ showAdmin: true }">
+                <div x-show="showAdmin" x-transition.duration.200ms class="bg-[var(--color-bg-cream)] border-b border-[var(--color-border-light)]">
+                    <div class="max-w-6xl mx-auto px-6 py-2 flex items-center gap-2.5">
+                        {{-- Admin badge --}}
+                        <span class="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-[var(--color-text-secondary)]/60 mr-1 select-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                            Admin
+                        </span>
+
+                        {{-- Actions group --}}
+                        <div class="flex items-center gap-px bg-[var(--color-border-light)] rounded-lg overflow-hidden">
+                            @can('update', $fiche)
+                                <a href="{{ route('fiches.edit', $fiche) }}" class="admin-bar-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/></svg>
+                                    Bewerk
+                                </a>
+                            @endcan
+                            <form action="{{ route('fiches.toggleDiamond', [$initiative, $fiche]) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="admin-bar-btn {{ $fiche->has_diamond ? 'admin-bar-btn-active' : '' }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="{{ $fiche->has_diamond ? 'currentColor' : 'none' }}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z"/></svg>
+                                    {{ $fiche->has_diamond ? 'Diamantje' : 'Diamantje' }}
+                                </button>
+                            </form>
+                            <flux:modal.trigger name="delete-fiche">
+                                <button class="admin-bar-btn hover:!text-red-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                                    Verwijder
+                                </button>
+                            </flux:modal.trigger>
+                        </div>
+
+                        {{-- Featured month --}}
+                        @if($fiche->featured_month)
+                            <div class="flex items-center gap-1.5 rounded-lg bg-amber-50 border border-amber-200/60 px-2.5 py-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-amber-500 shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                <span class="text-xs text-amber-800 font-medium">
+                                    Fiche van de maand &middot; {{ \Carbon\Carbon::createFromFormat('Y-m', $fiche->featured_month)->translatedFormat('M Y') }}
+                                </span>
+                                <form action="{{ route('fiches.unsetFicheOfMonth', [$initiative, $fiche]) }}" method="POST" class="flex">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-amber-400 hover:text-amber-700 transition-colors cursor-pointer -mr-0.5" title="Verwijder als fiche van de maand">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <form action="{{ route('fiches.setFicheOfMonth', [$initiative, $fiche]) }}" method="POST" class="flex items-center gap-px bg-[var(--color-border-light)] rounded-lg overflow-hidden">
+                                @csrf
+                                <label class="admin-bar-btn cursor-default !pr-1 gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                                    <input type="month" name="month" value="{{ now()->format('Y-m') }}" class="text-xs font-medium bg-transparent w-[7.5rem] cursor-pointer focus:outline-none text-[var(--color-text-secondary)]" required>
+                                </label>
+                                <button type="submit" class="admin-bar-btn">
+                                    Maak fiche van de maand
+                                </button>
+                            </form>
+                        @endif
+
+                        {{-- Hide toggle --}}
+                        <button @click="showAdmin = false" class="ml-auto text-[var(--color-text-secondary)]/40 hover:text-[var(--color-text-secondary)] transition-colors cursor-pointer" title="Verberg admin-balk">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endauth
+
     {{-- Hero — cream background --}}
     <section class="bg-[var(--color-bg-cream)]">
         <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
-            {{-- Breadcrumbs + admin actions --}}
+            {{-- Breadcrumbs --}}
             <div class="flex items-center justify-between mb-6">
                 <flux:breadcrumbs>
                     <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
@@ -33,26 +106,6 @@
                     <flux:breadcrumbs.item href="{{ route('initiatives.show', $initiative) }}">{{ $initiative->title }}</flux:breadcrumbs.item>
                     <flux:breadcrumbs.item>{{ $fiche->title }}</flux:breadcrumbs.item>
                 </flux:breadcrumbs>
-                @auth
-                    <div class="flex items-center gap-2">
-                        @can('update', $fiche)
-                            <flux:button variant="ghost" size="sm" icon="pencil-square" href="{{ route('fiches.edit', $fiche) }}">
-                                Bewerken
-                            </flux:button>
-                        @endcan
-                        @if(auth()->user()->isAdmin())
-                            <form action="{{ route('fiches.toggleDiamond', [$initiative, $fiche]) }}" method="POST">
-                                @csrf
-                                <flux:button type="submit" :variant="$fiche->has_diamond ? 'primary' : 'ghost'" icon="sparkles" size="sm">
-                                    {{ $fiche->has_diamond ? 'Diamantje' : 'Geef diamantje' }}
-                                </flux:button>
-                            </form>
-                            <flux:modal.trigger name="delete-fiche">
-                                <flux:button variant="danger" size="sm" icon="trash">Verwijderen</flux:button>
-                            </flux:modal.trigger>
-                        @endif
-                    </div>
-                @endauth
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
@@ -184,7 +237,7 @@
                             <div class="flex flex-col items-center text-center mb-5">
                                 <a href="{{ route('contributors.show', $fiche->user) }}" class="flex flex-col items-center text-center group">
                                     @if($fiche->user->avatar_path)
-                                        <img src="{{ Storage::url($fiche->user->avatar_path) }}" alt="{{ $fiche->user->full_name }}" class="w-16 h-16 rounded-full object-cover mb-3 transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30">
+                                        <img src="{{ $fiche->user->avatarUrl() }}" alt="{{ $fiche->user->full_name }}" class="w-16 h-16 rounded-full object-cover mb-3 transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30">
                                     @else
                                         <div class="w-16 h-16 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-2xl font-semibold mb-3 transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30">
                                             {{ substr($fiche->user->first_name, 0, 1) }}
@@ -349,4 +402,28 @@
         </section>
     @endif
 
+    <script type="application/ld+json">
+    @php
+        $steps = collect($fiche->practical_sections)->map(fn ($s, $i) => [
+            '@type' => 'HowToStep',
+            'position' => $i + 1,
+            'name' => $s['title'],
+            'text' => strip_tags($s['content']),
+        ])->values()->all();
+
+        echo json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'HowTo',
+            'name' => $fiche->title,
+            'description' => strip_tags($fiche->description ?? ''),
+            'author' => [
+                '@type' => 'Person',
+                'name' => $fiche->user->name,
+            ],
+            'datePublished' => $fiche->created_at->toIso8601String(),
+            'dateModified' => $fiche->updated_at->toIso8601String(),
+            'step' => $steps,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    @endphp
+    </script>
 </x-layout>

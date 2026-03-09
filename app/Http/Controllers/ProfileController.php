@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Comment;
 use App\Models\Fiche;
+use App\Services\AvatarThumbnailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -34,7 +35,7 @@ class ProfileController extends Controller
         return redirect()->route('profile.show')->with('success', 'Profiel bijgewerkt.');
     }
 
-    public function updateAvatar(Request $request): RedirectResponse
+    public function updateAvatar(Request $request, AvatarThumbnailService $thumbnailService): RedirectResponse
     {
         $request->validate([
             'avatar' => ['required', 'image', 'mimes:jpeg,png,webp', 'max:2048'],
@@ -42,22 +43,25 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        // Delete old avatar
+        // Delete old avatar and its thumbnail
         if ($user->avatar_path) {
+            $thumbnailService->delete($user->avatar_path);
             Storage::disk('public')->delete($user->avatar_path);
         }
 
         $path = $request->file('avatar')->store('avatars', 'public');
+        $thumbnailService->generate($path);
         $user->update(['avatar_path' => $path]);
 
         return redirect()->route('profile.show')->with('success', 'Profielfoto bijgewerkt.');
     }
 
-    public function deleteAvatar(Request $request): RedirectResponse
+    public function deleteAvatar(Request $request, AvatarThumbnailService $thumbnailService): RedirectResponse
     {
         $user = $request->user();
 
         if ($user->avatar_path) {
+            $thumbnailService->delete($user->avatar_path);
             Storage::disk('public')->delete($user->avatar_path);
             $user->update(['avatar_path' => null]);
         }

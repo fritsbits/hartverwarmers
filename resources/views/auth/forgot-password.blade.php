@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout title="Wachtwoord vergeten">
     <x-slot:header>
         <span class="section-label section-label-hero">Wachtwoord vergeten</span>
         <h1 class="text-4xl font-heading font-bold mt-1 mb-4">Geen probleem</h1>
