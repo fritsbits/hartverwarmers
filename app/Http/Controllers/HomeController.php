@@ -61,20 +61,24 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        $ficheVanDeMaand = Fiche::query()
-            ->published()
-            ->ficheOfMonth()
-            ->where('featured_month', now()->format('Y-m'))
-            ->with('initiative', 'user', 'tags', 'files')
-            ->withCount('comments')
-            ->first()
-            ?? Fiche::query()
+        try {
+            $ficheVanDeMaand = Fiche::query()
                 ->published()
                 ->ficheOfMonth()
+                ->where('featured_month', now()->format('Y-m'))
                 ->with('initiative', 'user', 'tags', 'files')
                 ->withCount('comments')
-                ->orderByDesc('featured_month')
-                ->first();
+                ->first()
+                ?? Fiche::query()
+                    ->published()
+                    ->ficheOfMonth()
+                    ->with('initiative', 'user', 'tags', 'files')
+                    ->withCount('comments')
+                    ->orderByDesc('featured_month')
+                    ->first();
+        } catch (\Illuminate\Database\QueryException) {
+            $ficheVanDeMaand = null;
+        }
 
         $stats = Cache::remember('home:stats', 300, fn () => [
             'fiches' => Fiche::published()->count(),
