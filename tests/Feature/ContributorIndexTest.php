@@ -119,6 +119,68 @@ class ContributorIndexTest extends TestCase
         $response->assertSee($user->full_name);
     }
 
+    public function test_show_page_displays_stats(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $user = User::factory()->create();
+        Fiche::factory()->published()->count(3)->create([
+            'user_id' => $user->id,
+            'initiative_id' => $initiative->id,
+            'kudos_count' => 2,
+            'download_count' => 5,
+        ]);
+
+        $response = $this->get(route('contributors.show', $user));
+
+        $response->assertStatus(200);
+        $response->assertSee('fiches');
+        $response->assertSee('kudos');
+        $response->assertSee('downloads');
+    }
+
+    public function test_show_page_groups_fiches_by_initiative(): void
+    {
+        $initiative1 = Initiative::factory()->published()->create(['title' => 'Muziektherapie']);
+        $initiative2 = Initiative::factory()->published()->create(['title' => 'Creatief atelier']);
+        $user = User::factory()->create();
+        Fiche::factory()->published()->create(['user_id' => $user->id, 'initiative_id' => $initiative1->id]);
+        Fiche::factory()->published()->create(['user_id' => $user->id, 'initiative_id' => $initiative2->id]);
+
+        $response = $this->get(route('contributors.show', $user));
+
+        $response->assertStatus(200);
+        $response->assertSee('Muziektherapie');
+        $response->assertSee('Creatief atelier');
+    }
+
+    public function test_show_page_has_back_link_to_contributors(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $user = User::factory()->create();
+        Fiche::factory()->published()->create(['user_id' => $user->id, 'initiative_id' => $initiative->id]);
+
+        $response = $this->get(route('contributors.show', $user));
+
+        $response->assertStatus(200);
+        $response->assertSee('Bekijk alle bijdragers');
+    }
+
+    public function test_show_page_displays_social_links(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $user = User::factory()->create([
+            'website' => 'https://example.com',
+            'linkedin' => 'https://linkedin.com/in/test',
+        ]);
+        Fiche::factory()->published()->create(['user_id' => $user->id, 'initiative_id' => $initiative->id]);
+
+        $response = $this->get(route('contributors.show', $user));
+
+        $response->assertStatus(200);
+        $response->assertSee('Website');
+        $response->assertSee('LinkedIn');
+    }
+
     public function test_stats_are_displayed_in_hero(): void
     {
         $initiative = Initiative::factory()->published()->create();

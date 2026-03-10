@@ -18,8 +18,18 @@ class ContributorController extends Controller
             $query->published()->with('initiative', 'tags', 'files');
         }]);
 
+        $fichesByInitiative = $user->fiches->groupBy('initiative.title')->sortKeysDesc();
+
+        $stats = [
+            'fiches_count' => $user->fiches->count(),
+            'kudos_total' => $user->fiches->sum('kudos_count'),
+            'downloads_total' => $user->fiches->sum('download_count'),
+        ];
+
         return view('contributors.show', [
             'contributor' => $user,
+            'fichesByInitiative' => $fichesByInitiative,
+            'stats' => $stats,
         ]);
     }
 }
