@@ -9,14 +9,7 @@ class ContributorController extends Controller
 {
     public function index(): View
     {
-        $contributors = User::query()
-            ->has('fiches')
-            ->orderBy('last_name')
-            ->get();
-
-        return view('contributors.index', [
-            'contributors' => $contributors,
-        ]);
+        return view('contributors.index');
     }
 
     public function show(User $user): View
