@@ -6,6 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Hartverwarmers is a Dutch-language Laravel 12 platform for sharing elderly care initiatives. Activity coordinators in care homes share practical elaborations of initiatives, organized around the DIAMANT model — a 7-goal pedagogical framework (Doen, Inclusief, Autonomie, Mensgericht, Anderen, Normalisatie, Talent).
 
+## Database Safety
+
+**NEVER run `migrate:fresh`, `migrate:reset`, `db:wipe`, or any other destructive database command.** The local database contains hand-curated content (initiatives, fiches, users, comments, kudos) that is NOT fully reproducible from seeders. There is no backup. Losing this data means hours of manual re-entry.
+
+- To test migrations: run `php artisan migrate` (forward only) — never `migrate:fresh`
+- To verify a migration works from scratch: use the **test suite** (which uses an isolated test database with `RefreshDatabase`)
+- If you need to rollback a migration you just created: `php artisan migrate:rollback --step=1`
+
 ## Commands
 
 ```bash

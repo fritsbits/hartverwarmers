@@ -6,6 +6,7 @@ use App\Livewire\FicheComments;
 use App\Models\Comment;
 use App\Models\Fiche;
 use App\Models\Initiative;
+use App\Models\Like;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -181,14 +182,150 @@ class CommentThreadingTest extends TestCase
         $this->assertEquals(2, $component->get('commentCount'));
     }
 
-    public function test_guest_cannot_add_comment_via_livewire(): void
+    public function test_guest_sees_inline_comment_form(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
 
         Livewire::test(FicheComments::class, ['fiche' => $fiche])
-            ->assertDontSee('Deel je ervaring')
-            ->assertSee('Log in');
+            ->assertSee('Wees de eerste die reageert!')
+            ->assertSee('Al een account?')
+            ->assertSee('Nog even je naam erbij');
+    }
+
+    public function test_guest_can_create_account_and_comment(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Livewire::test(FicheComments::class, ['fiche' => $fiche])
+            ->set('guestName', 'Marie Janssen')
+            ->set('guestEmail', 'marie@example.com')
+            ->set('guestBody', 'Geweldige fiche, bedankt!')
+            ->set('guestTerms', true)
+            ->call('addGuestComment');
+
+        $this->assertDatabaseHas('users', [
+            'first_name' => 'Marie',
+            'last_name' => 'Janssen',
+            'email' => 'marie@example.com',
+        ]);
+
+        $user = User::where('email', 'marie@example.com')->first();
+        $this->assertNotNull($user->terms_accepted_at);
+
+        $this->assertDatabaseHas('comments', [
+            'user_id' => $user->id,
+            'commentable_type' => Fiche::class,
+            'commentable_id' => $fiche->id,
+            'body' => 'Geweldige fiche, bedankt!',
+        ]);
+
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_guest_comment_rejects_existing_email(): void
+    {
+        $existing = User::factory()->create(['email' => 'taken@example.com']);
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Livewire::test(FicheComments::class, ['fiche' => $fiche])
+            ->set('guestName', 'Jan Peeters')
+            ->set('guestEmail', 'taken@example.com')
+            ->set('guestBody', 'Leuke fiche!')
+            ->set('guestTerms', true)
+            ->call('addGuestComment')
+            ->assertHasErrors('guestEmail');
+    }
+
+    public function test_guest_comment_requires_body(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Livewire::test(FicheComments::class, ['fiche' => $fiche])
+            ->set('guestBody', '')
+            ->call('addGuestComment')
+            ->assertHasErrors('guestBody');
+    }
+
+    public function test_guest_comment_requires_identity_fields(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Livewire::test(FicheComments::class, ['fiche' => $fiche])
+            ->set('guestBody', 'Een reactie')
+            ->set('guestName', '')
+            ->set('guestEmail', '')
+            ->set('guestTerms', false)
+            ->call('addGuestComment')
+            ->assertHasErrors(['guestName', 'guestEmail', 'guestTerms']);
+    }
+
+    public function test_guest_session_kudos_merged_on_account_creation(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        // Simulate session kudos
+        $sessionId = session()->getId();
+        Like::create([
+            'user_id' => null,
+            'session_id' => $sessionId,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 5,
+        ]);
+
+        Livewire::test(FicheComments::class, ['fiche' => $fiche])
+            ->set('guestName', 'Sofie De Mol')
+            ->set('guestEmail', 'sofie@example.com')
+            ->set('guestBody', 'Heel nuttig!')
+            ->set('guestTerms', true)
+            ->call('addGuestComment');
+
+        $user = User::where('email', 'sofie@example.com')->first();
+
+        $this->assertDatabaseHas('likes', [
+            'user_id' => $user->id,
+            'session_id' => null,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 5,
+        ]);
+    }
+
+    public function test_guest_can_reply_with_inline_account_creation(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+        $parent = Comment::factory()->create([
+            'commentable_type' => Fiche::class,
+            'commentable_id' => $fiche->id,
+        ]);
+
+        Livewire::test(FicheComments::class, ['fiche' => $fiche])
+            ->call('startReply', $parent->id)
+            ->set('replyBody', 'Bedankt voor de tip!')
+            ->set('guestName', 'Eva Peeters')
+            ->set('guestEmail', 'eva@example.com')
+            ->set('guestTerms', true)
+            ->call('addGuestReply');
+
+        $user = User::where('email', 'eva@example.com')->first();
+        $this->assertNotNull($user);
+
+        $this->assertDatabaseHas('comments', [
+            'user_id' => $user->id,
+            'body' => 'Bedankt voor de tip!',
+            'parent_id' => $parent->id,
+        ]);
+
+        $this->assertAuthenticatedAs($user);
     }
 
     public function test_body_validation_required(): void

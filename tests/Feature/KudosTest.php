@@ -80,14 +80,53 @@ class KudosTest extends TestCase
         ]);
     }
 
-    public function test_guest_is_redirected_when_giving_kudos(): void
+    public function test_guest_can_give_kudos_via_session(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
 
         Livewire::test(FicheKudos::class, ['fiche' => $fiche])
-            ->call('addKudos', amount: 1)
-            ->assertRedirect(route('login'));
+            ->call('addKudos', amount: 3);
+
+        $this->assertDatabaseHas('likes', [
+            'user_id' => null,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 3,
+        ]);
+    }
+
+    public function test_guest_kudos_capped_at_10(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        $component = Livewire::test(FicheKudos::class, ['fiche' => $fiche])
+            ->call('addKudos', amount: 8)
+            ->call('addKudos', amount: 8);
+
+        $this->assertDatabaseHas('likes', [
+            'user_id' => null,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 10,
+        ]);
+    }
+
+    public function test_guest_kudos_persist_in_same_session(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Livewire::test(FicheKudos::class, ['fiche' => $fiche])
+            ->call('addKudos', amount: 5);
+
+        $fresh = Livewire::test(FicheKudos::class, ['fiche' => $fiche]);
+
+        $this->assertEquals(5, $fresh->get('myKudos'));
+        $this->assertEquals(5, $fresh->get('totalKudos'));
     }
 
     public function test_bookmark_toggle_creates_bookmark(): void
@@ -133,14 +172,38 @@ class KudosTest extends TestCase
         ]);
     }
 
-    public function test_guest_is_redirected_when_toggling_bookmark(): void
+    public function test_guest_sees_inline_auth_when_toggling_bookmark(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
 
         Livewire::test(FicheKudos::class, ['fiche' => $fiche])
             ->call('toggleBookmark')
-            ->assertRedirect(route('login'));
+            ->assertSet('showBookmarkAuth', true)
+            ->assertNoRedirect();
+    }
+
+    public function test_guest_can_bookmark_via_inline_auth(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Livewire::test(FicheKudos::class, ['fiche' => $fiche])
+            ->call('toggleBookmark')
+            ->set('guestName', 'Sophie Van Damme')
+            ->set('guestEmail', 'sophie@example.com')
+            ->set('guestTerms', true)
+            ->call('guestBookmark');
+
+        $user = User::where('email', 'sophie@example.com')->first();
+        $this->assertNotNull($user);
+
+        $this->assertDatabaseHas('likes', [
+            'user_id' => $user->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'bookmark',
+        ]);
     }
 
     public function test_total_kudos_shows_sum_across_users(): void

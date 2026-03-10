@@ -102,95 +102,96 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-                {{-- A: label + h1 + meta strip — order-1 on mobile --}}
+                {{-- A: title + meta + description — order-1 on mobile --}}
                 <div class="lg:col-span-3 order-1 lg:order-none">
-                    <span class="section-label section-label-hero">Fiche</span>
-
-                    <div class="flex flex-wrap items-center gap-3 mt-1 mb-4">
+                    <div class="flex flex-wrap items-center gap-3 mb-2">
                         <h1 class="text-5xl">{{ $fiche->title }}</h1>
                         @if($fiche->has_diamond)
                             <x-diamond-badge />
                         @endif
                     </div>
 
-                    {{-- Compact meta strip --}}
-                    @if(($fiche->materials['duration'] ?? null) || ($fiche->materials['group_size'] ?? null) || $fileCount > 0 || ($fiche->download_count ?? 0) > 0)
-                        <div class="meta-group mb-6">
-                            @if($fiche->materials['duration'] ?? null)
-                                <span class="meta-item">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    {{ $fiche->materials['duration'] }}
-                                </span>
-                            @endif
+                    {{-- Meta line --}}
+                    <div class="meta-group mb-4">
+                        @if($fiche->materials['duration'] ?? null)
+                            <span class="meta-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                {{ $fiche->materials['duration'] }}
+                            </span>
+                        @endif
 
-                            @if($fiche->materials['group_size'] ?? null)
-                                <span class="meta-item">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                                    </svg>
-                                    {{ $fiche->materials['group_size'] }}
-                                </span>
-                            @endif
+                        @if($fiche->materials['group_size'] ?? null)
+                            <span class="meta-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
+                                {{ $fiche->materials['group_size'] }} pers.
+                            </span>
+                        @endif
 
-                            @if($fileCount > 0)
-                                <span class="meta-item">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                    </svg>
-                                    {{ $fileCount }} {{ $fileCount === 1 ? 'bestand' : 'bestanden' }}
-                                </span>
-                            @endif
+                        @if($fileCount > 0)
+                            <span class="meta-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                                {{ $fileCount }} {{ $fileCount === 1 ? 'bestand' : 'bestanden' }}
+                            </span>
+                        @endif
 
-                            @if(($fiche->download_count ?? 0) > 0)
-                                <span class="meta-item">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                    </svg>
-                                    {{ $fiche->download_count }} keer gedownload
-                                </span>
-                            @endif
+                        @feature(\App\Features\DiamantGoals::class)
+                            @foreach($fiche->tags->where('type', 'goal') as $tag)
+                                <a href="{{ route('goals.show', Str::after($tag->slug, 'doel-')) }}" class="diamant-pill diamant-pill-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="color: var(--color-primary)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" /></svg>
+                                    {{ $tag->name }}
+                                </a>
+                            @endforeach
+                        @endfeature
+                    </div>
+
+                    {{-- Description (lead text) --}}
+                    @if($fiche->description)
+                        <div class="text-[var(--color-text-secondary)] text-2xl font-light mb-6 max-w-3xl">
+                            {!! $fiche->description !!}
+                        </div>
+                    @endif
+
+                    {{-- Mobile-only download shortcut --}}
+                    @if($fileCount > 0)
+                        <div class="lg:hidden mb-6">
+                            <flux:button variant="primary" icon="arrow-down-tray" size="sm"
+                                href="{{ route('fiches.download', [$initiative, $fiche]) }}">
+                                Download {{ $fileCount === 1 ? 'bestand' : $fileCount . ' bestanden' }}
+                            </flux:button>
                         </div>
                     @endif
                 </div>
 
-                {{-- B: preview + download — order-2 on mobile, right column on desktop --}}
+                {{-- B: preview + download — order-3 on mobile (after description), right column on desktop --}}
                 @if($hasPreviewCarousel || $fiche->files->isNotEmpty())
-                    <div class="lg:col-span-2 lg:row-span-2 order-2 lg:order-none">
+                    <div class="lg:col-span-2 lg:row-span-2 order-3 lg:order-none">
                         @if($hasPreviewCarousel)
                             <div class="lg:sticky lg:top-24">
-                                <x-file-preview-carousel :files="$fiche->files" />
+                                <div class="bg-white rounded-2xl border border-[var(--color-border-light)] overflow-hidden shadow-[0_4px_24px_-4px_rgba(120,90,60,0.08)]">
+                                    {{-- Carousel inside the card --}}
+                                    <x-file-preview-carousel :files="$fiche->files" />
 
-                                {{-- Download button below carousel --}}
-                                @if($fileCount > 0)
-                                    <div class="flex justify-center">
-                                        <flux:button variant="primary" icon="arrow-down-tray"
-                                            href="{{ route('fiches.download', [$initiative, $fiche]) }}">
-                                            Download
-                                            <span class="text-xs font-normal text-white/70">({{ $sizeLabel }})</span>
-                                        </flux:button>
-                                    </div>
-                                @endif
+                                    {{-- Download footer with post-download nudge --}}
+                                    @if($fileCount > 0)
+                                        <div class="px-5 pb-5 pt-1" x-data="{ downloaded: false }">
+                                            {{-- Download button --}}
+                                            <a x-show="!downloaded"
+                                               href="{{ route('fiches.download', [$initiative, $fiche]) }}"
+                                               x-on:click="setTimeout(() => { downloaded = true }, 600)"
+                                               class="flex items-center justify-between gap-3 w-full px-5 py-3.5 rounded-xl bg-[var(--color-primary)] text-white font-semibold transition-all hover:bg-[var(--color-primary-hover)] hover:shadow-md active:scale-[0.98] group">
+                                                <div class="flex items-center gap-3">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform group-hover:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                                    </svg>
+                                                    <span>Download {{ $fileCount === 1 ? 'bestand' : $fileCount . ' bestanden' }}</span>
+                                                </div>
+                                                <span class="text-sm font-normal text-white/70">{{ $sizeLabel }}</span>
+                                            </a>
 
-                                {{-- File type pills below download --}}
-                                @if($fileCount > 1)
-                                    @php
-                                        $grouped = $fiche->files->groupBy(fn ($f) => strtoupper(pathinfo($f->original_filename, PATHINFO_EXTENSION)));
-                                    @endphp
-                                    <div class="flex flex-wrap justify-center gap-2 mt-2">
-                                        @foreach($grouped as $ext => $group)
-                                            <flux:tooltip position="top">
-                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-sm text-[var(--color-text-secondary)] font-medium cursor-default border border-[var(--color-border-light)]">
-                                                    {{ $group->count() > 1 ? $group->count() . '× ' : '' }}{{ $ext }}
-                                                </span>
-                                                <flux:tooltip.content class="max-w-xs">
-                                                    {{ $group->pluck('original_filename')->join(', ') }}
-                                                </flux:tooltip.content>
-                                            </flux:tooltip>
-                                        @endforeach
-                                    </div>
-                                @endif
+                                            @include('fiches.partials.post-download-nudge')
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         @else
                             {{-- Files without preview — show file cards + download --}}
@@ -210,55 +211,50 @@
                                     </div>
                                 @endforeach
 
-                                <div class="mt-4 flex justify-center">
-                                    <flux:button variant="primary" icon="arrow-down-tray"
-                                        href="{{ route('fiches.download', [$initiative, $fiche]) }}">
+                                <div class="mt-4" x-data="{ downloaded: false }">
+                                    <a x-show="!downloaded"
+                                       href="{{ route('fiches.download', [$initiative, $fiche]) }}"
+                                       x-on:click="setTimeout(() => { downloaded = true }, 600)"
+                                       class="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-[var(--color-primary)] text-white font-semibold transition-all hover:bg-[var(--color-primary-hover)] hover:shadow-md active:scale-[0.98]">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                        </svg>
                                         Download
-                                        <span class="text-xs font-normal text-white/70">({{ $sizeLabel }})</span>
-                                    </flux:button>
+                                    </a>
+                                    @include('fiches.partials.post-download-nudge')
                                 </div>
                             </div>
                         @endif
                     </div>
                 @endif
 
-                {{-- C: description + author + kudos + practical info — order-3 on mobile --}}
-                <div class="lg:col-span-3 order-3 lg:order-none">
-                    {{-- Description --}}
-                    @if($fiche->description)
-                        <div class="text-2xl font-light mb-6 max-w-2xl leading-relaxed" style="color: var(--color-text-secondary)">
-                            {!! $fiche->description !!}
-                        </div>
-                    @endif
-
+                {{-- C: author + kudos + practical info — order-2 on mobile (before preview) --}}
+                <div class="lg:col-span-3 order-2 lg:order-none">
                     {{-- Author --}}
                     @if($fiche->user)
-                        <div class="mt-2">
-                            <span class="text-meta text-xs uppercase tracking-wider font-semibold">Toegevoegd door</span>
-                            <a href="{{ route('contributors.show', $fiche->user) }}" class="flex items-center gap-3 group mt-2">
-                                @if($fiche->user->avatar_path)
-                                    <img src="{{ $fiche->user->avatarUrl() }}" alt="{{ $fiche->user->full_name }}" class="w-10 h-10 rounded-full object-cover transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30">
-                                @else
-                                    <div class="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-lg font-semibold transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30">
-                                        {{ substr($fiche->user->first_name, 0, 1) }}
-                                    </div>
-                                @endif
-                                <div>
-                                    <div class="text-base font-semibold group-hover:text-[var(--color-primary)] transition-colors">{{ $fiche->user->full_name }}</div>
-                                    <div class="text-sm text-[var(--color-text-secondary)]">
-                                        @if($fiche->user->function_title)
-                                            {{ $fiche->user->function_title }}
-                                        @endif
-                                        @if($fiche->user->function_title && $fiche->user->organisation)
-                                            &middot;
-                                        @endif
-                                        @if($fiche->user->organisation)
-                                            {{ $fiche->user->organisation }}
-                                        @endif
-                                    </div>
+                        <a href="{{ route('contributors.show', $fiche->user) }}" class="flex items-center gap-4 group mt-2">
+                            @if($fiche->user->avatar_path)
+                                <img src="{{ $fiche->user->avatarUrl() }}" alt="{{ $fiche->user->full_name }}" class="w-12 h-12 rounded-full object-cover transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30">
+                            @else
+                                <div class="w-12 h-12 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-xl font-semibold transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30">
+                                    {{ substr($fiche->user->first_name, 0, 1) }}
                                 </div>
-                            </a>
-                        </div>
+                            @endif
+                            <div>
+                                <div class="text-base font-semibold group-hover:text-[var(--color-primary)] transition-colors">{{ $fiche->user->full_name }}</div>
+                                <div class="text-sm text-[var(--color-text-secondary)]">
+                                    @if($fiche->user->function_title)
+                                        {{ $fiche->user->function_title }}
+                                    @endif
+                                    @if($fiche->user->function_title && $fiche->user->organisation)
+                                        &middot;
+                                    @endif
+                                    @if($fiche->user->organisation)
+                                        {{ $fiche->user->organisation }}
+                                    @endif
+                                </div>
+                            </div>
+                        </a>
                     @endif
 
                     {{-- Kudos & bookmark --}}
@@ -268,38 +264,17 @@
 
                     {{-- Practical information — expandable --}}
                     @if($fiche->practical_sections)
-                        @php
-                            $sectionTitles = collect($fiche->practical_sections)->pluck('title');
-                        @endphp
-                        <div x-data="{ open: false }" class="mt-8 mb-8 rounded-xl border border-[var(--color-border-light)] transition-all duration-200" :class="open ? 'bg-white shadow-card' : 'hover:-translate-y-0.5 hover:bg-white hover:shadow-card hover:border-[var(--color-border-hover)]'">
-                            <button @click="open = !open" class="w-full text-left px-5 py-4 flex items-center gap-4 cursor-pointer group">
-                                <div class="w-12 h-12 rounded-full bg-[var(--color-bg-subtle)] flex items-center justify-center shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" style="color: var(--color-primary)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-                                    </svg>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h2 class="font-heading text-[17px] font-bold !mb-0">Praktische informatie</h2>
-                                    <p class="text-sm text-[var(--color-text-secondary)] mt-1">{{ $sectionTitles->join(' · ') }}</p>
-                                </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0 transition-transform duration-200" :class="open && 'rotate-180'" style="color: var(--color-primary)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </button>
-
-                            <div x-show="open" x-collapse x-cloak>
-                                <div class="px-5 pb-6 border-t border-[var(--color-border-light)]">
-                                    <div class="divide-y divide-[var(--color-border-light)]">
-                                        @foreach($fiche->practical_sections as $section)
-                                            <div class="pt-5 {{ !$loop->last ? 'pb-5' : '' }}">
-                                                <h3 class="font-heading text-lg font-bold mb-3" style="color: var(--color-primary)">{{ $section['title'] }}</h3>
-                                                <div class="practical-content">
-                                                    {!! $section['content'] !!}
-                                                </div>
-                                            </div>
-                                        @endforeach
+                        <div class="mt-10 mb-8">
+                            <h2 class="text-2xl mb-6">Praktische informatie</h2>
+                            <div class="divide-y divide-[var(--color-border-light)]">
+                                @foreach($fiche->practical_sections as $section)
+                                    <div class="pt-6 {{ !$loop->last ? 'pb-6' : '' }}">
+                                        <h3 class="font-heading text-xl font-bold mb-3" style="color: var(--color-primary)">{{ $section['title'] }}</h3>
+                                        <div class="practical-content">
+                                            {!! $section['content'] !!}
+                                        </div>
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
                         </div>
                     @endif
@@ -308,11 +283,9 @@
         </div>
     </section>
 
-    <hr class="border-[var(--color-border-light)]">
-
     {{-- Content section — comments --}}
-    <section>
-        <div class="max-w-6xl mx-auto px-6 py-12">
+    <section class="bg-white">
+        <div class="max-w-6xl mx-auto px-6 py-16">
             <div id="reacties" class="max-w-3xl">
                 <livewire:fiche-comments :fiche="$fiche" />
             </div>
@@ -321,8 +294,6 @@
 
     {{-- Meer fiches --}}
     @if($otherFiches->isNotEmpty())
-        <hr class="border-[var(--color-border-light)]">
-
         <section class="bg-[var(--color-bg-cream)]">
             <div class="max-w-6xl mx-auto px-6 py-16">
                 <span class="section-label">
@@ -343,9 +314,14 @@
                             </span>
                             <div class="flex flex-col gap-0.5 min-w-0 flex-1">
                                 <span class="font-body font-semibold text-base text-[var(--color-text-primary)] truncate">{{ $other->title }}</span>
-                                <span class="text-xs text-[var(--color-text-secondary)]">
-                                    {{ $other->user?->full_name }}@if($other->user?->organisation), {{ $other->user->organisation }}@endif
-                                </span>
+                                <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                                    <span class="text-xs text-[var(--color-text-secondary)]">
+                                        {{ $other->user?->full_name }}@if($other->user?->organisation), {{ $other->user->organisation }}@endif
+                                    </span>
+                                    @if($other->materials['duration'] ?? null)
+                                        <span class="text-xs text-[var(--color-text-secondary)]">&middot; {{ $other->materials['duration'] }}</span>
+                                    @endif
+                                </div>
                             </div>
                             <span class="fiche-list-kudos {{ $other->kudos_count > 0 ? 'fiche-list-kudos-active' : '' }}">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -388,4 +364,28 @@
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     @endphp
     </script>
+
+    {{-- Welcome toast for guest account creation --}}
+    <div x-data="{ show: false, name: '' }"
+         x-on:guest-welcome.window="name = $event.detail.name; show = true; setTimeout(() => show = false, 4000)"
+         class="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+        <div x-show="show" x-cloak
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 -translate-y-4 scale-96"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 -translate-y-2 scale-98"
+             class="bg-white rounded-2xl px-6 py-4 shadow-[0_8px_32px_rgba(232,118,75,0.15)] border border-[var(--color-primary)]/20 pointer-events-auto">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-sm font-semibold shrink-0">
+                    <span x-text="name.charAt(0)"></span>
+                </div>
+                <div>
+                    <p class="font-heading font-bold text-sm text-[var(--color-text-primary)]">Welkom, <span x-text="name"></span>!</p>
+                    <p class="text-xs text-[var(--color-text-secondary)]">Je account is aangemaakt. We stuurden een e-mail om je wachtwoord in te stellen.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </x-layout>
