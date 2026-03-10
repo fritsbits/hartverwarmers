@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Services\AvatarThumbnailService;
+use Flux\Flux;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -46,7 +47,7 @@ class AvatarUpload extends Component
         $this->existingAvatar = $path;
         $this->photo = null;
 
-        session()->flash('message', 'Profielfoto bijgewerkt.');
+        Flux::toast('Profielfoto bijgewerkt.', variant: 'success');
         $this->dispatch('avatar-updated');
     }
 
@@ -62,7 +63,7 @@ class AvatarUpload extends Component
 
         $this->existingAvatar = null;
 
-        session()->flash('message', 'Profielfoto verwijderd.');
+        Flux::toast('Profielfoto verwijderd.', variant: 'success');
         $this->dispatch('avatar-updated');
     }
 

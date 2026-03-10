@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Features\DiamantGoals;
 use App\Models\Initiative;
 use App\Services\DiamantService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Laravel\Pennant\Feature;
 
 class InitiativeController extends Controller
 {
@@ -18,13 +20,15 @@ class InitiativeController extends Controller
             ->orderBy('title')
             ->get();
 
-        $goals = collect($diamant->all())->map(fn (array $facet) => [
-            'slug' => $facet['slug'],
-            'tagSlug' => 'doel-'.$facet['slug'],
-            'letter' => $facet['letter'],
-            'keyword' => $facet['keyword'],
-            'description' => $facet['ik_wil'],
-        ])->values()->all();
+        $goals = Feature::for(null)->active(DiamantGoals::class)
+            ? collect($diamant->all())->map(fn (array $facet) => [
+                'slug' => $facet['slug'],
+                'tagSlug' => 'doel-'.$facet['slug'],
+                'letter' => $facet['letter'],
+                'keyword' => $facet['keyword'],
+                'description' => $facet['ik_wil'],
+            ])->values()->all()
+            : [];
 
         return view('initiatives.index', [
             'initiatives' => $initiatives,
@@ -62,21 +66,25 @@ class InitiativeController extends Controller
                 ->get()
             : collect();
 
-        $diamantQuote = config('diamant_quotes.'.$initiative->slug);
-
-        $rawAnalyse = config('diamant_analyse.'.$initiative->slug);
+        $diamantQuote = null;
         $diamantAnalyse = null;
-        if (is_array($rawAnalyse)) {
-            $diamantAnalyse = collect($rawAnalyse)->map(function (array $item) use ($diamant) {
-                $facet = $diamant->findBySlug($item['facet']);
 
-                return [
-                    'facet' => $item['facet'],
-                    'text' => $item['text'],
-                    'keyword' => $facet['keyword'] ?? ucfirst($item['facet']),
-                    'slug' => $facet['slug'] ?? $item['facet'],
-                ];
-            })->all();
+        if (Feature::for(null)->active(DiamantGoals::class)) {
+            $diamantQuote = config('diamant_quotes.'.$initiative->slug);
+
+            $rawAnalyse = config('diamant_analyse.'.$initiative->slug);
+            if (is_array($rawAnalyse)) {
+                $diamantAnalyse = collect($rawAnalyse)->map(function (array $item) use ($diamant) {
+                    $facet = $diamant->findBySlug($item['facet']);
+
+                    return [
+                        'facet' => $item['facet'],
+                        'text' => $item['text'],
+                        'keyword' => $facet['keyword'] ?? ucfirst($item['facet']),
+                        'slug' => $facet['slug'] ?? $item['facet'],
+                    ];
+                })->all();
+            }
         }
 
         return view('initiatives.show', [

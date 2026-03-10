@@ -225,7 +225,7 @@ class InitiativeTest extends TestCase
     public function test_contributors_index_shows_users_with_fiches(): void
     {
         $contributor = User::factory()->create();
-        Fiche::factory()->create(['user_id' => $contributor->id]);
+        Fiche::factory()->published()->create(['user_id' => $contributor->id]);
 
         $userWithoutFiches = User::factory()->create();
 

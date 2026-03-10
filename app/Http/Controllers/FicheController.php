@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Laravel\Pennant\Feature;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipArchive;
@@ -40,10 +39,6 @@ class FicheController extends Controller
             'likes as bookmarks_count' => fn ($q) => $q->where('type', 'bookmark'),
         ]);
 
-        $goalTags = Feature::active('diamant-goals')
-            ? $fiche->tags->where('type', 'goal')
-            : collect();
-
         $otherFiches = Fiche::query()
             ->where('initiative_id', $initiative->id)
             ->where('id', '!=', $fiche->id)
@@ -55,7 +50,6 @@ class FicheController extends Controller
         return view('fiches.show', [
             'initiative' => $initiative,
             'fiche' => $fiche,
-            'goalTags' => $goalTags,
             'otherFiches' => $otherFiches,
         ]);
     }

@@ -149,6 +149,7 @@
 
 @layer base {
   html {
+    scroll-behavior: smooth;
     font-family: var(--font-body);
     font-size: var(--text-body);
     font-weight: var(--font-weight-regular);
@@ -209,6 +210,14 @@
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border-light);
   box-shadow: var(--shadow-card);
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer components {
@@ -548,6 +557,31 @@
     font-family: var(--font-heading);
     color: var(--color-primary);
     background-color: var(--color-bg-accent-light);
+  }
+
+  /* Initiative color system — 6 deterministic colors for contributor profiles */
+  .initiative-color-0 { --initiative-color: #E8764B; --initiative-bg: #FDF3EE; }
+  .initiative-color-1 { --initiative-color: #4CB7C5; --initiative-bg: #EEF8FA; }
+  .initiative-color-2 { --initiative-color: #F4C44E; --initiative-bg: #FEF9EC; }
+  .initiative-color-3 { --initiative-color: #B57BB3; --initiative-bg: #F6EEF6; }
+  .initiative-color-4 { --initiative-color: #D4837B; --initiative-bg: #FAF0EE; }
+  .initiative-color-5 { --initiative-color: #7BAF8E; --initiative-bg: #EFF6F1; }
+
+  .initiative-section {
+    @apply bg-white rounded-xl overflow-hidden;
+    border: 1px solid var(--color-border-light);
+  }
+
+  .initiative-section-header {
+    @apply flex items-center justify-between px-5 py-3.5;
+    background: var(--initiative-bg);
+    border-left: 4px solid var(--initiative-color);
+  }
+
+  .featured-badge {
+    @apply inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full;
+    background: var(--color-primary);
+    color: white;
   }
 
   /* DIAMANT pill — compact goal link with gem icon */

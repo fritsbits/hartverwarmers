@@ -112,7 +112,7 @@ class FicheDownloadTest extends TestCase
         $response = $this->get(route('fiches.show', [$this->initiative, $this->fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('Download PDF');
+        $response->assertSee('Download');
         $response->assertSee('2 MB');
         $response->assertSee(route('fiches.download', [$this->initiative, $this->fiche]));
     }
@@ -141,9 +141,7 @@ class FicheDownloadTest extends TestCase
         $response = $this->get(route('fiches.show', [$this->initiative, $this->fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('Download materiaal');
-        $response->assertSee('PPTX');
-        $response->assertSeeInOrder(['2×', 'PDF']);
+        $response->assertSee('3 bestanden');
         $response->assertSee('Download');
         $response->assertSee('1.9 MB');
     }

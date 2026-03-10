@@ -112,7 +112,7 @@ class ProfileController extends Controller
     {
         $fiches = $request->user()
             ->bookmarks()
-            ->with('likeable.initiative', 'likeable.tags', 'likeable.files')
+            ->with('likeable.initiative', 'likeable.user')
             ->latest()
             ->get()
             ->pluck('likeable')

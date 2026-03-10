@@ -39,18 +39,11 @@
     <!-- Navigation -->
     <x-nav />
 
-    <!-- Flash Messages -->
+    <!-- Toast notifications -->
+    <flux:toast position="top end" />
+
     @if(session('success'))
-        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="max-w-6xl mx-auto px-6 mt-4">
-            <div class="flex items-center justify-between gap-4 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-800">
-                <span>{{ session('success') }}</span>
-                <button @click="show = false" class="shrink-0 text-green-600 hover:text-green-800">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
+        <div x-data x-init="$flux.toast({ text: '{{ session('success') }}', variant: 'success' })"></div>
     @endif
 
     <!-- Main Content -->

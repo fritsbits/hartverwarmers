@@ -1,6 +1,11 @@
 <x-sidebar-layout title="Persoonlijke info" section-label="Profiel" description="Beheer je persoonlijke gegevens en voorkeuren.">
-    <div class="bg-white rounded-2xl p-6 shadow-sm">
-        <flux:card>
+    <x-slot:headerAction>
+        <a href="{{ route('contributors.show', $user) }}" class="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors whitespace-nowrap">
+            <flux:icon name="arrow-top-right-on-square" variant="mini" class="size-4" />
+            Bekijk publiek profiel
+        </a>
+    </x-slot:headerAction>
+    <flux:card>
 
             {{-- Avatar section --}}
             <livewire:avatar-upload />
@@ -47,7 +52,8 @@
 
                     <flux:field>
                         <flux:label>Over jou</flux:label>
-                        <flux:textarea name="bio" rows="4">{{ old('bio', $user->bio) }}</flux:textarea>
+                        <flux:textarea name="bio" rows="4" maxlength="500">{{ old('bio', $user->bio) }}</flux:textarea>
+                        <flux:description>Max. 500 tekens</flux:description>
                         <x-input-error :messages="$errors->get('bio')" />
                     </flux:field>
 
@@ -70,6 +76,5 @@
                     </div>
                 </div>
             </form>
-        </flux:card>
-    </div>
+    </flux:card>
 </x-sidebar-layout>
