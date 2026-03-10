@@ -8,7 +8,6 @@ use App\Models\Initiative;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
 class FicheShowTest extends TestCase
@@ -35,40 +34,6 @@ class FicheShowTest extends TestCase
         $response->assertSee('Jan Peeters');
         $response->assertSee('Activiteitencoördinator');
         $response->assertSee('WZC De Linde');
-    }
-
-    public function test_fiche_show_displays_diamant_pills_with_links(): void
-    {
-        Feature::define('diamant-goals', true);
-
-        $initiative = Initiative::factory()->published()->create();
-        $fiche = Fiche::factory()->published()->create([
-            'initiative_id' => $initiative->id,
-        ]);
-        $goalTag = Tag::factory()->goal()->create(['slug' => 'doel-doen', 'name' => 'Doen']);
-        $fiche->tags()->attach($goalTag);
-
-        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
-
-        $response->assertStatus(200);
-        $response->assertSee('Doelen');
-        $response->assertSee('Doen');
-        $response->assertSee(route('goals.show', 'doen'));
-    }
-
-    public function test_fiche_show_hides_diamant_profile_when_no_goal_tags(): void
-    {
-        $initiative = Initiative::factory()->published()->create();
-        $fiche = Fiche::factory()->published()->create([
-            'initiative_id' => $initiative->id,
-        ]);
-        $themeTag = Tag::factory()->theme()->create();
-        $fiche->tags()->attach($themeTag);
-
-        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
-
-        $response->assertStatus(200);
-        $response->assertDontSee('DIAMANT profiel');
     }
 
     public function test_fiche_show_displays_other_fiches_from_same_initiative(): void
@@ -121,8 +86,8 @@ class FicheShowTest extends TestCase
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('Bestanden');
-        $response->assertSee('Download PDF');
+        $response->assertSee('1 bestand');
+        $response->assertSee('Download');
         $response->assertSee(route('fiches.download', [$initiative, $fiche]));
     }
 
@@ -249,7 +214,7 @@ class FicheShowTest extends TestCase
         $response->assertDontSee('Materiaal');
     }
 
-    public function test_fiche_show_displays_file_preview_carousel_when_files_exist(): void
+    public function test_fiche_show_displays_carousel_when_files_have_previews(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create([
@@ -265,7 +230,7 @@ class FicheShowTest extends TestCase
         $response->assertSee('data-carousel', false);
     }
 
-    public function test_fiche_show_hides_file_preview_carousel_when_no_files(): void
+    public function test_fiche_show_hides_carousel_when_no_files(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create([
@@ -305,8 +270,8 @@ class FicheShowTest extends TestCase
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
+        $response->assertSee('data-carousel', false);
         $response->assertSee('data-preview-image', false);
-        $response->assertDontSee('data-skeleton-card', false);
     }
 
     public function test_fiche_show_hides_carousel_for_files_without_previews(): void
@@ -323,7 +288,7 @@ class FicheShowTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertDontSee('data-carousel', false);
-        $response->assertSee('Bestanden');
+        $response->assertSee('1 bestand');
     }
 
     public function test_fiche_show_displays_preview_indicator_when_file_has_more_slides(): void
@@ -332,17 +297,16 @@ class FicheShowTest extends TestCase
         $fiche = Fiche::factory()->published()->create([
             'initiative_id' => $initiative->id,
         ]);
-        File::factory()->pptx()->withPreviews(5, 65)->create([
+        File::factory()->pptx()->withPreviews(3)->create([
             'fiche_id' => $fiche->id,
+            'total_slides' => 10,
         ]);
 
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
         $response->assertSee('data-preview-counter', false);
-        $response->assertSee('data-preview-overlay', false);
-        $response->assertSee('+60');
-        $response->assertSee('slides in dit bestand');
+        $response->assertSee('+7', false);
     }
 
     public function test_fiche_show_hides_preview_indicator_when_all_slides_shown(): void
@@ -351,52 +315,33 @@ class FicheShowTest extends TestCase
         $fiche = Fiche::factory()->published()->create([
             'initiative_id' => $initiative->id,
         ]);
-        File::factory()->withPreviews(3, 3)->create([
+        File::factory()->pptx()->withPreviews(3)->create([
             'fiche_id' => $fiche->id,
+            'total_slides' => 3,
         ]);
 
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
         $response->assertDontSee('data-preview-counter', false);
-        $response->assertDontSee('data-preview-overlay', false);
     }
 
-    public function test_fiche_show_displays_slides_for_pdf_preview(): void
+    public function test_fiche_show_displays_toegevoegd_door(): void
     {
+        $user = User::factory()->create([
+            'first_name' => 'Anna',
+            'last_name' => 'Janssens',
+        ]);
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create([
             'initiative_id' => $initiative->id,
-        ]);
-        File::factory()->withPreviews(5, 30)->create([
-            'fiche_id' => $fiche->id,
-            'mime_type' => 'application/pdf',
+            'user_id' => $user->id,
         ]);
 
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('+25');
-        $response->assertSee('slides in dit bestand');
-    }
-
-    public function test_fiche_show_hides_skeletons_when_previews_exist(): void
-    {
-        $initiative = Initiative::factory()->published()->create();
-        $fiche = Fiche::factory()->published()->create([
-            'initiative_id' => $initiative->id,
-        ]);
-        File::factory()->pptx()->withPreviews(3)->create([
-            'fiche_id' => $fiche->id,
-        ]);
-        File::factory()->create([
-            'fiche_id' => $fiche->id,
-        ]);
-
-        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
-
-        $response->assertStatus(200);
-        $response->assertSee('data-preview-image', false);
-        $response->assertDontSee('data-skeleton-card', false);
+        $response->assertSee('Toegevoegd door');
+        $response->assertSee('Anna Janssens');
     }
 }

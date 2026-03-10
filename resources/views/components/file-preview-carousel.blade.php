@@ -42,7 +42,12 @@
             if (diff > 50) next();
             if (diff < -50) prev();
         "
-        class="relative bg-[var(--color-bg-subtle)] rounded-2xl mb-5"
+        x-on:keydown.left.prevent="prev()"
+        x-on:keydown.right.prevent="next()"
+        tabindex="0"
+        role="region"
+        aria-label="Bestandencarrousel"
+        class="relative bg-[var(--color-bg-cream)] rounded-2xl mb-5 aspect-[4/3] overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
         data-carousel
     >
         {{-- Preview badge (top-left) --}}
@@ -51,24 +56,24 @@
         @endif
 
         {{-- Slide viewport --}}
-        <div class="overflow-hidden">
+        <div class="overflow-hidden h-full">
             <div
-                class="flex transition-transform duration-300 ease-in-out"
+                class="flex transition-transform duration-300 ease-out h-full motion-reduce:transition-none"
                 :style="`transform: translateX(-${current * 100}%)`"
             >
                 @foreach($slides as $index => $slide)
-                    <div class="w-full shrink-0 px-8 pt-8">
+                    <div class="w-full shrink-0 h-full flex items-center justify-center p-6 sm:p-10 pb-10 sm:pb-14">
                         @if($slide['type'] === 'preview')
-                            <div class="relative w-full">
+                            <div class="relative bg-white rounded-sm max-h-full" style="box-shadow: 11px 13px 19px -7px rgba(120, 90, 60, 0.18); border: 1px solid rgba(120, 90, 60, 0.1);">
                                 <img
                                     src="{{ $slide['url'] }}"
                                     alt="Preview van {{ $slide['filename'] }}"
-                                    loading="lazy"
-                                    class="w-full rounded-lg shadow-md"
+                                    @if($index > 0) loading="lazy" @endif
+                                    class="max-h-full w-auto rounded-sm"
                                     data-preview-image
                                 >
                                 @if($hasMoreSlides && $loop->last)
-                                    <div class="absolute inset-0 rounded-lg bg-white border border-[var(--color-border-light)] flex flex-col items-center justify-center" data-preview-overlay>
+                                    <div class="absolute inset-0 rounded-sm bg-white flex flex-col items-center justify-center" style="border: 1px solid rgba(120, 90, 60, 0.1);" data-preview-overlay>
                                         <span class="text-3xl font-heading font-bold text-[var(--color-primary)]">+{{ $remaining }}</span>
                                         <span class="text-sm text-[var(--color-text-secondary)]">{{ $pageUnit }} in dit bestand</span>
                                         @if($downloadUrl && $downloadLabel)
@@ -88,7 +93,7 @@
                         @else
                             {{-- Dummy skeleton card --}}
                             @php $file = $slide['file']; @endphp
-                            <div class="bg-white rounded-lg shadow-md w-full max-w-[280px] mx-auto aspect-[3/4] p-6 sm:p-8 flex flex-col" data-skeleton-card>
+                            <div class="bg-white rounded-sm w-full max-w-[280px] aspect-[3/4] p-6 sm:p-8 flex flex-col" style="box-shadow: 11px 13px 19px -7px rgba(120, 90, 60, 0.18); border: 1px solid rgba(120, 90, 60, 0.1);" data-skeleton-card>
                                 <div class="flex-1 flex flex-col gap-3">
                                     <div class="flex items-center gap-2 mb-2">
                                         @php
@@ -139,7 +144,7 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            class="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-zinc-50 transition-colors cursor-pointer"
+            class="absolute left-1 sm:left-2 top-1/2 -translate-y-[calc(50%+12px)] w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center hover:bg-white active:scale-95 transition-all cursor-pointer"
             aria-label="Vorige"
         >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-text-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -157,7 +162,7 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            class="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center hover:bg-zinc-50 transition-colors cursor-pointer"
+            class="absolute right-1 sm:right-2 top-1/2 -translate-y-[calc(50%+12px)] w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center hover:bg-white active:scale-95 transition-all cursor-pointer"
             aria-label="Volgende"
         >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-text-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -165,16 +170,24 @@
             </svg>
         </button>
 
-        {{-- Dot indicators --}}
+        {{-- Screen reader announcement --}}
+        <div class="sr-only" aria-live="polite" x-text="`Slide ${current + 1} van ${total}`"></div>
+
+        {{-- Dot indicators (inside fixed container) --}}
         @if($total > 1)
-            <div class="flex justify-center gap-1.5 pt-4 pb-4">
+            <div class="absolute bottom-0 left-0 right-0 flex justify-center gap-0 pb-1">
                 <template x-for="i in total" :key="i">
                     <button
                         x-on:click="goTo(i - 1)"
-                        class="w-2 h-2 rounded-full transition-colors cursor-pointer"
-                        :class="current === i - 1 ? 'bg-[var(--color-primary)]' : 'bg-zinc-300 hover:bg-zinc-400'"
+                        class="p-2 cursor-pointer group"
                         :aria-label="`Ga naar slide ${i}`"
-                    ></button>
+                        :aria-current="current === i - 1 ? 'step' : undefined"
+                    >
+                        <span
+                            class="block w-2 h-2 rounded-full transition-colors"
+                            :class="current === i - 1 ? 'bg-[var(--color-primary)]' : 'bg-zinc-300 group-hover:bg-zinc-400'"
+                        ></span>
+                    </button>
                 </template>
             </div>
         @endif

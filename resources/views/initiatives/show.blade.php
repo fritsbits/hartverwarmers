@@ -160,8 +160,9 @@
 
                 {{-- Right column: DIAMANT analyse card --}}
                 <div class="lg:col-span-1">
+                    @feature('diamant-goals')
                     @if($initiative->image || $diamantAnalyse)
-                        <div class="rounded-2xl bg-white shadow-lg lg:sticky lg:top-8 lg:self-start lg:-mt-20 overflow-hidden">
+                        <div class="rounded-2xl bg-white shadow-lg lg:sticky lg:top-8 lg:self-start lg:-mt-[180px] overflow-hidden">
                             @if($initiative->image)
                                 <img src="{{ $initiative->image }}" alt="{{ $initiative->title }}" class="w-full aspect-video object-cover" loading="lazy">
                             @endif
@@ -220,6 +221,7 @@
                             </div>
                         </div>
                     @endif
+                    @endfeature
                 </div>
             </div>
         </div>

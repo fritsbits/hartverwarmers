@@ -76,6 +76,35 @@ Component classes (`.cta-link`, `.btn-pill`, `.section-label`, `.content-card`, 
 - **Living pattern library** (admin-only): view at `resources/views/admin/design-system.blade.php` — all visual components rendered with real CSS/Blade. Read this file to see every component name, markup pattern, and usage note.
 - **Written reference**: [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) — concise rules for when to use which component.
 
+## Design Context
+
+### Users
+
+Activity coordinators ("animatoren" / "begeleidsters") in Flemish residential care homes. Mostly women aged 35–55, practically oriented, not tech-native. They visit the platform during work breaks or preparation time, looking for concrete ideas they can implement tomorrow. The job to be done: **find, adapt, and share practical activity ideas** that genuinely improve residents' quality of life.
+
+### Brand Personality
+
+**Warm, Practical, Encouraging.** The platform speaks like a supportive colleague — never academic, never condescending. It celebrates the small, real moments of care work. The tone is direct and hopeful: "you can do this too."
+
+### Emotional Goals
+
+The primary emotion to evoke is **belonging and pride** — "I'm part of something meaningful." Coordinators should feel they're contributing to a community of peers who share the same mission. Secondary: quiet confidence that their work matters.
+
+### Aesthetic Direction
+
+- **Visual tone**: Warm, tactile, handcrafted — like a well-loved scrapbook or bulletin board in a care home common room. Paper textures (polaroid frames, ruled-paper quotes, stacked fiche cards), generous white space, cream and orange warmth.
+- **Reference**: Airbnb-adjacent — clean layout, beautiful photography, content-first, but warmer and less polished. The interface should feel personal, not corporate.
+- **Anti-references**: Clinical healthcare portals, cold SaaS dashboards, overly minimal tech aesthetics. Nothing that feels institutional or sterile — the platform should be the opposite of the environment these users are trying to humanize.
+- **Theme**: Light mode only. The warm cream/orange palette doesn't translate well to dark mode and the audience has no expectation of it.
+
+### Design Principles
+
+1. **Warmth over polish** — Every surface should feel warm and human. Prefer cream backgrounds, soft shadows, rounded corners, and organic touches (paper textures, handwritten accents) over pixel-perfect minimalism.
+2. **Content is the hero** — Initiatives, elaborations, and the DIAMANT goals are the stars. UI chrome should recede. Large text, generous spacing, real photography over icons where possible.
+3. **Accessible by default** — WCAG AA compliance. Good contrast on warm backgrounds, generous click targets, readable font sizes (base 17px for forms). Many users are 40–60 and not digitally fluent.
+4. **Encourage, don't overwhelm** — Progressive disclosure. Show the essential path clearly. Use section labels + outcome-driven headings to guide rather than dump. Celebrate contributions (confetti, kudos hearts) to reinforce participation.
+5. **Dutch, direct, imperative** — All copy uses the Dutch imperative form ("Registreer", "Ontdek", "Deel"). Headings are outcome-driven, not descriptive. The voice is a peer, not an authority.
+
 ===
 
 <laravel-boost-guidelines>

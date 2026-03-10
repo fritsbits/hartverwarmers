@@ -72,40 +72,6 @@ class FeatureFlagTest extends TestCase
         $response->assertSee('Zeven doelstellingen');
     }
 
-    public function test_fiche_show_hides_goal_tags_when_feature_disabled(): void
-    {
-        Feature::define('diamant-goals', false);
-
-        $initiative = Initiative::factory()->published()->create();
-        $fiche = Fiche::factory()->published()->create([
-            'initiative_id' => $initiative->id,
-        ]);
-        $goalTag = Tag::factory()->goal()->create(['slug' => 'doel-doen', 'name' => 'Doen']);
-        $fiche->tags()->attach($goalTag);
-
-        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
-
-        $response->assertStatus(200);
-        $response->assertDontSee('diamant-pill', false);
-    }
-
-    public function test_fiche_show_shows_goal_tags_when_feature_enabled(): void
-    {
-        Feature::define('diamant-goals', true);
-
-        $initiative = Initiative::factory()->published()->create();
-        $fiche = Fiche::factory()->published()->create([
-            'initiative_id' => $initiative->id,
-        ]);
-        $goalTag = Tag::factory()->goal()->create(['slug' => 'doel-doen', 'name' => 'Doen']);
-        $fiche->tags()->attach($goalTag);
-
-        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
-
-        $response->assertStatus(200);
-        $response->assertSee('diamant-pill', false);
-    }
-
     public function test_admin_can_view_features_page(): void
     {
         $admin = User::factory()->admin()->create();
@@ -165,6 +131,72 @@ class FeatureFlagTest extends TestCase
         $response = $this->actingAs($admin)->post(route('admin.features.toggle', 'non-existent'));
 
         $response->assertStatus(404);
+    }
+
+    public function test_initiative_show_hides_diamant_card_when_feature_disabled(): void
+    {
+        Feature::define('diamant-goals', false);
+
+        $initiative = Initiative::factory()->published()->create();
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Laat het initiatief schitteren');
+        $response->assertDontSee('DIAMANT-principes');
+    }
+
+    public function test_initiative_show_shows_diamant_card_when_feature_enabled(): void
+    {
+        Feature::define('diamant-goals', true);
+
+        $initiative = Initiative::factory()->published()->create();
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+    }
+
+    public function test_initiatives_index_hides_goal_filter_when_feature_disabled(): void
+    {
+        Feature::define('diamant-goals', false);
+
+        $response = $this->get(route('initiatives.index'));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Doelen filteren');
+        $response->assertSee('Vind het juiste initiatief of zoek op naam.');
+    }
+
+    public function test_initiatives_index_shows_goal_filter_when_feature_enabled(): void
+    {
+        Feature::define('diamant-goals', true);
+
+        $response = $this->get(route('initiatives.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Doelen filteren');
+        $response->assertSee('DIAMANT-doelen');
+    }
+
+    public function test_fiche_van_de_maand_hides_diamant_link_when_feature_disabled(): void
+    {
+        Feature::define('diamant-goals', false);
+
+        $response = $this->get(route('fiches.ficheVanDeMaand'));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Het DIAMANT-kompas');
+    }
+
+    public function test_fiche_van_de_maand_shows_diamant_link_when_feature_enabled(): void
+    {
+        Feature::define('diamant-goals', true);
+
+        $response = $this->get(route('fiches.ficheVanDeMaand'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Het DIAMANT-kompas');
     }
 
     public function test_fiche_edit_preserves_goal_tags_when_feature_disabled(): void

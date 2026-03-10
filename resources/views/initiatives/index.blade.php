@@ -46,10 +46,17 @@
 
                 <span class="section-label section-label-hero">Initiatieven</span>
                 <h1 class="text-5xl mt-1">Ontdek inspirerende activiteiten</h1>
-                <p class="text-2xl text-[var(--color-text-secondary)] mt-4">Vind het juiste initiatief via de DIAMANT-doelen of zoek op naam.</p>
+                <p class="text-2xl text-[var(--color-text-secondary)] mt-4">
+                    @if(count($goals) > 0)
+                        Vind het juiste initiatief via de DIAMANT-doelen of zoek op naam.
+                    @else
+                        Vind het juiste initiatief of zoek op naam.
+                    @endif
+                </p>
 
                 {{-- Filter controls --}}
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-8">
+                    @if(count($goals) > 0)
                     {{-- Goal filter dropdown --}}
                     <flux:dropdown>
                         <button class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full font-semibold text-sm text-white transition-all hover:shadow-md"
@@ -85,6 +92,7 @@
                             </div>
                         </flux:popover>
                     </flux:dropdown>
+                    @endif
 
                     {{-- Search input --}}
                     <flux:input icon="magnifying-glass" placeholder="Zoek op naam..." x-model.debounce.200ms="search" class="sm:max-w-xs" />
@@ -97,6 +105,7 @@
                 </div>
 
                 {{-- Active filter pills --}}
+                @if(count($goals) > 0)
                 <div class="flex flex-wrap items-center gap-2 mt-4" x-show="selectedGoals.length > 0" x-cloak>
                     @foreach($goals as $goal)
                         <template x-if="selectedGoals.includes('{{ $goal['tagSlug'] }}')">
@@ -114,6 +123,7 @@
                         </button>
                     </template>
                 </div>
+                @endif
             </div>
         </section>
 
