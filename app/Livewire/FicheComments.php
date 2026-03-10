@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\CreatesGuestAccount;
 use App\Models\Comment;
 use App\Models\Fiche;
 use Livewire\Attributes\Computed;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class FicheComments extends Component
 {
+    use CreatesGuestAccount;
+
     public Fiche $fiche;
 
     #[Validate('required|string|max:1000', message: [
@@ -26,6 +29,8 @@ class FicheComments extends Component
     ])]
     public string $replyBody = '';
 
+    public string $guestBody = '';
+
     public function addComment(): void
     {
         $this->validate(['body' => 'required|string|max:1000']);
@@ -40,6 +45,62 @@ class FicheComments extends Component
 
         $this->reset('body');
         unset($this->comments);
+    }
+
+    public function addGuestComment(): void
+    {
+        $this->validate([
+            'guestBody' => ['required', 'string', 'max:1000'],
+        ], [
+            'guestBody.required' => 'Schrijf een reactie.',
+            'guestBody.max' => 'Je reactie mag maximaal 1000 tekens bevatten.',
+        ]);
+
+        $this->validateGuestIdentity();
+
+        $user = $this->createGuestUser();
+
+        Comment::create([
+            'body' => $this->guestBody,
+            'user_id' => $user->id,
+            'commentable_type' => Fiche::class,
+            'commentable_id' => $this->fiche->id,
+            'parent_id' => null,
+        ]);
+
+        $this->reset('guestBody');
+        unset($this->comments);
+
+        $this->dispatch('guest-welcome', name: $user->first_name);
+    }
+
+    public function addGuestReply(): void
+    {
+        $this->validate([
+            'replyBody' => 'required|string|max:1000',
+        ], [
+            'replyBody.required' => 'Schrijf een reactie.',
+            'replyBody.max' => 'Je reactie mag maximaal 1000 tekens bevatten.',
+        ]);
+
+        $this->validateGuestIdentity();
+
+        $parent = Comment::findOrFail($this->replyingTo);
+        $user = $this->createGuestUser();
+
+        Comment::create([
+            'body' => $this->replyBody,
+            'user_id' => $user->id,
+            'commentable_type' => Fiche::class,
+            'commentable_id' => $this->fiche->id,
+            'parent_id' => $parent->id,
+        ]);
+
+        $this->replyingTo = null;
+        $this->replyBody = '';
+        unset($this->comments);
+
+        $this->dispatch('guest-welcome', name: $user->first_name);
     }
 
     public function startReply(int $commentId): void

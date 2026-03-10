@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Livewire\Concerns\CreatesGuestAccount;
 use App\Models\Fiche;
 use App\Models\Like;
 use Livewire\Attributes\Computed;
@@ -9,47 +10,65 @@ use Livewire\Component;
 
 class FicheKudos extends Component
 {
+    use CreatesGuestAccount;
+
     public const MAX_KUDOS_PER_USER = 25;
 
+    public const MAX_KUDOS_PER_SESSION = 10;
+
     public Fiche $fiche;
+
+    public bool $showBookmarkAuth = false;
 
     #[Computed]
     public function isOwnFiche(): bool
     {
+        if (! auth()->check()) {
+            return false;
+        }
+
         return auth()->id() === $this->fiche->user_id;
     }
 
     #[Computed]
     public function maxKudos(): int
     {
-        return self::MAX_KUDOS_PER_USER;
+        return auth()->check() ? self::MAX_KUDOS_PER_USER : self::MAX_KUDOS_PER_SESSION;
     }
 
     public function addKudos(int $amount): void
     {
-        if (! auth()->check()) {
-            $this->redirect(route('login'));
-
+        if (auth()->check() && auth()->id() === $this->fiche->user_id) {
             return;
         }
 
-        if (auth()->id() === $this->fiche->user_id) {
-            return;
+        $max = auth()->check() ? self::MAX_KUDOS_PER_USER : self::MAX_KUDOS_PER_SESSION;
+        $amount = max(1, min($amount, $max));
+
+        if (auth()->check()) {
+            $kudos = Like::firstOrCreate(
+                [
+                    'user_id' => auth()->id(),
+                    'likeable_type' => Fiche::class,
+                    'likeable_id' => $this->fiche->id,
+                    'type' => 'kudos',
+                ],
+                ['count' => 0]
+            );
+        } else {
+            $kudos = Like::firstOrCreate(
+                [
+                    'session_id' => session()->getId(),
+                    'user_id' => null,
+                    'likeable_type' => Fiche::class,
+                    'likeable_id' => $this->fiche->id,
+                    'type' => 'kudos',
+                ],
+                ['count' => 0]
+            );
         }
 
-        $amount = max(1, min($amount, self::MAX_KUDOS_PER_USER));
-
-        $kudos = Like::firstOrCreate(
-            [
-                'user_id' => auth()->id(),
-                'likeable_type' => Fiche::class,
-                'likeable_id' => $this->fiche->id,
-                'type' => 'kudos',
-            ],
-            ['count' => 0]
-        );
-
-        $remaining = self::MAX_KUDOS_PER_USER - $kudos->count;
+        $remaining = $max - $kudos->count;
         if ($remaining <= 0) {
             unset($this->totalKudos, $this->myKudos, $this->kudosGiversCount);
 
@@ -64,11 +83,34 @@ class FicheKudos extends Component
     public function toggleBookmark(): void
     {
         if (! auth()->check()) {
-            $this->redirect(route('login'));
+            $this->showBookmarkAuth = true;
 
             return;
         }
 
+        $this->performBookmarkToggle();
+    }
+
+    public function guestBookmark(): void
+    {
+        $this->validateGuestIdentity();
+        $user = $this->createGuestUser();
+        $this->showBookmarkAuth = false;
+
+        $this->performBookmarkToggle();
+
+        unset($this->isBookmarked);
+
+        $this->dispatch('guest-welcome', name: $user->first_name);
+    }
+
+    public function cancelBookmarkAuth(): void
+    {
+        $this->showBookmarkAuth = false;
+    }
+
+    private function performBookmarkToggle(): void
+    {
         $bookmark = Like::where('user_id', auth()->id())
             ->where('likeable_type', Fiche::class)
             ->where('likeable_id', $this->fiche->id)
@@ -96,11 +138,16 @@ class FicheKudos extends Component
     #[Computed]
     public function myKudos(): int
     {
-        if (! auth()->check()) {
-            return 0;
+        if (auth()->check()) {
+            return (int) Like::where('user_id', auth()->id())
+                ->where('likeable_type', Fiche::class)
+                ->where('likeable_id', $this->fiche->id)
+                ->where('type', 'kudos')
+                ->value('count') ?? 0;
         }
 
-        return (int) Like::where('user_id', auth()->id())
+        return (int) Like::where('session_id', session()->getId())
+            ->whereNull('user_id')
             ->where('likeable_type', Fiche::class)
             ->where('likeable_id', $this->fiche->id)
             ->where('type', 'kudos')
