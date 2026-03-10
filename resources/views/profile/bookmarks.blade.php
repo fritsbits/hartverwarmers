@@ -14,13 +14,13 @@
 
         <div class="space-y-2">
             @foreach($fiches as $fiche)
-                <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="fiche-list-item group">
+                <div class="fiche-list-item group">
                     <div class="fiche-list-icon">
                         <flux:icon name="bookmark" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start gap-2">
-                            <span class="font-heading font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">{{ $fiche->title }}</span>
+                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-heading font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">{{ $fiche->title }}</a>
                             @if($fiche->has_diamond)
                                 <x-diamond-badge class="shrink-0 mt-0.5" />
                             @endif
@@ -35,8 +35,10 @@
                             @endif
                         </div>
                     </div>
-                    <flux:icon name="chevron-right" variant="mini" class="size-4 shrink-0 text-[var(--color-border-hover)] group-hover:text-[var(--color-primary)] transition-colors" />
-                </a>
+                    <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}">
+                        <flux:icon name="chevron-right" variant="mini" class="size-4 shrink-0 text-[var(--color-border-hover)] group-hover:text-[var(--color-primary)] transition-colors" />
+                    </a>
+                </div>
             @endforeach
         </div>
     @endif
