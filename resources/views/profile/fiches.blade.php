@@ -39,14 +39,14 @@
                     <div class="fiche-list-icon">
                         <flux:icon :name="$fiche->published ? 'document-text' : 'pencil-square'" />
                     </div>
-                    <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2">
-                            <span class="font-heading font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors truncate">{{ $fiche->title }}</span>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-heading font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors truncate">{{ $fiche->title }}</a>
                             @if($fiche->has_diamond)
-                                <x-diamond-badge />
+                                <x-diamond-badge class="shrink-0" />
                             @endif
                             @if(!$fiche->published)
-                                <flux:badge size="sm" color="yellow" inset="top bottom">Concept</flux:badge>
+                                <flux:badge size="sm" color="yellow" inset="top bottom" class="shrink-0">Concept</flux:badge>
                             @endif
                         </div>
                         <div class="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
@@ -56,7 +56,7 @@
                             @endif
                             <span class="whitespace-nowrap">{{ $fiche->created_at->format('d-m-Y') }}</span>
                         </div>
-                    </a>
+                    </div>
                     <div class="hidden sm:flex items-center gap-3 text-xs text-[var(--color-text-secondary)] shrink-0">
                         <span class="flex items-center gap-1" title="Downloads">
                             <flux:icon name="arrow-down-tray" variant="micro" class="size-3.5" />
