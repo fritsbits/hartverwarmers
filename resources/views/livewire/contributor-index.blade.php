@@ -40,113 +40,142 @@
 
     <hr class="border-[var(--color-border-light)]">
 
-    {{-- Search + Grid --}}
+    {{-- Search + Contributors list with sidebar --}}
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
-            {{-- Search bar --}}
-            <div class="max-w-md mb-10">
-                <flux:input
-                    wire:model.live.debounce.300ms="search"
-                    placeholder="Zoek op naam of organisatie..."
-                    icon="magnifying-glass"
-                    clearable
-                />
-            </div>
+            <div class="flex flex-col lg:flex-row gap-12">
 
-            {{-- Results info when searching --}}
-            @if(strlen(trim($search)) >= 2)
-                <p class="text-sm text-[var(--color-text-secondary)] mb-6">
-                    Resultaten voor "{{ $search }}"
-                </p>
-            @endif
-
-            {{-- Contributors grid --}}
-            @if($contributors->isEmpty())
-                <div class="text-center py-16">
-                    <div class="w-16 h-16 rounded-full bg-[var(--color-bg-accent-light)] flex items-center justify-center mx-auto mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" />
-                        </svg>
+                {{-- Main column: search + list --}}
+                <div class="flex-1 min-w-0">
+                    {{-- Search bar --}}
+                    <div class="max-w-md mb-8">
+                        <flux:input
+                            wire:model.live.debounce.300ms="search"
+                            placeholder="Zoek op naam of organisatie..."
+                            icon="magnifying-glass"
+                            clearable
+                        />
                     </div>
-                    <p class="text-[var(--color-text-secondary)] font-light">
-                        @if(strlen(trim($search)) >= 2)
-                            Geen bijdragers gevonden voor "{{ $search }}"
-                        @else
-                            Nog geen bijdragers.
-                        @endif
-                    </p>
-                </div>
-            @else
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @foreach($contributors as $contributor)
-                        <a href="{{ route('contributors.show', $contributor) }}"
-                           class="group content-card p-5 flex items-start gap-4"
-                           wire:key="contributor-{{ $contributor->id }}">
 
-                            {{-- Avatar --}}
-                            @if($contributor->avatar_path)
-                                <img src="{{ $contributor->avatarUrl() }}"
-                                     alt=""
-                                     class="w-11 h-11 rounded-full object-cover shrink-0 ring-2 ring-white shadow-sm"
-                                     loading="lazy">
-                            @else
-                                <div class="w-11 h-11 rounded-full bg-[var(--color-bg-accent-light)] text-[var(--color-primary)] flex items-center justify-center text-base font-bold shrink-0 ring-2 ring-white shadow-sm">
-                                    {{ mb_substr($contributor->first_name, 0, 1) }}
-                                </div>
-                            @endif
+                    {{-- Results info when searching --}}
+                    @if(strlen(trim($search)) >= 2)
+                        <p class="text-sm text-[var(--color-text-secondary)] mb-6">
+                            Resultaten voor "{{ $search }}"
+                        </p>
+                    @endif
 
-                            {{-- Info --}}
-                            <div class="min-w-0 flex-1">
-                                <h4 class="text-[15px] font-heading font-bold leading-snug truncate group-hover:text-[var(--color-primary)] transition-colors">
-                                    {{ $contributor->full_name }}
-                                </h4>
-
-                                @if($contributor->function_title || $contributor->organisation)
-                                    <p class="text-[13px] text-[var(--color-text-secondary)] font-light mt-0.5 truncate">
-                                        {{ collect([$contributor->function_title, $contributor->organisation])->filter()->join(' · ') }}
-                                    </p>
+                    {{-- Contributors list --}}
+                    @if($contributors->isEmpty())
+                        <div class="text-center py-16">
+                            <div class="w-16 h-16 rounded-full bg-[var(--color-bg-accent-light)] flex items-center justify-center mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0" />
+                                </svg>
+                            </div>
+                            <p class="text-[var(--color-text-secondary)] font-light">
+                                @if(strlen(trim($search)) >= 2)
+                                    Geen bijdragers gevonden voor "{{ $search }}"
+                                @else
+                                    Nog geen bijdragers.
                                 @endif
+                            </p>
+                        </div>
+                    @else
+                        <div class="divide-y divide-[var(--color-border-light)]">
+                            @foreach($contributors as $contributor)
+                                <a href="{{ route('contributors.show', $contributor) }}"
+                                   class="group flex items-start gap-4 py-5 -mx-3 px-3 rounded-xl hover:bg-[var(--color-bg-cream)] transition-colors"
+                                   wire:key="contributor-{{ $contributor->id }}">
 
-                                {{-- Fiche count + initiative context --}}
-                                @php
-                                    $initiativeTitles = $contributor->fiches->pluck('initiative.title')->filter()->unique()->values();
-                                @endphp
-                                <div class="meta-group mt-2.5" style="gap: 0.5rem; font-size: var(--text-small);">
-                                    <span class="meta-item whitespace-nowrap shrink-0 !font-semibold" style="color: var(--color-primary);">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                        </svg>
+                                    {{-- Avatar --}}
+                                    @if($contributor->avatar_path)
+                                        <img src="{{ $contributor->avatarUrl() }}"
+                                             alt=""
+                                             class="w-12 h-12 rounded-full object-cover shrink-0"
+                                             loading="lazy">
+                                    @else
+                                        <div class="w-12 h-12 rounded-full bg-[var(--color-bg-accent-light)] text-[var(--color-primary)] flex items-center justify-center text-lg font-bold shrink-0">
+                                            {{ mb_substr($contributor->first_name, 0, 1) }}
+                                        </div>
+                                    @endif
+
+                                    {{-- Info --}}
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="text-lg font-heading font-bold leading-snug group-hover:text-[var(--color-primary)] transition-colors">
+                                            {{ $contributor->full_name }}
+                                        </h4>
+
+                                        @if($contributor->function_title || $contributor->organisation)
+                                            <p class="text-sm text-[var(--color-text-secondary)] font-light mt-0.5">
+                                                {{ collect([$contributor->function_title, $contributor->organisation])->filter()->join(', ') }}
+                                            </p>
+                                        @endif
+
+                                        {{-- Qualitative context --}}
+                                        @php
+                                            $initiativeTitles = $contributor->fiches->pluck('initiative.title')->filter()->unique()->values();
+                                        @endphp
+                                        @if($initiativeTitles->isNotEmpty())
+                                            <p class="text-sm text-[var(--color-text-secondary)] font-light mt-1.5">
+                                                Deelde fiches over {{ $initiativeTitles->take(3)->join(', ', ' en ') }}{{ $initiativeTitles->count() > 3 ? ' en meer' : '' }}
+                                            </p>
+                                        @endif
+                                    </div>
+
+                                    {{-- Fiche count (subtle, right-aligned) --}}
+                                    <span class="text-sm text-[var(--color-text-secondary)] font-light shrink-0 hidden sm:block mt-1">
                                         {{ $contributor->fiches_count }}&nbsp;{{ $contributor->fiches_count === 1 ? 'fiche' : 'fiches' }}
                                     </span>
-                                    @if($initiativeTitles->isNotEmpty())
-                                        <span class="text-meta truncate" style="font-size: var(--text-small);">
-                                            {{ $initiativeTitles->take(2)->join(', ') }}{{ $initiativeTitles->count() > 2 ? ' ...' : '' }}
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </a>
-                    @endforeach
+                                </a>
+                            @endforeach
+                        </div>
+
+                        {{-- Pagination --}}
+                        <div class="mt-8">
+                            {{ $contributors->links() }}
+                        </div>
+                    @endif
                 </div>
 
-                {{-- Pagination --}}
-                <div class="mt-10">
-                    {{ $contributors->links() }}
+                {{-- Sidebar: sticky CTA --}}
+                <div class="hidden lg:block w-72 shrink-0">
+                    <div class="sticky top-8">
+                        @guest
+                            <div class="rounded-2xl bg-[var(--color-bg-cream)] border border-[var(--color-border-light)] p-6">
+                                <h3 class="text-lg mb-2">Word ook bijdrager</h3>
+                                <p class="text-sm text-[var(--color-text-secondary)] font-light leading-relaxed mb-5">
+                                    Deel je praktijkfiches met collega's uit heel Vlaanderen en Nederland.
+                                </p>
+                                <a href="{{ route('register') }}" class="btn-pill w-full text-center text-sm">Registreer</a>
+                            </div>
+                        @endguest
+
+                        @auth
+                            <div class="rounded-2xl bg-[var(--color-bg-cream)] border border-[var(--color-border-light)] p-6">
+                                <h3 class="text-lg mb-2">Deel je ervaring</h3>
+                                <p class="text-sm text-[var(--color-text-secondary)] font-light leading-relaxed mb-5">
+                                    Heb je een activiteit die goed werkt? Schrijf een fiche en inspireer collega's.
+                                </p>
+                                <a href="{{ route('fiches.create') }}" class="btn-pill w-full text-center text-sm">Schrijf een fiche</a>
+                            </div>
+                        @endauth
+
+                        {{-- Community stats in sidebar --}}
+                        <div class="mt-6 space-y-3 text-sm text-[var(--color-text-secondary)]">
+                            <p><span class="font-semibold text-[var(--color-text-primary)]">{{ $this->stats['contributors_count'] }}</span> bijdragers</p>
+                            <p><span class="font-semibold text-[var(--color-text-primary)]">{{ $this->stats['organisations_count'] }}</span> organisaties</p>
+                            <p><span class="font-semibold text-[var(--color-text-primary)]">{{ $this->stats['fiches_count'] }}</span> fiches gedeeld</p>
+                        </div>
+                    </div>
                 </div>
-            @endif
+
+            </div>
         </div>
     </section>
 
-    {{-- CTA for guests --}}
+    {{-- Mobile CTA (hidden on desktop where sidebar shows) --}}
     @guest
-        <section class="relative bg-[var(--color-bg-cream)] border-t border-[var(--color-border-light)] overflow-hidden">
-            {{-- Decorative diamond shape --}}
-            <div class="absolute -right-8 top-1/2 -translate-y-1/2 opacity-[0.04] pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-64 h-64" viewBox="0 0 100 100">
-                    <path d="M20,5 L2,36 L50,97 L98,36 L80,5 L50,22 Z" fill="var(--color-primary)"/>
-                </svg>
-            </div>
-
+        <section class="lg:hidden relative bg-[var(--color-bg-cream)] border-t border-[var(--color-border-light)] overflow-hidden">
             <div class="max-w-6xl mx-auto px-6 py-16">
                 <div class="max-w-lg">
                     <span class="section-label mb-2">Word deel van de community</span>
