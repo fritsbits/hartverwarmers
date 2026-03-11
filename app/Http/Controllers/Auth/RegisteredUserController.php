@@ -44,6 +44,11 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('home', absolute: false));
+        return redirect(route('home', absolute: false))
+            ->with('toast', [
+                'heading' => 'Welkom bij de club, '.$user->first_name.'!',
+                'text' => 'Fijn dat je erbij bent. Ontdek wat collega\'s delen.',
+                'variant' => 'success',
+            ]);
     }
 }

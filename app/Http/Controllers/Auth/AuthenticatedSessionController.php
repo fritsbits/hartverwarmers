@@ -28,7 +28,18 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('home', absolute: false));
+        $greeting = match (true) {
+            now()->hour < 12 => 'Goedemorgen',
+            now()->hour < 18 => 'Goedemiddag',
+            default => 'Goedenavond',
+        };
+
+        return redirect()->intended(route('home', absolute: false))
+            ->with('toast', [
+                'heading' => $greeting.', '.Auth::user()->first_name.'!',
+                'text' => 'Fijn je weer te zien.',
+                'variant' => 'success',
+            ]);
     }
 
     /**
@@ -42,6 +53,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/')->with('toast', [
+            'heading' => 'Tot de volgende keer!',
+            'text' => 'Je bent uitgelogd.',
+            'variant' => 'success',
+        ]);
     }
 }

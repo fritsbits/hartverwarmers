@@ -14,7 +14,7 @@ class FooterComposer
         $stats = Cache::remember('footer_stats', 3600, function () {
             return [
                 'fiches_count' => Fiche::count(),
-                'contributors_count' => User::count(),
+                'contributors_count' => User::whereHas('fiches')->count(),
                 'organisations_count' => User::whereNotNull('organisation')->distinct('organisation')->count('organisation'),
             ];
         });

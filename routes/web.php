@@ -10,6 +10,7 @@ use App\Http\Controllers\FicheController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InitiativeController;
+use App\Http\Controllers\MailPreviewController;
 use App\Http\Controllers\ProfileController as HvProfileController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ThemeController;
@@ -61,6 +62,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/design-systeem', [DesignSystemController::class, 'index'])->name('admin.design-system');
         Route::get('/admin/features', [FeatureController::class, 'index'])->name('admin.features');
         Route::post('/admin/features/{feature}/toggle', [FeatureController::class, 'toggle'])->name('admin.features.toggle');
+        Route::get('/admin/mails', [MailPreviewController::class, 'index'])->name('admin.mails');
+        Route::get('/admin/mails/{email}', [MailPreviewController::class, 'show'])->name('admin.mails.show');
+        Route::get('/admin/mails/{email}/preview', [MailPreviewController::class, 'preview'])->name('admin.mails.preview');
         Route::delete('/initiatieven/{initiative:slug}', [InitiativeController::class, 'destroy'])->name('initiatives.destroy');
         Route::post('/initiatieven/{initiative:slug}/{fiche:slug}/diamant', [FicheController::class, 'toggleDiamond'])->name('fiches.toggleDiamond');
         Route::post('/initiatieven/{initiative:slug}/{fiche:slug}/fiche-van-de-maand', [FicheController::class, 'setFicheOfMonth'])->name('fiches.setFicheOfMonth');
@@ -87,6 +91,9 @@ Route::middleware(EnsureFeaturesAreActive::using('diamant-goals'))->group(functi
 Route::get('/{slug}', [ContentController::class, 'content'])
     ->where('slug', '(lessenreeks|wonen-en-leven).*')
     ->name('content');
+
+// About
+Route::view('/over-ons', 'about')->name('about');
 
 // Legal pages
 Route::view('/privacybeleid', 'legal.privacy')->name('legal.privacy');
