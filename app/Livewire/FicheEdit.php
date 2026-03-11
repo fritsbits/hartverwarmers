@@ -185,7 +185,11 @@ class FicheEdit extends Component
             ? route('fiches.show', [$this->fiche->initiative, $this->fiche])
             : route('home');
 
-        session()->flash('success', 'Fiche bijgewerkt.');
+        session()->flash('toast', [
+            'heading' => 'Fiche bijgewerkt',
+            'text' => 'Je wijzigingen zijn opgeslagen.',
+            'variant' => 'success',
+        ]);
         $this->redirect($route, navigate: false);
     }
 

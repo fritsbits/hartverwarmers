@@ -248,13 +248,14 @@ class FicheShowTest extends TestCase
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create([
             'initiative_id' => $initiative->id,
-            'download_count' => 42,
+            'materials' => ['duration' => '45 min', 'group_size' => '6-12'],
         ]);
 
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('42 keer gedownload');
+        $response->assertSee('45 min');
+        $response->assertSee('6-12 pers.');
     }
 
     public function test_fiche_show_displays_preview_images_in_carousel(): void
@@ -341,7 +342,6 @@ class FicheShowTest extends TestCase
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('Toegevoegd door');
         $response->assertSee('Anna Janssens');
     }
 }

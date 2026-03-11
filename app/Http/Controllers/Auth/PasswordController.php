@@ -24,6 +24,10 @@ class PasswordController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        return back()->with('success', 'Wachtwoord succesvol bijgewerkt.');
+        return back()->with('toast', [
+            'heading' => 'Wachtwoord bijgewerkt',
+            'text' => 'Je account is weer veilig.',
+            'variant' => 'success',
+        ]);
     }
 }

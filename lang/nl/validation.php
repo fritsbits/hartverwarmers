@@ -2,6 +2,7 @@
 
 return [
 
+    'accepted' => ':Attribute moet geaccepteerd worden.',
     'confirmed' => ':Attribute komt niet overeen met de bevestiging.',
     'current_password' => 'Het wachtwoord is onjuist.',
     'email' => ':Attribute moet een geldig e-mailadres zijn.',

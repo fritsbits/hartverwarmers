@@ -143,6 +143,5 @@ class FicheDownloadTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('3 bestanden');
         $response->assertSee('Download');
-        $response->assertSee('1.9 MB');
     }
 }

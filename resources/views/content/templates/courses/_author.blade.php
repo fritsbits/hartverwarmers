@@ -1,8 +1,8 @@
-<div class="bg-[var(--color-bg-subtle)] rounded-lg p-5">
+<div class="bg-[var(--color-bg-subtle)] rounded-xl p-5">
     @isset($author['image'])
         <img src="{{ is_array($author['image']) ? $author['image']['src'] : $author['image'] }}" alt="{{ $author['name'] }}" class="w-16 h-16 rounded-full object-cover mb-3">
     @endisset
-    <h3 class="font-semibold text-[var(--color-text-primary)]">{{ $author['name'] }}</h3>
+    <h4 class="font-heading font-bold text-[var(--color-text-primary)]">{{ $author['name'] }}</h4>
     @isset($author['text'])
         <p class="text-sm text-[var(--color-text-secondary)] mt-1">{{ $author['text'] }}</p>
     @endisset
@@ -29,8 +29,8 @@
                         $href = '#';
                     }
                 @endphp
-                <a href="{{ $href }}" class="flex items-center gap-2 text-sm text-[var(--color-primary)] hover:underline" @if(isset($link['url'])) target="_blank" @endif>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0">
+                <a href="{{ $href }}" class="flex items-center gap-2 text-sm text-[var(--color-primary)] hover:underline" @if(isset($link['url'])) target="_blank" rel="noopener" @endif>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 shrink-0" aria-hidden="true">
                         @if(($link['icon'] ?? '') === 'file_copy')
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                         @elseif(($link['icon'] ?? '') === 'info')
@@ -48,10 +48,10 @@
     @endif
 
     @if(!empty($author['social']))
-        <div class="flex gap-3 mt-3">
+        <div class="flex flex-wrap gap-2 mt-3">
             @foreach($author['social'] as $social)
                 @isset($social['url'])
-                    <a href="{{ $social['url'] }}" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]" target="_blank">
+                    <a href="{{ $social['url'] }}" class="inline-flex items-center text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors" target="_blank" rel="noopener">
                         {{ $social['label'] ?? ucfirst($social['type'] ?? $social['platform'] ?? 'Link') }}
                     </a>
                 @endisset

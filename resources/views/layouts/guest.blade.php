@@ -29,6 +29,14 @@
 
 </head>
 <body class="font-body antialiased min-h-screen bg-[var(--color-bg-cream)]">
+    <flux:toast position="top end" />
+
+    @if(session('toast'))
+        <div x-data x-init="$flux.toast(@js(session('toast')))"></div>
+    @elseif(session('success'))
+        <div x-data x-init="$flux.toast({ text: @js(session('success')), variant: 'success' })"></div>
+    @endif
+
     <div class="min-h-screen lg:grid lg:grid-cols-2">
         {{-- Left panel: hero image (desktop only) --}}
         <div class="hidden lg:block lg:relative border-r border-[var(--color-border-light)]">
@@ -41,13 +49,13 @@
 
         {{-- Right panel: hero zone + form zone --}}
         <div class="flex flex-col min-h-screen">
-            {{-- Hero zone (cream, 1/3 height, content bottom-aligned) --}}
-            <div class="flex flex-col justify-end h-1/3 px-8 pt-8 pb-8 sm:px-12 border-b border-[var(--color-border-light)]">
+            {{-- Hero zone (cream, fixed height, content bottom-aligned) --}}
+            <div class="flex flex-col justify-end min-h-[280px] px-8 pt-8 pb-8 sm:px-12 border-b border-[var(--color-border-light)]">
                 {{ $header }}
             </div>
 
-            {{-- Form zone (white, 2/3 height, content top-aligned) --}}
-            <div class="bg-[var(--color-bg-white)] h-2/3 px-8 pt-10 sm:px-12">
+            {{-- Form zone (white, fills remaining height, content top-aligned) --}}
+            <div class="bg-[var(--color-bg-white)] flex-1 px-8 pt-10 sm:px-12">
                 <div class="max-w-lg">
                     {{ $slot }}
                 </div>

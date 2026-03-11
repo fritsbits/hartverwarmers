@@ -32,7 +32,11 @@ class ProfileController extends Controller
         $user->fill($validated);
         $user->save();
 
-        return redirect()->route('profile.show')->with('success', 'Profiel bijgewerkt.');
+        return redirect()->route('profile.show')->with('toast', [
+            'heading' => 'Profiel bijgewerkt',
+            'text' => 'Je wijzigingen zijn opgeslagen.',
+            'variant' => 'success',
+        ]);
     }
 
     public function updateAvatar(Request $request, AvatarThumbnailService $thumbnailService): RedirectResponse
@@ -53,7 +57,11 @@ class ProfileController extends Controller
         $thumbnailService->generate($path);
         $user->update(['avatar_path' => $path]);
 
-        return redirect()->route('profile.show')->with('success', 'Profielfoto bijgewerkt.');
+        return redirect()->route('profile.show')->with('toast', [
+            'heading' => 'Nieuwe foto!',
+            'text' => 'Je profielfoto is bijgewerkt.',
+            'variant' => 'success',
+        ]);
     }
 
     public function deleteAvatar(Request $request, AvatarThumbnailService $thumbnailService): RedirectResponse

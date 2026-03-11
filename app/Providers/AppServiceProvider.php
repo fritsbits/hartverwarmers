@@ -2,8 +2,14 @@
 
 namespace App\Providers;
 
+use App\Listeners\SendWelcomeNotification;
 use App\Models\User;
 use App\View\Composers\FooterComposer;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -41,5 +47,38 @@ class AppServiceProvider extends ServiceProvider
             'extra' => $user->email,
             'avatar' => null,
         ]);
+
+        Event::listen(Verified::class, SendWelcomeNotification::class);
+
+        $this->customizeMailNotifications();
+    }
+
+    private function customizeMailNotifications(): void
+    {
+        VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+            return (new MailMessage)
+                ->subject('Bevestig je e-mailadres — Hartverwarmers')
+                ->greeting("Hoi {$notifiable->first_name}!")
+                ->line('Bevestig je e-mailadres om je account te activeren.')
+                ->action('Bevestig je e-mailadres', $url)
+                ->line('Heb je geen account aangemaakt? Dan hoef je niets te doen.')
+                ->salutation("Warme groet,\nHet Hartverwarmers-team");
+        });
+
+        ResetPassword::toMailUsing(function (object $notifiable, string $token) {
+            $url = url(route('password.reset', [
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ], false));
+
+            return (new MailMessage)
+                ->subject('Wachtwoord resetten — Hartverwarmers')
+                ->greeting("Hoi {$notifiable->first_name}!")
+                ->line('Je ontvangt deze e-mail omdat we een verzoek kregen om je wachtwoord te resetten.')
+                ->action('Wachtwoord resetten', $url)
+                ->line('Deze link is '.config('auth.passwords.'.config('auth.defaults.passwords').'.expire').' minuten geldig.')
+                ->line('Heb je dit niet aangevraagd? Dan hoef je niets te doen.')
+                ->salutation("Warme groet,\nHet Hartverwarmers-team");
+        });
     }
 }

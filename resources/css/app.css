@@ -859,6 +859,82 @@
 
   .wizard-confetti-particle:nth-child(odd) { width: 6px; height: 6px; }
   .wizard-confetti-particle:nth-child(even) { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* Syllabus step — vertical timeline row with connector line */
+  .syllabus-step {
+    @apply relative flex gap-5 pb-8;
+  }
+
+  .syllabus-step::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 48px;
+    bottom: 0;
+    width: 2px;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--color-border-light) 0px,
+      var(--color-border-light) 6px,
+      transparent 6px,
+      transparent 12px
+    );
+  }
+
+  .syllabus-step:last-child::before {
+    display: none;
+  }
+
+  .syllabus-step:last-child {
+    padding-bottom: 0;
+  }
+
+  /* Syllabus number — 48px circle with lesson number */
+  .syllabus-number {
+    @apply flex items-center justify-center shrink-0;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-bold);
+    font-size: 1.125rem;
+    background: var(--color-bg-accent-light);
+    color: var(--color-primary);
+    z-index: 1;
+    box-shadow: var(--shadow-card);
+  }
+
+  .syllabus-number--done {
+    background: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg-subtle));
+    color: var(--color-primary);
+    opacity: 0.7;
+  }
+
+  .syllabus-number--done svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .syllabus-number--current {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  /* Syllabus card — hover lift */
+  .syllabus-card {
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .syllabus-card:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Materials callout — download resources card */
+  .materials-callout {
+    @apply rounded-xl p-6;
+    background: var(--color-bg-accent-light);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
 }
 
 /* ==========================================================================

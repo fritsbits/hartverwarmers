@@ -42,8 +42,10 @@
     <!-- Toast notifications -->
     <flux:toast position="top end" />
 
-    @if(session('success'))
-        <div x-data x-init="$flux.toast({ text: '{{ session('success') }}', variant: 'success' })"></div>
+    @if(session('toast'))
+        <div x-data x-init="$flux.toast(@js(session('toast')))"></div>
+    @elseif(session('success'))
+        <div x-data x-init="$flux.toast({ text: @js(session('success')), variant: 'success' })"></div>
     @endif
 
     <!-- Main Content -->
@@ -141,6 +143,7 @@
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[var(--color-text-secondary)]">
                     <span>&copy; {{ date('Y') }} Hartverwarmers</span>
                     <div class="flex items-center gap-6">
+                        <a href="{{ route('about') }}" class="hover:text-[var(--color-primary)] transition-colors">Over ons</a>
                         <a href="{{ route('legal.privacy') }}" class="hover:text-[var(--color-primary)] transition-colors">Privacybeleid</a>
                         <a href="{{ route('legal.terms') }}" class="hover:text-[var(--color-primary)] transition-colors">Gebruiksvoorwaarden</a>
                     </div>

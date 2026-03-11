@@ -743,6 +743,10 @@ class FicheWizard extends Component
             return;
         }
 
+        if ($published && auth()->user()->isMember()) {
+            auth()->user()->update(['role' => 'contributor']);
+        }
+
         $this->clearWizardSession();
 
         $route = $fiche->initiative
@@ -758,7 +762,11 @@ class FicheWizard extends Component
         }
 
         $this->redirect($route, navigate: false);
-        session()->flash('success', 'Fiche opgeslagen als concept.');
+        session()->flash('toast', [
+            'heading' => 'Concept opgeslagen',
+            'text' => 'Je kunt later verder werken aan je fiche.',
+            'variant' => 'success',
+        ]);
     }
 
     private function clearWizardSession(): void

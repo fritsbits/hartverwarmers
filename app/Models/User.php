@@ -107,6 +107,16 @@ class User extends Authenticatable
         return $this->role === 'curator';
     }
 
+    public function isContributor(): bool
+    {
+        return $this->role === 'contributor';
+    }
+
+    public function isMember(): bool
+    {
+        return $this->role === 'member';
+    }
+
     public function newFicheCommentsCount(): int
     {
         return Comment::whereHasMorph('commentable', Fiche::class, fn ($q) => $q->where('user_id', $this->id))
