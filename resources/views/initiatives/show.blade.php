@@ -244,9 +244,7 @@
             @if($initiative->comments->isNotEmpty())
                 @foreach($initiative->comments as $comment)
                     <div class="flex gap-4 py-4 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
-                        <div class="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center font-semibold shrink-0">
-                            {{ substr($comment->user->first_name ?? 'A', 0, 1) }}
-                        </div>
+                        <x-user-avatar :user="$comment->user" size="md" />
                         <div class="flex-1 min-w-0">
                             <div class="flex items-start justify-between">
                                 <div class="text-sm">

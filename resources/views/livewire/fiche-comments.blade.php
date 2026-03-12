@@ -12,13 +12,7 @@
         <div class="bg-white rounded-2xl border-2 border-[var(--color-primary)]/20 p-6 mb-8 shadow-[0_4px_24px_rgba(232,118,75,0.08)]">
             <div>
                 <div class="flex items-center gap-3 mb-4">
-                    @if(auth()->user()->avatar_path)
-                        <img src="{{ auth()->user()->avatarUrl() }}" alt="" class="w-10 h-10 rounded-full object-cover ring-2 ring-[var(--color-primary)]/20">
-                    @else
-                        <div class="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-base font-semibold ring-2 ring-[var(--color-primary)]/20">
-                            {{ substr(auth()->user()->first_name, 0, 1) }}
-                        </div>
-                    @endif
+                    <x-user-avatar :user="auth()->user()" size="md" class="ring-2 ring-[var(--color-primary)]/20" />
                     <div>
                         <span class="font-semibold text-[var(--color-text-primary)]">{{ auth()->user()->full_name }}</span>
                         @if($this->comments->isEmpty())
@@ -133,9 +127,7 @@
         <div class="space-y-0">
             @foreach($this->comments as $comment)
                 <div wire:key="comment-{{ $comment->id }}" class="flex gap-4 py-5 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
-                    <div class="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center font-semibold shrink-0">
-                        {{ substr($comment->user->first_name ?? 'A', 0, 1) }}
-                    </div>
+                    <x-user-avatar :user="$comment->user" size="md" />
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between">
                             <div class="text-sm">

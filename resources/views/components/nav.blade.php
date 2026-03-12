@@ -148,13 +148,7 @@
                     <flux:dropdown>
                         <flux:button variant="ghost" icon-trailing="chevron-down">
                             <div class="flex items-center gap-2">
-                                @if(auth()->user()->avatar_path)
-                                    <img src="{{ auth()->user()->avatarUrl() }}" alt="{{ auth()->user()->first_name }}" class="w-8 h-8 rounded-full object-cover">
-                                @else
-                                    <div class="w-8 h-8 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-sm font-semibold">
-                                        {{ substr(auth()->user()->first_name, 0, 1) }}
-                                    </div>
-                                @endif
+                                <x-user-avatar :user="auth()->user()" size="sm" />
                                 <span class="hidden sm:inline">{{ auth()->user()->first_name }}</span>
                             </div>
                         </flux:button>

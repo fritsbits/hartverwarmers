@@ -13,12 +13,111 @@ class InitiativeController extends Controller
 {
     public function index(DiamantService $diamant): View
     {
+        $sixtyDaysAgo = now()->subDays(60);
+        $thirtyDaysAgo = now()->subDays(30);
+
         $initiatives = Initiative::query()
             ->published()
             ->with(['tags' => fn ($q) => $q->where('type', 'goal')])
             ->withCount(['fiches' => fn ($q) => $q->published()])
+            ->selectRaw('initiatives.*')
+            ->selectRaw('(SELECT MAX(f.created_at) FROM fiches f WHERE f.initiative_id = initiatives.id AND f.published = 1 AND f.deleted_at IS NULL) as latest_fiche_at')
+            ->selectRaw('(SELECT COUNT(*) FROM fiches f WHERE f.initiative_id = initiatives.id AND f.published = 1 AND f.deleted_at IS NULL AND f.created_at >= ?) as recent_fiches_count', [$sixtyDaysAgo])
+            ->with(['fiches' => fn ($q) => $q->published()
+                ->select('id', 'initiative_id', 'user_id', 'title', 'slug', 'created_at')
+                ->with('user:id,first_name,last_name,avatar_path')])
             ->orderBy('title')
             ->get();
+
+        // Compute top contributors per initiative
+        $initiatives->each(function (Initiative $initiative) {
+            $initiative->topContributors = $initiative->fiches
+                ->sortByDesc('created_at')
+                ->pluck('user')
+                ->filter()
+                ->unique('id')
+                ->take(3)
+                ->values();
+        });
+
+        // Trending: initiative with most recent fiches (min 2)
+        $trending = $initiatives
+            ->where('recent_fiches_count', '>=', 2)
+            ->sortByDesc('recent_fiches_count')
+            ->first();
+
+        $trendingFiches = [];
+        if ($trending) {
+            $trendingFiches = $trending->fiches
+                ->sortByDesc('created_at')
+                ->take(3)
+                ->values()
+                ->all();
+        }
+
+        // Interleaved "Ontdek" order
+        $rich = $initiatives->filter(fn ($i) => $i->fiches_count >= 10)->sortByDesc('latest_fiche_at')->values();
+        $growing = $initiatives->filter(fn ($i) => $i->fiches_count >= 3 && $i->fiches_count < 10)->sortByDesc('latest_fiche_at')->values();
+        $needsLove = $initiatives->filter(fn ($i) => $i->fiches_count < 3)->sortByDesc('latest_fiche_at')->values();
+
+        $discoverOrder = [];
+        $maxLen = max($rich->count(), $growing->count(), $needsLove->count(), 1);
+        for ($i = 0; $i < $maxLen; $i++) {
+            if (isset($rich[$i])) {
+                $discoverOrder[] = $rich[$i]->id;
+            }
+            if (isset($growing[$i])) {
+                $discoverOrder[] = $growing[$i]->id;
+            }
+            if (isset($needsLove[$i])) {
+                $discoverOrder[] = $needsLove[$i]->id;
+            }
+        }
+
+        // Needs-love initiative titles for callout
+        $needsLoveInitiatives = $needsLove->take(3)->map(fn ($i) => ['title' => $i->title, 'route' => route('initiatives.show', $i)])->values()->all();
+
+        // Recent fiches grouped by initiative for editorial section
+        $recentByInitiative = $initiatives
+            ->filter(fn ($i) => $i->recent_fiches_count >= 1)
+            ->sortByDesc('latest_fiche_at')
+            ->take(5)
+            ->mapWithKeys(fn ($i) => [
+                $i->slug => [
+                    'title' => $i->title,
+                    'route' => route('initiatives.show', $i),
+                    'fiches' => $i->fiches
+                        ->filter(fn ($f) => $f->created_at >= $sixtyDaysAgo && $f->user)
+                        ->sortByDesc('created_at')
+                        ->take(3)
+                        ->map(function ($f) use ($i) {
+                            $avatarColors = [
+                                ['bg' => '#FDF3EE', 'text' => '#E8764B'],
+                                ['bg' => '#E8F6F8', 'text' => '#3A9BA8'],
+                                ['bg' => '#FEF6E0', 'text' => '#B08A22'],
+                                ['bg' => '#F3E8F3', 'text' => '#9A5E98'],
+                            ];
+                            $color = $avatarColors[$f->user->id % 4];
+
+                            return [
+                                'id' => $f->id,
+                                'title' => $f->title,
+                                'url' => route('fiches.show', [$i, $f]),
+                                'user_name' => $f->user->full_name,
+                                'user_avatar' => $f->user->avatar_path ? $f->user->avatarUrl() : null,
+                                'user_initial' => mb_strtoupper(mb_substr($f->user->first_name, 0, 1).mb_substr($f->user->last_name, 0, 1)),
+                                'user_color_bg' => $color['bg'],
+                                'user_color_text' => $color['text'],
+                                'time_ago' => $f->created_at->diffForHumans(),
+                            ];
+                        })
+                        ->values()
+                        ->all(),
+                ],
+            ]);
+
+        $recentFiches = collect(); // kept for backward compat
+        $recentlyActiveInitiatives = $recentByInitiative->map(fn ($item) => ['title' => $item['title'], 'route' => $item['route']])->values()->all();
 
         $goals = Feature::for(null)->active(DiamantGoals::class)
             ? collect($diamant->all())->map(fn (array $facet) => [
@@ -33,6 +132,13 @@ class InitiativeController extends Controller
         return view('initiatives.index', [
             'initiatives' => $initiatives,
             'goals' => $goals,
+            'trending' => $trending,
+            'trendingFiches' => $trendingFiches,
+            'needsLoveInitiatives' => $needsLoveInitiatives,
+            'discoverOrder' => $discoverOrder,
+            'recentlyActiveInitiatives' => $recentlyActiveInitiatives,
+            'recentFiches' => $recentFiches,
+            'recentByInitiative' => $recentByInitiative,
         ]);
     }
 
