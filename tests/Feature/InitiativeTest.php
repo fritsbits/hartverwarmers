@@ -28,17 +28,27 @@ class InitiativeTest extends TestCase
         $response->assertViewHas('initiatives', fn ($initiatives) => $initiatives instanceof Collection);
     }
 
-    public function test_initiatives_index_orders_alphabetically(): void
+    public function test_initiatives_index_provides_discover_order(): void
     {
-        Initiative::factory()->published()->create(['title' => 'Zingen met bewoners']);
-        Initiative::factory()->published()->create(['title' => 'Aardbei plukken']);
-        Initiative::factory()->published()->create(['title' => 'Muziektherapie']);
+        // Rich initiative (10+ fiches)
+        $rich = Initiative::factory()->published()->create(['title' => 'Bingo']);
+        Fiche::factory()->published()->count(12)->create(['initiative_id' => $rich->id]);
+
+        // Growing initiative (3-9 fiches)
+        $growing = Initiative::factory()->published()->create(['title' => 'Koken']);
+        Fiche::factory()->published()->count(5)->create(['initiative_id' => $growing->id]);
+
+        // Needs-love initiative (0-2 fiches)
+        $needsLove = Initiative::factory()->published()->create(['title' => 'Yoga']);
+        Fiche::factory()->published()->count(1)->create(['initiative_id' => $needsLove->id]);
 
         $response = $this->get(route('initiatives.index'));
 
         $response->assertStatus(200);
-        $titles = $response->viewData('initiatives')->pluck('title')->values()->all();
-        $this->assertEquals(['Aardbei plukken', 'Muziektherapie', 'Zingen met bewoners'], $titles);
+        $discoverOrder = $response->viewData('discoverOrder');
+        $this->assertIsArray($discoverOrder);
+        // Rich initiative should come first in discover order
+        $this->assertEquals($rich->id, $discoverOrder[0]);
     }
 
     public function test_initiatives_index_passes_goal_data(): void
@@ -79,6 +89,83 @@ class InitiativeTest extends TestCase
         $response = $this->get(route('initiatives.index'));
 
         $this->assertEquals(3, $response->viewData('initiatives')->first()->fiches_count);
+    }
+
+    public function test_initiatives_index_shows_trending_initiative(): void
+    {
+        $trending = Initiative::factory()->published()->create(['title' => 'Trending']);
+        Fiche::factory()->published()->count(3)->create([
+            'initiative_id' => $trending->id,
+            'created_at' => now()->subDays(10),
+        ]);
+
+        $other = Initiative::factory()->published()->create(['title' => 'Other']);
+        Fiche::factory()->published()->count(1)->create([
+            'initiative_id' => $other->id,
+            'created_at' => now()->subDays(10),
+        ]);
+
+        $response = $this->get(route('initiatives.index'));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('trending');
+        $trendingResult = $response->viewData('trending');
+        $this->assertNotNull($trendingResult);
+        $this->assertEquals($trending->id, $trendingResult->id);
+    }
+
+    public function test_initiatives_index_no_trending_when_no_recent_fiches(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        Fiche::factory()->published()->count(3)->create([
+            'initiative_id' => $initiative->id,
+            'created_at' => now()->subDays(90),
+        ]);
+
+        $response = $this->get(route('initiatives.index'));
+
+        $response->assertStatus(200);
+        $this->assertNull($response->viewData('trending'));
+    }
+
+    public function test_initiatives_index_provides_needs_love_initiatives(): void
+    {
+        $rich = Initiative::factory()->published()->create(['title' => 'Veel fiches']);
+        Fiche::factory()->published()->count(10)->create(['initiative_id' => $rich->id]);
+
+        $needsLove = Initiative::factory()->published()->create(['title' => 'Weinig fiches']);
+        Fiche::factory()->published()->count(1)->create(['initiative_id' => $needsLove->id]);
+
+        $response = $this->get(route('initiatives.index'));
+
+        $response->assertStatus(200);
+        $needsLoveInitiatives = $response->viewData('needsLoveInitiatives');
+        $titles = array_column($needsLoveInitiatives, 'title');
+        $this->assertContains('Weinig fiches', $titles);
+        $this->assertNotContains('Veel fiches', $titles);
+    }
+
+    public function test_initiatives_index_loads_latest_fiche_at(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $latestFiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'created_at' => now()->subDays(5),
+        ]);
+        Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'created_at' => now()->subDays(30),
+        ]);
+
+        $response = $this->get(route('initiatives.index'));
+
+        $response->assertStatus(200);
+        $loadedInitiative = $response->viewData('initiatives')->first();
+        $this->assertNotNull($loadedInitiative->latest_fiche_at);
+        $this->assertEquals(
+            $latestFiche->created_at->startOfSecond()->toDateTimeString(),
+            \Carbon\Carbon::parse($loadedInitiative->latest_fiche_at)->startOfSecond()->toDateTimeString()
+        );
     }
 
     public function test_initiatives_index_returns_all_without_pagination(): void

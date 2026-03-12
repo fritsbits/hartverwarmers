@@ -719,8 +719,26 @@
 &lt;/flux:modal&gt;</code></pre>
                         </details>
 
-                        <h3 class="mb-4">Avatar Stack</h3>
-                        <p class="text-meta mb-4">Overlappende avatarcirkels met initialen. Toont +N badge bij meer gebruikers.</p>
+                        <h3 class="mb-4">User Avatar</h3>
+                        <p class="text-meta mb-4">Enkele gebruikersavatar met profielfoto of deterministische kleur + twee initialen. Kleur is gebaseerd op user ID zodat elke persoon altijd dezelfde kleur krijgt. Beschikbare maten: xs, sm, md, base, lg, xl, 2xl.</p>
+                        <div class="mb-4 p-6 rounded-xl bg-[var(--color-bg-cream)]">
+                            <div class="flex items-end gap-4">
+                                @foreach(['xs', 'sm', 'md', 'base', 'lg', 'xl'] as $size)
+                                    <div class="flex flex-col items-center gap-1">
+                                        <x-user-avatar :user="$users->skip(array_search($size, ['xs', 'sm', 'md', 'base', 'lg', 'xl']))->first() ?? $users->first()" :size="$size" />
+                                        <span class="text-[10px] text-[var(--color-text-secondary)]">{{ $size }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        <details>
+                            <summary class="text-sm font-semibold text-[var(--color-text-secondary)] cursor-pointer">Toon markup</summary>
+                            <pre class="mt-2 p-4 bg-zinc-50 rounded-lg text-sm overflow-x-auto"><code>&lt;x-user-avatar :user="$user" size="md" /&gt;
+&lt;x-user-avatar :user="$user" size="lg" class="ring-2 ring-white" /&gt;</code></pre>
+                        </details>
+
+                        <h3 class="mb-4 mt-8">Avatar Stack</h3>
+                        <p class="text-meta mb-4">Overlappende avatarcirkels met initialen. Toont +N badge bij meer gebruikers. Gebruikt <code>&lt;x-user-avatar&gt;</code> intern.</p>
                         <div class="mb-4 p-6 rounded-xl bg-[var(--color-bg-cream)]">
                             <x-avatar-stack :users="$users" :max="4" />
                         </div>

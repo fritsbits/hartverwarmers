@@ -9,13 +9,7 @@
             </flux:breadcrumbs>
 
             <div class="flex flex-col md:flex-row gap-8 items-start">
-                @if($contributor->avatar_path)
-                    <img src="{{ $contributor->avatarUrl() }}" alt="" class="w-28 h-28 md:w-40 md:h-40 rounded-full object-cover ring-4 ring-white shadow-md shrink-0">
-                @else
-                    <div class="w-28 h-28 md:w-40 md:h-40 rounded-full flex items-center justify-center text-5xl md:text-6xl font-bold ring-4 ring-white shadow-md shrink-0 initiative-color-{{ $dominantColorIndex }}" style="background: var(--initiative-bg); color: var(--initiative-color);">
-                        {{ mb_substr($contributor->first_name, 0, 1) }}
-                    </div>
-                @endif
+                <x-user-avatar :user="$contributor" size="2xl" class="ring-4 ring-white shadow-md" />
 
                 <div class="flex-1 min-w-0">
                     <span class="section-label">Bijdrager</span>
@@ -187,13 +181,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl">
                     @foreach($relatedContributors as $related)
                         <a href="{{ route('contributors.show', $related) }}" class="group flex flex-col items-center text-center p-5 rounded-2xl bg-white border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all no-underline text-inherit">
-                            @if($related->avatar_path)
-                                <img src="{{ $related->avatarUrl() }}" alt="" class="w-16 h-16 rounded-full object-cover mb-3" loading="lazy">
-                            @else
-                                <div class="w-16 h-16 rounded-full bg-[var(--color-bg-accent-light)] text-[var(--color-primary)] flex items-center justify-center text-xl font-bold mb-3">
-                                    {{ mb_substr($related->first_name, 0, 1) }}
-                                </div>
-                            @endif
+                            <x-user-avatar :user="$related" size="xl" class="mb-3" />
                             <h3 class="font-heading font-bold text-sm leading-snug group-hover:text-[var(--color-primary)] transition-colors">{{ $related->full_name }}</h3>
                             @if($related->shared_initiatives?->isNotEmpty())
                                 <p class="text-xs text-[var(--color-text-secondary)] font-light mt-1.5">

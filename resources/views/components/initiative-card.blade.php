@@ -1,12 +1,15 @@
-@props(['initiative', 'variant' => 'compact', 'showFicheCount' => false])
+@props(['initiative', 'variant' => 'compact', 'showFicheCount' => false, 'showNewBadge' => false, 'eager' => false])
+
+@php
+    $isNew = $showNewBadge && $initiative->latest_fiche_at && now()->diffInDays($initiative->latest_fiche_at) < 30;
+    $isLowFiche = $initiative->fiches_count <= 2;
+@endphp
 
 <a href="{{ route('initiatives.show', $initiative) }}" class="block cursor-pointer">
-@if($variant === 'compact')
-<flux:card class="group overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 !p-0">
+<flux:card class="group overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-[transform,box-shadow,border-color] duration-200 !p-0">
     <div class="relative">
-        {{-- Image --}}
         @if($initiative->image)
-            <img src="{{ $initiative->thumbnailUrl() ?? $initiative->image }}" alt="{{ $initiative->title }}" class="w-full aspect-[16/10] object-cover" loading="lazy">
+            <img src="{{ $initiative->thumbnailUrl() ?? $initiative->image }}" alt="{{ $initiative->title }}" class="w-full aspect-[16/10] object-cover" loading="{{ $eager ? 'eager' : 'lazy' }}" decoding="async" @if($eager) fetchpriority="high" @endif>
         @else
             <div class="bg-[var(--color-bg-cream)] aspect-[16/10] flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-[var(--color-border-light)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -15,54 +18,25 @@
             </div>
         @endif
 
-        {{-- Title — compact white label, bottom left --}}
-        <div class="absolute bottom-4 left-4 right-4">
+        {{-- "Nieuw" badge (top-right) --}}
+        @if($isNew)
+            <span class="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-white" style="background-color: var(--color-primary);">
+                Nieuw
+            </span>
+        @endif
+
+        {{-- Title + fiche count (bottom, aligned) --}}
+        <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-2">
             <span class="inline font-heading font-bold text-lg leading-tight bg-white px-3 py-1.5 rounded box-decoration-clone text-[var(--color-text-primary)]">
                 {{ $initiative->title }}<span class="text-[var(--color-primary)] ml-1">&rarr;</span>
             </span>
-        </div>
-    </div>
-</flux:card>
-@else
-<flux:card class="overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
-    @if($initiative->image)
-        <div class="-mx-6 -mt-6 mb-4">
-            <img src="{{ $initiative->thumbnailUrl() ?? $initiative->image }}" alt="{{ $initiative->title }}" class="w-full aspect-[16/10] object-cover" loading="lazy">
-        </div>
-    @else
-        <div class="-mx-6 -mt-6 mb-4 bg-[var(--color-bg-cream)] aspect-[16/10] flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-[var(--color-border-light)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
-        </div>
-    @endif
 
-    <h3 class="font-heading font-bold text-lg">{{ $initiative->title }}</h3>
-
-    @if($initiative->description)
-        <flux:text class="mt-2 line-clamp-2">
-            {{ Str::limit(strip_tags($initiative->description), 120) }}
-        </flux:text>
-    @endif
-
-    @if(!$showFicheCount && $initiative->tags->isNotEmpty())
-        <div class="flex flex-wrap gap-1 mt-3">
-            @foreach($initiative->tags->take(3) as $tag)
-                <flux:badge size="sm" color="zinc">{{ $tag->name }}</flux:badge>
-            @endforeach
-        </div>
-    @endif
-
-    <div class="flex items-center justify-between mt-4 pt-3 border-t border-[var(--color-border-light)]">
-        <div class="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
             @if($showFicheCount)
-                <span>{{ $initiative->fiches_count }} {{ $initiative->fiches_count === 1 ? 'fiche' : 'fiches' }}</span>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-semibold text-white shrink-0" style="background-color: rgba(35, 30, 26, 0.65);">
+                    {{ $initiative->fiches_count }} {{ $initiative->fiches_count === 1 ? 'fiche' : 'fiches' }}
+                </span>
             @endif
         </div>
-        <span class="cta-link text-sm">
-            Bekijk
-        </span>
     </div>
 </flux:card>
-@endif
 </a>

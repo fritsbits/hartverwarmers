@@ -1,15 +1,3 @@
-@php
-    // Fallback avatar color palette — deterministic by user ID
-    $avatarColors = [
-        ['bg' => 'bg-[#FDF3EE]', 'text' => 'text-[var(--color-primary)]'],      // orange
-        ['bg' => 'bg-[#E8F6F8]', 'text' => 'text-[#3A9BA8]'],                   // teal
-        ['bg' => 'bg-[#FEF6E0]', 'text' => 'text-[#B08A22]'],                   // yellow
-        ['bg' => 'bg-[#F3E8F3]', 'text' => 'text-[#9A5E98]'],                   // purple
-    ];
-    $getAvatarColor = fn ($id) => $avatarColors[$id % count($avatarColors)];
-    $getInitials = fn ($user) => mb_strtoupper(mb_substr($user->first_name, 0, 1) . mb_substr($user->last_name, 0, 1));
-@endphp
-
 <div>
     {{-- Hero --}}
     <section class="bg-[var(--color-bg-cream)] overflow-hidden">
@@ -43,23 +31,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         @foreach($this->recentlyActive as $contributor)
                             @php
-                                $color = $getAvatarColor($contributor->id);
                                 $latestFiche = $contributor->fiches->first();
                                 $ficheTitle = $latestFiche?->title;
                             @endphp
                             <a href="{{ route('contributors.show', $contributor) }}"
                                class="group flex items-center gap-4 p-4 rounded-xl hover:bg-[var(--color-bg-cream)] transition-colors">
 
-                                @if($contributor->avatar_path)
-                                    <img src="{{ $contributor->avatarUrl() }}"
-                                         alt=""
-                                         class="w-14 h-14 rounded-full object-cover shrink-0 group-hover:scale-105 transition-transform"
-                                         @if(! $loop->first) loading="lazy" @endif>
-                                @else
-                                    <div class="w-14 h-14 rounded-full {{ $color['bg'] }} {{ $color['text'] }} flex items-center justify-center text-base font-bold shrink-0 group-hover:scale-105 transition-transform">
-                                        {{ $getInitials($contributor) }}
-                                    </div>
-                                @endif
+                                <x-user-avatar :user="$contributor" size="lg" class="group-hover:scale-105 transition-transform" />
 
                                 <div class="min-w-0 flex-1">
                                     <h3 class="font-heading font-bold leading-snug group-hover:text-[var(--color-primary)] transition-colors">
@@ -97,7 +75,6 @@
                             @php
                                 $rotations = ['-rotate-2', 'rotate-1', '-rotate-1', 'rotate-2'];
                                 $rotation = $rotations[$i % 4];
-                                $color = $getAvatarColor($contributor->id);
                                 $newcomerFiche = $contributor->fiches->first();
                                 $newcomerFicheTitle = $newcomerFiche?->title;
                             @endphp
@@ -105,16 +82,7 @@
                                class="group flex flex-col items-center text-center bg-white p-5 pb-6 min-w-[180px] snap-start sm:min-w-0 {{ $rotation }} hover:rotate-0 transition-all duration-300 hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
                                style="box-shadow: 8px 10px 25px -5px rgba(120, 90, 60, 0.15);">
 
-                                @if($contributor->avatar_path)
-                                    <img src="{{ $contributor->avatarUrl() }}"
-                                         alt=""
-                                         class="w-16 h-16 rounded-full object-cover mb-3"
-                                         loading="lazy">
-                                @else
-                                    <div class="w-16 h-16 rounded-full {{ $color['bg'] }} {{ $color['text'] }} flex items-center justify-center text-lg font-bold mb-3">
-                                        {{ $getInitials($contributor) }}
-                                    </div>
-                                @endif
+                                <x-user-avatar :user="$contributor" size="xl" class="mb-3" />
 
                                 <h3 class="font-heading font-bold leading-snug group-hover:text-[var(--color-primary)] transition-colors max-w-full text-center">
                                     {{ $contributor->full_name }}
@@ -147,8 +115,6 @@
                     <h2 class="text-3xl mt-1 mb-8">Onze topbijdragers</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-[1fr_1px_1fr] sm:grid-rows-4 sm:grid-flow-col gap-y-3 gap-x-6">
                         @foreach($this->topContributors as $i => $contributor)
-                            @php $color = $getAvatarColor($contributor->id); @endphp
-
                             {{-- Insert divider column after the 4th item --}}
                             @if($i === 4)
                                 <div class="hidden sm:block row-span-4 bg-[var(--color-border-light)]"></div>
@@ -161,16 +127,7 @@
                                     {{ $i + 1 }}
                                 </span>
 
-                                @if($contributor->avatar_path)
-                                    <img src="{{ $contributor->avatarUrl() }}"
-                                         alt=""
-                                         class="w-12 h-12 rounded-full object-cover shrink-0 {{ $i < 3 ? 'ring-2 ring-[var(--color-primary)]/20' : '' }}"
-                                         loading="lazy">
-                                @else
-                                    <div class="w-12 h-12 rounded-full {{ $color['bg'] }} {{ $color['text'] }} flex items-center justify-center text-sm font-bold shrink-0 {{ $i < 3 ? 'ring-2 ring-[var(--color-primary)]/20' : '' }}">
-                                        {{ $getInitials($contributor) }}
-                                    </div>
-                                @endif
+                                <x-user-avatar :user="$contributor" size="base" @class(['ring-2 ring-[var(--color-primary)]/20' => $i < 3]) />
 
                                 <div class="min-w-0 flex-1">
                                     <h3 class="font-heading font-bold leading-snug group-hover:text-[var(--color-primary)] transition-colors sm:truncate">
@@ -210,20 +167,10 @@
                     <h2 class="text-3xl mt-1 mb-8">Betrokken collega's</h2>
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
                         @foreach($this->communityEngagers as $contributor)
-                            @php $color = $getAvatarColor($contributor->id); @endphp
                             <a href="{{ route('contributors.show', $contributor) }}"
                                class="group flex flex-col items-center text-center p-4 rounded-2xl hover:bg-white/60 transition-colors">
 
-                                @if($contributor->avatar_path)
-                                    <img src="{{ $contributor->avatarUrl() }}"
-                                         alt=""
-                                         class="w-14 h-14 rounded-full object-cover mb-3"
-                                         loading="lazy">
-                                @else
-                                    <div class="w-14 h-14 rounded-full {{ $color['bg'] }} {{ $color['text'] }} flex items-center justify-center text-sm font-bold mb-3">
-                                        {{ $getInitials($contributor) }}
-                                    </div>
-                                @endif
+                                <x-user-avatar :user="$contributor" size="lg" class="mb-3" />
 
                                 <h3 class="font-heading font-bold text-sm leading-snug group-hover:text-[var(--color-primary)] transition-colors truncate max-w-full">
                                     {{ $contributor->full_name }}
@@ -288,22 +235,11 @@
                     @else
                         <div class="divide-y divide-[var(--color-border-light)]">
                             @foreach($contributors as $contributor)
-                                @php $color = $getAvatarColor($contributor->id); @endphp
-
                                 <a href="{{ route('contributors.show', $contributor) }}"
                                    class="group flex items-start gap-4 py-4 -mx-3 px-3 rounded-xl hover:bg-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
                                    wire:key="contributor-{{ $contributor->id }}">
 
-                                    @if($contributor->avatar_path)
-                                        <img src="{{ $contributor->avatarUrl() }}"
-                                             alt=""
-                                             class="w-12 h-12 rounded-full object-cover shrink-0"
-                                             loading="lazy">
-                                    @else
-                                        <div class="w-12 h-12 rounded-full {{ $color['bg'] }} {{ $color['text'] }} flex items-center justify-center text-sm font-bold shrink-0">
-                                            {{ $getInitials($contributor) }}
-                                        </div>
-                                    @endif
+                                    <x-user-avatar :user="$contributor" size="base" />
 
                                     <div class="min-w-0 flex-1">
                                         <h4 class="text-lg font-heading font-bold leading-snug group-hover:text-[var(--color-primary)] transition-colors">
