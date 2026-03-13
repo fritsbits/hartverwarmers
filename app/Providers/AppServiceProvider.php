@@ -4,13 +4,17 @@ namespace App\Providers;
 
 use App\Listeners\SendWelcomeNotification;
 use App\Models\User;
+use App\Notifications\QueueJobFailedNotification;
 use App\View\Composers\FooterComposer;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Pennant\Feature;
@@ -50,7 +54,25 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(Verified::class, SendWelcomeNotification::class);
 
+        $this->listenForFailedJobs();
+
         $this->customizeMailNotifications();
+    }
+
+    private function listenForFailedJobs(): void
+    {
+        if (! config('services.telegram-bot-api.token') || ! config('services.telegram-bot-api.chat_id')) {
+            return;
+        }
+
+        Queue::failing(function (JobFailed $event) {
+            Notification::route('telegram', config('services.telegram-bot-api.chat_id'))
+                ->notify(new QueueJobFailedNotification(
+                    jobName: $event->job->resolveName(),
+                    exceptionMessage: $event->exception->getMessage(),
+                    queue: $event->job->getQueue(),
+                ));
+        });
     }
 
     private function customizeMailNotifications(): void

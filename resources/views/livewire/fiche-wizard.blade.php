@@ -95,12 +95,20 @@
                                 realFinished: false,
                                 hintIndex: -1,
                                 hintTimeout: null,
-                                hints: [
-                                    { icon: 'document-text', text: 'We lezen straks de tekst uit je bestand en doen slimme suggesties.' },
-                                    { icon: 'sparkles', text: 'Wat maakt jouw activiteit uniek? Straks kun je dat beschrijven.' },
-                                    { icon: 'users', text: 'Je fiche wordt zichtbaar voor alle collega\u2019s op het platform.' },
-                                    { icon: 'document-plus', text: 'Heb je nog een bestand? Sleep het erbij \u2014 je kunt meerdere bestanden uploaden.' },
-                                ],
+                                hasConvertibleFile: false,
+                                convertibleExtensions: ['pptx', 'ppt', 'docx', 'doc'],
+                                get activeHints() {
+                                    const base = [
+                                        { icon: 'document-text', text: 'We lezen straks de tekst uit je bestand en doen slimme suggesties.' },
+                                        { icon: 'sparkles', text: 'Wat maakt jouw activiteit uniek? Straks kun je dat beschrijven.' },
+                                        { icon: 'users', text: 'Je fiche wordt zichtbaar voor alle collega\u2019s op het platform.' },
+                                        { icon: 'document-plus', text: 'Heb je nog een bestand? Sleep het erbij \u2014 je kunt meerdere bestanden uploaden.' },
+                                    ];
+                                    if (this.hasConvertibleFile) {
+                                        base.unshift({ icon: 'document-check', text: 'We maken automatisch een PDF-versie aan, zodat iedereen je bestand kan openen.' });
+                                    }
+                                    return base;
+                                },
                                 maxSize: 50 * 1024 * 1024,
                                 allowedExtensions: ['pdf','pptx','docx','doc','ppt','jpg','jpeg','png'],
                                 sizeTips: {
@@ -131,7 +139,7 @@
                                     this.hintTimeout = setTimeout(() => {
                                         if (!this.uploading) return;
                                         const next = this.hintIndex + 1;
-                                        if (next < this.hints.length) {
+                                        if (next < this.activeHints.length) {
                                             this.hintIndex = next;
                                             this.scheduleNextHint(3500);
                                         }
@@ -185,6 +193,9 @@
                                             this.uploadError = file.name + ' kan niet worden ge\u00fcpload. Kies een PDF, PPTX, DOCX of afbeelding (JPG/PNG).';
                                             return false;
                                         }
+                                        if (this.convertibleExtensions.includes(ext)) {
+                                            this.hasConvertibleFile = true;
+                                        }
                                     }
                                     return true;
                                 }
@@ -222,7 +233,6 @@
                                     <flux:file-upload.dropzone
                                         heading="Sleep bestanden hierheen of klik om te bladeren"
                                         text="PDF, PPTX, DOCX, afbeeldingen — max 50MB per bestand"
-                                        with-progress
                                     />
                                 </flux:file-upload>
                             </div>
@@ -247,9 +257,12 @@
 
                                     {{-- Rotating hints --}}
                                     <div class="rounded-xl bg-[var(--color-bg-cream)] border border-[var(--color-border-light)] p-4 relative overflow-hidden min-h-[3.5rem]">
-                                        <template x-for="(hint, i) in hints" :key="i">
+                                        <template x-for="(hint, i) in activeHints" :key="i">
                                             <div x-show="hintIndex === i" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200 absolute inset-x-4 top-4" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="flex items-center gap-3">
                                                 <div class="w-8 h-8 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center shrink-0">
+                                                    <template x-if="hint.icon === 'document-check'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9zm4.125 9.75l-3.75 3.75-1.875-1.875" /></svg>
+                                                    </template>
                                                     <template x-if="hint.icon === 'document-text'">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
                                                     </template>

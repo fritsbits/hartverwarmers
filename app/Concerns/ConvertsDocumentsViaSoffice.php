@@ -2,32 +2,19 @@
 
 namespace App\Concerns;
 
+use App\Services\PdfConverter;
+
 trait ConvertsDocumentsViaSoffice
 {
     private function convertToPdf(string $sourcePath): ?string
     {
-        $outputDir = sys_get_temp_dir();
-        $basename = pathinfo($sourcePath, PATHINFO_FILENAME);
-
-        $command = sprintf(
-            'soffice --headless --convert-to pdf --outdir %s %s 2>&1',
-            escapeshellarg($outputDir),
-            escapeshellarg($sourcePath)
-        );
-
         $this->info('  Converting to PDF via LibreOffice...');
-        exec($command, $output, $exitCode);
 
-        if ($exitCode !== 0) {
-            $this->error('  LibreOffice conversion failed: '.implode("\n", $output));
+        $converter = app(PdfConverter::class);
+        $pdfPath = $converter->convert($sourcePath);
 
-            return null;
-        }
-
-        $pdfPath = $outputDir.'/'.$basename.'.pdf';
-
-        if (! file_exists($pdfPath)) {
-            $this->error('  PDF output not found at: '.$pdfPath);
+        if (! $pdfPath) {
+            $this->error('  LibreOffice conversion failed.');
 
             return null;
         }

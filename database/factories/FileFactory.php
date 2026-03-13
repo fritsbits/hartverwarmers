@@ -40,4 +40,24 @@ class FileFactory extends Factory
             'mime_type' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         ]);
     }
+
+    public function docx(): static
+    {
+        return $this->state(fn () => [
+            'original_filename' => fake()->word().'-document.docx',
+            'path' => 'files/'.fake()->uuid().'.docx',
+            'mime_type' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ]);
+    }
+
+    public function generatedPdf(\App\Models\File $sourceFile): static
+    {
+        return $this->state(fn () => [
+            'source_file_id' => $sourceFile->id,
+            'fiche_id' => $sourceFile->fiche_id,
+            'original_filename' => pathinfo($sourceFile->original_filename, PATHINFO_FILENAME).'.pdf',
+            'path' => 'files/'.fake()->uuid().'.pdf',
+            'mime_type' => 'application/pdf',
+        ]);
+    }
 }
