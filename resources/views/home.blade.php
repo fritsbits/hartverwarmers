@@ -16,6 +16,9 @@
         </div>
     </section>
 
+    <!-- Onboarding Banner -->
+    <livewire:onboarding-banner />
+
     <!-- Featured Initiatives -->
     @if($initiatives->isNotEmpty())
         <section class="bg-[var(--color-bg-base)]" x-data="{

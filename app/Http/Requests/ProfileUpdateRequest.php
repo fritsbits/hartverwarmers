@@ -23,7 +23,7 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'function_title' => ['nullable', 'string', 'max:255'],
             'organisation' => ['nullable', 'string', 'max:255'],
-            'bio' => ['nullable', 'string', 'max:1000'],
+            'bio' => ['nullable', 'string', 'max:5000'],
             'website' => ['nullable', 'url', 'max:255'],
             'linkedin' => ['nullable', 'url', 'max:255'],
         ];

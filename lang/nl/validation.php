@@ -17,6 +17,7 @@ return [
     'unique' => ':Attribute is al in gebruik.',
     'url' => ':Attribute moet een geldige URL zijn.',
     'image' => ':Attribute moet een afbeelding zijn.',
+    'lowercase' => ':Attribute mag alleen kleine letters bevatten.',
     'mimes' => ':Attribute moet een bestand zijn van het type: :values.',
 
     'attributes' => [

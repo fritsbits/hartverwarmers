@@ -55,9 +55,9 @@ class FicheEdit extends Component
     #[Validate(
         ['newUploads.*' => 'file|max:51200|mimes:pdf,pptx,docx,doc,ppt,jpg,jpeg,png'],
         message: [
-            'newUploads.*.max' => 'Een bestand mag maximaal 50MB zijn.',
-            'newUploads.*.mimes' => 'Alleen PDF, PPTX, DOCX en afbeeldingen zijn toegestaan.',
-            'newUploads.*.file' => 'Upload een geldig bestand.',
+            'newUploads.*.max' => 'Dit bestand is te groot (max 50 MB). Probeer het bestand te verkleinen voor je het opnieuw uploadt.',
+            'newUploads.*.mimes' => 'Dit bestandstype wordt niet ondersteund. Kies een PDF, PPTX, DOCX of afbeelding (JPG/PNG).',
+            'newUploads.*.file' => 'Dit bestand kon niet worden gelezen. Probeer het opnieuw te uploaden.',
         ]
     )]
     public array $newUploads = [];
@@ -93,9 +93,9 @@ class FicheEdit extends Component
     public function updatedNewUploads(): void
     {
         $this->validateOnly('newUploads.*', messages: [
-            'newUploads.*.max' => 'Een bestand mag maximaal 50MB zijn.',
-            'newUploads.*.mimes' => 'Alleen PDF, PPTX, DOCX en afbeeldingen zijn toegestaan.',
-            'newUploads.*.file' => 'Upload een geldig bestand.',
+            'newUploads.*.max' => 'Dit bestand is te groot (max 50 MB). Probeer het bestand te verkleinen voor je het opnieuw uploadt.',
+            'newUploads.*.mimes' => 'Dit bestandstype wordt niet ondersteund. Kies een PDF, PPTX, DOCX of afbeelding (JPG/PNG).',
+            'newUploads.*.file' => 'Dit bestand kon niet worden gelezen. Probeer het opnieuw te uploaden.',
         ]);
 
         foreach ($this->newUploads as $upload) {

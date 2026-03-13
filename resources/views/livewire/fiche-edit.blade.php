@@ -76,14 +76,84 @@
                     @endif
 
                     <flux:field>
-                        <flux:file-upload wire:model="newUploads" multiple>
-                            <flux:file-upload.dropzone
-                                heading="Sleep bestanden hierheen of klik om te bladeren"
-                                text="PDF, PPTX, DOCX, afbeeldingen — max 50MB per bestand"
-                                inline
-                            />
-                        </flux:file-upload>
-                        <flux:error name="newUploads.*" />
+                        <div
+                            x-data="{
+                                uploadError: '',
+                                uploadTip: '',
+                                maxSize: 50 * 1024 * 1024,
+                                allowedExtensions: ['pdf','pptx','docx','doc','ppt','jpg','jpeg','png'],
+                                sizeTips: {
+                                    pptx: 'Grote presentaties bevatten vaak foto\u2019s in hoge resolutie. Verklein ze in \u00e9\u00e9n keer: klik op een willekeurige foto \u2192 Afbeeldingen comprimeren \u2192 vink \u201cAlleen op deze afbeelding\u201d uit \u2192 kies \u201cE-mail (96 ppi)\u201d \u2192 sla opnieuw op.',
+                                    ppt: 'Grote presentaties bevatten vaak foto\u2019s in hoge resolutie. Verklein ze in \u00e9\u00e9n keer: klik op een willekeurige foto \u2192 Afbeeldingen comprimeren \u2192 vink \u201cAlleen op deze afbeelding\u201d uit \u2192 kies \u201cE-mail (96 ppi)\u201d \u2192 sla opnieuw op.',
+                                    docx: 'Grote Word-bestanden bevatten vaak foto\u2019s in hoge resolutie. Verklein ze in \u00e9\u00e9n keer: klik op een willekeurige foto \u2192 Afbeeldingen comprimeren \u2192 vink \u201cAlleen op deze afbeelding\u201d uit \u2192 kies \u201cE-mail (96 ppi)\u201d \u2192 sla opnieuw op.',
+                                    doc: 'Grote Word-bestanden bevatten vaak foto\u2019s in hoge resolutie. Verklein ze in \u00e9\u00e9n keer: klik op een willekeurige foto \u2192 Afbeeldingen comprimeren \u2192 vink \u201cAlleen op deze afbeelding\u201d uit \u2192 kies \u201cE-mail (96 ppi)\u201d \u2192 sla opnieuw op.',
+                                    pdf: 'Open het PDF in je browser, druk Ctrl+P en kies \u201cOpslaan als PDF\u201d of \u201cMicrosoft Print to PDF\u201d. Dit maakt vaak een veel kleiner bestand aan.',
+                                    jpg: 'Open de foto in Paint \u2192 Formaat wijzigen \u2192 kies een kleiner percentage (bv. 50%) \u2192 sla op.',
+                                    jpeg: 'Open de foto in Paint \u2192 Formaat wijzigen \u2192 kies een kleiner percentage (bv. 50%) \u2192 sla op.',
+                                    png: 'Open de foto in Paint \u2192 Formaat wijzigen \u2192 kies een kleiner percentage (bv. 50%) \u2192 sla op als JPEG.',
+                                },
+                                validateFiles(files) {
+                                    this.uploadError = '';
+                                    this.uploadTip = '';
+                                    for (const file of files) {
+                                        const ext = file.name.split('.').pop().toLowerCase();
+                                        if (file.size > this.maxSize) {
+                                            this.uploadError = file.name + ' is te groot (' + Math.round(file.size / 1024 / 1024) + ' MB \u2014 max 50 MB). Probeer het bestand eerst te verkleinen.';
+                                            this.uploadTip = this.sizeTips[ext] || '';
+                                            return false;
+                                        }
+                                        if (!this.allowedExtensions.includes(ext)) {
+                                            this.uploadError = file.name + ' kan niet worden ge\u00fcpload. Kies een PDF, PPTX, DOCX of afbeelding (JPG/PNG).';
+                                            return false;
+                                        }
+                                    }
+                                    return true;
+                                }
+                            }"
+                            x-on:livewire-upload-error.window="uploadError = 'Het uploaden is mislukt. Controleer of het bestand kleiner is dan 50 MB en probeer het opnieuw.'"
+                            x-init="
+                                const self = this;
+                                $nextTick(() => {
+                                    const input = $el.querySelector('input[type=file]');
+                                    if (input) {
+                                        input.addEventListener('change', (e) => {
+                                            if (!self.validateFiles(e.target.files)) {
+                                                e.target.value = '';
+                                                e.stopImmediatePropagation();
+                                            }
+                                        }, true);
+                                    }
+                                })
+                            "
+                        >
+                            <flux:file-upload wire:model="newUploads" multiple accept=".pdf,.pptx,.docx,.doc,.ppt,.jpg,.jpeg,.png">
+                                <flux:file-upload.dropzone
+                                    heading="Sleep bestanden hierheen of klik om te bladeren"
+                                    text="PDF, PPTX, DOCX, afbeeldingen — max 50MB per bestand"
+                                    inline
+                                />
+                            </flux:file-upload>
+
+                            {{-- Client-side error (Alpine) --}}
+                            <div wire:ignore x-show="uploadError" x-cloak class="mt-3">
+                                <flux:callout variant="warning" icon="exclamation-triangle">
+                                    <flux:callout.heading><span x-text="uploadError"></span></flux:callout.heading>
+                                    <flux:callout.text><p x-show="uploadTip" x-text="uploadTip"></p></flux:callout.text>
+                                    <x-slot name="controls">
+                                        <flux:button icon="x-mark" variant="ghost" x-on:click="uploadError = ''; uploadTip = ''" />
+                                    </x-slot>
+                                </flux:callout>
+                            </div>
+
+                            {{-- Server-side error (Livewire) --}}
+                            @error('newUploads.*')
+                                <div class="mt-3">
+                                    <flux:callout variant="danger" icon="x-circle">
+                                        <flux:callout.heading>{{ $message }}</flux:callout.heading>
+                                    </flux:callout>
+                                </div>
+                            @enderror
+                        </div>
                     </flux:field>
                 </div>
             </flux:tab.panel>

@@ -11,33 +11,38 @@
             <flux:field>
                 <flux:label for="first_name">Voornaam</flux:label>
                 <flux:input id="first_name" type="text" name="first_name" :value="old('first_name')" required autofocus autocomplete="given-name" maxlength="255" />
-                <x-input-error :messages="$errors->get('first_name')" />
+                <flux:error name="first_name" />
             </flux:field>
 
             <flux:field>
                 <flux:label for="last_name">Achternaam</flux:label>
                 <flux:input id="last_name" type="text" name="last_name" :value="old('last_name')" required autocomplete="family-name" maxlength="255" />
-                <x-input-error :messages="$errors->get('last_name')" />
+                <flux:error name="last_name" />
             </flux:field>
         </div>
 
         <flux:field>
             <flux:label for="email">E-mailadres</flux:label>
             <flux:input id="email" type="email" name="email" :value="old('email')" required autocomplete="username" maxlength="255" />
-            <x-input-error :messages="$errors->get('email')" />
+            <flux:error name="email" />
         </flux:field>
 
         <flux:field>
-            <flux:label for="password">Wachtwoord</flux:label>
+            <flux:label for="password" class="flex items-center gap-1.5">
+                Wachtwoord
+                <flux:tooltip>
+                    <flux:icon.information-circle variant="micro" class="size-4 text-zinc-400" />
+                    <flux:tooltip.content>Kies minstens 8 tekens.</flux:tooltip.content>
+                </flux:tooltip>
+            </flux:label>
             <flux:input id="password" type="password" name="password" required autocomplete="new-password" />
-            <flux:description>Minstens 8 tekens.</flux:description>
-            <x-input-error :messages="$errors->get('password')" />
+            <flux:error name="password" />
         </flux:field>
 
         <flux:field>
             <flux:label for="password_confirmation">Bevestig wachtwoord</flux:label>
             <flux:input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password_confirmation')" />
+            <flux:error name="password_confirmation" />
         </flux:field>
 
         <div>
@@ -45,7 +50,7 @@
             <p class="mt-1 ml-7 text-sm text-[var(--color-text-secondary)]">
                 Lees de <a href="{{ route('legal.terms') }}" target="_blank" class="underline hover:text-[var(--color-primary)]">gebruiksvoorwaarden</a> en het <a href="{{ route('legal.privacy') }}" target="_blank" class="underline hover:text-[var(--color-primary)]">privacybeleid</a>.
             </p>
-            <x-input-error :messages="$errors->get('terms')" />
+            <flux:error name="terms" />
         </div>
 
         <div class="flex items-center justify-between pt-2">

@@ -122,7 +122,7 @@ class FicheWizardTest extends TestCase
             ->assertHasErrors(['uploads.*']);
 
         $this->assertStringContainsString(
-            'Alleen PDF, PPTX, DOCX en afbeeldingen zijn toegestaan.',
+            'Dit bestandstype wordt niet ondersteund.',
             implode(' ', $component->errors()->all())
         );
     }
@@ -138,7 +138,8 @@ class FicheWizardTest extends TestCase
             ->assertHasErrors(['uploads.*']);
 
         $this->assertStringContainsString(
-            'Een bestand mag maximaal 50MB zijn.',
+            'Dit bestand is te groot (max 50 MB).',
+            // Full message includes advice to resize the file
             implode(' ', $component->errors()->all())
         );
     }
@@ -199,12 +200,14 @@ class FicheWizardTest extends TestCase
     public function test_step2_allows_empty_description(): void
     {
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
 
         Livewire::actingAs($user)
             ->test(FicheWizard::class)
             ->set('currentStep', 2)
             ->set('title', 'Een titel')
             ->set('description', '')
+            ->set('selectedInitiativeId', $initiative->id)
             ->call('goToStep3')
             ->assertHasNoErrors()
             ->assertSet('currentStep', 3);
@@ -213,12 +216,14 @@ class FicheWizardTest extends TestCase
     public function test_step2_advances_to_step3_with_valid_data(): void
     {
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
 
         Livewire::actingAs($user)
             ->test(FicheWizard::class)
             ->set('currentStep', 2)
             ->set('title', 'Mijn activiteit')
             ->set('description', 'Een mooie beschrijving')
+            ->set('selectedInitiativeId', $initiative->id)
             ->call('goToStep3')
             ->assertSet('currentStep', 3);
     }
@@ -395,6 +400,7 @@ class FicheWizardTest extends TestCase
     {
         Storage::fake('public');
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
 
         Livewire::actingAs($user)
@@ -402,6 +408,7 @@ class FicheWizardTest extends TestCase
             ->set('currentStep', 3)
             ->set('title', 'Mijn titel')
             ->set('description', 'Mijn beschrijving')
+            ->set('selectedInitiativeId', $initiative->id)
             ->set('aiDescription', '<p>AI beschrijving</p>')
             ->call('applySuggestion', 'description')
             ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
@@ -447,6 +454,7 @@ class FicheWizardTest extends TestCase
     {
         Storage::fake('public');
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
 
         $file = File::factory()->create(['fiche_id' => null]);
 
@@ -455,6 +463,7 @@ class FicheWizardTest extends TestCase
             ->set('currentStep', 3)
             ->set('title', 'Concept fiche')
             ->set('description', 'Een concept')
+            ->set('selectedInitiativeId', $initiative->id)
             ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
             ->call('saveDraft');
 
@@ -525,6 +534,7 @@ class FicheWizardTest extends TestCase
             ->set('currentStep', 3)
             ->set('title', 'Mijn activiteit')
             ->set('description', 'Beschrijving')
+            ->set('selectedInitiativeId', $initiative->id)
             ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
             ->call('publish');
 
@@ -537,6 +547,7 @@ class FicheWizardTest extends TestCase
     {
         Storage::fake('public');
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
 
         $file1 = File::factory()->create(['fiche_id' => null]);
         $file2 = File::factory()->create(['fiche_id' => null]);
@@ -546,6 +557,7 @@ class FicheWizardTest extends TestCase
             ->set('currentStep', 3)
             ->set('title', 'Test fiche')
             ->set('description', 'Beschrijving')
+            ->set('selectedInitiativeId', $initiative->id)
             ->set('uploadedFiles', [
                 ['id' => $file1->id, 'name' => $file1->original_filename, 'size' => $file1->size_bytes, 'type' => 'PDF'],
                 ['id' => $file2->id, 'name' => $file2->original_filename, 'size' => $file2->size_bytes, 'type' => 'PDF'],
@@ -560,6 +572,7 @@ class FicheWizardTest extends TestCase
     {
         Storage::fake('public');
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
 
         $themeTag = Tag::factory()->theme()->create();
         $goalTag = Tag::factory()->goal()->create();
@@ -570,6 +583,7 @@ class FicheWizardTest extends TestCase
             ->set('currentStep', 3)
             ->set('title', 'Tagged fiche')
             ->set('description', 'Beschrijving')
+            ->set('selectedInitiativeId', $initiative->id)
             ->set('selectedThemeTags', [$themeTag->id])
             ->set('selectedGoalTags', [$goalTag->id])
             ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
@@ -584,6 +598,7 @@ class FicheWizardTest extends TestCase
     {
         Storage::fake('public');
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
 
         $component = Livewire::actingAs($user)
@@ -591,6 +606,7 @@ class FicheWizardTest extends TestCase
             ->set('currentStep', 3)
             ->set('title', 'Fiche met fout')
             ->set('description', 'Beschrijving')
+            ->set('selectedInitiativeId', $initiative->id)
             ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
             ->set('selectedGoalTags', [99999])
             ->call('saveDraft');
@@ -659,10 +675,8 @@ class FicheWizardTest extends TestCase
         $this->assertEquals($unclaimedFile->id, $uploadedFiles[0]['id']);
     }
 
-    public function test_suggested_tags_shown_as_recommended_on_step2(): void
+    public function test_suggested_tags_stored_internally_on_step2(): void
     {
-        Feature::define('diamant-goals', true);
-
         $user = User::factory()->create();
 
         $themeTag = Tag::factory()->theme()->create();
@@ -674,7 +688,8 @@ class FicheWizardTest extends TestCase
             ->set('title', 'Test')
             ->set('suggestedThemeTagIds', [$themeTag->id])
             ->set('suggestedGoalTagIds', [$goalTag->id])
-            ->assertSee('Aanbevolen');
+            ->assertSet('suggestedThemeTagIds', [$themeTag->id])
+            ->assertSet('suggestedGoalTagIds', [$goalTag->id]);
     }
 
     public function test_wizard_works_without_ai_processing(): void
@@ -683,6 +698,7 @@ class FicheWizardTest extends TestCase
         Storage::fake('public');
 
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
 
         $component = Livewire::actingAs($user)
@@ -697,6 +713,7 @@ class FicheWizardTest extends TestCase
 
         $component->set('title', 'Handmatige fiche')
             ->set('description', 'Zonder AI')
+            ->set('selectedInitiativeId', $initiative->id)
             ->call('goToStep3')
             ->assertSet('currentStep', 3);
 
@@ -775,6 +792,7 @@ class FicheWizardTest extends TestCase
     {
         Storage::fake('public');
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
 
         Livewire::actingAs($user)
@@ -782,6 +800,7 @@ class FicheWizardTest extends TestCase
             ->set('currentStep', 3)
             ->set('title', 'Test')
             ->set('description', 'Test')
+            ->set('selectedInitiativeId', $initiative->id)
             ->set('preparation', '')
             ->set('aiPreparation', '<p>AI voorbereiding</p>')
             ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
@@ -892,12 +911,14 @@ class FicheWizardTest extends TestCase
     public function test_description_is_optional_for_step3(): void
     {
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
 
         Livewire::actingAs($user)
             ->test(FicheWizard::class)
             ->set('currentStep', 2)
             ->set('title', 'Een titel')
             ->set('description', '')
+            ->set('selectedInitiativeId', $initiative->id)
             ->call('goToStep3')
             ->assertHasNoErrors()
             ->assertSet('currentStep', 3);
@@ -1464,12 +1485,14 @@ class FicheWizardTest extends TestCase
     {
         Storage::fake('public');
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
 
         $component = Livewire::actingAs($user)
             ->test(FicheWizard::class)
             ->set('title', 'Publiceer test')
             ->set('description', 'Test beschrijving')
+            ->set('selectedInitiativeId', $initiative->id)
             ->set('currentStep', 3)
             ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
             ->call('publish');
@@ -1485,12 +1508,14 @@ class FicheWizardTest extends TestCase
     {
         Storage::fake('public');
         $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
 
         $component = Livewire::actingAs($user)
             ->test(FicheWizard::class)
             ->set('title', 'Concept test')
             ->set('description', 'Test beschrijving')
+            ->set('selectedInitiativeId', $initiative->id)
             ->set('currentStep', 3)
             ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
             ->call('saveDraft');

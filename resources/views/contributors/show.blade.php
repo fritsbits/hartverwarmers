@@ -8,8 +8,17 @@
                 <flux:breadcrumbs.item>{{ $contributor->full_name }}</flux:breadcrumbs.item>
             </flux:breadcrumbs>
 
+            @php $isOwnProfile = auth()->id() === $contributor->id; @endphp
+
             <div class="flex flex-col md:flex-row gap-8 items-start">
-                <x-user-avatar :user="$contributor" size="2xl" class="ring-4 ring-white shadow-md" />
+                <div class="relative">
+                    <x-user-avatar :user="$contributor" size="2xl" class="ring-4 ring-white shadow-md" />
+                    @if($isOwnProfile && ! $contributor->avatar_path)
+                        <a href="{{ route('profile.show') }}" class="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-white border border-[var(--color-border-light)] shadow-sm flex items-center justify-center text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] transition-colors" title="Voeg een foto toe">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z"/></svg>
+                        </a>
+                    @endif
+                </div>
 
                 <div class="flex-1 min-w-0">
                     <span class="section-label">Bijdrager</span>
@@ -19,6 +28,8 @@
                     <p class="text-lg text-[var(--color-text-secondary)] font-light mt-2">
                         @if($metaParts->isNotEmpty())
                             {{ $metaParts->join(' · ') }} · Lid sinds {{ $contributor->created_at->format('Y') }}
+                        @elseif($isOwnProfile)
+                            <a href="{{ route('profile.show') }}" class="text-[var(--color-primary)] hover:underline">Voeg je functie en organisatie toe</a> · Lid sinds {{ $contributor->created_at->format('Y') }}
                         @else
                             Lid sinds {{ $contributor->created_at->format('Y') }}
                         @endif
@@ -44,6 +55,10 @@
                         <div class="mt-4 text-[var(--color-text-secondary)] font-light leading-relaxed line-clamp-3 max-w-2xl">
                             {!! $contributor->bio !!}
                         </div>
+                    @elseif($isOwnProfile)
+                        <a href="{{ route('profile.show') }}" class="mt-4 block text-[var(--color-text-secondary)] font-light italic hover:text-[var(--color-primary)] transition-colors max-w-2xl">
+                            Laat andere hartverwarmers weten wie jij bent — <span class="text-[var(--color-primary)] not-italic font-normal">voeg een bio toe</span>
+                        </a>
                     @endif
 
                     {{-- Specialization pills + social links --}}
@@ -77,6 +92,7 @@
                             @endif
                         </div>
                     @endif
+
                 </div>
             </div>
         </div>
@@ -165,6 +181,16 @@
                                 </div>
                             </div>
                         @endforeach
+
+                        {{-- Own profile: add fiche row --}}
+                        @if($isOwnProfile)
+                            <a href="{{ route('fiches.create') }}" class="group flex items-center gap-3 px-5 py-3.5 rounded-xl border border-dashed border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:bg-[var(--color-bg-cream)] transition-all no-underline">
+                                <span class="w-8 h-8 rounded-full bg-[var(--color-bg-accent-light)] text-[var(--color-primary)] flex items-center justify-center group-hover:bg-[var(--color-primary)] group-hover:text-white transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                </span>
+                                <span class="text-sm text-[var(--color-text-secondary)] group-hover:text-[var(--color-primary)] transition-colors">Deel nog een activiteit</span>
+                            </a>
+                        @endif
                     </div>
                 </div>
             </div>
