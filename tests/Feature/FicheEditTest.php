@@ -135,7 +135,7 @@ class FicheEditTest extends TestCase
             ->assertHasErrors(['newUploads.*']);
 
         $this->assertStringContainsString(
-            'Alleen PDF, PPTX, DOCX en afbeeldingen zijn toegestaan.',
+            'Dit bestandstype wordt niet ondersteund.',
             implode(' ', $component->errors()->all())
         );
     }
@@ -152,7 +152,8 @@ class FicheEditTest extends TestCase
             ->assertHasErrors(['newUploads.*']);
 
         $this->assertStringContainsString(
-            'Een bestand mag maximaal 50MB zijn.',
+            'Dit bestand is te groot (max 50 MB).',
+            // Full message includes advice to resize the file
             implode(' ', $component->errors()->all())
         );
     }

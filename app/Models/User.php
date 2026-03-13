@@ -29,6 +29,8 @@ class User extends Authenticatable
         'linkedin',
         'fiches_comments_seen_at',
         'terms_accepted_at',
+        'onboarded_at',
+        'contributor_onboarded_at',
     ];
 
     /**
@@ -45,6 +47,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'fiches_comments_seen_at' => 'datetime',
             'terms_accepted_at' => 'datetime',
+            'onboarded_at' => 'datetime',
+            'contributor_onboarded_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -115,6 +119,16 @@ class User extends Authenticatable
     public function isMember(): bool
     {
         return $this->role === 'member';
+    }
+
+    public function hasCompletedOnboarding(): bool
+    {
+        return $this->onboarded_at !== null;
+    }
+
+    public function hasCompletedContributorOnboarding(): bool
+    {
+        return $this->contributor_onboarded_at !== null;
     }
 
     public function newFicheCommentsCount(): int

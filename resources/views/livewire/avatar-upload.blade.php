@@ -1,21 +1,31 @@
 <div>
+    @php
+        $avatarColors = [
+            ['bg' => '#FDF3EE', 'text' => '#E8764B'],
+            ['bg' => '#E8F6F8', 'text' => '#3A9BA8'],
+            ['bg' => '#FEF6E0', 'text' => '#B08A22'],
+            ['bg' => '#F3E8F3', 'text' => '#9A5E98'],
+        ];
+        $color = $avatarColors[$colorIndex] ?? $avatarColors[0];
+    @endphp
+
     <div class="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6 mb-8">
         <flux:file-upload wire:model="photo" accept="image/jpeg,image/png,image/webp">
-            <div class="
-                relative flex items-center justify-center size-20 shrink-0 rounded-full transition-colors cursor-pointer
-                border border-zinc-200 hover:border-zinc-300
-                bg-zinc-100 hover:bg-zinc-200
-            ">
+            <div class="relative flex items-center justify-center size-20 shrink-0 rounded-full cursor-pointer transition-all hover:scale-105"
+                 @if(!$photo && !$existingAvatar)
+                     style="background: {{ $color['bg'] }}; color: {{ $color['text'] }};"
+                 @endif
+            >
                 @if ($photo && $photo->isPreviewable())
                     <img src="{{ $photo->temporaryUrl() }}" class="size-full object-cover rounded-full" />
                 @elseif ($existingAvatar)
                     <img src="{{ Storage::url($existingAvatar) }}" class="size-full object-cover rounded-full" />
                 @else
-                    <flux:icon name="user" variant="solid" class="text-zinc-500" />
+                    <span class="text-2xl font-bold">{{ $initials }}</span>
                 @endif
 
-                <div class="absolute bottom-0 right-0 bg-white rounded-full">
-                    <flux:icon name="arrow-up-circle" variant="solid" class="text-zinc-500" />
+                <div class="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-white border border-[var(--color-border-light)] shadow-sm flex items-center justify-center text-[var(--color-text-secondary)]">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
                 </div>
             </div>
         </flux:file-upload>

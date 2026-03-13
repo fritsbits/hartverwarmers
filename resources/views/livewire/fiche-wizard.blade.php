@@ -83,58 +83,245 @@
 
                 <div class="space-y-10 relative z-10">
                     <flux:field>
-                        <div @class([
-                            'grid gap-6',
-                            'grid-cols-1' => empty($uploadedFiles),
-                            'grid-cols-1 lg:grid-cols-2' => !empty($uploadedFiles),
-                        ])>
+                        <div
+                            x-data="{
+                                uploadError: '',
+                                uploadTip: '',
+                                uploading: false,
+                                uploadProgress: 0,
+                                displayProgress: 0,
+                                devMode: @js($devMode),
+                                fakeInterval: null,
+                                realFinished: false,
+                                hintIndex: -1,
+                                hintTimeout: null,
+                                hints: [
+                                    { icon: 'document-text', text: 'We lezen straks de tekst uit je bestand en doen slimme suggesties.' },
+                                    { icon: 'sparkles', text: 'Wat maakt jouw activiteit uniek? Straks kun je dat beschrijven.' },
+                                    { icon: 'users', text: 'Je fiche wordt zichtbaar voor alle collega\u2019s op het platform.' },
+                                    { icon: 'document-plus', text: 'Heb je nog een bestand? Sleep het erbij \u2014 je kunt meerdere bestanden uploaden.' },
+                                ],
+                                maxSize: 50 * 1024 * 1024,
+                                allowedExtensions: ['pdf','pptx','docx','doc','ppt','jpg','jpeg','png'],
+                                sizeTips: {
+                                    pptx: 'Grote presentaties bevatten vaak foto\u2019s in hoge resolutie. Verklein ze in \u00e9\u00e9n keer: klik op een willekeurige foto \u2192 Afbeeldingen comprimeren \u2192 vink \u201cAlleen op deze afbeelding\u201d uit \u2192 kies \u201cE-mail (96 ppi)\u201d \u2192 sla opnieuw op.',
+                                    ppt: 'Grote presentaties bevatten vaak foto\u2019s in hoge resolutie. Verklein ze in \u00e9\u00e9n keer: klik op een willekeurige foto \u2192 Afbeeldingen comprimeren \u2192 vink \u201cAlleen op deze afbeelding\u201d uit \u2192 kies \u201cE-mail (96 ppi)\u201d \u2192 sla opnieuw op.',
+                                    docx: 'Grote Word-bestanden bevatten vaak foto\u2019s in hoge resolutie. Verklein ze in \u00e9\u00e9n keer: klik op een willekeurige foto \u2192 Afbeeldingen comprimeren \u2192 vink \u201cAlleen op deze afbeelding\u201d uit \u2192 kies \u201cE-mail (96 ppi)\u201d \u2192 sla opnieuw op.',
+                                    doc: 'Grote Word-bestanden bevatten vaak foto\u2019s in hoge resolutie. Verklein ze in \u00e9\u00e9n keer: klik op een willekeurige foto \u2192 Afbeeldingen comprimeren \u2192 vink \u201cAlleen op deze afbeelding\u201d uit \u2192 kies \u201cE-mail (96 ppi)\u201d \u2192 sla opnieuw op.',
+                                    pdf: 'Open het PDF in je browser, druk Ctrl+P en kies \u201cOpslaan als PDF\u201d of \u201cMicrosoft Print to PDF\u201d. Dit maakt vaak een veel kleiner bestand aan.',
+                                    jpg: 'Open de foto in Paint \u2192 Formaat wijzigen \u2192 kies een kleiner percentage (bv. 50%) \u2192 sla op.',
+                                    jpeg: 'Open de foto in Paint \u2192 Formaat wijzigen \u2192 kies een kleiner percentage (bv. 50%) \u2192 sla op.',
+                                    png: 'Open de foto in Paint \u2192 Formaat wijzigen \u2192 kies een kleiner percentage (bv. 50%) \u2192 sla op als JPEG.',
+                                },
+                                startUpload() {
+                                    if (this.uploadError) return;
+                                    this.uploading = true;
+                                    this.realFinished = false;
+                                    this.hintIndex = -1;
+
+                                    if (this.devMode) {
+                                        this.displayProgress = 0;
+                                        this.startFakeProgress();
+                                    }
+
+                                    this.scheduleNextHint(2500);
+                                },
+                                scheduleNextHint(delay) {
+                                    clearTimeout(this.hintTimeout);
+                                    this.hintTimeout = setTimeout(() => {
+                                        if (!this.uploading) return;
+                                        const next = this.hintIndex + 1;
+                                        if (next < this.hints.length) {
+                                            this.hintIndex = next;
+                                            this.scheduleNextHint(3500);
+                                        }
+                                    }, delay);
+                                },
+                                startFakeProgress() {
+                                    clearInterval(this.fakeInterval);
+                                    this.fakeInterval = setInterval(() => {
+                                        if (this.displayProgress < 85) {
+                                            this.displayProgress += Math.random() * 3 + 0.5;
+                                        } else if (this.realFinished && this.displayProgress < 100) {
+                                            this.displayProgress = Math.min(100, this.displayProgress + 5);
+                                        }
+                                        if (this.displayProgress >= 100) {
+                                            this.finishUpload();
+                                        }
+                                    }, 200);
+                                },
+                                onProgress(progress) {
+                                    if (this.uploadError) return;
+                                    this.uploadProgress = progress;
+                                    if (!this.devMode) {
+                                        this.displayProgress = progress;
+                                    }
+                                },
+                                onFinish() {
+                                    if (this.devMode) {
+                                        this.realFinished = true;
+                                    } else {
+                                        this.finishUpload();
+                                    }
+                                },
+                                finishUpload() {
+                                    this.uploading = false;
+                                    this.uploadProgress = 0;
+                                    this.realFinished = false;
+                                    clearInterval(this.fakeInterval);
+                                    clearTimeout(this.hintTimeout);
+                                },
+                                validateFiles(files) {
+                                    this.uploadError = '';
+                                    this.uploadTip = '';
+                                    for (const file of files) {
+                                        const ext = file.name.split('.').pop().toLowerCase();
+                                        if (file.size > this.maxSize) {
+                                            this.uploadError = file.name + ' is te groot (' + Math.round(file.size / 1024 / 1024) + ' MB \u2014 max 50 MB). Probeer het bestand eerst te verkleinen.';
+                                            this.uploadTip = this.sizeTips[ext] || '';
+                                            return false;
+                                        }
+                                        if (!this.allowedExtensions.includes(ext)) {
+                                            this.uploadError = file.name + ' kan niet worden ge\u00fcpload. Kies een PDF, PPTX, DOCX of afbeelding (JPG/PNG).';
+                                            return false;
+                                        }
+                                    }
+                                    return true;
+                                }
+                            }"
+                            x-on:livewire-upload-start.window="startUpload()"
+                            x-on:livewire-upload-progress.window="onProgress($event.detail.progress)"
+                            x-on:livewire-upload-finish.window="onFinish()"
+                            x-on:livewire-upload-error.window="if (!uploadError) { uploadError = 'Het uploaden is mislukt. Controleer of het bestand kleiner is dan 50 MB en probeer het opnieuw.'; } finishUpload()"
+                            x-on:livewire-upload-cancel.window="finishUpload()"
+                            @upload-rejected.window="finishUpload()"
+                            x-init="
+                                const self = this;
+                                $watch('uploadError', (value) => {
+                                    if (value && self.uploading) {
+                                        self.finishUpload();
+                                    }
+                                });
+                                $nextTick(() => {
+                                    const input = $el.querySelector('input[type=file]');
+                                    if (input) {
+                                        input.addEventListener('change', (e) => {
+                                            if (!self.validateFiles(e.target.files)) {
+                                                e.target.value = '';
+                                                e.stopImmediatePropagation();
+                                            }
+                                        }, true);
+                                    }
+                                })
+                            "
+                            class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+                        >
                             {{-- Left: drop zone --}}
                             <div>
-                                <flux:file-upload wire:model="uploads" multiple>
+                                <flux:file-upload wire:model="uploads" multiple accept=".pdf,.pptx,.docx,.doc,.ppt,.jpg,.jpeg,.png">
                                     <flux:file-upload.dropzone
                                         heading="Sleep bestanden hierheen of klik om te bladeren"
                                         text="PDF, PPTX, DOCX, afbeeldingen — max 50MB per bestand"
                                         with-progress
                                     />
                                 </flux:file-upload>
-                                <flux:error name="uploads" />
-                                <flux:error name="uploads.*" />
                             </div>
 
-                            {{-- Right: file list --}}
-                            @if(!empty($uploadedFiles))
-                                <div>
-                                    <flux:label class="text-base font-body font-bold">Bestanden</flux:label>
-                                    <div class="mt-2 flex flex-col gap-2">
-                                        @foreach($uploadedFiles as $file)
-                                            <flux:file-item
-                                                :heading="$file['name']"
-                                                :size="$file['size']"
-                                                wire:key="file-{{ $file['id'] }}"
-                                            >
-                                                <x-slot name="actions">
-                                                    @if($file['id'] === $previewFileId)
-                                                        <flux:tooltip position="top">
-                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                                </svg>
-                                                                Preview
-                                                            </span>
-                                                            <flux:tooltip.content>Dit bestand krijgt automatisch een voorvertoning.</flux:tooltip.content>
-                                                        </flux:tooltip>
-                                                    @endif
-                                                    <flux:file-item.remove
-                                                        wire:click="removeFile({{ $file['id'] }})"
-                                                        aria-label="Verwijder {{ $file['name'] }}"
-                                                    />
-                                                </x-slot>
-                                            </flux:file-item>
-                                        @endforeach
+                            {{-- Right: upload progress + hints, error state, or file list --}}
+                            <div class="space-y-3">
+                                {{-- Upload in progress: educational hints --}}
+                                <div x-show="uploading && !uploadError" x-cloak class="space-y-4">
+                                    {{-- Progress bar --}}
+                                    <div class="space-y-2">
+                                        <div class="flex items-center justify-between text-sm">
+                                            <span class="font-medium text-[var(--color-text-primary)]">Bezig met uploaden...</span>
+                                            <span class="text-[var(--color-text-secondary)] tabular-nums" x-text="Math.round(displayProgress) + '%'"></span>
+                                        </div>
+                                        <div class="h-2 rounded-full bg-[var(--color-bg-subtle)] overflow-hidden">
+                                            <div
+                                                class="h-full rounded-full bg-[var(--color-primary)] transition-all duration-300 ease-out"
+                                                :style="'width: ' + displayProgress + '%'"
+                                            ></div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Rotating hints --}}
+                                    <div class="rounded-xl bg-[var(--color-bg-cream)] border border-[var(--color-border-light)] p-4 relative overflow-hidden min-h-[3.5rem]">
+                                        <template x-for="(hint, i) in hints" :key="i">
+                                            <div x-show="hintIndex === i" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200 absolute inset-x-4 top-4" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="flex items-center gap-3">
+                                                <div class="w-8 h-8 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center shrink-0">
+                                                    <template x-if="hint.icon === 'document-text'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                                                    </template>
+                                                    <template x-if="hint.icon === 'sparkles'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" /></svg>
+                                                    </template>
+                                                    <template x-if="hint.icon === 'users'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>
+                                                    </template>
+                                                    <template x-if="hint.icon === 'document-plus'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                                                    </template>
+                                                </div>
+                                                <p class="text-sm text-[var(--color-text-secondary)] leading-relaxed" x-text="hint.text"></p>
+                                            </div>
+                                        </template>
                                     </div>
                                 </div>
-                            @endif
+
+                                {{-- Client-side error (Alpine) --}}
+                                <div wire:ignore x-show="uploadError" x-cloak>
+                                    <flux:callout variant="warning" icon="exclamation-triangle">
+                                        <flux:callout.heading><span x-text="uploadError"></span></flux:callout.heading>
+                                        <flux:callout.text><p x-show="uploadTip" x-text="uploadTip"></p></flux:callout.text>
+                                        <x-slot name="controls">
+                                            <flux:button icon="x-mark" variant="ghost" x-on:click="uploadError = ''; uploadTip = ''" />
+                                        </x-slot>
+                                    </flux:callout>
+                                </div>
+
+                                {{-- Server-side error (Livewire) --}}
+                                @error('uploads.*')
+                                    <flux:callout variant="danger" icon="x-circle">
+                                        <flux:callout.heading>{{ $message }}</flux:callout.heading>
+                                    </flux:callout>
+                                @enderror
+
+                                {{-- File list --}}
+                                @if(!empty($uploadedFiles))
+                                    <div x-show="!uploadError && !uploading">
+                                        <flux:label class="text-base font-body font-bold">Bestanden</flux:label>
+                                        <div class="mt-2 flex flex-col gap-2">
+                                            @foreach($uploadedFiles as $file)
+                                                <flux:file-item
+                                                    :heading="$file['name']"
+                                                    :size="$file['size']"
+                                                    wire:key="file-{{ $file['id'] }}"
+                                                >
+                                                    <x-slot name="actions">
+                                                        @if($file['id'] === $previewFileId)
+                                                            <flux:tooltip position="top">
+                                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                    </svg>
+                                                                    Preview
+                                                                </span>
+                                                                <flux:tooltip.content>Dit bestand krijgt automatisch een voorvertoning.</flux:tooltip.content>
+                                                            </flux:tooltip>
+                                                        @endif
+                                                        <flux:file-item.remove
+                                                            wire:click="removeFile({{ $file['id'] }})"
+                                                            aria-label="Verwijder {{ $file['name'] }}"
+                                                        />
+                                                    </x-slot>
+                                                </flux:file-item>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </flux:field>
                 </div>
@@ -216,83 +403,14 @@
                         </flux:field>
                     </div>
 
-                    {{-- DIAMANT goals --}}
-                    @feature('diamant-goals')
-                    <flux:field>
-                        <flux:label class="text-base font-body font-bold">DIAMANT-doelen</flux:label>
-                        <flux:description>Welke doelen van het DIAMANT-model worden aangesproken?</flux:description>
-
-                        @if(!empty($suggestedGoalTagIds))
-                            <div class="text-xs font-semibold text-[var(--color-primary)] mt-2 mb-1 uppercase tracking-wider">Aanbevolen</div>
-                        @endif
-                        <div class="flex flex-wrap gap-2 mt-1">
-                            @foreach($allGoalTags as $tag)
-                                @php
-                                    $isSuggested = in_array($tag->id, $suggestedGoalTagIds);
-                                    $facetSlug = str_replace('doel-', '', $tag->slug);
-                                    $facet = config("diamant.facets.{$facetSlug}");
-                                @endphp
-
-                                @if($isSuggested)
-                                    <label wire:key="goal-{{ $tag->id }}" @class([
-                                        'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm cursor-pointer transition-colors border',
-                                        'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' => in_array($tag->id, $selectedGoalTags),
-                                        'bg-[var(--color-primary)]/10 border-[var(--color-primary)]/30 hover:border-[var(--color-primary)] text-[var(--color-primary)]' => !in_array($tag->id, $selectedGoalTags),
-                                    ])>
-                                        <input type="checkbox" wire:model.live="selectedGoalTags" value="{{ $tag->id }}" class="sr-only">
-                                        @if($facet)
-                                            <x-diamant-gem :letter="$facet['letter']" size="xxs"
-                                                :inverted="in_array($tag->id, $selectedGoalTags)" />
-                                        @endif
-                                        {{ $tag->name }}
-                                    </label>
-                                @endif
-                            @endforeach
-                        </div>
-
-                        @if(!empty($suggestedGoalTagIds))
-                            <button wire:click="$toggle('showMoreGoalTags')" class="mt-2 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] underline">
-                                {{ $showMoreGoalTags ? 'Minder tonen' : 'Alle doelen tonen' }}
-                            </button>
-                        @endif
-
-                        @if($showMoreGoalTags || empty($suggestedGoalTagIds))
-                            @if(!empty($suggestedGoalTagIds))
-                                <div class="text-xs font-semibold text-[var(--color-text-secondary)] mt-3 mb-1 uppercase tracking-wider">Overige doelen</div>
-                            @endif
-                            <div class="flex flex-wrap gap-2 mt-1">
-                                @foreach($allGoalTags as $tag)
-                                    @php
-                                        $facetSlug = str_replace('doel-', '', $tag->slug);
-                                        $facet = config("diamant.facets.{$facetSlug}");
-                                    @endphp
-                                    @if(!in_array($tag->id, $suggestedGoalTagIds))
-                                        <label wire:key="goal-more-{{ $tag->id }}" @class([
-                                            'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm cursor-pointer transition-colors border',
-                                            'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' => in_array($tag->id, $selectedGoalTags),
-                                            'bg-white border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] text-[var(--color-text-primary)]' => !in_array($tag->id, $selectedGoalTags),
-                                        ])>
-                                            <input type="checkbox" wire:model.live="selectedGoalTags" value="{{ $tag->id }}" class="sr-only">
-                                            @if($facet)
-                                                <x-diamant-gem :letter="$facet['letter']" size="xxs"
-                                                    :inverted="in_array($tag->id, $selectedGoalTags)" />
-                                            @endif
-                                            {{ $tag->name }}
-                                        </label>
-                                    @endif
-                                @endforeach
-                            </div>
-                        @endif
-                    </flux:field>
-                    @endfeature
-
+                    {{-- DIAMANT goals — not user-selectable; assigned automatically via AI analysis --}}
                     {{-- Theme tags (hidden from UI — suggestions still applied automatically) --}}
 
                     {{-- Initiative linking --}}
                     <div class="space-y-4">
                         <flux:field>
-                            <flux:label class="text-base font-body font-bold">Gekoppeld initiatief</flux:label>
-                            <flux:description>Optioneel — koppel deze fiche aan een initiatief</flux:description>
+                            <flux:label class="text-base font-body font-bold">Gekoppeld initiatief <span class="field-tag ml-1">Verplicht</span></flux:label>
+                            <flux:description>Koppel deze fiche aan een initiatief</flux:description>
 
                             {{-- Inline processing indicator --}}
                             @if(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'skipped')
@@ -339,7 +457,15 @@
                                 </div>
                             @endif
 
-                            {{-- Initiative dropdown hidden — suggestions should suffice --}}
+                            {{-- Manual initiative select (always visible as fallback) --}}
+                            <div class="mt-3">
+                                <flux:select wire:model.live="selectedInitiativeId" placeholder="Kies een initiatief...">
+                                    @foreach($allInitiatives as $initiative)
+                                        <flux:select.option :value="$initiative->id">{{ $initiative->title }}</flux:select.option>
+                                    @endforeach
+                                </flux:select>
+                                <flux:error name="selectedInitiativeId" />
+                            </div>
                         </flux:field>
                     </div>
                 </div>
@@ -385,9 +511,9 @@
                             <flux:label class="text-base font-body font-bold">{{ $field['label'] }} @if($field['required'] ?? false)<span class="field-tag ml-1">Verplicht</span>@endif</flux:label>
                             <flux:description>{{ $field['description'] }}</flux:description>
 
-                            <div class="grid grid-cols-1 {{ $hasAiSuggestion ? 'lg:grid-cols-12' : '' }} gap-8">
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                                 {{-- User's editable field --}}
-                                <div class="{{ $hasAiSuggestion ? 'lg:col-span-8' : '' }}">
+                                <div class="lg:col-span-8">
                                     <flux:editor
                                         wire:model="{{ $field['userProp'] }}"
                                         toolbar="bold | bullet ordered | link"
@@ -395,33 +521,35 @@
                                     />
                                 </div>
 
-                                {{-- Suggestion --}}
-                                @if($hasAiSuggestion)
-                                    <div class="lg:col-span-4 flex gap-2.5 bg-white py-4 pl-2 pr-4 text-sm text-[var(--color-text-primary)]/70">
-                                        <flux:icon.sparkles class="w-5 h-5 shrink-0 text-[var(--color-primary)] mt-0.5" />
-                                        <div class="min-w-0">
-                                        <div class="text-xs font-semibold text-[var(--color-text-secondary)] mb-3 uppercase tracking-wider">Suggestie</div>
-                                        <div class="prose prose-sm max-w-none [&_strong]:text-[var(--color-text-primary)]/80">{!! $this->{$field['aiProp']} !!}</div>
-                                        <div class="mt-3">
-                                            @if($isApplied)
-                                                <span class="inline-flex items-center gap-1 h-7 px-2 text-xs font-medium text-[var(--color-text-secondary)]">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                                    </svg>
-                                                    Toegevoegd
-                                                </span>
-                                            @else
-                                                <flux:button size="xs" variant="filled" x-on:click="let y = window.scrollY; $wire.applySuggestion('{{ $field['field'] }}').then(() => { requestAnimationFrame(() => window.scrollTo(0, y)) })">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                                                    </svg>
-                                                    Toevoegen
-                                                </flux:button>
-                                            @endif
+                                {{-- Suggestion panel (always reserved) --}}
+                                <div class="lg:col-span-4">
+                                    @if($hasAiSuggestion)
+                                        <div class="flex gap-2.5 py-4 pl-2 pr-4 text-sm text-[var(--color-text-primary)]/70">
+                                            <flux:icon.sparkles class="w-5 h-5 shrink-0 text-[var(--color-primary)] mt-0.5" />
+                                            <div class="min-w-0">
+                                                <div class="text-xs font-semibold text-[var(--color-text-secondary)] mb-3 uppercase tracking-wider">Suggestie</div>
+                                                <div class="prose prose-sm max-w-none [&_strong]:text-[var(--color-text-primary)]/80">{!! $this->{$field['aiProp']} !!}</div>
+                                                <div class="mt-3">
+                                                    @if($isApplied)
+                                                        <span class="inline-flex items-center gap-1 h-7 px-2 text-xs font-medium text-[var(--color-text-secondary)]">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                                            </svg>
+                                                            Toegevoegd
+                                                        </span>
+                                                    @else
+                                                        <flux:button size="xs" variant="filled" x-on:click="let y = window.scrollY; $wire.applySuggestion('{{ $field['field'] }}').then(() => { requestAnimationFrame(() => window.scrollTo(0, y)) })">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                                                            </svg>
+                                                            Toevoegen
+                                                        </flux:button>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
-                                        </div>
-                                    </div>
-                                @endif
+                                    @endif
+                                </div>
                             </div>
 
                             <flux:error :name="$field['field']" />

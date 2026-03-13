@@ -47,9 +47,9 @@ class FicheWizard extends Component
     #[Validate(
         ['uploads.*' => 'file|max:51200|mimes:pdf,pptx,docx,doc,ppt,jpg,jpeg,png'],
         message: [
-            'uploads.*.max' => 'Een bestand mag maximaal 50MB zijn.',
-            'uploads.*.mimes' => 'Alleen PDF, PPTX, DOCX en afbeeldingen zijn toegestaan.',
-            'uploads.*.file' => 'Upload een geldig bestand.',
+            'uploads.*.max' => 'Dit bestand is te groot (max 50 MB). Probeer het bestand te verkleinen voor je het opnieuw uploadt.',
+            'uploads.*.mimes' => 'Dit bestandstype wordt niet ondersteund. Kies een PDF, PPTX, DOCX of afbeelding (JPG/PNG).',
+            'uploads.*.file' => 'Dit bestand kon niet worden gelezen. Probeer het opnieuw te uploaden.',
         ]
     )]
     public array $uploads = [];
@@ -230,11 +230,18 @@ class FicheWizard extends Component
 
     public function updatedUploads(): void
     {
-        $this->validateOnly('uploads.*', messages: [
-            'uploads.*.max' => 'Een bestand mag maximaal 50MB zijn.',
-            'uploads.*.mimes' => 'Alleen PDF, PPTX, DOCX en afbeeldingen zijn toegestaan.',
-            'uploads.*.file' => 'Upload een geldig bestand.',
-        ]);
+        try {
+            $this->validateOnly('uploads.*', messages: [
+                'uploads.*.max' => 'Dit bestand is te groot (max 50 MB). Probeer het bestand te verkleinen voor je het opnieuw uploadt.',
+                'uploads.*.mimes' => 'Dit bestandstype wordt niet ondersteund. Kies een PDF, PPTX, DOCX of afbeelding (JPG/PNG).',
+                'uploads.*.file' => 'Dit bestand kon niet worden gelezen. Probeer het opnieuw te uploaden.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->uploads = [];
+            $this->dispatch('upload-rejected');
+
+            throw $e;
+        }
 
         $isFirstUploadBatch = $this->processingStep === 'idle';
         $newFileIds = [];
@@ -418,9 +425,12 @@ class FicheWizard extends Component
     {
         $this->validate([
             'title' => 'required|string|max:255',
+            'selectedInitiativeId' => 'required|exists:initiatives,id',
         ], [
             'title.required' => 'Geef je activiteit een titel.',
             'title.max' => 'De titel mag maximaal 255 tekens bevatten.',
+            'selectedInitiativeId.required' => 'Kies een initiatief waar deze fiche bij hoort.',
+            'selectedInitiativeId.exists' => 'Het gekozen initiatief bestaat niet.',
         ]);
 
         $this->currentStep = 3;
@@ -476,9 +486,6 @@ class FicheWizard extends Component
     {
         return view('livewire.fiche-wizard', [
             'allThemeTags' => Tag::where('type', 'theme')->orderBy('name')->get(),
-            'allGoalTags' => Feature::active('diamant-goals')
-                ? Tag::where('type', 'goal')->orderBy('name')->get()
-                : collect(),
             'allInitiatives' => $this->currentStep >= 2
                 ? Initiative::published()->orderBy('title')->get(['id', 'title', 'description'])
                 : collect(),
@@ -697,11 +704,14 @@ class FicheWizard extends Component
         $this->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:5000',
+            'selectedInitiativeId' => 'required|exists:initiatives,id',
         ], [
             'title.required' => 'Geef je activiteit een titel.',
             'title.max' => 'De titel mag maximaal 255 tekens bevatten.',
             'description.required' => 'Geef een beschrijving van je activiteit.',
             'description.max' => 'De beschrijving mag maximaal 5000 tekens bevatten.',
+            'selectedInitiativeId.required' => 'Kies een initiatief waar deze fiche bij hoort.',
+            'selectedInitiativeId.exists' => 'Het gekozen initiatief bestaat niet.',
         ]);
 
         $slug = $this->generateUniqueSlug($this->title);

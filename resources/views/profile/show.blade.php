@@ -5,6 +5,30 @@
             Bekijk publiek profiel
         </a>
     </x-slot:headerAction>
+    @php
+        $missing = collect();
+        if (! $user->avatar_path) $missing->push('Voeg een profielfoto toe');
+        if (! $user->bio) $missing->push('Schrijf een korte bio');
+        if (! $user->function_title) $missing->push('Vul je jobfunctie in');
+        if (! $user->organisation) $missing->push('Voeg je organisatie toe');
+    @endphp
+    @if($missing->isNotEmpty() && $user->fiches()->where('published', true)->exists())
+        <div class="flex items-start gap-3 p-4 rounded-xl bg-[var(--color-bg-cream)] border border-[var(--color-border-light)] mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z"/></svg>
+            <div>
+                <p class="text-sm font-medium text-[var(--color-text-primary)]">Maak je bijdragerprofiel compleet</p>
+                <ul class="mt-1.5 space-y-1">
+                    @foreach($missing as $item)
+                        <li class="text-sm text-[var(--color-text-secondary)] flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] shrink-0"></span>
+                            {{ $item }}
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
     <flux:card>
 
             {{-- Avatar section --}}
@@ -24,7 +48,7 @@
                         </flux:field>
 
                         <flux:field>
-                            <flux:label>Achternaam</flux:label>
+                            <flux:label>Familienaam</flux:label>
                             <flux:input name="last_name" :value="old('last_name', $user->last_name)" required />
                             <x-input-error :messages="$errors->get('last_name')" />
                         </flux:field>
@@ -50,26 +74,18 @@
                         </flux:field>
                     </div>
 
-                    <flux:field>
-                        <flux:label>Over jou</flux:label>
-                        <flux:textarea name="bio" rows="4" maxlength="500">{{ old('bio', $user->bio) }}</flux:textarea>
-                        <flux:description>Max. 500 tekens</flux:description>
+                    <div>
+                        <flux:label class="mb-1">Over jou</flux:label>
+                        <p class="text-[var(--color-text-secondary)] text-sm font-light mb-3">Andere hartverwarmers willen weten wie er achter je fiches zit. Denk aan: hoe lang werk je al in de ouderenzorg, welke activiteiten je het liefst organiseert, of met welke bewoners je werkt.</p>
+                        <flux:textarea name="bio" rows="4" placeholder="Bv. Ik werk al 8 jaar als animator in de ouderenzorg...">{{ old('bio', $user->bio) }}</flux:textarea>
                         <x-input-error :messages="$errors->get('bio')" />
-                    </flux:field>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <flux:field>
-                            <flux:label>Website</flux:label>
-                            <flux:input type="url" name="website" :value="old('website', $user->website)" placeholder="https://" />
-                            <x-input-error :messages="$errors->get('website')" />
-                        </flux:field>
-
-                        <flux:field>
-                            <flux:label>LinkedIn</flux:label>
-                            <flux:input type="url" name="linkedin" :value="old('linkedin', $user->linkedin)" placeholder="https://linkedin.com/in/" />
-                            <x-input-error :messages="$errors->get('linkedin')" />
-                        </flux:field>
                     </div>
+
+                    <flux:field>
+                        <flux:label>Website</flux:label>
+                        <flux:input type="url" name="website" :value="old('website', $user->website)" placeholder="https://" />
+                        <x-input-error :messages="$errors->get('website')" />
+                    </flux:field>
 
                     <div class="flex justify-end">
                         <flux:button type="submit" variant="primary">Opslaan</flux:button>

@@ -18,13 +18,16 @@ class AvatarUpload extends Component
 
     public ?string $existingAvatar = null;
 
-    public string $userInitial = '';
+    public string $initials = '';
+
+    public int $colorIndex = 0;
 
     public function mount(): void
     {
         $user = auth()->user();
         $this->existingAvatar = $user->avatar_path;
-        $this->userInitial = substr($user->first_name, 0, 1);
+        $this->initials = mb_strtoupper(mb_substr($user->first_name, 0, 1).mb_substr($user->last_name, 0, 1));
+        $this->colorIndex = $user->id % 4;
     }
 
     public function updatedPhoto(): void
