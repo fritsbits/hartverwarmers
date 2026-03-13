@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class File extends Model
@@ -13,6 +14,7 @@ class File extends Model
 
     protected $fillable = [
         'fiche_id',
+        'source_file_id',
         'original_filename',
         'path',
         'mime_type',
@@ -87,5 +89,28 @@ class File extends Model
     public function fiche(): BelongsTo
     {
         return $this->belongsTo(Fiche::class);
+    }
+
+    public function sourceFile(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'source_file_id');
+    }
+
+    public function pdfVersion(): HasOne
+    {
+        return $this->hasOne(self::class, 'source_file_id');
+    }
+
+    public function isGenerated(): bool
+    {
+        return $this->source_file_id !== null;
+    }
+
+    public function isConvertibleToPdf(): bool
+    {
+        return str_contains($this->mime_type, 'presentation')
+            || str_contains($this->mime_type, 'powerpoint')
+            || str_contains($this->mime_type, 'word')
+            || str_contains($this->mime_type, 'document');
     }
 }

@@ -117,6 +117,46 @@ class FicheDownloadTest extends TestCase
         $response->assertSee(route('fiches.download', [$this->initiative, $this->fiche]));
     }
 
+    public function test_download_includes_generated_pdf_versions(): void
+    {
+        $sourceFile = File::factory()->pptx()->create([
+            'fiche_id' => $this->fiche->id,
+            'original_filename' => 'presentatie.pptx',
+            'path' => 'files/a.pptx',
+        ]);
+        Storage::disk('public')->put($sourceFile->path, 'fake pptx');
+
+        $pdfFile = File::factory()->generatedPdf($sourceFile)->create([
+            'original_filename' => 'presentatie.pdf',
+            'path' => 'files/a.pdf',
+        ]);
+        Storage::disk('public')->put($pdfFile->path, 'fake pdf');
+
+        $response = $this->get(route('fiches.download', [$this->initiative, $this->fiche]));
+
+        $response->assertStatus(200);
+        $response->assertDownload($this->fiche->slug.'-bestanden.zip');
+    }
+
+    public function test_show_page_displays_uploaded_file_count_excluding_generated(): void
+    {
+        $sourceFile = File::factory()->pptx()->create([
+            'fiche_id' => $this->fiche->id,
+            'original_filename' => 'presentatie.pptx',
+            'mime_type' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'size_bytes' => 1_000_000,
+        ]);
+        File::factory()->generatedPdf($sourceFile)->create([
+            'size_bytes' => 500_000,
+        ]);
+
+        $response = $this->get(route('fiches.show', [$this->initiative, $this->fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('1 bestand');
+        $response->assertSee('+ PDF');
+    }
+
     public function test_show_page_displays_type_pills_for_multiple_files(): void
     {
         File::factory()->create([

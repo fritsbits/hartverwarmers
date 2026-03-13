@@ -313,6 +313,12 @@ class FicheWizard extends Component
         $file = File::find($fileId);
 
         if ($file && $file->fiche_id === null) {
+            $pdfVersion = File::where('source_file_id', $fileId)->first();
+            if ($pdfVersion) {
+                Storage::disk('public')->delete($pdfVersion->path);
+                $pdfVersion->delete();
+            }
+
             Storage::disk('public')->delete($file->path);
             $file->delete();
             $this->uploadedFiles = array_values(
@@ -738,6 +744,9 @@ class FicheWizard extends Component
 
                 $fileIds = collect($this->uploadedFiles)->pluck('id')->toArray();
                 File::whereIn('id', $fileIds)->update(['fiche_id' => $fiche->id]);
+
+                // Also assign generated PDF versions to this fiche
+                File::whereIn('source_file_id', $fileIds)->update(['fiche_id' => $fiche->id]);
 
                 $tagIds = array_merge($this->selectedThemeTags, $this->selectedGoalTags);
                 if (! empty($tagIds)) {

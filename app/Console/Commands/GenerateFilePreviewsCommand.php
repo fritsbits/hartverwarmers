@@ -92,18 +92,27 @@ class GenerateFilePreviewsCommand extends Command
             }
 
             $pdfPath = $storagePath;
+            $reusedExistingPdf = false;
 
             if ($isPptx || $isDocx) {
-                $pdfPath = $this->convertToPdf($storagePath);
+                $existingPdf = File::where('source_file_id', $file->id)->first();
 
-                if (! $pdfPath) {
-                    return false;
+                if ($existingPdf) {
+                    $pdfPath = Storage::disk('public')->path($existingPdf->path);
+                    $reusedExistingPdf = true;
+                    $this->info('  Reusing existing PDF version.');
+                } else {
+                    $pdfPath = $this->convertToPdf($storagePath);
+
+                    if (! $pdfPath) {
+                        return false;
+                    }
                 }
             }
 
             $result = $this->generateSlideImages($pdfPath, $file->id, $maxSlides);
 
-            if (($isPptx || $isDocx) && $pdfPath !== $storagePath) {
+            if (($isPptx || $isDocx) && ! $reusedExistingPdf && $pdfPath !== $storagePath) {
                 @unlink($pdfPath);
             }
 

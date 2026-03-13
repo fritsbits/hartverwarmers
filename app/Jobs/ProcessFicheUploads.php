@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\File;
 use App\Services\FicheAiService;
 use App\Services\FileTextExtractor;
+use App\Services\PdfConverter;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
@@ -31,6 +32,7 @@ class ProcessFicheUploads implements ShouldQueue
         try {
             $this->updateStatus('extracting');
             $this->extractText();
+            $this->generatePdfVersions();
 
             if ($this->previewFileId) {
                 GenerateFilePreview::dispatch($this->previewFileId);
@@ -62,6 +64,19 @@ class ProcessFicheUploads implements ShouldQueue
 
             if ($text) {
                 $file->update(['extracted_text' => $text]);
+            }
+        }
+    }
+
+    private function generatePdfVersions(): void
+    {
+        $converter = app(PdfConverter::class);
+
+        foreach ($this->fileIds as $fileId) {
+            $file = File::find($fileId);
+
+            if ($file && $file->isConvertibleToPdf() && ! $file->pdfVersion) {
+                $converter->convertAndStore($file);
             }
         }
     }
