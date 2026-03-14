@@ -146,6 +146,7 @@
                         <a href="{{ route('about') }}" class="hover:text-[var(--color-primary)] transition-colors">Over ons</a>
                         <a href="{{ route('legal.privacy') }}" class="hover:text-[var(--color-primary)] transition-colors">Privacybeleid</a>
                         <a href="{{ route('legal.terms') }}" class="hover:text-[var(--color-primary)] transition-colors">Gebruiksvoorwaarden</a>
+                        <a href="{{ route('legal.copyright') }}" class="hover:text-[var(--color-primary)] transition-colors">Auteursrecht</a>
                     </div>
                 </div>
             </div>
