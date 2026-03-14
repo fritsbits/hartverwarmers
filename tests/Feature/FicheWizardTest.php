@@ -178,6 +178,7 @@ class FicheWizardTest extends TestCase
             ->set('uploadedFiles', [['id' => $file->id, 'name' => $file->original_filename, 'size' => $file->size_bytes, 'type' => 'PDF']])
             ->set('previewFileId', $file->id)
             ->set('processingStep', 'extracting')
+            ->set('disclaimerAccepted', true)
             ->call('submitStep1');
 
         $component->assertSet('currentStep', 2);
@@ -707,6 +708,7 @@ class FicheWizardTest extends TestCase
             ->set('previewFileId', $file->id)
             ->set('processingStep', 'failed')
             ->set('processingComplete', true)
+            ->set('disclaimerAccepted', true)
             ->call('submitStep1');
 
         $component->assertSet('currentStep', 2);
