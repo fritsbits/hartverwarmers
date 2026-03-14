@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserInteraction;
 use App\Services\FicheInteractionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class UserInteractionTest extends TestCase
@@ -184,5 +185,59 @@ class UserInteractionTest extends TestCase
         $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $this->assertDatabaseCount('user_interactions', 0);
+    }
+
+    public function test_downloading_fiche_creates_download_interaction(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('files/test-file.pdf', 'test content');
+
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+        \App\Models\File::factory()->create(['fiche_id' => $fiche->id, 'path' => 'files/test-file.pdf']);
+
+        $this->actingAs($user)->get(route('fiches.download', [$initiative, $fiche]));
+
+        $this->assertDatabaseHas('user_interactions', [
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'download',
+        ]);
+    }
+
+    public function test_downloading_fiche_also_increments_global_download_count(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('files/test-file.pdf', 'test content');
+
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'download_count' => 0]);
+        \App\Models\File::factory()->create(['fiche_id' => $fiche->id, 'path' => 'files/test-file.pdf']);
+
+        $this->actingAs($user)->get(route('fiches.download', [$initiative, $fiche]));
+
+        $this->assertEquals(1, $fiche->fresh()->download_count);
+    }
+
+    public function test_guest_downloading_fiche_does_not_create_interaction(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('files/test-file.pdf', 'test content');
+
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+        \App\Models\File::factory()->create(['fiche_id' => $fiche->id, 'path' => 'files/test-file.pdf']);
+
+        $response = $this->get(route('fiches.download', [$initiative, $fiche]));
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('user_interactions', [
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'download',
+        ]);
     }
 }
