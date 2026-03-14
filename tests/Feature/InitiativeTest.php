@@ -28,27 +28,17 @@ class InitiativeTest extends TestCase
         $response->assertViewHas('initiatives', fn ($initiatives) => $initiatives instanceof Collection);
     }
 
-    public function test_initiatives_index_provides_discover_order(): void
+    public function test_initiatives_index_passes_random_order(): void
     {
-        // Rich initiative (10+ fiches)
-        $rich = Initiative::factory()->published()->create(['title' => 'Bingo']);
-        Fiche::factory()->published()->count(12)->create(['initiative_id' => $rich->id]);
-
-        // Growing initiative (3-9 fiches)
-        $growing = Initiative::factory()->published()->create(['title' => 'Koken']);
-        Fiche::factory()->published()->count(5)->create(['initiative_id' => $growing->id]);
-
-        // Needs-love initiative (0-2 fiches)
-        $needsLove = Initiative::factory()->published()->create(['title' => 'Yoga']);
-        Fiche::factory()->published()->count(1)->create(['initiative_id' => $needsLove->id]);
+        Initiative::factory()->published()->count(5)->create();
 
         $response = $this->get(route('initiatives.index'));
 
         $response->assertStatus(200);
-        $discoverOrder = $response->viewData('discoverOrder');
-        $this->assertIsArray($discoverOrder);
-        // Rich initiative should come first in discover order
-        $this->assertEquals($rich->id, $discoverOrder[0]);
+        $response->assertViewHas('randomOrder');
+        $randomOrder = $response->viewData('randomOrder');
+        $this->assertIsArray($randomOrder);
+        $this->assertCount(5, $randomOrder);
     }
 
     public function test_initiatives_index_passes_goal_data(): void
