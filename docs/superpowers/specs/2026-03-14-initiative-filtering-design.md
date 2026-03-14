@@ -38,10 +38,10 @@ Client-side filtering/sorting with Alpine.js (consistent with existing codebase 
 
 #### Add sort pills with icons and tooltips
 Sort options (in this order):
-1. **Nieuwste** (default) — sorted by `created_at` descending. Icon: `flux:icon.clock`. Tooltip: "Nieuwste fiches eerst"
-2. **Populair** — sorted by `kudos_count` descending (denormalized column on `fiches` table, always available — no `withCount` needed). Icon: `flux:icon.heart`. Tooltip: "Fiches met de meeste kudos"
-3. **Willekeurig** — shuffled order, re-shuffled on each page load. Icon: `flux:icon.arrows-right-left`. Tooltip: "Willekeurige volgorde — verras jezelf!"
-4. **A–Z** — alphabetical by title. Icon: `flux:icon.bars-3-bottom-left`. Tooltip: "Alfabetische volgorde"
+1. **Nieuwste** (default) — sorted by `created_at` descending. Icon: `<flux:icon name="clock" />`. Tooltip: "Nieuwste fiches eerst"
+2. **Populair** — sorted by `kudos_count` descending (denormalized column on `fiches` table, always available — no `withCount` needed). Icon: `<flux:icon name="heart" />`. Tooltip: "Fiches met de meeste kudos"
+3. **Willekeurig** — shuffled order, re-shuffled on each page load. Icon: `<flux:icon name="arrows-right-left" />`. Tooltip: "Willekeurige volgorde — verras jezelf!"
+4. **A–Z** — alphabetical by title. Icon: `<flux:icon name="bars-3-bottom-left" />`. Tooltip: "Alfabetische volgorde"
 
 Default is "Nieuwste" because on an initiative page, users want to see what's new — what colleagues recently contributed. On the index page, A–Z is the default because users are browsing a known catalogue of initiative names.
 
@@ -62,10 +62,10 @@ Synced to URL param: `?sort=newest` (default, omitted from URL), `?sort=popular`
 #### Replace sort options
 Old: Ontdek | Meest bijdragen | A–Z
 New (in this order):
-1. **A–Z** (default) — alphabetical by title. Icon: `flux:icon.bars-3-bottom-left`. Tooltip: "Alle initiatieven op alfabetische volgorde"
-2. **Veel fiches** — initiatives with 10+ fiches, sorted by fiche count descending. Icon: `flux:icon.square-3-stack-3d`. Tooltip: "Initiatieven met de meeste uitwerkingen"
-3. **Hulp nodig** — initiatives with <3 fiches, sorted by fiche count ascending. Icon: `flux:icon.hand-raised`. Tooltip: "Initiatieven die nog uitwerkingen zoeken"
-4. **Willekeurig** — shuffled order (all initiatives visible). Icon: `flux:icon.arrows-right-left`. Tooltip: "Willekeurige volgorde — verras jezelf!"
+1. **A–Z** (default) — alphabetical by title. Icon: `<flux:icon name="bars-3-bottom-left" />`. Tooltip: "Alle initiatieven op alfabetische volgorde"
+2. **Veel fiches** — initiatives with 10+ fiches, sorted by fiche count descending. Icon: `<flux:icon name="square-3-stack-3d" />`. Tooltip: "Initiatieven met de meeste uitwerkingen"
+3. **Hulp nodig** — initiatives with <3 fiches, sorted by fiche count ascending. Icon: `<flux:icon name="hand-raised" />`. Tooltip: "Initiatieven die nog uitwerkingen zoeken"
+4. **Willekeurig** — shuffled order (all initiatives visible). Icon: `<flux:icon name="arrows-right-left" />`. Tooltip: "Willekeurige volgorde — verras jezelf!"
 
 Note: "Veel fiches" and "Hulp nodig" are **filters** as well as sorts — they hide initiatives that don't match the threshold. "A–Z" and "Willekeurig" show all initiatives. This intentionally replaces the old "Meest bijdragen" unfiltered popularity sort — the user specifically wanted these two curated views instead of a generic popularity ranking.
 
