@@ -26,6 +26,10 @@
                                 <flux:icon name="bookmark" variant="mini" class="size-4" />
                                 Favorieten
                             </a>
+                            <a href="{{ route('profile.downloads') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('profile.downloads') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                <flux:icon name="arrow-down-tray" variant="mini" class="size-4" />
+                                Downloads
+                            </a>
                             <a href="{{ route('profile.fiches') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('profile.fiches') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
                                 <flux:icon name="document-text" variant="mini" class="size-4" />
                                 Fiches
@@ -73,6 +77,7 @@
                                 <flux:navlist.item href="{{ route('profile.show') }}" icon="user" :current="request()->routeIs('profile.show')">Persoonlijke info</flux:navlist.item>
                                 <flux:navlist.item href="{{ route('profile.security') }}" icon="lock-closed" :current="request()->routeIs('profile.security')">Beveiliging</flux:navlist.item>
                                 <flux:navlist.item href="{{ route('profile.bookmarks') }}" icon="bookmark" :current="request()->routeIs('profile.bookmarks')">Favorieten</flux:navlist.item>
+                                <flux:navlist.item href="{{ route('profile.downloads') }}" icon="arrow-down-tray" :current="request()->routeIs('profile.downloads')">Downloads</flux:navlist.item>
                                 <flux:navlist.item href="{{ route('profile.fiches') }}" icon="document-text" :current="request()->routeIs('profile.fiches')" :badge="$newFicheCommentsCount > 0 ? $newFicheCommentsCount : null">Fiches</flux:navlist.item>
                             </flux:navlist.group>
 
