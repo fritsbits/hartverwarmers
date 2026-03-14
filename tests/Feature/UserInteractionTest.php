@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Fiche;
 use App\Models\User;
 use App\Models\UserInteraction;
+use App\Services\FicheInteractionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -92,5 +93,57 @@ class UserInteractionTest extends TestCase
         $user->forceDelete();
 
         $this->assertDatabaseCount('user_interactions', 0);
+    }
+
+    public function test_service_returns_interaction_types_for_user(): void
+    {
+        $user = User::factory()->create();
+        $fiche1 = Fiche::factory()->published()->create();
+        $fiche2 = Fiche::factory()->published()->create();
+
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche1->id,
+            'type' => 'view',
+        ]);
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche1->id,
+            'type' => 'download',
+        ]);
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche2->id,
+            'type' => 'view',
+        ]);
+
+        $service = new FicheInteractionService;
+        $result = $service->forUser($user, [$fiche1->id, $fiche2->id]);
+
+        $this->assertCount(2, $result);
+        $this->assertContains('view', $result[$fiche1->id]);
+        $this->assertContains('download', $result[$fiche1->id]);
+        $this->assertContains('view', $result[$fiche2->id]);
+        $this->assertNotContains('download', $result[$fiche2->id]);
+    }
+
+    public function test_service_returns_empty_array_for_guest(): void
+    {
+        $service = new FicheInteractionService;
+        $result = $service->forUser(null, [1, 2, 3]);
+
+        $this->assertEmpty($result);
+    }
+
+    public function test_service_returns_empty_array_for_empty_fiche_ids(): void
+    {
+        $user = User::factory()->create();
+        $service = new FicheInteractionService;
+        $result = $service->forUser($user, []);
+
+        $this->assertEmpty($result);
     }
 }
