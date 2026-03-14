@@ -6,6 +6,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Comment;
 use App\Models\Fiche;
 use App\Services\AvatarThumbnailService;
+use App\Services\FicheInteractionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -113,7 +114,10 @@ class ProfileController extends Controller
 
         $user->update(['fiches_comments_seen_at' => now()]);
 
-        return view('profile.fiches', compact('fiches', 'stats', 'newCommentsCount'));
+        $ficheInteractions = app(FicheInteractionService::class)
+            ->forUser($user, $fiches->pluck('id'));
+
+        return view('profile.fiches', compact('fiches', 'stats', 'newCommentsCount', 'ficheInteractions'));
     }
 
     public function bookmarks(Request $request): View
@@ -126,8 +130,12 @@ class ProfileController extends Controller
             ->pluck('likeable')
             ->filter();
 
+        $ficheInteractions = app(FicheInteractionService::class)
+            ->forUser($request->user(), $fiches->pluck('id'));
+
         return view('profile.bookmarks', [
             'fiches' => $fiches,
+            'ficheInteractions' => $ficheInteractions,
         ]);
     }
 }
