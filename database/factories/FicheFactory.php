@@ -52,4 +52,11 @@ class FicheFactory extends Factory
             'featured_month' => $month ?? now()->format('Y-m'),
         ]);
     }
+
+    public function withIcon(string $icon = 'file-text'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'icon' => $icon,
+        ]);
+    }
 }

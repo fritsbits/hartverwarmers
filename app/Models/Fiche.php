@@ -30,6 +30,7 @@ class Fiche extends Model
         'download_count',
         'kudos_count',
         'featured_month',
+        'icon',
     ];
 
     protected function casts(): array
