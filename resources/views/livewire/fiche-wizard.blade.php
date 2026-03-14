@@ -338,7 +338,7 @@
                                     <label class="flex items-start gap-3 cursor-pointer mt-4">
                                         <flux:checkbox wire:model.live="disclaimerAccepted" />
                                         <span class="text-sm text-[var(--color-text-secondary)] leading-snug">
-                                            Ik mag deze bestanden delen — ze zijn mijn eigen werk of ik heb toestemming van de maker.
+                                            Deze bestanden zijn mijn eigen werk en bevatten geen auteursrechtelijk beschermd materiaal van anderen (zoals foto's, illustraties of teksten waarvoor ik geen toestemming heb).
                                         </span>
                                     </label>
                                     @error('disclaimerAccepted')
@@ -677,9 +677,19 @@
                         @endif
                     </div>
                     <div class="flex items-center gap-4">
-                        <flux:button variant="primary" wire:click="submitStep1" icon-trailing="arrow-right">
-                            {{ empty($uploadedFiles) ? 'Verder zonder bestand' : 'Volgende' }}
-                        </flux:button>
+                        @if(empty($uploadedFiles))
+                            <flux:button variant="primary" wire:click="submitStep1" icon-trailing="arrow-right">
+                                Verder zonder bestand
+                            </flux:button>
+                        @elseif($disclaimerAccepted)
+                            <flux:button variant="primary" wire:click="submitStep1" icon-trailing="arrow-right">
+                                Volgende
+                            </flux:button>
+                        @else
+                            <flux:button variant="primary" icon-trailing="arrow-right" disabled>
+                                Volgende
+                            </flux:button>
+                        @endif
                     </div>
                 </div>
 
