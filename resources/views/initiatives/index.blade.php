@@ -1,15 +1,23 @@
 <x-layout title="Initiatieven" description="Blader door alle initiatieven op Hartverwarmers. Van muziek tot beweging, van natuur tot koken — ontdek activiteiten voor jouw woonzorgcentrum." :full-width="true">
     <div x-data="{
-        search: '',
-        selectedGoals: [],
-        sortMode: 'discover',
-        discoverOrder: @js($discoverOrder),
+        search: new URLSearchParams(window.location.search).get('q') || '',
+        selectedGoals: (new URLSearchParams(window.location.search).get('goals') || '').split(',').filter(Boolean),
+        sortMode: new URLSearchParams(window.location.search).get('sort') || 'az',
+        randomOrder: @js($randomOrder),
         initiatives: @js($initiatives->map(fn ($i) => [
             'id' => $i->id,
             'title' => $i->title,
             'fichesCount' => $i->fiches_count,
             'goalSlugs' => $i->tags->pluck('slug')->values(),
         ])),
+        updateUrl() {
+            const params = new URLSearchParams();
+            if (this.sortMode && this.sortMode !== 'az') params.set('sort', this.sortMode);
+            if (this.search) params.set('q', this.search);
+            if (this.selectedGoals.length > 0) params.set('goals', this.selectedGoals.join(','));
+            const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+            history.replaceState(null, '', url);
+        },
         toggleGoal(tagSlug) {
             const idx = this.selectedGoals.indexOf(tagSlug);
             if (idx === -1) {
@@ -24,12 +32,15 @@
         clearAll() {
             this.selectedGoals = [];
             this.search = '';
+            this.sortMode = 'az';
         },
         isVisible(id) {
             const item = this.initiatives.find(i => i.id === id);
             if (!item) return false;
             if (this.search && !item.title.toLowerCase().includes(this.search.toLowerCase())) return false;
             if (this.selectedGoals.length > 0 && !this.selectedGoals.every(g => item.goalSlugs.includes(g))) return false;
+            if (this.sortMode === 'rich' && item.fichesCount < 10) return false;
+            if (this.sortMode === 'needs-love' && item.fichesCount >= 3) return false;
             return true;
         },
         get visibleCount() {
@@ -39,18 +50,20 @@
             return this.initiatives.length;
         },
         get sortedIds() {
-            if (this.sortMode === 'discover') {
-                return this.discoverOrder;
+            if (this.sortMode === 'random') {
+                return this.randomOrder;
             }
             const sorted = [...this.initiatives];
-            if (this.sortMode === 'popular') {
+            if (this.sortMode === 'rich') {
                 sorted.sort((a, b) => b.fichesCount - a.fichesCount);
+            } else if (this.sortMode === 'needs-love') {
+                sorted.sort((a, b) => a.fichesCount - b.fichesCount);
             } else {
                 sorted.sort((a, b) => a.title.localeCompare(b.title, 'nl'));
             }
             return sorted.map(i => i.id);
         }
-    }">
+    }" x-init="$watch('search', () => updateUrl()); $watch('sortMode', () => updateUrl()); $watch('selectedGoals', () => updateUrl())">
         {{-- Zone 1: Hero (cream bg) --}}
         <section class="bg-[var(--color-bg-cream)]">
             <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
@@ -201,25 +214,47 @@
                         <flux:input icon="magnifying-glass" placeholder="Zoek op naam..." x-model.debounce.200ms="search" class="sm:max-w-xs" />
 
                         {{-- Sort pills --}}
-                        <div class="inline-flex rounded-full bg-[var(--color-bg-subtle)] p-1 sm:ml-auto">
+                        <div class="inline-flex rounded-full bg-[var(--color-bg-subtle)] p-1 sm:ml-auto flex-wrap">
                             <button
-                                @click="sortMode = 'discover'"
-                                :class="sortMode === 'discover' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
-                                class="px-4 py-1.5 rounded-full text-sm font-semibold transition-all"
+                                @click="sortMode = 'az'"
+                                :class="sortMode === 'az' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
                                 type="button"
-                            >Ontdek</button>
+                                title="Alle initiatieven op alfabetische volgorde"
+                            >
+                                <flux:icon name="bars-3-bottom-left" class="size-4" />
+                                A&ndash;Z
+                            </button>
                             <button
-                                @click="sortMode = 'popular'"
-                                :class="sortMode === 'popular' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
-                                class="px-4 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap"
+                                @click="sortMode = 'rich'"
+                                :class="sortMode === 'rich' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap"
                                 type="button"
-                            ><span class="sm:hidden">Populair</span><span class="hidden sm:inline">Meest bijdragen</span></button>
+                                title="Initiatieven met de meeste uitwerkingen"
+                            >
+                                <flux:icon name="square-3-stack-3d" class="size-4" />
+                                Veel fiches
+                            </button>
                             <button
-                                @click="sortMode = 'alpha'"
-                                :class="sortMode === 'alpha' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
-                                class="px-4 py-1.5 rounded-full text-sm font-semibold transition-all"
+                                @click="sortMode = 'needs-love'"
+                                :class="sortMode === 'needs-love' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all whitespace-nowrap"
                                 type="button"
-                            >A&ndash;Z</button>
+                                title="Initiatieven die nog uitwerkingen zoeken"
+                            >
+                                <flux:icon name="hand-raised" class="size-4" />
+                                Hulp nodig
+                            </button>
+                            <button
+                                @click="sortMode = 'random'"
+                                :class="sortMode === 'random' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
+                                type="button"
+                                title="Willekeurige volgorde — verras jezelf!"
+                            >
+                                <flux:icon name="arrows-right-left" class="size-4" />
+                                Willekeurig
+                            </button>
                         </div>
                     </div>
 
@@ -247,7 +282,7 @@
 
                 {{-- Initiatives grid --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @php $eagerIds = array_slice($discoverOrder, 0, 6); @endphp
+                    @php $eagerIds = $initiatives->take(6)->pluck('id')->all(); @endphp
                     @foreach($initiatives as $initiative)
                         <div
                             x-show="isVisible({{ $initiative->id }})"
@@ -260,7 +295,7 @@
 
                     {{-- "Jouw ervaring telt" callout (single-column card slot) --}}
                     @if(count($needsLoveInitiatives) > 0)
-                        <div :style="'order: 9'">
+                        <div :style="'order: 999'">
                             <div class="relative rounded-[var(--radius-sm)] overflow-hidden flex flex-col justify-between p-6 aspect-[16/10]" style="background-color: var(--color-primary);">
                                 {{-- Decorative large heart outline --}}
                                 <svg class="absolute -bottom-6 -right-6 w-40 h-40 opacity-10" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
