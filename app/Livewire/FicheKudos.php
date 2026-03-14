@@ -20,6 +20,8 @@ class FicheKudos extends Component
 
     public bool $showBookmarkAuth = false;
 
+    public bool $justBookmarked = false;
+
     #[Computed]
     public function isOwnFiche(): bool
     {
@@ -119,6 +121,7 @@ class FicheKudos extends Component
 
         if ($bookmark) {
             $bookmark->delete();
+            $this->justBookmarked = false;
         } else {
             Like::create([
                 'user_id' => auth()->id(),
@@ -126,6 +129,7 @@ class FicheKudos extends Component
                 'likeable_id' => $this->fiche->id,
                 'type' => 'bookmark',
             ]);
+            $this->justBookmarked = true;
         }
     }
 

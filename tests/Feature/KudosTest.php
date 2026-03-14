@@ -497,6 +497,54 @@ class KudosTest extends TestCase
         ]);
     }
 
+    public function test_favorites_link_appears_after_bookmarking(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Livewire::actingAs($user)
+            ->test(FicheKudos::class, ['fiche' => $fiche])
+            ->assertDontSee('Je favorieten')
+            ->call('toggleBookmark')
+            ->assertSet('justBookmarked', true)
+            ->assertSee('Je favorieten');
+    }
+
+    public function test_favorites_link_disappears_after_unbookmarking(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Livewire::actingAs($user)
+            ->test(FicheKudos::class, ['fiche' => $fiche])
+            ->call('toggleBookmark')
+            ->assertSet('justBookmarked', true)
+            ->call('toggleBookmark')
+            ->assertSet('justBookmarked', false)
+            ->assertDontSee('Je favorieten');
+    }
+
+    public function test_favorites_link_not_shown_on_initial_load_when_already_bookmarked(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Like::create([
+            'user_id' => $user->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'bookmark',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(FicheKudos::class, ['fiche' => $fiche])
+            ->assertSet('justBookmarked', false)
+            ->assertDontSee('Je favorieten');
+    }
+
     public function test_is_own_fiche_computed_property(): void
     {
         $author = User::factory()->create();
