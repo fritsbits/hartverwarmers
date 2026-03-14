@@ -1159,6 +1159,19 @@ dialog[data-modal="search"]::backdrop {
   }
 }
 
+/* Gentle nudge animation for CTA buttons becoming available */
+@keyframes nudge {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(1px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-nudge { animation: none !important; }
+}
+
 /* Details arrow rotation */
 details[open] .details-arrow {
   transform: rotate(90deg);

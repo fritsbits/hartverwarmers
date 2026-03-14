@@ -682,7 +682,7 @@
                                 Verder zonder bestand
                             </flux:button>
                         @elseif($disclaimerAccepted)
-                            <flux:button variant="primary" wire:click="submitStep1" icon-trailing="arrow-right">
+                            <flux:button variant="primary" wire:click="submitStep1" icon-trailing="arrow-right" class="animate-nudge" style="animation: nudge 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.15s both;">
                                 Volgende
                             </flux:button>
                         @else
