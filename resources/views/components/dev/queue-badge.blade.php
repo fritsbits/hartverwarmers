@@ -15,7 +15,7 @@
                     id="queue-badge"
                     style="
                         position: fixed;
-                        bottom: 12px;
+                        bottom: 50px;
                         left: 12px;
                         display: flex;
                         align-items: center;

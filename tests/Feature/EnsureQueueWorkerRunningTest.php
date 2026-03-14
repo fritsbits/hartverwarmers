@@ -107,12 +107,15 @@ class EnsureQueueWorkerRunningTest extends TestCase
         $user = User::factory()->admin()->create();
         Cache::forget('queue:heartbeat');
         Cache::forget('queue:autostart-attempted');
+        // Set a dead PID so the middleware can't find a live worker
+        Cache::put('queue:worker-pid', 99999, 3700);
 
-        // First request sets cooldown
+        // First request: no heartbeat, no live worker, no cooldown → starting + sets cooldown
         $this->actingAs($user)->get('/');
         $this->assertTrue(Cache::has('queue:autostart-attempted'));
 
-        // Second request sees cooldown, shows failed
+        // Second request: still no heartbeat, worker still dead, cooldown active → failed
+        Cache::put('queue:worker-pid', 99999, 3700);
         $response = $this->actingAs($user)->get('/');
         $response->assertSee('Queue down');
     }

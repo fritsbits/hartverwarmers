@@ -52,6 +52,15 @@ class EnsureQueueWorkerRunning
             return 'healthy';
         }
 
+        // Heartbeat is stale — but is the worker process still alive?
+        $pid = Cache::get('queue:worker-pid');
+        if ($pid && $this->isProcessAlive($pid)) {
+            // Worker is alive, just refresh the heartbeat probe
+            QueueHealthCheck::dispatch();
+
+            return 'healthy';
+        }
+
         if (Cache::has('queue:autostart-attempted')) {
             return 'failed';
         }
