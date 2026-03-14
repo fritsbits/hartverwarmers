@@ -135,51 +135,63 @@
 
                         {{-- Toolbar: Search + Sort --}}
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
-                            <flux:input icon="magnifying-glass" placeholder="Zoek op titel of beschrijving..." x-model.debounce.200ms="search" class="sm:max-w-xs" />
+                            <flux:input icon="magnifying-glass" placeholder="Zoek..." x-model.debounce.200ms="search" class="sm:max-w-48" />
 
                             <div class="inline-flex rounded-full bg-[var(--color-bg-subtle)] p-1 sm:ml-auto flex-wrap">
-                                <button
-                                    @click="sortMode = 'newest'"
-                                    :class="sortMode === 'newest' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
-                                    type="button"
-                                    title="Nieuwste fiches eerst"
-                                >
-                                    <flux:icon name="clock" class="size-4" />
-                                    Nieuwste
-                                </button>
-                                <button
-                                    @click="sortMode = 'popular'"
-                                    :class="sortMode === 'popular' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
-                                    type="button"
-                                    title="Fiches met de meeste kudos"
-                                >
-                                    <flux:icon name="heart" class="size-4" />
-                                    Populair
-                                </button>
-                                <button
-                                    @click="sortMode = 'random'"
-                                    :class="sortMode === 'random' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
-                                    type="button"
-                                    title="Willekeurige volgorde — verras jezelf!"
-                                >
-                                    <flux:icon name="arrows-right-left" class="size-4" />
-                                    Willekeurig
-                                </button>
-                                <button
-                                    @click="sortMode = 'az'"
-                                    :class="sortMode === 'az' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
-                                    type="button"
-                                    title="Alfabetische volgorde"
-                                >
-                                    <flux:icon name="bars-3-bottom-left" class="size-4" />
-                                    A&ndash;Z
-                                </button>
+                                <flux:tooltip content="Nieuwste fiches eerst" position="bottom">
+                                    <button
+                                        @click="sortMode = 'newest'"
+                                        :class="sortMode === 'newest' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all cursor-pointer"
+                                        type="button"
+                                    >
+                                        <flux:icon name="clock" class="size-4" />
+                                        Nieuwste
+                                    </button>
+                                </flux:tooltip>
+                                <flux:tooltip content="Fiches met de meeste kudos" position="bottom">
+                                    <button
+                                        @click="sortMode = 'popular'"
+                                        :class="sortMode === 'popular' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all cursor-pointer"
+                                        type="button"
+                                    >
+                                        <flux:icon name="heart" class="size-4" />
+                                        Populair
+                                    </button>
+                                </flux:tooltip>
+                                <flux:tooltip content="Willekeurige volgorde — verras jezelf!" position="bottom">
+                                    <button
+                                        @click="sortMode = 'random'"
+                                        :class="sortMode === 'random' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all cursor-pointer"
+                                        type="button"
+                                    >
+                                        <flux:icon name="arrows-right-left" class="size-4" />
+                                        Willekeurig
+                                    </button>
+                                </flux:tooltip>
+                                <flux:tooltip content="Alfabetische volgorde" position="bottom">
+                                    <button
+                                        @click="sortMode = 'az'"
+                                        :class="sortMode === 'az' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all cursor-pointer"
+                                        type="button"
+                                    >
+                                        <flux:icon name="bars-3-bottom-left" class="size-4" />
+                                        A&ndash;Z
+                                    </button>
+                                </flux:tooltip>
                             </div>
                         </div>
+
+                        {{-- Active sort clarification --}}
+                        <p class="text-sm text-[var(--color-text-secondary)] mb-4" x-cloak>
+                            <span x-show="sortMode === 'newest'">Nieuwste fiches eerst</span>
+                            <span x-show="sortMode === 'popular'">Fiches met de meeste kudos</span>
+                            <span x-show="sortMode === 'random'">Willekeurige volgorde</span>
+                            <span x-show="sortMode === 'az'">Alfabetische volgorde</span>
+                        </p>
 
                         {{-- Fiche list (flex container required for CSS order to work) --}}
                         <div class="flex flex-col gap-2">
