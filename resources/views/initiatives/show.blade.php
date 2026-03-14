@@ -207,13 +207,9 @@
                                     :style="'order: ' + sortedIds.indexOf({{ $fiche->id }})"
                                     x-cloak
                                 >
-                                    <span class="fiche-list-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                        </svg>
-                                    </span>
+                                    <x-fiche-icon :fiche="$fiche" class="fiche-list-icon" />
                                     <div class="flex flex-col gap-0.5 min-w-0 flex-1">
-                                        <span class="font-body font-semibold text-base text-[var(--color-text-primary)] truncate">{{ $fiche->title }}</span>
+                                        <span class="font-body font-semibold text-lg text-[var(--color-text-primary)] truncate">{{ $fiche->title }}</span>
                                         <span class="text-xs text-[var(--color-text-secondary)]">
                                             {{ $fiche->user?->full_name }}@if($fiche->user?->organisation), {{ $fiche->user->organisation }}@endif
                                         </span>
