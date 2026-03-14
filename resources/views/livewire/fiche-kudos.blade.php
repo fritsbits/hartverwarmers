@@ -158,6 +158,13 @@
         </span>
     </button>
 
+    {{-- Link to favorites overview (only after just bookmarking) --}}
+    @if($justBookmarked)
+        <a href="{{ route('profile.bookmarks') }}" class="text-sm font-medium transition-colors hover:underline" style="color: var(--color-primary)" wire:transition>
+            Je favorieten &rarr;
+        </a>
+    @endif
+
     {{-- Inline auth gate for bookmark (guests) --}}
     @if($showBookmarkAuth)
         <div class="w-full mt-2 bg-white rounded-xl border border-[var(--color-border-light)] p-4 shadow-sm"
