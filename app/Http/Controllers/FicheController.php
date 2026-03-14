@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Fiche;
 use App\Models\Initiative;
 use App\Models\UserInteraction;
+use App\Services\FicheInteractionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -57,10 +58,14 @@ class FicheController extends Controller
             ]);
         }
 
+        $ficheInteractions = app(FicheInteractionService::class)
+            ->forUser(auth()->user(), $otherFiches->pluck('id'));
+
         return view('fiches.show', [
             'initiative' => $initiative,
             'fiche' => $fiche,
             'otherFiches' => $otherFiches,
+            'ficheInteractions' => $ficheInteractions,
         ]);
     }
 

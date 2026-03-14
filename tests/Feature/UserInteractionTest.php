@@ -255,6 +255,28 @@ class UserInteractionTest extends TestCase
         $response->assertViewHas('ficheInteractions', []);
     }
 
+    public function test_fiche_show_passes_interaction_data_for_logged_in_user(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+        $otherFiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $otherFiche->id,
+            'type' => 'view',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('ficheInteractions');
+        $interactions = $response->viewData('ficheInteractions');
+        $this->assertArrayHasKey($otherFiche->id, $interactions);
+    }
+
     public function test_guest_downloading_fiche_does_not_create_interaction(): void
     {
         Storage::fake('public');
