@@ -580,4 +580,14 @@ class InitiativeTest extends TestCase
 
         $this->assertNull($initiative->thumbnailUrl());
     }
+
+    public function test_initiative_show_handles_invalid_url_params(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        $response = $this->get(route('initiatives.show', $initiative).'?sort=invalid&q=test');
+
+        $response->assertStatus(200);
+    }
 }
