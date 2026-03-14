@@ -5,7 +5,7 @@
             <span class="section-label">Juridisch</span>
             <h1 class="mt-1">Gebruiksvoorwaarden</h1>
             <p class="text-lg text-[var(--color-text-secondary)] mt-4 font-light">De regels voor het gebruik van het Hartverwarmers-platform.</p>
-            <p class="text-meta text-sm mt-4">Laatst bijgewerkt: 7 maart 2026</p>
+            <p class="text-meta text-sm mt-4">Laatst bijgewerkt: 14 maart 2026</p>
         </div>
     </section>
 
@@ -54,8 +54,16 @@
                     <li>Verleen je het platform een niet-exclusieve, kosteloze licentie om je bijdrage te tonen, op te slaan en beschikbaar te maken voor andere gebruikers.</li>
                     <li>Verleen je andere gebruikers het recht om je bijdrage te gebruiken, aan te passen en toe te passen binnen hun eigen woonzorgcentrum of zorginstelling, <strong class="text-[var(--color-text-primary)]">uitsluitend voor niet-commerciele doeleinden</strong>.</li>
                     <li>Bevestig je dat de bijdrage je eigen werk is, of dat je toestemming hebt om het te delen.</li>
+                    <li><strong class="text-[var(--color-text-primary)]">Garandeert</strong> je dat je bijdrage geen inbreuk maakt op het auteursrecht, merkrecht of enig ander intellectueel eigendomsrecht van derden.</li>
                 </ul>
                 <p class="text-[var(--color-text-secondary)] mt-3">Gebruik van bijdragen buiten de context van de ouderenzorg of voor commerciele doeleinden is niet toegestaan zonder schriftelijke toestemming van de auteur.</p>
+            </div>
+
+            {{-- 4b. Vrijwaring --}}
+            <div>
+                <h2 class="text-xl mb-3">4b. Vrijwaring bij auteursrechtclaims</h2>
+                <p class="text-[var(--color-text-secondary)] mb-3">Als gebruiker <strong class="text-[var(--color-text-primary)]">vrijwaart</strong> je de beheerder tegen alle claims, kosten en schade die voortvloeien uit een bewering dat jouw bijdrage inbreuk maakt op de intellectuele eigendomsrechten van een derde.</p>
+                <p class="text-[var(--color-text-secondary)]">Dit betekent dat als een derde partij een claim indient met betrekking tot content die jij hebt geupload, jij verantwoordelijk bent voor de verdediging en eventuele kosten, en niet het platform.</p>
             </div>
 
             {{-- 5. Verwijdering --}}
@@ -91,13 +99,15 @@
 
             {{-- 8. Moderatie --}}
             <div>
-                <h2 class="text-xl mb-3">8. Moderatie</h2>
+                <h2 class="text-xl mb-3">8. Moderatie en auteursrechtbeleid</h2>
                 <p class="text-[var(--color-text-secondary)] mb-3">De beheerder behoudt het recht om:</p>
                 <ul class="list-disc list-inside space-y-1 text-[var(--color-text-secondary)]">
+                    <li>Bijdragen onmiddellijk te verwijderen bij een gegronde melding van auteursrechtinbreuk, conform onze <a href="{{ route('legal.copyright') }}" class="text-[var(--color-primary)] hover:underline">notice-and-takedown procedure</a>.</li>
                     <li>Bijdragen te verwijderen of aan te passen die in strijd zijn met deze voorwaarden.</li>
-                    <li>Accounts te waarschuwen, op te schorten of te verwijderen bij herhaalde of ernstige overtredingen.</li>
+                    <li>Accounts te waarschuwen, op te schorten of te verwijderen bij herhaaldelijke of ernstige overtredingen.</li>
                 </ul>
-                <p class="text-[var(--color-text-secondary)] mt-3">Gebruikers kunnen ongepaste inhoud melden via <a href="mailto:info@hartverwarmers.be" class="text-[var(--color-primary)] hover:underline">info@hartverwarmers.be</a>.</p>
+                <p class="text-[var(--color-text-secondary)] mt-3"><strong class="text-[var(--color-text-primary)]">Herhaaldelijke overtredingen:</strong> Bij herhaaldelijke auteursrechtinbreuken kan het account van de gebruiker tijdelijk of permanent worden geschorst. De beheerder bepaalt of er sprake is van een herhaaldelijke overtreding.</p>
+                <p class="text-[var(--color-text-secondary)] mt-3">Gebruikers kunnen ongepaste inhoud of vermoedelijke auteursrechtinbreuken melden via <a href="mailto:info@hartverwarmers.be" class="text-[var(--color-primary)] hover:underline">info@hartverwarmers.be</a>.</p>
             </div>
 
             {{-- 9. Aansprakelijkheid --}}
