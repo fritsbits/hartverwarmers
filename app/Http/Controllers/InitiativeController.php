@@ -56,27 +56,16 @@ class InitiativeController extends Controller
                 ->all();
         }
 
-        // Interleaved "Ontdek" order
-        $rich = $initiatives->filter(fn ($i) => $i->fiches_count >= 10)->sortByDesc('latest_fiche_at')->values();
-        $growing = $initiatives->filter(fn ($i) => $i->fiches_count >= 3 && $i->fiches_count < 10)->sortByDesc('latest_fiche_at')->values();
-        $needsLove = $initiatives->filter(fn ($i) => $i->fiches_count < 3)->sortByDesc('latest_fiche_at')->values();
-
-        $discoverOrder = [];
-        $maxLen = max($rich->count(), $growing->count(), $needsLove->count(), 1);
-        for ($i = 0; $i < $maxLen; $i++) {
-            if (isset($rich[$i])) {
-                $discoverOrder[] = $rich[$i]->id;
-            }
-            if (isset($growing[$i])) {
-                $discoverOrder[] = $growing[$i]->id;
-            }
-            if (isset($needsLove[$i])) {
-                $discoverOrder[] = $needsLove[$i]->id;
-            }
-        }
+        // Random order for "Willekeurig" sort
+        $randomOrder = $initiatives->pluck('id')->shuffle()->values()->all();
 
         // Needs-love initiative titles for callout
-        $needsLoveInitiatives = $needsLove->take(3)->map(fn ($i) => ['title' => $i->title, 'route' => route('initiatives.show', $i)])->values()->all();
+        $needsLoveInitiatives = $initiatives->filter(fn ($i) => $i->fiches_count < 3)
+            ->sortByDesc('latest_fiche_at')
+            ->take(3)
+            ->map(fn ($i) => ['title' => $i->title, 'route' => route('initiatives.show', $i)])
+            ->values()
+            ->all();
 
         // Recent fiches grouped by initiative for editorial section
         $recentByInitiative = $initiatives
@@ -136,7 +125,7 @@ class InitiativeController extends Controller
             'trending' => $trending,
             'trendingFiches' => $trendingFiches,
             'needsLoveInitiatives' => $needsLoveInitiatives,
-            'discoverOrder' => $discoverOrder,
+            'randomOrder' => $randomOrder,
             'recentlyActiveInitiatives' => $recentlyActiveInitiatives,
             'recentFiches' => $recentFiches,
             'recentByInitiative' => $recentByInitiative,
