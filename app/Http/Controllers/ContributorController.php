@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\FicheInteractionService;
 use Illuminate\View\View;
 
 class ContributorController extends Controller
@@ -62,6 +63,9 @@ class ContributorController extends Controller
                 });
         }
 
+        $ficheInteractions = app(FicheInteractionService::class)
+            ->forUser(auth()->user(), $user->fiches->pluck('id'));
+
         return view('contributors.show', [
             'contributor' => $user,
             'fichesByInitiative' => $fichesByInitiative,
@@ -69,6 +73,7 @@ class ContributorController extends Controller
             'initiativeColors' => $initiativeColors,
             'relatedContributors' => $relatedContributors,
             'dominantColorIndex' => $dominantColorIndex,
+            'ficheInteractions' => $ficheInteractions,
         ]);
     }
 }
