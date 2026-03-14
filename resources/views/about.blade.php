@@ -18,7 +18,7 @@
         <div class="max-w-4xl mx-auto px-6 py-16">
             <span class="section-label">De hartverwarmers</span>
             <h2 class="mt-1 mb-4">Samen maken we het verschil</h2>
-            <p class="text-lg text-[var(--color-text-secondary)] max-w-3xl" style="font-weight: var(--font-weight-light);">
+            <p class="text-[var(--color-text-secondary)] max-w-3xl" style="font-weight: var(--font-weight-light);">
                 Hartverwarmers is niet het werk van één organisatie. Vandaag delen <strong class="text-[var(--color-text-primary)]">{{ number_format($aboutStats['contributors_count']) }} hartverwarmers</strong> uit heel Vlaanderen en Nederland hun <strong class="text-[var(--color-text-primary)]">{{ number_format($aboutStats['fiches_count']) }} praktijkfiches</strong> — gratis, voor meer dan <strong class="text-[var(--color-text-primary)]">{{ number_format($aboutStats['users_count']) }}+ collega's</strong>. Activiteitenbegeleiders, animatoren en ergotherapeuten die elke dag harten verwarmen en hun beste ideeën delen met de rest van de sector.
             </p>
             <a href="{{ route('contributors.index') }}" class="cta-link mt-4 inline-block">Ontdek wie er bijdraagt</a>
@@ -41,7 +41,7 @@
 
                 {{-- Right: the people (takes 2 of 5 columns) --}}
                 <div class="lg:col-span-2">
-                    <span class="section-label text-sm !text-[var(--color-text-secondary)]" style="font-size: 12px;">De mensen erachter</span>
+                    <span class="text-sm font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">De mensen erachter</span>
 
                     <figure class="photo-polaroid mt-4 inline-block" style="transform: rotate(2deg)">
                         <img src="/img/about/frederik-vincx.webp" alt="Frederik Vincx" class="w-full aspect-[4/3] object-cover object-top">
@@ -52,7 +52,7 @@
                         <img src="/img/wonen-en-leven/maitemallentjer.jpg" alt="Maite Mallentjer" class="w-full aspect-square object-cover">
                         <figcaption><strong class="text-[var(--color-text-primary)]">Maite Mallentjer</strong><br><small>Pedagoog dagbesteding</small></figcaption>
                     </figure>
-                    <p class="text-sm text-[var(--color-text-secondary)] mt-4" style="font-weight: var(--font-weight-light);">Maite hielp Hartverwarmers mee vormgeven bij de lancering in 2020. In 2026 brengt ze haar expertise in via het <a href="{{ route('goals.index') }}" class="underline hover:text-[var(--color-primary)]">DIAMANT-model</a> — een kwaliteitskader dat ons helpt toe te werken naar betere activiteiten.</p>
+                    <p class="text-[var(--color-text-secondary)] mt-4" style="font-weight: var(--font-weight-light);">Maite hielp Hartverwarmers mee vormgeven bij de lancering in 2020. In 2026 brengt ze haar expertise in via het <a href="{{ route('goals.index') }}" class="underline hover:text-[var(--color-primary)]">DIAMANT-model</a> — een kwaliteitskader dat ons helpt toe te werken naar betere activiteiten.</p>
                 </div>
             </div>
         </div>
@@ -63,7 +63,7 @@
         <div class="max-w-4xl mx-auto px-6 pb-16">
             <figure class="photo-polaroid mx-auto" style="transform: rotate(-0.5deg); max-width: 56rem;">
                 <img src="/img/about/lancering-boek.jpg" alt="Boekvoorstelling van het Hartverwarmers boek" class="w-full">
-                <figcaption class="!text-base">Boekvoorstelling van <em>Hartverwarmers</em>, 2021 — bewoners ontdekken het boek.</figcaption>
+                <figcaption>Boekvoorstelling van <em>Hartverwarmers</em>, 2021 — bewoners ontdekken het boek.</figcaption>
             </figure>
         </div>
     </section>
@@ -76,10 +76,10 @@
                     <img src="/img/covers/hartverwarmers.jpg" alt="Hartverwarmers boekcover" class="w-24 shadow-md" style="transform: rotate(-2deg);">
                 </a>
                 <div>
-                    <p class="font-semibold">Hartverwarmers — Deugddoende activiteiten voor woonzorgcentra</p>
-                    <p class="text-sm text-[var(--color-text-secondary)]" style="font-weight: var(--font-weight-light);">Politeia, 2021</p>
-                    <p class="text-sm text-[var(--color-text-secondary)] mt-1">Bundelt een selectie van de beste activiteiten en legt het fundament van het DIAMANT-model uit.</p>
-                    <a href="https://www.standaardboekhandel.be/p/hartverwarmers-9782509037831" target="_blank" rel="noopener noreferrer" class="cta-link mt-1 inline-block text-sm">Bekijk bij Standaard Boekhandel</a>
+                    <p class="text-lg font-semibold">Hartverwarmers — Deugddoende activiteiten voor woonzorgcentra</p>
+                    <p class="text-[var(--color-text-secondary)]" style="font-weight: var(--font-weight-light);">Politeia, 2021</p>
+                    <p class="text-[var(--color-text-secondary)] mt-1">Bundelt een selectie van de beste activiteiten en legt het fundament van het DIAMANT-model uit.</p>
+                    <a href="https://www.standaardboekhandel.be/p/hartverwarmers-9782509037831" target="_blank" rel="noopener noreferrer" class="cta-link mt-1 inline-block">Bekijk bij Standaard Boekhandel</a>
                 </div>
             </div>
         </div>
@@ -109,7 +109,7 @@
                     Hartverwarmers is een vrijwillig project — de domeinnaam, server, e-maildienst en technische infrastructuur worden persoonlijk bekostigd. Wil je dit platform steunen of een samenwerking verkennen? Laat het weten. Elke bijdrage, hoe klein ook, helpt om de vaste kosten te dekken.
                 </p>
                 <div class="mt-6">
-                    <button @click="open = !open" class="btn-pill text-lg px-8 py-3" x-text="open ? 'Sluiten' : 'Neem contact op'"></button>
+                    <button @click="open = !open" class="btn-pill" x-text="open ? 'Sluiten' : 'Neem contact op'"></button>
                 </div>
                 <div x-show="open" x-collapse x-cloak class="mt-6">
                     <livewire:support-contact-form />
@@ -120,13 +120,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16 pt-10 border-t border-[var(--color-border-light)]">
                 <div>
                     <p class="font-semibold text-[var(--color-text-primary)]">Deel jouw activiteit</p>
-                    <p class="text-sm text-[var(--color-text-secondary)] mt-1" style="font-weight: var(--font-weight-light);">Heb jij een activiteit die werkt? Voeg ze toe en help een collega.</p>
-                    <a href="{{ route('fiches.create') }}" class="cta-link mt-2 inline-block text-sm">Nieuwe fiche toevoegen</a>
+                    <p class="text-[var(--color-text-secondary)] mt-1" style="font-weight: var(--font-weight-light);">Heb jij een activiteit die werkt? Voeg ze toe en help een collega.</p>
+                    <a href="{{ route('fiches.create') }}" class="cta-link mt-2 inline-block">Nieuwe fiche toevoegen</a>
                 </div>
                 <div x-data="{ copied: false, async share() { const data = { title: 'Hartverwarmers', url: window.location.origin }; try { if (navigator.share) { await navigator.share(data); } else { await navigator.clipboard.writeText(data.url); this.copied = true; setTimeout(() => this.copied = false, 2000); } } catch (e) {} } }">
                     <p class="font-semibold text-[var(--color-text-primary)]">Verspreid het woord</p>
-                    <p class="text-sm text-[var(--color-text-secondary)] mt-1" style="font-weight: var(--font-weight-light);">Ken jij iemand die dit platform zou gebruiken? Deel de link.</p>
-                    <button @click="share()" class="cta-link mt-2 inline-block text-sm text-[var(--color-primary)] cursor-pointer">
+                    <p class="text-[var(--color-text-secondary)] mt-1" style="font-weight: var(--font-weight-light);">Ken jij iemand die dit platform zou gebruiken? Deel de link.</p>
+                    <button @click="share()" class="cta-link mt-2 inline-block text-[var(--color-primary)] cursor-pointer">
                         <span x-show="!copied">Deel Hartverwarmers →</span>
                         <span x-show="copied" x-cloak>Link gekopieerd!</span>
                     </button>
