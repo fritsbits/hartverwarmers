@@ -665,9 +665,25 @@
                             </div>
                         @endif
                     </div>
-                    <flux:button variant="primary" wire:click="submitStep1" icon-trailing="arrow-right">
-                        {{ empty($uploadedFiles) ? 'Verder zonder bestand' : 'Volgende' }}
-                    </flux:button>
+                    <div class="flex items-center gap-4">
+                        {{-- Disclaimer checkbox (only shown when files have been uploaded) --}}
+                        @if(count($uploadedFiles) > 0)
+                            <flux:field>
+                                <label class="flex items-start gap-3 cursor-pointer">
+                                    <flux:checkbox wire:model.live="disclaimerAccepted" />
+                                    <span class="text-sm text-[var(--color-text-secondary)] leading-snug">
+                                        Ik bevestig dat ik de rechten heb om deze bestanden te delen, of dat ik toestemming heb van de rechthebbende.
+                                    </span>
+                                </label>
+                                @error('disclaimerAccepted')
+                                    <flux:error>{{ $message }}</flux:error>
+                                @enderror
+                            </flux:field>
+                        @endif
+                        <flux:button variant="primary" wire:click="submitStep1" icon-trailing="arrow-right">
+                            {{ empty($uploadedFiles) ? 'Verder zonder bestand' : 'Volgende' }}
+                        </flux:button>
+                    </div>
                 </div>
 
                 {{-- Step 2 footer --}}

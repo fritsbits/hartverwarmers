@@ -7,6 +7,7 @@ use App\Jobs\GenerateFilePreview;
 use App\Jobs\ProcessFicheUploads;
 use App\Models\Fiche;
 use App\Models\File;
+use App\Models\FileUpload;
 use App\Models\Initiative;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Cache;
@@ -53,6 +54,9 @@ class FicheWizard extends Component
         ]
     )]
     public array $uploads = [];
+
+    #[Session(key: 'fiche-wizard.disclaimerAccepted')]
+    public bool $disclaimerAccepted = false;
 
     /** @var array<int, array{id: int, name: string, size: int, type: string}> */
     #[Session(key: 'fiche-wizard.uploadedFiles')]
@@ -266,6 +270,15 @@ class FicheWizard extends Component
             ];
 
             $newFileIds[] = $file->id;
+
+            FileUpload::create([
+                'file_id' => $file->id,
+                'user_id' => auth()->id(),
+                'ip_address' => request()->ip(),
+                'file_hash' => hash_file('sha256', $upload->getRealPath()),
+                'original_filename' => $upload->getClientOriginalName(),
+                'disclaimer_accepted_at' => $this->disclaimerAccepted ? now() : null,
+            ]);
         }
 
         $this->uploads = [];
@@ -348,6 +361,20 @@ class FicheWizard extends Component
 
     public function submitStep1(): void
     {
+        if (! empty($this->uploadedFiles) && ! $this->disclaimerAccepted) {
+            $this->addError('disclaimerAccepted', 'Je moet bevestigen dat je de rechten hebt om deze bestanden te delen.');
+
+            return;
+        }
+
+        // Backfill disclaimer_accepted_at on audit records created before checkbox was ticked
+        if ($this->disclaimerAccepted && ! empty($this->uploadedFiles)) {
+            $fileIds = collect($this->uploadedFiles)->pluck('id')->toArray();
+            FileUpload::whereIn('file_id', $fileIds)
+                ->whereNull('disclaimer_accepted_at')
+                ->update(['disclaimer_accepted_at' => now()]);
+        }
+
         $this->findSimilarFiches();
         $this->currentStep = 2;
     }
@@ -802,6 +829,7 @@ class FicheWizard extends Component
         $this->selectedGoalTags = [];
         $this->uploadedFiles = [];
         $this->previewFileId = null;
+        $this->disclaimerAccepted = false;
     }
 
     private function generateUniqueSlug(string $title): string
