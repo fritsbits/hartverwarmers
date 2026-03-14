@@ -59,19 +59,6 @@
                         <p>In één week bouwden we Hartverwarmers: een plek om die initiatieven te bundelen, zodat elk woonzorgcentrum kon leren van wat elders werkte. Wat begon als een crisisinitiatief, is vijf jaar later nog steeds springlevend. Elke maand vinden zo'n 50 nieuwe activiteitenbegeleiders de weg naar het platform.</p>
                     </div>
 
-                    {{-- Book --}}
-                    <div class="flex gap-5 items-start mt-10 pt-8 border-t border-[var(--color-border-light)] max-w-2xl">
-                        <a href="https://www.standaardboekhandel.be/p/hartverwarmers-9782509037831" target="_blank" rel="noopener noreferrer" class="shrink-0">
-                            <img src="/img/covers/hartverwarmers.jpg" alt="Hartverwarmers boekcover" class="w-24 shadow-md" style="transform: rotate(-2deg);">
-                        </a>
-                        <div>
-                            <p class="text-lg font-semibold">Hartverwarmers — Deugddoende activiteiten voor woonzorgcentra</p>
-                            <p class="text-[var(--color-text-secondary)]" style="font-weight: var(--font-weight-light);">Politeia, 2021</p>
-                            <p class="text-[var(--color-text-secondary)] mt-1">Bundelt een selectie van de beste activiteiten uit de community in boekvorm.</p>
-                            <a href="https://www.standaardboekhandel.be/p/hartverwarmers-9782509037831" target="_blank" rel="noopener noreferrer" class="cta-link mt-1 inline-block">Bekijk bij Standaard Boekhandel</a>
-                        </div>
-                    </div>
-
                     {{-- Video --}}
                     <div class="mt-10 pt-8 border-t border-[var(--color-border-light)] max-w-2xl">
                         <p class="text-sm font-semibold uppercase tracking-widest text-[var(--color-text-secondary)] mb-3">Mei 2020 — twee maanden na de lancering</p>
@@ -117,7 +104,7 @@
                     <span class="section-label">Steun Hartverwarmers</span>
                     <h2 class="mt-1 mb-4">Doe een gift</h2>
                     <p class="text-[var(--color-text-secondary)] max-w-2xl" style="font-weight: var(--font-weight-light);">
-                        Hartverwarmers is een vrijwillig project — de domeinnaam, server, e-maildienst en technische infrastructuur worden persoonlijk bekostigd. Wil je dit platform steunen of een samenwerking verkennen? Laat het weten. Elke bijdrage, hoe klein ook, helpt om de vaste kosten te dekken.
+                        Hartverwarmers is een vrijwillig project. Alle kosten om het platform in de lucht te houden worden persoonlijk gedragen, en al het ontwerp en de ontwikkeling gebeurt in vrije uren — onbetaald. Wil je bijdragen of een samenwerking verkennen? Laat het weten.
                     </p>
                     <div class="mt-6" x-show="!open">
                         <button @click="open = true" class="btn-pill">Neem contact op</button>
@@ -143,7 +130,7 @@
                         </div>
                         <h3 class="text-xl">Verspreid het woord</h3>
                         <p class="text-[var(--color-text-secondary)] mt-2" style="font-weight: var(--font-weight-light);">Ken jij iemand die dit platform zou gebruiken? Deel de link.</p>
-                        <button @click="share()" class="mt-2 inline-flex items-center gap-1 font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors cursor-pointer">
+                        <button @click="share()" class="cta-link mt-2 inline-block cursor-pointer">
                             <span x-show="!copied">Deel Hartverwarmers</span>
                             <span x-show="copied" x-cloak>Link gekopieerd!</span>
                         </button>
