@@ -87,74 +87,137 @@
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
                 {{-- Left column: Fiches --}}
-                <div class="lg:col-span-2">
+                <div class="lg:col-span-2" x-data="{
+                    search: new URLSearchParams(window.location.search).get('q') || '',
+                    sortMode: new URLSearchParams(window.location.search).get('sort') || 'newest',
+                    fiches: @js($ficheAlpineData),
+                    randomOrder: @js($randomOrder),
+                    updateUrl() {
+                        const params = new URLSearchParams();
+                        if (this.sortMode && this.sortMode !== 'newest') params.set('sort', this.sortMode);
+                        if (this.search) params.set('q', this.search);
+                        const url = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+                        history.replaceState(null, '', url);
+                    },
+                    isVisible(id) {
+                        if (!this.search) return true;
+                        const item = this.fiches.find(f => f.id === id);
+                        if (!item) return false;
+                        const q = this.search.toLowerCase();
+                        return item.title.toLowerCase().includes(q) || item.description.toLowerCase().includes(q);
+                    },
+                    get sortedIds() {
+                        const visible = this.fiches.filter(f => this.isVisible(f.id));
+                        if (this.sortMode === 'random') {
+                            return this.randomOrder.filter(id => visible.some(f => f.id === id));
+                        }
+                        const sorted = [...visible];
+                        if (this.sortMode === 'popular') {
+                            sorted.sort((a, b) => b.kudosCount - a.kudosCount);
+                        } else if (this.sortMode === 'az') {
+                            sorted.sort((a, b) => a.title.localeCompare(b.title, 'nl'));
+                        } else {
+                            sorted.sort((a, b) => b.createdAt - a.createdAt);
+                        }
+                        return sorted.map(f => f.id);
+                    },
+                    get visibleCount() {
+                        return this.fiches.filter(f => this.isVisible(f.id)).length;
+                    }
+                }" x-init="$watch('search', () => updateUrl()); $watch('sortMode', () => updateUrl())">
                     <span class="section-label">Fiches</span>
 
                     @if($initiative->fiches->isEmpty())
                         <h2 class="mt-1 mb-8">Fiches door collega's</h2>
                         <p class="text-[var(--color-text-secondary)]">Nog geen fiches voor dit initiatief.</p>
                     @else
-                        @php
-                            $diamondFiche = $initiative->fiches->firstWhere('has_diamond', true);
-                            $otherFiches = $initiative->fiches->reject(fn ($e) => $diamondFiche && $e->id === $diamondFiche->id);
-                            $totalFiches = $initiative->fiches->count();
-                            $gridLimit = 6;
-                        @endphp
+                        <h2 class="mt-1 mb-8">{{ $initiative->fiches->count() }} {{ $initiative->fiches->count() === 1 ? 'uitwerking' : 'uitwerkingen' }} door collega's</h2>
 
-                        <h2 class="mt-1 mb-8">{{ $totalFiches }} {{ $totalFiches === 1 ? 'uitwerking' : 'uitwerkingen' }} door collega's</h2>
+                        {{-- Toolbar: Search + Sort --}}
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6">
+                            <flux:input icon="magnifying-glass" placeholder="Zoek op titel of beschrijving..." x-model.debounce.200ms="search" class="sm:max-w-xs" />
 
-                        {{-- Featured diamond fiche --}}
-                        @if($diamondFiche)
-                            <div class="mb-8">
-                                <x-fiche-card :fiche="$diamondFiche" :show-diamond="true" />
+                            <div class="inline-flex rounded-full bg-[var(--color-bg-subtle)] p-1 sm:ml-auto flex-wrap">
+                                <button
+                                    @click="sortMode = 'newest'"
+                                    :class="sortMode === 'newest' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
+                                    type="button"
+                                    title="Nieuwste fiches eerst"
+                                >
+                                    <flux:icon name="clock" class="size-4" />
+                                    Nieuwste
+                                </button>
+                                <button
+                                    @click="sortMode = 'popular'"
+                                    :class="sortMode === 'popular' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
+                                    type="button"
+                                    title="Fiches met de meeste kudos"
+                                >
+                                    <flux:icon name="heart" class="size-4" />
+                                    Populair
+                                </button>
+                                <button
+                                    @click="sortMode = 'random'"
+                                    :class="sortMode === 'random' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
+                                    type="button"
+                                    title="Willekeurige volgorde — verras jezelf!"
+                                >
+                                    <flux:icon name="arrows-right-left" class="size-4" />
+                                    Willekeurig
+                                </button>
+                                <button
+                                    @click="sortMode = 'az'"
+                                    :class="sortMode === 'az' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
+                                    type="button"
+                                    title="Alfabetische volgorde"
+                                >
+                                    <flux:icon name="bars-3-bottom-left" class="size-4" />
+                                    A&ndash;Z
+                                </button>
                             </div>
-                        @endif
+                        </div>
 
-                        {{-- Compact fiche list --}}
-                        @if($otherFiches->isNotEmpty())
-                            <div x-data="{ showAll: {{ $otherFiches->count() <= $gridLimit ? 'true' : 'false' }} }">
-                                <div class="space-y-2">
-                                    @foreach($otherFiches as $fiche)
-                                        <a
-                                            href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}"
-                                            class="fiche-list-item"
-                                            @if($loop->index >= $gridLimit) x-show="showAll" x-cloak @endif
-                                        >
-                                            {{-- File-text icon with tint background --}}
-                                            <span class="fiche-list-icon">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                                </svg>
-                                            </span>
-
-                                            {{-- Title + author (two-row) --}}
-                                            <div class="flex flex-col gap-0.5 min-w-0 flex-1">
-                                                <span class="font-body font-semibold text-base text-[var(--color-text-primary)] truncate">{{ $fiche->title }}</span>
-                                                <span class="text-xs text-[var(--color-text-secondary)]">
-                                                    {{ $fiche->user?->full_name }}@if($fiche->user?->organisation), {{ $fiche->user->organisation }}@endif
-                                                </span>
-                                            </div>
-
-                                            {{-- Kudos count (always outline heart) --}}
-                                            <span class="fiche-list-kudos {{ $fiche->kudos_count > 0 ? 'fiche-list-kudos-active' : '' }}">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                                                </svg>
-                                                {{ $fiche->kudos_count }}
-                                            </span>
-                                        </a>
-                                    @endforeach
-                                </div>
-
-                                @if($otherFiches->count() > $gridLimit)
-                                    <div class="mt-4 text-center" x-show="!showAll" x-cloak>
-                                        <button @click="showAll = true" class="fiche-list-expand">
-                                            + {{ $otherFiches->count() - $gridLimit }} meer
-                                        </button>
+                        {{-- Fiche list (flex container required for CSS order to work) --}}
+                        <div class="flex flex-col gap-2">
+                            @foreach($initiative->fiches as $fiche)
+                                <a
+                                    href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}"
+                                    class="fiche-list-item"
+                                    x-show="isVisible({{ $fiche->id }})"
+                                    :style="'order: ' + sortedIds.indexOf({{ $fiche->id }})"
+                                    x-cloak
+                                >
+                                    <span class="fiche-list-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                        </svg>
+                                    </span>
+                                    <div class="flex flex-col gap-0.5 min-w-0 flex-1">
+                                        <span class="font-body font-semibold text-base text-[var(--color-text-primary)] truncate">{{ $fiche->title }}</span>
+                                        <span class="text-xs text-[var(--color-text-secondary)]">
+                                            {{ $fiche->user?->full_name }}@if($fiche->user?->organisation), {{ $fiche->user->organisation }}@endif
+                                        </span>
                                     </div>
-                                @endif
-                            </div>
-                        @endif
+                                    <span class="fiche-list-kudos {{ $fiche->kudos_count > 0 ? 'fiche-list-kudos-active' : '' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                        </svg>
+                                        {{ $fiche->kudos_count }}
+                                    </span>
+                                </a>
+                            @endforeach
+                        </div>
+
+                        {{-- Empty search state --}}
+                        <div x-show="visibleCount === 0" x-cloak class="text-center py-12">
+                            <flux:icon.magnifying-glass class="mx-auto mb-4 text-[var(--color-border-light)]" variant="outline" />
+                            <p class="text-[var(--color-text-secondary)] mb-4">Geen fiches gevonden.</p>
+                            <flux:button variant="outline" size="sm" @click="search = ''">Wis zoekopdracht</flux:button>
+                        </div>
                     @endif
                 </div>
 
