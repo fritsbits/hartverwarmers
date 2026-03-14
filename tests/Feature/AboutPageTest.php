@@ -20,7 +20,8 @@ class AboutPageTest extends TestCase
         $response = $this->get('/over-ons');
 
         $response->assertOk();
-        $response->assertSeeText('Over Hartverwarmers');
+        $response->assertSeeText('Jij hoort niet achter een computer te zitten.');
+        $response->assertSee('Deel Hartverwarmers');
     }
 
     public function test_support_message_mailable_has_correct_envelope(): void
