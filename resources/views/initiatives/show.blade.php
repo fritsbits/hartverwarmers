@@ -196,9 +196,13 @@
                         {{-- Fiche list (flex container required for CSS order to work) --}}
                         <div class="flex flex-col gap-2">
                             @foreach($initiative->fiches as $fiche)
+                                @php
+                                    $viewed = isset($ficheInteractions[$fiche->id]) && in_array('view', $ficheInteractions[$fiche->id]);
+                                    $downloaded = isset($ficheInteractions[$fiche->id]) && in_array('download', $ficheInteractions[$fiche->id]);
+                                @endphp
                                 <a
                                     href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}"
-                                    class="fiche-list-item"
+                                    class="fiche-list-item {{ $viewed ? 'fiche-list-item-viewed' : '' }}"
                                     x-show="isVisible({{ $fiche->id }})"
                                     :style="'order: ' + sortedIds.indexOf({{ $fiche->id }})"
                                     x-cloak
@@ -220,6 +224,11 @@
                                         </svg>
                                         {{ $fiche->kudos_count }}
                                     </span>
+                                    @if($downloaded)
+                                        <span class="fiche-list-downloaded" title="Gedownload">
+                                            <flux:icon name="arrow-down-tray" class="size-3.5" />
+                                        </span>
+                                    @endif
                                 </a>
                             @endforeach
                         </div>
