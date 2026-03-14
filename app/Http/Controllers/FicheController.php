@@ -78,6 +78,15 @@ class FicheController extends Controller
 
         $fiche->increment('download_count');
 
+        if (auth()->check()) {
+            UserInteraction::firstOrCreate([
+                'user_id' => auth()->id(),
+                'interactable_type' => Fiche::class,
+                'interactable_id' => $fiche->id,
+                'type' => 'download',
+            ]);
+        }
+
         if ($files->count() === 1) {
             $file = $files->first();
 
