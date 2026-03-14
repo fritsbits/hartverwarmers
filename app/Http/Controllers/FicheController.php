@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Fiche;
 use App\Models\Initiative;
+use App\Models\UserInteraction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -46,6 +47,15 @@ class FicheController extends Controller
             ->with(['user', 'tags', 'files'])
             ->take(6)
             ->get();
+
+        if (auth()->check()) {
+            UserInteraction::firstOrCreate([
+                'user_id' => auth()->id(),
+                'interactable_type' => Fiche::class,
+                'interactable_id' => $fiche->id,
+                'type' => 'view',
+            ]);
+        }
 
         return view('fiches.show', [
             'initiative' => $initiative,
