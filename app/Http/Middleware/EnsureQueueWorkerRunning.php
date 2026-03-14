@@ -78,14 +78,29 @@ class EnsureQueueWorkerRunning
         }
 
         $artisan = base_path('artisan');
-        $php = PHP_BINARY;
+        $php = $this->findCliPhp();
 
         $output = [];
-        exec("{$php} {$artisan} queue:listen --tries=1 --max-time=3600 > /dev/null 2>&1 & echo $!", $output);
+        $php = escapeshellarg($php);
+        $artisan = escapeshellarg($artisan);
+        exec("nohup {$php} {$artisan} queue:listen --tries=1 > /dev/null 2>&1 & echo $!", $output);
 
         if (! empty($output[0]) && is_numeric($output[0])) {
             Cache::put('queue:worker-pid', (int) $output[0], 3700);
         }
+    }
+
+    private function findCliPhp(): string
+    {
+        // PHP_BINARY points to php-fpm under Herd, which can't run CLI commands.
+        // The CLI binary is the same path without the '-fpm' suffix (e.g. php84-fpm → php84).
+        $cli = str_replace('-fpm', '', PHP_BINARY);
+
+        if ($cli !== PHP_BINARY && is_executable($cli)) {
+            return $cli;
+        }
+
+        return PHP_BINARY;
     }
 
     private function isProcessAlive(int $pid): bool
