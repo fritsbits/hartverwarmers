@@ -20,7 +20,7 @@ class AboutPageTest extends TestCase
         $response = $this->get('/over-ons');
 
         $response->assertOk();
-        $response->assertSeeText('Jij hoort niet achter een computer te zitten.');
+        $response->assertSeeText('Meer tijd voor wat écht telt');
         $response->assertSee('Deel Hartverwarmers');
     }
 
