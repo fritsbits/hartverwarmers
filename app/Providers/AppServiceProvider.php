@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Listeners\SendWelcomeNotification;
 use App\Models\User;
 use App\Notifications\QueueJobFailedNotification;
+use App\View\Composers\AboutComposer;
 use App\View\Composers\FooterComposer;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -37,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('components.layout', FooterComposer::class);
+        View::composer('about', AboutComposer::class);
 
         Feature::discover();
 
