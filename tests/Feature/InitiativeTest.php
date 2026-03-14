@@ -565,6 +565,42 @@ class InitiativeTest extends TestCase
         $response->assertSee('Laat het initiatief schitteren');
     }
 
+    public function test_initiative_show_passes_fiche_alpine_data(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'description' => '<p>Een leuke quiz over dieren</p>',
+            'kudos_count' => 5,
+        ]);
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('ficheAlpineData');
+        $ficheData = $response->viewData('ficheAlpineData');
+        $this->assertCount(1, $ficheData);
+        $this->assertEquals($fiche->id, $ficheData[0]['id']);
+        $this->assertEquals($fiche->title, $ficheData[0]['title']);
+        $this->assertStringNotContainsString('<p>', $ficheData[0]['description']);
+        $this->assertEquals(5, $ficheData[0]['kudosCount']);
+        $this->assertArrayHasKey('createdAt', $ficheData[0]);
+    }
+
+    public function test_initiative_show_passes_random_order(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        Fiche::factory()->published()->count(5)->create(['initiative_id' => $initiative->id]);
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('randomOrder');
+        $randomOrder = $response->viewData('randomOrder');
+        $this->assertIsArray($randomOrder);
+        $this->assertCount(5, $randomOrder);
+    }
+
     public function test_thumbnail_url_derives_from_image_path(): void
     {
         $initiative = Initiative::factory()->published()->create([

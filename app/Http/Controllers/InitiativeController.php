@@ -6,6 +6,7 @@ use App\Features\DiamantGoals;
 use App\Models\Initiative;
 use App\Services\DiamantService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Laravel\Pennant\Feature;
 
@@ -193,11 +194,23 @@ class InitiativeController extends Controller
             }
         }
 
+        $ficheAlpineData = $initiative->fiches->map(fn ($fiche) => [
+            'id' => $fiche->id,
+            'title' => $fiche->title,
+            'description' => Str::limit(strip_tags($fiche->description), 200),
+            'kudosCount' => $fiche->kudos_count,
+            'createdAt' => $fiche->created_at->timestamp,
+        ])->values()->all();
+
+        $randomOrder = $initiative->fiches->pluck('id')->shuffle()->values()->all();
+
         return view('initiatives.show', [
             'initiative' => $initiative,
             'relatedInitiatives' => $relatedInitiatives,
             'diamantQuote' => $diamantQuote,
             'diamantAnalyse' => $diamantAnalyse,
+            'ficheAlpineData' => $ficheAlpineData,
+            'randomOrder' => $randomOrder,
         ]);
     }
 
