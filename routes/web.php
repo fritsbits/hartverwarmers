@@ -98,6 +98,7 @@ Route::view('/over-ons', 'about')->name('about');
 // Legal pages
 Route::view('/privacybeleid', 'legal.privacy')->name('legal.privacy');
 Route::view('/gebruiksvoorwaarden', 'legal.terms')->name('legal.terms');
+Route::view('/auteursrecht', 'legal.copyright')->name('legal.copyright');
 
 // Legacy redirects (old /uitwerkingen URLs → /fiches)
 Route::redirect('/uitwerkingen/nieuw', '/fiches/nieuw', 301);
