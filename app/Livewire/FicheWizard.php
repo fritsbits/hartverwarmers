@@ -362,7 +362,7 @@ class FicheWizard extends Component
     public function submitStep1(): void
     {
         if (! empty($this->uploadedFiles) && ! $this->disclaimerAccepted) {
-            $this->addError('disclaimerAccepted', 'Je moet bevestigen dat je de rechten hebt om deze bestanden te delen.');
+            $this->addError('disclaimerAccepted', 'Bevestig dat je deze bestanden mag delen.');
 
             return;
         }
