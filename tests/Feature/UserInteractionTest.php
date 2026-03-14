@@ -222,6 +222,39 @@ class UserInteractionTest extends TestCase
         $this->assertEquals(1, $fiche->fresh()->download_count);
     }
 
+    public function test_initiative_show_passes_interaction_data_for_logged_in_user(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'view',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('ficheInteractions');
+        $interactions = $response->viewData('ficheInteractions');
+        $this->assertArrayHasKey($fiche->id, $interactions);
+        $this->assertContains('view', $interactions[$fiche->id]);
+    }
+
+    public function test_initiative_show_passes_empty_interactions_for_guest(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        $response = $this->get(route('initiatives.show', $initiative));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('ficheInteractions', []);
+    }
+
     public function test_guest_downloading_fiche_does_not_create_interaction(): void
     {
         Storage::fake('public');

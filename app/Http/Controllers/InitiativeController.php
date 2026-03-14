@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Features\DiamantGoals;
 use App\Models\Initiative;
 use App\Services\DiamantService;
+use App\Services\FicheInteractionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -193,6 +194,9 @@ class InitiativeController extends Controller
 
         $randomOrder = $initiative->fiches->pluck('id')->shuffle()->values()->all();
 
+        $ficheInteractions = app(FicheInteractionService::class)
+            ->forUser(auth()->user(), $initiative->fiches->pluck('id'));
+
         return view('initiatives.show', [
             'initiative' => $initiative,
             'relatedInitiatives' => $relatedInitiatives,
@@ -200,6 +204,7 @@ class InitiativeController extends Controller
             'diamantAnalyse' => $diamantAnalyse,
             'ficheAlpineData' => $ficheAlpineData,
             'randomOrder' => $randomOrder,
+            'ficheInteractions' => $ficheInteractions,
         ]);
     }
 
