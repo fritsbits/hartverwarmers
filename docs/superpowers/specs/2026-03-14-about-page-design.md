@@ -27,7 +27,8 @@ Add a **View Composer** (`AboutComposer`) registered for the `about` view, provi
 - `fiches_count` — `Fiche::count()`
 - `contributors_count` — `User::whereHas('fiches')->count()`
 - `users_count` — `User::count()`
-- `organisations_count` — `User::whereNotNull('organisation')->distinct('organisation')->count('organisation')` (duplicated from FooterComposer — acceptable since extracting a shared helper for 1 line of query logic is premature)
+
+Note: The 4th stat card displays "Gratis" (branding, not a dynamic stat), so `organisations_count` is not needed here.
 
 Cache for 1 hour (same as footer). Available as `$aboutStats` in the view.
 
