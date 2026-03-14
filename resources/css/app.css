@@ -752,11 +752,11 @@
 
   /* Viewed fiche: muted appearance */
   .fiche-list-item-viewed {
-    opacity: 0.55;
+    opacity: 0.65;
   }
 
   .fiche-list-item-viewed:hover {
-    opacity: 0.85;
+    opacity: 0.9;
   }
 
   /* Downloaded indicator icon */
