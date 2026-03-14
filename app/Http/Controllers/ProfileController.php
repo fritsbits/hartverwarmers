@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Comment;
 use App\Models\Fiche;
+use App\Models\UserInteraction;
 use App\Services\AvatarThumbnailService;
 use App\Services\FicheInteractionService;
 use Illuminate\Http\RedirectResponse;
@@ -118,6 +119,23 @@ class ProfileController extends Controller
             ->forUser($user, $fiches->pluck('id'));
 
         return view('profile.fiches', compact('fiches', 'stats', 'newCommentsCount', 'ficheInteractions'));
+    }
+
+    public function downloads(Request $request): View
+    {
+        $fiches = Fiche::query()
+            ->whereIn('id', UserInteraction::where('user_id', $request->user()->id)
+                ->where('interactable_type', Fiche::class)
+                ->where('type', 'download')
+                ->pluck('interactable_id'))
+            ->published()
+            ->with(['initiative', 'user', 'files'])
+            ->latest()
+            ->get();
+
+        return view('profile.downloads', [
+            'fiches' => $fiches,
+        ]);
     }
 
     public function bookmarks(Request $request): View
