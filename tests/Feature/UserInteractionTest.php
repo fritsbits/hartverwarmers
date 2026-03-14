@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Fiche;
+use App\Models\Initiative;
 use App\Models\User;
 use App\Models\UserInteraction;
 use App\Services\FicheInteractionService;
@@ -145,5 +146,43 @@ class UserInteractionTest extends TestCase
         $result = $service->forUser($user, []);
 
         $this->assertEmpty($result);
+    }
+
+    public function test_viewing_fiche_page_creates_view_interaction(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        $this->actingAs($user)->get(route('fiches.show', [$initiative, $fiche]));
+
+        $this->assertDatabaseHas('user_interactions', [
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'view',
+        ]);
+    }
+
+    public function test_viewing_fiche_page_does_not_duplicate_view_interaction(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        $this->actingAs($user)->get(route('fiches.show', [$initiative, $fiche]));
+        $this->actingAs($user)->get(route('fiches.show', [$initiative, $fiche]));
+
+        $this->assertDatabaseCount('user_interactions', 1);
+    }
+
+    public function test_guest_viewing_fiche_page_does_not_create_interaction(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $this->assertDatabaseCount('user_interactions', 0);
     }
 }
