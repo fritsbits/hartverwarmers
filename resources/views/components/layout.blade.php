@@ -155,6 +155,8 @@
 
     <livewire:search />
 
+    <x-dev.queue-badge />
+
     @fluxScripts
 </body>
 </html>
