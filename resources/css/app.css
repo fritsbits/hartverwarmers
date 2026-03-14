@@ -750,6 +750,28 @@
     color: var(--color-text-primary);
   }
 
+  /* Viewed fiche: muted appearance */
+  .fiche-list-item-viewed {
+    opacity: 0.55;
+  }
+
+  .fiche-list-item-viewed:hover {
+    opacity: 0.85;
+  }
+
+  /* Downloaded indicator icon */
+  .fiche-list-downloaded {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-text-secondary);
+    opacity: 0.6;
+  }
+
+  .fiche-list-downloaded svg {
+    width: 14px;
+    height: 14px;
+  }
+
   /* DIAMANT accordion — expandable goal items in initiative sidebar */
   .diamant-accordion-item {
     background: transparent;
