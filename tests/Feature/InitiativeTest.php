@@ -342,24 +342,6 @@ class InitiativeTest extends TestCase
         $response->assertSee('In opbouw');
     }
 
-    public function test_initiative_show_highlights_diamond_fiche(): void
-    {
-        $initiative = Initiative::factory()->published()->create();
-        $diamond = Fiche::factory()->published()->withDiamond()->create([
-            'initiative_id' => $initiative->id,
-        ]);
-        $regular = Fiche::factory()->published()->create([
-            'initiative_id' => $initiative->id,
-        ]);
-
-        $response = $this->get(route('initiatives.show', $initiative));
-
-        $response->assertStatus(200);
-        $response->assertSee('Diamantje');
-        $response->assertSee($diamond->title);
-        $response->assertSee($regular->title);
-    }
-
     public function test_fiche_show_displays_other_fiches_from_initiative(): void
     {
         $initiative = Initiative::factory()->published()->create();
@@ -435,26 +417,18 @@ class InitiativeTest extends TestCase
         $response->assertDontSee('keer ervaringen gedeeld');
     }
 
-    public function test_initiative_show_displays_expand_button_when_more_than_six_fiches(): void
+    public function test_initiative_show_displays_all_fiches_without_expand_toggle(): void
     {
         $initiative = Initiative::factory()->published()->create();
-        Fiche::factory()->published()->count(8)->create(['initiative_id' => $initiative->id]);
+        $fiches = Fiche::factory()->published()->count(10)->create(['initiative_id' => $initiative->id]);
 
         $response = $this->get(route('initiatives.show', $initiative));
 
         $response->assertStatus(200);
-        $response->assertSee('+ 2 meer');
-    }
-
-    public function test_initiative_show_hides_expand_button_when_six_or_fewer_fiches(): void
-    {
-        $initiative = Initiative::factory()->published()->create();
-        Fiche::factory()->published()->count(5)->create(['initiative_id' => $initiative->id]);
-
-        $response = $this->get(route('initiatives.show', $initiative));
-
-        $response->assertStatus(200);
-        $response->assertDontSee('fiche-list-expand');
+        foreach ($fiches as $fiche) {
+            $response->assertSee($fiche->title);
+        }
+        $response->assertDontSee('meer</button>', false);
     }
 
     public function test_initiative_show_displays_comment_count_when_comments_exist(): void
