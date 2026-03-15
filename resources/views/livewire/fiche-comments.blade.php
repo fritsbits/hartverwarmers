@@ -23,7 +23,7 @@
                             <span class="text-sm text-[var(--color-text-secondary)] shrink-0">{{ $comment->created_at->diffForHumans() }}</span>
                         </div>
                         <p class="mt-2">{{ $comment->body }}</p>
-                        <button wire:click="startReply({{ $comment->id }})" class="mt-2 text-sm font-medium transition-colors" style="color: var(--color-primary)">
+                        <button wire:click="startReply({{ $comment->id }})" class="mt-2 text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] hover:underline transition-colors">
                             Reageer
                         </button>
 
