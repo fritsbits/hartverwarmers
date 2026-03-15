@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use App\Models\Comment;
-use App\Models\Fiche;
 use App\Services\AvatarThumbnailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -81,53 +79,6 @@ class ProfileController extends Controller
     {
         return view('profile.security', [
             'user' => $request->user(),
-        ]);
-    }
-
-    public function fiches(Request $request): View
-    {
-        $user = $request->user();
-
-        $fiches = $user->fiches()
-            ->with('initiative')
-            ->withCount([
-                'comments',
-                'files',
-                'likes as bookmarks_count' => fn ($q) => $q->where('type', 'bookmark'),
-            ])
-            ->latest()
-            ->get();
-
-        $newCommentsCount = Comment::whereHasMorph('commentable', Fiche::class, fn ($q) => $q->where('user_id', $user->id))
-            ->when($user->fiches_comments_seen_at, fn ($q) => $q->where('comments.created_at', '>', $user->fiches_comments_seen_at))
-            ->count();
-
-        $stats = [
-            'total' => $fiches->count(),
-            'published' => $fiches->where('published', true)->count(),
-            'drafts' => $fiches->where('published', false)->count(),
-            'downloads' => $fiches->sum('download_count'),
-            'kudos' => $fiches->sum('kudos_count'),
-            'comments' => $fiches->sum('comments_count'),
-        ];
-
-        $user->update(['fiches_comments_seen_at' => now()]);
-
-        return view('profile.fiches', compact('fiches', 'stats', 'newCommentsCount'));
-    }
-
-    public function bookmarks(Request $request): View
-    {
-        $fiches = $request->user()
-            ->bookmarks()
-            ->with('likeable.initiative', 'likeable.user')
-            ->latest()
-            ->get()
-            ->pluck('likeable')
-            ->filter();
-
-        return view('profile.bookmarks', [
-            'fiches' => $fiches,
         ]);
     }
 }

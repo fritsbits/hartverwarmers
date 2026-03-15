@@ -374,7 +374,7 @@ class InitiativeTest extends TestCase
             'type' => 'bookmark',
         ]);
 
-        $response = $this->actingAs($user)->get(route('profile.bookmarks'));
+        $response = $this->actingAs($user)->get(route('bookmarks.index'));
 
         $response->assertStatus(200);
         $response->assertSee($fiche->title);
