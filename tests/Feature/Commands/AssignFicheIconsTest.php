@@ -19,7 +19,7 @@ class AssignFicheIconsTest extends TestCase
         Fiche::factory()->count(3)->create(['icon' => null]);
 
         $this->artisan('fiches:assign-icons')
-            ->expectsOutputToContain('Processing 3 fiches')
+            ->expectsOutputToContain('Dispatching 3 jobs')
             ->assertExitCode(0);
 
         // 3 from backfill + 3 from observer on create = 6 total
@@ -34,7 +34,7 @@ class AssignFicheIconsTest extends TestCase
         Fiche::factory()->create(['icon' => null]);
 
         $this->artisan('fiches:assign-icons')
-            ->expectsOutputToContain('Processing 1 fiches')
+            ->expectsOutputToContain('Dispatching 1 jobs')
             ->assertExitCode(0);
     }
 
@@ -45,7 +45,7 @@ class AssignFicheIconsTest extends TestCase
         Fiche::factory()->withIcon('music')->count(2)->create();
 
         $this->artisan('fiches:assign-icons', ['--force' => true])
-            ->expectsOutputToContain('Processing 2 fiches')
+            ->expectsOutputToContain('Dispatching 2 jobs')
             ->assertExitCode(0);
 
         // 2 from backfill + 2 from observer on create = 4 total
