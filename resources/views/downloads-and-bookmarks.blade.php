@@ -47,7 +47,7 @@
                                     <x-fiche-icon :fiche="$fiche" class="fiche-list-icon" />
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-start gap-2">
-                                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-heading font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">{{ $fiche->title }}</a>
+                                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-body font-semibold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">{{ $fiche->title }}</a>
                                             @if($fiche->has_diamond)
                                                 <x-diamond-badge class="shrink-0 mt-0.5" />
                                             @endif
@@ -92,7 +92,7 @@
                                     <x-fiche-icon :fiche="$fiche" class="fiche-list-icon" />
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-start gap-2">
-                                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-heading font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">{{ $fiche->title }}</a>
+                                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-body font-semibold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">{{ $fiche->title }}</a>
                                             @if($fiche->has_diamond)
                                                 <x-diamond-badge class="shrink-0 mt-0.5" />
                                             @endif
