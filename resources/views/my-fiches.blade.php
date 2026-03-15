@@ -62,10 +62,10 @@
                 <div class="space-y-2">
                     @foreach($fiches as $fiche)
                         <div class="fiche-list-item group">
-                            <x-fiche-icon :fiche="$fiche" class="fiche-list-icon" />
+                            <x-fiche-icon :fiche="$fiche" :class="'fiche-list-icon' . ($fiche->published ? '' : ' opacity-50')" />
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 min-w-0">
-                                    <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-heading font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors truncate">{{ $fiche->title }}</a>
+                                    <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-body font-semibold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors truncate">{{ $fiche->title }}</a>
                                     @if($fiche->has_diamond)
                                         <x-diamond-badge class="shrink-0" />
                                     @endif

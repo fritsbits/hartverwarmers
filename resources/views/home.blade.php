@@ -137,7 +137,7 @@
                                 <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="fiche-list-item">
                                     <x-fiche-icon :fiche="$fiche" class="fiche-list-icon" />
                                     <div class="flex flex-col gap-0.5 min-w-0 flex-1">
-                                        <span class="font-body font-semibold text-base text-[var(--color-text-primary)] truncate">{{ $fiche->title }}</span>
+                                        <span class="font-body font-semibold text-lg text-[var(--color-text-primary)] truncate">{{ $fiche->title }}</span>
                                         <span class="text-xs text-[var(--color-text-secondary)]">{{ $fiche->user?->full_name }}</span>
                                     </div>
                                     <span class="flex items-center gap-2.5 shrink-0">

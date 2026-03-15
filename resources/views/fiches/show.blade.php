@@ -321,7 +321,7 @@
                         <a href="{{ route('fiches.show', [$other->initiative, $other]) }}" class="fiche-list-item {{ $viewed ? 'fiche-list-item-viewed' : '' }}">
                             <x-fiche-icon :fiche="$other" class="fiche-list-icon" />
                             <div class="flex flex-col gap-0.5 min-w-0 flex-1">
-                                <span class="font-body font-semibold text-base text-[var(--color-text-primary)] truncate">{{ $other->title }}</span>
+                                <span class="font-body font-semibold text-lg text-[var(--color-text-primary)] truncate">{{ $other->title }}</span>
                                 <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                                     <span class="text-xs text-[var(--color-text-secondary)]">
                                         {{ $other->user?->full_name }}@if($other->user?->organisation), {{ $other->user->organisation }}@endif
