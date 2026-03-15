@@ -545,6 +545,28 @@ class KudosTest extends TestCase
             ->assertDontSee('Je favorieten');
     }
 
+    public function test_kudos_count_synced_to_fiche_column(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        $this->assertEquals(0, $fiche->fresh()->kudos_count);
+
+        Livewire::actingAs($user1)
+            ->test(FicheKudos::class, ['fiche' => $fiche])
+            ->call('addKudos', amount: 5);
+
+        $this->assertEquals(5, $fiche->fresh()->kudos_count);
+
+        Livewire::actingAs($user2)
+            ->test(FicheKudos::class, ['fiche' => $fiche])
+            ->call('addKudos', amount: 10);
+
+        $this->assertEquals(15, $fiche->fresh()->kudos_count);
+    }
+
     public function test_is_own_fiche_computed_property(): void
     {
         $author = User::factory()->create();

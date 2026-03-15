@@ -132,7 +132,7 @@
                         @auth
                             <li><a href="{{ route('fiches.create') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Nieuwe fiche schrijven</a></li>
                             <li><a href="{{ route('profile.show') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Mijn profiel</a></li>
-                            <li><a href="{{ route('profile.bookmarks') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Mijn favorieten</a></li>
+                            <li><a href="{{ route('bookmarks.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Mijn favorieten</a></li>
                         @endauth
                     </ul>
                 </div>
