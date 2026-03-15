@@ -17,7 +17,7 @@ class AssignFicheIcons extends Command
 
     public function handle(): int
     {
-        $query = Fiche::query();
+        $query = Fiche::query()->with('initiative');
 
         if (! $this->option('force')) {
             $query->whereNull('icon');
@@ -62,10 +62,11 @@ class AssignFicheIcons extends Command
         $bar->start();
 
         foreach ($chunks as $chunk) {
-            $titleList = $chunk->map(fn (Fiche $f) => "- {$f->id}: {$f->title}")->implode("\n");
+            $titleList = $chunk->map(fn (Fiche $f) => "- {$f->id}: [{$f->initiative?->title}] {$f->title}")->implode("\n");
 
             $prompt = <<<PROMPT
-            Here are activity titles from a Dutch elderly care platform. For each one, pick the best icon.
+            Here are activity titles from a Dutch elderly care platform. Each line shows [Initiative name] Activity title.
+            Pick an icon that represents what makes each activity UNIQUE within its initiative — not the initiative's general theme.
 
             {$titleList}
 

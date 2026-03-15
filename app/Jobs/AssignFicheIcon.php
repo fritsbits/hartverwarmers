@@ -20,10 +20,11 @@ class AssignFicheIcon implements ShouldQueue
 
     public function handle(): void
     {
-        $prompt = $this->fiche->title;
+        $initiativeName = $this->fiche->initiative?->title ?? '';
+        $prompt = "Initiatief: {$initiativeName}\nActiviteit: {$this->fiche->title}";
 
         if ($this->fiche->description) {
-            $prompt .= "\n\nBeschrijving: ".Str::limit(strip_tags($this->fiche->description), 200);
+            $prompt .= "\nBeschrijving: ".Str::limit(strip_tags($this->fiche->description), 200);
         }
 
         $response = (new IconSelector)->prompt($prompt);
