@@ -10,6 +10,9 @@
     ];
     $color = $avatarColors[($user->id ?? 0) % count($avatarColors)];
     $initials = mb_strtoupper(mb_substr($user->first_name ?? '', 0, 1) . mb_substr($user->last_name ?? '', 0, 1));
+    if ($initials === '') {
+        $initials = mb_strtoupper(mb_substr($user->name ?? '?', 0, 1));
+    }
 
     $sizeMap = [
         'xs' => 'w-6 h-6 text-[10px]',
