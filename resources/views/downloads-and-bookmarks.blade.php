@@ -43,29 +43,17 @@
                     @else
                         <div class="space-y-2">
                             @foreach($downloads as $fiche)
-                                <div class="fiche-list-item group">
+                                <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="fiche-list-item">
                                     <x-fiche-icon :fiche="$fiche" class="fiche-list-icon" />
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-start gap-2">
-                                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-body font-semibold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">{{ $fiche->title }}</a>
-                                            @if($fiche->has_diamond)
-                                                <x-diamond-badge class="shrink-0 mt-0.5" />
-                                            @endif
-                                        </div>
-                                        <div class="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] truncate">
-                                            @if($fiche->initiative)
-                                                <span>{{ $fiche->initiative->title }}</span>
-                                                <span class="text-[var(--color-border-light)]">&middot;</span>
-                                            @endif
-                                            @if($fiche->user)
-                                                <span>{{ $fiche->user->first_name }} {{ $fiche->user->last_name }}</span>
-                                            @endif
-                                        </div>
+                                    <div class="flex flex-col gap-0.5 min-w-0 flex-1">
+                                        <span class="font-body font-semibold text-lg text-[var(--color-text-primary)] truncate">{{ $fiche->title }}</span>
+                                        <span class="text-xs text-[var(--color-text-secondary)]">
+                                            @if($fiche->initiative){{ $fiche->initiative->title }}@endif
+                                            @if($fiche->initiative && $fiche->user)<span class="text-[var(--color-border-light)]">&middot;</span>@endif
+                                            @if($fiche->user){{ $fiche->user->full_name }}@endif
+                                        </span>
                                     </div>
-                                    <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}">
-                                        <flux:icon name="chevron-right" variant="mini" class="size-4 shrink-0 text-[var(--color-border-hover)] group-hover:text-[var(--color-primary)] transition-colors" />
-                                    </a>
-                                </div>
+                                </a>
                             @endforeach
                         </div>
                     @endif
@@ -88,29 +76,17 @@
                     @else
                         <div class="space-y-2">
                             @foreach($bookmarks as $fiche)
-                                <div class="fiche-list-item group">
+                                <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="fiche-list-item">
                                     <x-fiche-icon :fiche="$fiche" class="fiche-list-icon" />
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-start gap-2">
-                                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-body font-semibold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">{{ $fiche->title }}</a>
-                                            @if($fiche->has_diamond)
-                                                <x-diamond-badge class="shrink-0 mt-0.5" />
-                                            @endif
-                                        </div>
-                                        <div class="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] truncate">
-                                            @if($fiche->initiative)
-                                                <span>{{ $fiche->initiative->title }}</span>
-                                                <span class="text-[var(--color-border-light)]">&middot;</span>
-                                            @endif
-                                            @if($fiche->user)
-                                                <span>{{ $fiche->user->first_name }} {{ $fiche->user->last_name }}</span>
-                                            @endif
-                                        </div>
+                                    <div class="flex flex-col gap-0.5 min-w-0 flex-1">
+                                        <span class="font-body font-semibold text-lg text-[var(--color-text-primary)] truncate">{{ $fiche->title }}</span>
+                                        <span class="text-xs text-[var(--color-text-secondary)]">
+                                            @if($fiche->initiative){{ $fiche->initiative->title }}@endif
+                                            @if($fiche->initiative && $fiche->user)<span class="text-[var(--color-border-light)]">&middot;</span>@endif
+                                            @if($fiche->user){{ $fiche->user->full_name }}@endif
+                                        </span>
                                     </div>
-                                    <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}">
-                                        <flux:icon name="chevron-right" variant="mini" class="size-4 shrink-0 text-[var(--color-border-hover)] group-hover:text-[var(--color-primary)] transition-colors" />
-                                    </a>
-                                </div>
+                                </a>
                             @endforeach
                         </div>
                     @endif
