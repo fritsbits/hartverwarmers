@@ -38,7 +38,7 @@ return [
         'brain', 'book-open', 'lightbulb', 'graduation-cap', 'newspaper', 'file-question',
 
         // Seasons & holidays
-        'snowflake', 'egg', 'star', 'candle', 'flame', 'umbrella',
+        'snowflake', 'egg', 'star', 'flame', 'umbrella', 'candy-cane',
 
         // Animals
         'dog', 'cat', 'fish', 'rabbit', 'squirrel',
