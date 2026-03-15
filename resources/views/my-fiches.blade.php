@@ -36,28 +36,6 @@
             @endif
 
             @if($fiches->isNotEmpty())
-                {{-- Stats strip --}}
-                <div class="text-sm text-[var(--color-text-secondary)] mb-6">
-                    <p class="mb-1">
-                        <strong class="text-[var(--color-text-primary)]">{{ $stats['total'] }}</strong> fiches
-                        <span class="text-xs">({{ $stats['published'] }} gepubliceerd, {{ $stats['drafts'] }} {{ Str::plural('concept', $stats['drafts']) }})</span>
-                    </p>
-                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-                        <span class="flex items-center gap-1">
-                            <flux:icon name="arrow-down-tray" variant="mini" class="size-4" />
-                            <strong class="text-[var(--color-text-primary)]">{{ $stats['downloads'] }}</strong> downloads
-                        </span>
-                        <span class="flex items-center gap-1">
-                            <flux:icon name="heart" variant="mini" class="size-4" />
-                            <strong class="text-[var(--color-text-primary)]">{{ $stats['kudos'] }}</strong> kudos
-                        </span>
-                        <span class="flex items-center gap-1">
-                            <flux:icon name="chat-bubble-oval-left-ellipsis" variant="mini" class="size-4" />
-                            <strong class="text-[var(--color-text-primary)]">{{ $stats['comments'] }}</strong> reacties
-                        </span>
-                    </div>
-                </div>
-
                 {{-- Fiche list --}}
                 <div class="space-y-2">
                     @foreach($fiches as $fiche)
@@ -99,7 +77,7 @@
                                     @endif
                                 </div>
                             @endif
-                            <flux:button variant="ghost" href="{{ route('fiches.edit', $fiche) }}" icon="pencil-square" class="relative z-10 shrink-0" />
+                            <flux:button variant="ghost" size="sm" href="{{ route('fiches.edit', $fiche) }}" icon="pencil-square" class="relative z-10 shrink-0">Bewerk</flux:button>
                         </div>
                     @endforeach
                 </div>
