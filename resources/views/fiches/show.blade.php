@@ -107,11 +107,16 @@
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
                 {{-- A: title + meta + description — order-1 on mobile --}}
                 <div class="lg:col-span-3 order-1 lg:order-none">
-                    <div class="flex flex-wrap items-center gap-3 mb-2">
-                        <h1 class="text-5xl">{{ $fiche->title }}</h1>
-                        @if($fiche->has_diamond)
-                            <x-diamond-badge />
-                        @endif
+                    <div class="flex items-start gap-4 mb-2">
+                        <x-fiche-icon :fiche="$fiche" size="lg" class="shrink-0 mt-1" />
+                        <div>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <h1 class="text-5xl">{{ $fiche->title }}</h1>
+                                @if($fiche->has_diamond)
+                                    <x-diamond-badge />
+                                @endif
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Author — inline below title --}}
