@@ -324,59 +324,63 @@
                         </details>
 
                         <h3 class="mb-4">Fiche List (compact)</h3>
-                        <p class="text-meta mb-4">Card-stijl rijen voor compacte fiche-lijst op initiatief-detailpagina's. Klassen: <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-list-item</code>, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-list-icon</code>, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-list-kudos</code>, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-list-expand</code>.</p>
+                        <p class="text-meta mb-4">Card-stijl rijen voor compacte fiche-lijst op initiatief-detailpagina's. Elk item toont een <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">&lt;x-fiche-icon&gt;</code> — een gekleurd schijfje met een contextueel Lucide-icoon, automatisch toegewezen via AI. Kleur wordt bepaald door <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">fiche->id % 6</code>. Klassen: <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-list-item</code>, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-list-icon</code>, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-list-kudos</code>.</p>
+
+                        {{-- Fiche icon component demo: sizes --}}
+                        <h4 class="text-sm font-semibold text-[var(--color-text-secondary)] mb-3">Fiche Icon — formaten</h4>
+                        <div class="flex items-center gap-6 mb-6">
+                            @php
+                                $demoFiche = App\Models\Fiche::whereNotNull('icon')->first() ?? (object)['id' => 1, 'icon' => 'music'];
+                            @endphp
+                            <div class="flex flex-col items-center gap-1">
+                                <x-fiche-icon :fiche="$demoFiche" size="sm" />
+                                <span class="text-xs text-[var(--color-text-secondary)]">sm (32px)</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1">
+                                <x-fiche-icon :fiche="$demoFiche" size="md" />
+                                <span class="text-xs text-[var(--color-text-secondary)]">md (48px)</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-1">
+                                <x-fiche-icon :fiche="$demoFiche" size="lg" />
+                                <span class="text-xs text-[var(--color-text-secondary)]">lg (64px)</span>
+                            </div>
+                        </div>
+
+                        {{-- Color palette demo --}}
+                        <h4 class="text-sm font-semibold text-[var(--color-text-secondary)] mb-3">Kleurenpalet (6 kleuren, ID-gebaseerd)</h4>
+                        <div class="flex items-center gap-3 mb-8">
+                            @foreach(config('fiche-icons.colors') as $i => $color)
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style="background-color: {{ $color['bg'] }}; color: {{ $color['text'] }}">
+                                    <x-lucide-heart class="w-6 h-6" />
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- Live fiche list demo --}}
+                        <h4 class="text-sm font-semibold text-[var(--color-text-secondary)] mb-3">Lijst met echte fiches</h4>
                         <div class="max-w-xl mb-4 space-y-2">
-                            <a href="#" class="fiche-list-item">
-                                <span class="fiche-list-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
-                                </span>
-                                <div class="flex flex-col gap-0.5 min-w-0 flex-1">
-                                    <span class="font-body font-semibold text-base text-[var(--color-text-primary)] truncate">Muziek uit de jaren 60 als gespreksstarter</span>
-                                    <span class="text-xs text-[var(--color-text-secondary)]">Lien Verhoeven, WZC De Beuken</span>
-                                </div>
-                                <span class="fiche-list-kudos fiche-list-kudos-active">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
-                                    12
-                                </span>
-                            </a>
-                            <a href="#" class="fiche-list-item">
-                                <span class="fiche-list-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
-                                </span>
-                                <div class="flex flex-col gap-0.5 min-w-0 flex-1">
-                                    <span class="font-body font-semibold text-base text-[var(--color-text-primary)] truncate">Wandelen in de tuin met zintuigprikkels</span>
-                                    <span class="text-xs text-[var(--color-text-secondary)]">Jan Peeters, Huis Perrekes</span>
-                                </div>
-                                <span class="fiche-list-kudos">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
-                                    0
-                                </span>
-                            </a>
-                            <a href="#" class="fiche-list-item">
-                                <span class="fiche-list-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
-                                </span>
-                                <div class="flex flex-col gap-0.5 min-w-0 flex-1">
-                                    <span class="font-body font-semibold text-base text-[var(--color-text-primary)] truncate">Koken met bewoners: appeltaart bakken</span>
-                                    <span class="text-xs text-[var(--color-text-secondary)]">Sara De Wolf, WZC Sint-Jozef</span>
-                                </div>
-                                <span class="fiche-list-kudos fiche-list-kudos-active">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
-                                    3
-                                </span>
-                            </a>
+                            @foreach(App\Models\Fiche::whereNotNull('icon')->with('user')->inRandomOrder()->take(4)->get() as $demoFiche)
+                                <a href="#" class="fiche-list-item" onclick="event.preventDefault()">
+                                    <x-fiche-icon :fiche="$demoFiche" class="fiche-list-icon" />
+                                    <div class="flex flex-col gap-0.5 min-w-0 flex-1">
+                                        <span class="font-body font-semibold text-lg text-[var(--color-text-primary)] truncate">{{ $demoFiche->title }}</span>
+                                        <span class="text-xs text-[var(--color-text-secondary)]">{{ $demoFiche->user?->full_name }}@if($demoFiche->user?->organisation), {{ $demoFiche->user->organisation }}@endif</span>
+                                    </div>
+                                    <span class="fiche-list-kudos {{ $demoFiche->kudos_count > 0 ? 'fiche-list-kudos-active' : '' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+                                        {{ $demoFiche->kudos_count }}
+                                    </span>
+                                </a>
+                            @endforeach
                         </div>
-                        <div class="max-w-xl mb-4 text-center">
-                            <button class="fiche-list-expand">+ 5 meer</button>
-                        </div>
-                        <p class="text-xs text-[var(--color-text-secondary)] mb-2">Hover over de rijen voor een subtiel lift-schaduw effect.</p>
+                        <p class="text-xs text-[var(--color-text-secondary)] mb-2">Hover over de rijen voor een subtiel lift-schaduw effect. Iconen worden automatisch toegewezen via AI bij het aanmaken van een fiche.</p>
                         <details class="mb-8">
                             <summary class="text-sm font-semibold text-[var(--color-text-secondary)] cursor-pointer">Toon markup</summary>
                             <pre class="mt-2 p-4 bg-zinc-50 rounded-lg text-sm overflow-x-auto"><code>&lt;div class="space-y-2"&gt;
     &lt;a href="..." class="fiche-list-item"&gt;
-        &lt;span class="fiche-list-icon"&gt;&lt;svg ...&gt;&lt;/svg&gt;&lt;/span&gt;
+        &lt;x-fiche-icon :fiche="$fiche" class="fiche-list-icon" /&gt;
         &lt;div class="flex flex-col gap-0.5 min-w-0 flex-1"&gt;
-            &lt;span class="font-body font-semibold text-base ..."&gt;Titel&lt;/span&gt;
+            &lt;span class="font-body font-semibold text-lg ..."&gt;Titel&lt;/span&gt;
             &lt;span class="text-xs ..."&gt;Auteur, Organisatie&lt;/span&gt;
         &lt;/div&gt;
         &lt;span class="fiche-list-kudos fiche-list-kudos-active"&gt;
