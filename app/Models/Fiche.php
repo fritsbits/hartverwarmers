@@ -35,6 +35,7 @@ class Fiche extends Model
         'featured_month',
         'icon',
         'migration_id',
+        'zip_path',
     ];
 
     protected function casts(): array
