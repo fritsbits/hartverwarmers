@@ -64,7 +64,7 @@
                     :style="`transform: translateX(-${current * 100}%)`"
                 >
                     @foreach($slides as $index => $slide)
-                        <div class="w-full shrink-0 h-full flex items-center justify-center p-8 sm:p-12">
+                        <div class="w-full shrink-0 h-full flex items-center justify-center p-4 sm:p-6">
                             @if($slide['type'] === 'preview')
                                 <div class="relative bg-white rounded-sm max-h-full max-w-full" style="box-shadow: 0 4px 20px -4px rgba(120, 90, 60, 0.15), 0 1px 4px rgba(120, 90, 60, 0.08); border: 1px solid rgba(120, 90, 60, 0.1);">
                                     <img
