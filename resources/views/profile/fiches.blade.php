@@ -35,11 +35,7 @@
         {{-- Fiche list --}}
         <div class="space-y-2">
             @foreach($fiches as $fiche)
-                @php
-                    $viewed = isset($ficheInteractions[$fiche->id]) && in_array('view', $ficheInteractions[$fiche->id]);
-                    $downloaded = isset($ficheInteractions[$fiche->id]) && in_array('download', $ficheInteractions[$fiche->id]);
-                @endphp
-                <div class="fiche-list-item group {{ $viewed ? 'fiche-list-item-viewed' : '' }}">
+                <div class="fiche-list-item group">
                     <div class="fiche-list-icon">
                         <flux:icon :name="$fiche->published ? 'document-text' : 'pencil-square'" />
                     </div>
@@ -75,11 +71,6 @@
                             {{ $fiche->comments_count }}
                         </span>
                     </div>
-                    @if($downloaded)
-                        <span class="fiche-list-downloaded" title="Gedownload">
-                            <flux:icon name="arrow-down-tray" class="size-3.5" />
-                        </span>
-                    @endif
                     <flux:button variant="ghost" href="{{ route('fiches.edit', $fiche) }}" icon="pencil-square" class="shrink-0" />
                 </div>
             @endforeach

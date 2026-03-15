@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Comment;
 use App\Models\Fiche;
-use App\Models\UserInteraction;
 use App\Services\AvatarThumbnailService;
-use App\Services\FicheInteractionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -115,27 +113,7 @@ class ProfileController extends Controller
 
         $user->update(['fiches_comments_seen_at' => now()]);
 
-        $ficheInteractions = app(FicheInteractionService::class)
-            ->forUser($user, $fiches->pluck('id'));
-
-        return view('profile.fiches', compact('fiches', 'stats', 'newCommentsCount', 'ficheInteractions'));
-    }
-
-    public function downloads(Request $request): View
-    {
-        $fiches = Fiche::query()
-            ->whereIn('id', UserInteraction::where('user_id', $request->user()->id)
-                ->where('interactable_type', Fiche::class)
-                ->where('type', 'download')
-                ->pluck('interactable_id'))
-            ->published()
-            ->with(['initiative', 'user', 'files'])
-            ->latest()
-            ->get();
-
-        return view('profile.downloads', [
-            'fiches' => $fiches,
-        ]);
+        return view('profile.fiches', compact('fiches', 'stats', 'newCommentsCount'));
     }
 
     public function bookmarks(Request $request): View
@@ -148,12 +126,8 @@ class ProfileController extends Controller
             ->pluck('likeable')
             ->filter();
 
-        $ficheInteractions = app(FicheInteractionService::class)
-            ->forUser($request->user(), $fiches->pluck('id'));
-
         return view('profile.bookmarks', [
             'fiches' => $fiches,
-            'ficheInteractions' => $ficheInteractions,
         ]);
     }
 }
