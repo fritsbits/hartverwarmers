@@ -9,10 +9,10 @@
 
     {{-- Comment form (CTA position — above comments for maximum invitation) --}}
     @auth
-        <div class="bg-white rounded-2xl border-2 border-[var(--color-primary)]/20 p-6 mb-8 shadow-[0_4px_24px_rgba(232,118,75,0.08)]">
+        <div class="bg-white rounded-2xl border border-[var(--color-border-light)] p-6 mb-8">
             <div>
                 <div class="flex items-center gap-3 mb-4">
-                    <x-user-avatar :user="auth()->user()" size="md" class="ring-2 ring-[var(--color-primary)]/20" />
+                    <x-user-avatar :user="auth()->user()" size="md" />
                     <div>
                         <span class="font-semibold text-[var(--color-text-primary)]">{{ auth()->user()->full_name }}</span>
                         @if($this->comments->isEmpty())
@@ -35,7 +35,7 @@
             </div>
         </div>
     @else
-        <div class="bg-white rounded-2xl border-2 border-[var(--color-primary)]/20 p-6 mb-8 shadow-[0_4px_24px_rgba(232,118,75,0.08)]"
+        <div class="bg-white rounded-2xl border border-[var(--color-border-light)] p-6 mb-8"
              x-data="{ step: 1 }">
 
             {{-- Step dots --}}
