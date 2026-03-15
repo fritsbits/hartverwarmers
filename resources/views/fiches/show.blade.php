@@ -166,25 +166,27 @@
                     {{-- Practical information — collapsible preview card --}}
                     @if($fiche->practical_sections)
                         <div class="mt-8" x-data="{ expanded: false }">
-                            <div class="bg-[var(--color-bg-cream)] rounded-2xl border border-[var(--color-border-light)] overflow-hidden transition-all">
+                            <div class="rounded-2xl border border-[var(--color-border-light)] overflow-hidden transition-colors duration-200"
+                                 :class="expanded ? 'bg-white' : 'bg-[var(--color-bg-cream)] hover:bg-white'">
                                 <button @click="expanded = !expanded" class="w-full text-left px-6 py-5 flex items-center gap-4 cursor-pointer group">
                                     <div class="flex-1 min-w-0">
-                                        <h2 class="text-xl mb-1">Praktische informatie</h2>
-                                        <p class="text-sm text-[var(--color-text-secondary)]">
+                                        <h2 class="text-xl" :class="expanded ? '' : 'mb-1'">Praktische informatie</h2>
+                                        <p x-show="!expanded" class="text-sm text-[var(--color-text-secondary)]">
                                             @foreach($fiche->practical_sections as $section)
                                                 <span>{{ $section['title'] }}</span>@if(!$loop->last)<span class="text-[var(--color-border-light)]"> &middot; </span>@endif
                                             @endforeach
                                         </p>
                                     </div>
-                                    <div class="shrink-0 w-8 h-8 rounded-full bg-white flex items-center justify-center border border-[var(--color-border-light)] group-hover:border-[var(--color-primary)] transition-colors">
+                                    <div class="shrink-0 w-8 h-8 rounded-full flex items-center justify-center border transition-colors"
+                                         :class="expanded ? 'bg-[var(--color-bg-subtle)] border-[var(--color-border-light)]' : 'bg-white border-[var(--color-border-light)] group-hover:border-[var(--color-primary)]'">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-text-secondary)] transition-transform duration-200" :class="expanded && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                                     </div>
                                 </button>
 
                                 <div x-show="expanded" x-collapse x-cloak>
-                                    <div class="px-6 pb-6 divide-y divide-[var(--color-border-light)]">
+                                    <div class="px-6 pb-6 space-y-6">
                                         @foreach($fiche->practical_sections as $section)
-                                            <div class="pt-5 {{ !$loop->last ? 'pb-5' : '' }}">
+                                            <div @if(!$loop->first) class="pt-6 border-t border-[var(--color-border-light)]" @endif>
                                                 <h3 class="font-heading text-lg font-bold mb-3" style="color: var(--color-primary)">{{ $section['title'] }}</h3>
                                                 <div class="practical-content">
                                                     {!! $section['content'] !!}
