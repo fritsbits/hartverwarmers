@@ -62,9 +62,7 @@
                 <div class="space-y-2">
                     @foreach($fiches as $fiche)
                         <div class="fiche-list-item group">
-                            <div class="fiche-list-icon">
-                                <flux:icon :name="$fiche->published ? 'document-text' : 'pencil-square'" />
-                            </div>
+                            <x-fiche-icon :fiche="$fiche" class="fiche-list-icon" />
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 min-w-0">
                                     <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-heading font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors truncate">{{ $fiche->title }}</a>

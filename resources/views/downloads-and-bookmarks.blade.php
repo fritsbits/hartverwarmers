@@ -44,9 +44,7 @@
                         <div class="space-y-2">
                             @foreach($downloads as $fiche)
                                 <div class="fiche-list-item group">
-                                    <div class="fiche-list-icon">
-                                        <flux:icon name="arrow-down-tray" />
-                                    </div>
+                                    <x-fiche-icon :fiche="$fiche" class="fiche-list-icon" />
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-start gap-2">
                                             <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-heading font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">{{ $fiche->title }}</a>
@@ -91,9 +89,7 @@
                         <div class="space-y-2">
                             @foreach($bookmarks as $fiche)
                                 <div class="fiche-list-item group">
-                                    <div class="fiche-list-icon">
-                                        <flux:icon name="bookmark" />
-                                    </div>
+                                    <x-fiche-icon :fiche="$fiche" class="fiche-list-icon" />
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-start gap-2">
                                             <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-heading font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">{{ $fiche->title }}</a>
