@@ -298,7 +298,7 @@
 
     {{-- Meer fiches --}}
     @if($otherFiches->isNotEmpty())
-        <section class="bg-[var(--color-bg-cream)]">
+        <section class="bg-white">
             <div class="max-w-6xl mx-auto px-6 py-16">
                 <span class="section-label">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
