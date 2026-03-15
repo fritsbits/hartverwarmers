@@ -160,7 +160,7 @@
 
     {{-- Link to favorites overview (only after just bookmarking) --}}
     @if($justBookmarked)
-        <a href="{{ route('profile.bookmarks') }}" class="text-sm font-medium transition-colors hover:underline" style="color: var(--color-primary)" wire:transition>
+        <a href="{{ route('bookmarks.index') }}" class="text-sm font-medium transition-colors hover:underline" style="color: var(--color-primary)" wire:transition>
             Je favorieten &rarr;
         </a>
     @endif

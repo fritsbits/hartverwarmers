@@ -1,0 +1,54 @@
+<h2>Queue Worker Status Badge</h2>
+<p class="subtitle">Fixed bottom-left corner, only visible to admins in local env</p>
+
+<div class="cards">
+  <div class="card" data-choice="healthy" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px; background: #faf7f2; position: relative; min-height: 120px;">
+      <!-- Simulated page corner -->
+      <div style="position: absolute; bottom: 12px; left: 12px; display: flex; align-items: center; gap: 6px; background: #166534; color: white; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-family: system-ui; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
+        <span style="width: 7px; height: 7px; background: #4ade80; border-radius: 50%; display: inline-block;"></span>
+        Queue ok
+      </div>
+      <div style="color: #9ca3af; font-size: 11px; position: absolute; top: 12px; left: 12px;">↙ bottom-left corner of page</div>
+    </div>
+    <div class="card-body">
+      <h3>Healthy state</h3>
+      <p>Briefly flashes green on page load, then fades out after 3 seconds. Unobtrusive — you only notice it subconsciously.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="failed" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px; background: #faf7f2; position: relative; min-height: 120px;">
+      <div style="position: absolute; bottom: 12px; left: 12px; display: flex; align-items: center; gap: 6px; background: #991b1b; color: white; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-family: system-ui; box-shadow: 0 1px 3px rgba(0,0,0,0.15); animation: pulse 2s infinite;">
+        <span style="width: 7px; height: 7px; background: #fca5a5; border-radius: 50%; display: inline-block;"></span>
+        Queue down — run composer run dev
+      </div>
+      <div style="color: #9ca3af; font-size: 11px; position: absolute; top: 12px; left: 12px;">↙ bottom-left corner of page</div>
+    </div>
+    <div class="card-body">
+      <h3>Failed state</h3>
+      <p>Stays visible, gentle pulse animation. Shows when auto-start was attempted but worker didn't come alive. Tells you exactly what to do.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="starting" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px; background: #faf7f2; position: relative; min-height: 120px;">
+      <div style="position: absolute; bottom: 12px; left: 12px; display: flex; align-items: center; gap: 6px; background: #92400e; color: white; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-family: system-ui; box-shadow: 0 1px 3px rgba(0,0,0,0.15);">
+        <span style="width: 7px; height: 7px; background: #fbbf24; border-radius: 50%; display: inline-block;"></span>
+        Starting queue worker…
+      </div>
+      <div style="color: #9ca3af; font-size: 11px; position: absolute; top: 12px; left: 12px;">↙ bottom-left corner of page</div>
+    </div>
+    <div class="card-body">
+      <h3>Starting state</h3>
+      <p>Shown briefly while auto-start is in progress. Transitions to healthy or failed on next page load.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+</style>

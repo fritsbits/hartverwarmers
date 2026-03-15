@@ -55,8 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/profiel/avatar', [HvProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
     Route::delete('/profiel/avatar', [HvProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
     Route::get('/profiel/beveiliging', [HvProfileController::class, 'security'])->name('profile.security');
-    Route::redirect('/profiel/favorieten', '/favorieten', 301)->name('profile.bookmarks');
-    Route::redirect('/profiel/fiches', '/mijn-fiches', 301)->name('profile.fiches');
+    Route::redirect('/profiel/favorieten', '/favorieten', 301);
+    Route::redirect('/profiel/fiches', '/mijn-fiches', 301);
     Route::post('/fiches/{fiche}/favoriet', [BookmarkController::class, 'toggle'])->name('fiches.bookmark');
     Route::post('/fiches/{fiche}/comment', [CommentController::class, 'store'])->name('fiches.comment');
     Route::post('/initiatieven/{initiative:slug}/comment', [CommentController::class, 'storeForInitiative'])->name('initiatives.comment');

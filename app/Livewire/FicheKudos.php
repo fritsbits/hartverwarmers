@@ -79,6 +79,10 @@ class FicheKudos extends Component
 
         $kudos->increment('count', min($amount, $remaining));
 
+        $this->fiche->update([
+            'kudos_count' => (int) $this->fiche->kudos()->sum('count'),
+        ]);
+
         unset($this->totalKudos, $this->myKudos, $this->kudosGiversCount);
     }
 
