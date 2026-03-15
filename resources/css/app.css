@@ -680,8 +680,8 @@
 
   /* Fiche list item — card-style compact row for initiative detail pages */
   .fiche-list-item {
-    @apply flex items-center gap-3 no-underline;
-    padding: 16px 12px;
+    @apply flex items-center gap-4 no-underline;
+    padding: 16px 20px;
     background: var(--color-bg-white);
     border: 1px solid var(--color-border-light);
     border-radius: var(--radius-sm);
