@@ -122,8 +122,11 @@
 
     {{-- Compact comment form — below comments --}}
     @auth
+        <div class="border-t border-[var(--color-border-light)] pt-5 mt-1">
+            <p class="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-3">Schrijf een reactie</p>
+        </div>
         <div class="flex gap-3 items-start" x-data="{ focused: false }">
-            <x-user-avatar :user="auth()->user()" size="sm" class="mt-0.5" />
+            <x-user-avatar :user="auth()->user()" size="xs" class="mt-1" />
             <form wire:submit="addComment" class="flex-1">
                 <textarea
                     wire:model="body"
