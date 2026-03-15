@@ -162,6 +162,40 @@
                             </flux:button>
                         </div>
                     @endif
+
+                    {{-- Practical information — collapsible preview card --}}
+                    @if($fiche->practical_sections)
+                        <div class="mt-8" x-data="{ expanded: false }">
+                            <div class="bg-[var(--color-bg-cream)] rounded-2xl border border-[var(--color-border-light)] overflow-hidden transition-all">
+                                <button @click="expanded = !expanded" class="w-full text-left px-6 py-5 flex items-center gap-4 cursor-pointer group">
+                                    <div class="flex-1 min-w-0">
+                                        <h2 class="text-xl mb-1">Praktische informatie</h2>
+                                        <p class="text-sm text-[var(--color-text-secondary)]">
+                                            @foreach($fiche->practical_sections as $section)
+                                                <span>{{ $section['title'] }}</span>@if(!$loop->last)<span class="text-[var(--color-border-light)]"> &middot; </span>@endif
+                                            @endforeach
+                                        </p>
+                                    </div>
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-white flex items-center justify-center border border-[var(--color-border-light)] group-hover:border-[var(--color-primary)] transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-text-secondary)] transition-transform duration-200" :class="expanded && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                                    </div>
+                                </button>
+
+                                <div x-show="expanded" x-collapse x-cloak>
+                                    <div class="px-6 pb-6 divide-y divide-[var(--color-border-light)]">
+                                        @foreach($fiche->practical_sections as $section)
+                                            <div class="pt-5 {{ !$loop->last ? 'pb-5' : '' }}">
+                                                <h3 class="font-heading text-lg font-bold mb-3" style="color: var(--color-primary)">{{ $section['title'] }}</h3>
+                                                <div class="practical-content">
+                                                    {!! $section['content'] !!}
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- B: preview + download — order-3 on mobile (after description), right column on desktop --}}
@@ -242,46 +276,6 @@
             </div>
         </div>
     </section>
-
-    {{-- Practical information — preview card with expand --}}
-    @if($fiche->practical_sections)
-        <section class="bg-white">
-            <div class="max-w-6xl mx-auto px-6 py-12">
-                <div class="max-w-3xl" x-data="{ expanded: false }">
-                    <div class="bg-[var(--color-bg-cream)] rounded-2xl border border-[var(--color-border-light)] overflow-hidden transition-all">
-                        {{-- Preview header — always visible --}}
-                        <button @click="expanded = !expanded" class="w-full text-left px-6 py-5 flex items-center gap-4 cursor-pointer group">
-                            <div class="flex-1 min-w-0">
-                                <h2 class="text-xl mb-1">Praktische informatie</h2>
-                                <p class="text-sm text-[var(--color-text-secondary)]">
-                                    @foreach($fiche->practical_sections as $section)
-                                        <span>{{ $section['title'] }}</span>@if(!$loop->last)<span class="text-[var(--color-border-light)]"> &middot; </span>@endif
-                                    @endforeach
-                                </p>
-                            </div>
-                            <div class="shrink-0 w-8 h-8 rounded-full bg-white flex items-center justify-center border border-[var(--color-border-light)] group-hover:border-[var(--color-primary)] transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-text-secondary)] transition-transform duration-200" :class="expanded && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
-                            </div>
-                        </button>
-
-                        {{-- Expanded content --}}
-                        <div x-show="expanded" x-collapse x-cloak>
-                            <div class="px-6 pb-6 divide-y divide-[var(--color-border-light)]">
-                                @foreach($fiche->practical_sections as $section)
-                                    <div class="pt-5 {{ !$loop->last ? 'pb-5' : '' }}">
-                                        <h3 class="font-heading text-lg font-bold mb-3" style="color: var(--color-primary)">{{ $section['title'] }}</h3>
-                                        <div class="practical-content">
-                                            {!! $section['content'] !!}
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    @endif
 
     {{-- Content section — comments --}}
     <section class="bg-white">
