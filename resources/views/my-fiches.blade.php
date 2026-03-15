@@ -77,20 +77,28 @@
                                     @if($fiche->initiative){{ $fiche->initiative->title }}<span class="text-[var(--color-border-light)]"> &middot; </span>@endif{{ $fiche->created_at->format('d-m-Y') }}
                                 </span>
                             </div>
-                            <div class="hidden sm:flex items-center gap-3 text-xs text-[var(--color-text-secondary)] shrink-0">
-                                <span class="flex items-center gap-1" title="Downloads">
-                                    <flux:icon name="arrow-down-tray" variant="micro" class="size-3.5" />
-                                    {{ $fiche->download_count }}
-                                </span>
-                                <span class="flex items-center gap-1" title="Kudos">
-                                    <flux:icon name="heart" variant="micro" class="size-3.5" />
-                                    {{ $fiche->kudos_count }}
-                                </span>
-                                <span class="flex items-center gap-1" title="Reacties">
-                                    <flux:icon name="chat-bubble-oval-left-ellipsis" variant="micro" class="size-3.5" />
-                                    {{ $fiche->comments_count }}
-                                </span>
-                            </div>
+                            @if($fiche->download_count || $fiche->kudos_count || $fiche->comments_count)
+                                <div class="hidden sm:flex items-center gap-3 text-xs text-[var(--color-text-secondary)] shrink-0">
+                                    @if($fiche->download_count)
+                                        <span class="flex items-center gap-1" title="Downloads">
+                                            <flux:icon name="arrow-down-tray" variant="micro" class="size-3.5" />
+                                            {{ $fiche->download_count }}
+                                        </span>
+                                    @endif
+                                    @if($fiche->kudos_count)
+                                        <span class="flex items-center gap-1" title="Kudos">
+                                            <flux:icon name="heart" variant="micro" class="size-3.5" />
+                                            {{ $fiche->kudos_count }}
+                                        </span>
+                                    @endif
+                                    @if($fiche->comments_count)
+                                        <span class="flex items-center gap-1" title="Reacties">
+                                            <flux:icon name="chat-bubble-oval-left-ellipsis" variant="micro" class="size-3.5" />
+                                            {{ $fiche->comments_count }}
+                                        </span>
+                                    @endif
+                                </div>
+                            @endif
                             <flux:button variant="ghost" href="{{ route('fiches.edit', $fiche) }}" icon="pencil-square" class="relative z-10 shrink-0" />
                         </div>
                     @endforeach
