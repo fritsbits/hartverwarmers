@@ -25,7 +25,12 @@ Rename the "Initiatieven" nav item to **"Ontdek"**. Convert it from a plain link
 | Downloads & favorieten | Gedownloade en opgeslagen fiches | `bookmarks.index` | `/favorieten` |
 | Mijn fiches | Fiches die je hebt bijgedragen | `my-fiches.index` | `/mijn-fiches` |
 
-All 3 items are visible to everyone (logged in and anonymous). Anonymous users see a conversion CTA page on `/favorieten` and `/mijn-fiches`.
+All 3 items are visible to everyone (logged in and anonymous). The new routes are **public** (no auth middleware) — this is a deliberate change from the old profile routes which required authentication. Anonymous users see a conversion CTA page on `/favorieten` and `/mijn-fiches` instead of being redirected to login.
+
+**Dropdown icons** (Heroicons, outline style):
+- Initiatieven: `book-open` (same as current)
+- Downloads & favorieten: `arrow-down-tray`
+- Mijn fiches: `document-text`
 
 ### 2. New Routes
 
@@ -53,10 +58,14 @@ Note: `/profiel/downloads` was never implemented (only planned). No redirect nee
 **Page title:** "Downloads & favorieten"
 
 **Logged-in view:** Two-column layout using the base `layout` component (no sidebar).
-- **Left column (~60%):** Downloads — queried from `UserInteraction` model (`type=download`), eager loading `interactable` (the `Fiche`) with its `initiative` and `user`. Filter out records where the fiche has been deleted. Sorted by `created_at` descending. Each row: fiche icon, title, download date.
-- **Right column (~40%):** Favorieten — queried from the `$user->bookmarks()` relationship (polymorphic likes). Eager load the fiche with its `initiative` and `user`. Filter out records where the fiche has been deleted. Sorted by bookmark date. Each row: heart icon, title, save date.
+- **Left column (~60%):** Downloads — queried from `UserInteraction` model (`type=download`), eager loading `interactable` (the `Fiche`) with its `initiative` and `user`. Use `whereHas('interactable')` to filter out orphaned records where the fiche has been deleted. Sorted by `created_at` descending. No pagination (list will be manageable in size). Each row: fiche icon, title, download date.
+- **Right column (~40%):** Favorieten — queried from the `$user->bookmarks()` relationship (polymorphic likes). Eager load the fiche with its `initiative` and `user`. Use `whereHas` to filter out orphaned records. Sorted by bookmark date. No pagination. Each row: heart icon, title, save date.
 - Section headers with item counts.
 - On mobile: columns stack vertically, downloads first.
+
+**Empty states (logged-in, no items):**
+- Downloads column: "Je hebt nog geen fiches gedownload." with a link to browse initiatieven.
+- Favorieten column: "Je hebt nog geen fiches als favoriet opgeslagen." with a link to browse initiatieven.
 
 **Anonymous view:** Conversion CTA page. Warm, centered layout with:
 - Heart + download icons
@@ -67,7 +76,7 @@ Note: `/profiel/downloads` was never implemented (only planned). No redirect nee
 
 ### 4. Mijn Fiches Page (`/mijn-fiches`)
 
-Moves from `/profiel/fiches` to `/mijn-fiches`. Same content and functionality as before — list of contributed fiches with comment badge for new comments. Uses the base `layout` component (no sidebar).
+Moves from `/profiel/fiches` to `/mijn-fiches`. Same content and functionality as before — list of contributed fiches with comment badge for new comments. The `newFicheCommentsCount()` badge moves with this page. Uses the base `layout` component (no sidebar).
 
 **Anonymous view:** Conversion CTA:
 - Heading: "Deel jouw ervaring met collega's"
@@ -108,13 +117,13 @@ Remove "Favorieten" and "Fiches" entries from the user dropdown in the top-right
 - `resources/views/components/nav.blade.php` — rename Initiatieven to Ontdek dropdown (desktop + mobile)
 - `resources/views/components/sidebar-layout.blade.php` — remove Favorieten, Downloads, Fiches from sidebar
 - `routes/web.php` — add new routes, remove old profile routes, add redirects
-- `app/Http/Controllers/ProfileController.php` — move `bookmarks()` and `fiches()` methods to new controllers (no `downloads()` method exists on ProfileController)
+- `app/Http/Controllers/ProfileController.php` — move `bookmarks()` and `fiches()` logic to new controllers, then delete these methods from ProfileController (no `downloads()` method exists on ProfileController)
 - New: `DownloadsAndBookmarksController` for `/favorieten` — receives the moved `bookmarks()` logic from ProfileController plus new downloads query
 - New: `MyFichesController` for `/mijn-fiches` — receives the moved `fiches()` logic from ProfileController (including eager loads, comment counting, stats, `fiches_comments_seen_at` update)
 - New: view for `/favorieten` (two-column layout)
 - New: view for `/mijn-fiches` (moved from profile)
 - New: anonymous CTA views (or inline conditionals in the views above)
-- `tests/Feature/ProfileDownloadsTest.php` — this test references `profile.downloads` which was never implemented. Repurpose assertions into the new `bookmarks.index` tests or delete and rewrite
+- `tests/Feature/ProfileDownloadsTest.php` — dead code: references `profile.downloads` route that was never registered. Delete and rewrite as part of the new `bookmarks.index` tests
 - `tests/Feature/ProfileFichesTest.php` (if exists) — update route references from `profile.fiches` to `my-fiches.index`
 - Other tests referencing old profile routes need updating
 
