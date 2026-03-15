@@ -82,23 +82,21 @@ class InitiativeController extends Controller
                         ->sortByDesc('created_at')
                         ->take(3)
                         ->map(function ($f) use ($i) {
-                            $avatarColors = [
-                                ['bg' => '#FDF3EE', 'text' => '#E8764B'],
-                                ['bg' => '#E8F6F8', 'text' => '#3A9BA8'],
-                                ['bg' => '#FEF6E0', 'text' => '#B08A22'],
-                                ['bg' => '#F3E8F3', 'text' => '#9A5E98'],
-                            ];
-                            $color = $avatarColors[$f->user->id % 4];
+                            $ficheColors = config('fiche-icons.colors');
+                            $ficheColor = $ficheColors[$f->id % count($ficheColors)];
+
+                            $iconSvg = $f->icon
+                                ? view('components.lucide-icon-svg', ['icon' => $f->icon])->render()
+                                : '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>';
 
                             return [
                                 'id' => $f->id,
                                 'title' => $f->title,
                                 'url' => route('fiches.show', [$i, $f]),
                                 'user_name' => $f->user->full_name,
-                                'user_avatar' => $f->user->avatar_path ? $f->user->avatarUrl() : null,
-                                'user_initial' => mb_strtoupper(mb_substr($f->user->first_name, 0, 1).mb_substr($f->user->last_name, 0, 1)),
-                                'user_color_bg' => $color['bg'],
-                                'user_color_text' => $color['text'],
+                                'icon_svg' => $iconSvg,
+                                'icon_color_bg' => $ficheColor['bg'],
+                                'icon_color_text' => $ficheColor['text'],
                                 'time_ago' => $f->created_at->diffForHumans(),
                             ];
                         })

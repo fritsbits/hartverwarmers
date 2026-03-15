@@ -140,14 +140,9 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <template x-for="fiche in currentFiches" :key="fiche.id">
                             <a :href="fiche.url" class="flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--color-bg-cream)] transition-colors group">
-                                <template x-if="fiche.user_avatar">
-                                    <img :src="fiche.user_avatar" :alt="fiche.user_name" class="w-12 h-12 rounded-full object-cover shrink-0" loading="lazy">
-                                </template>
-                                <template x-if="!fiche.user_avatar">
-                                    <div class="w-12 h-12 rounded-full flex items-center justify-center font-semibold text-xs shrink-0"
-                                         :style="'background-color: ' + fiche.user_color_bg + '; color: ' + fiche.user_color_text"
-                                         x-text="fiche.user_initial"></div>
-                                </template>
+                                <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                                     :style="'background-color: ' + fiche.icon_color_bg + '; color: ' + fiche.icon_color_text"
+                                     x-html="fiche.icon_svg"></div>
                                 <div class="min-w-0">
                                     <p class="font-semibold text-[var(--color-text-primary)] truncate group-hover:text-[var(--color-primary)] transition-colors" x-text="fiche.title"></p>
                                     <p class="text-sm text-[var(--color-text-secondary)] mt-0.5"><span x-text="fiche.user_name"></span></p>
