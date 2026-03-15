@@ -157,11 +157,7 @@
 
                                 <div class="divide-y divide-[var(--color-border-light)]">
                                     @foreach($fiches->sortByDesc('created_at') as $fiche)
-                                        @php
-                                            $viewed = isset($ficheInteractions[$fiche->id]) && in_array('view', $ficheInteractions[$fiche->id]);
-                                            $downloaded = isset($ficheInteractions[$fiche->id]) && in_array('download', $ficheInteractions[$fiche->id]);
-                                        @endphp
-                                        <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="group flex items-center gap-4 px-5 py-3 no-underline text-inherit hover:bg-[var(--color-bg-cream)]/50 transition-colors {{ $viewed ? 'fiche-list-item-viewed' : '' }}">
+                                        <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="group flex items-center gap-4 px-5 py-3 no-underline text-inherit hover:bg-[var(--color-bg-cream)]/50 transition-colors">
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-center gap-2 flex-wrap">
                                                     <span class="font-heading font-bold text-[15px] group-hover:text-[var(--color-primary)] transition-colors">{{ $fiche->title }}</span>
@@ -178,11 +174,6 @@
                                                 <span class="flex items-center gap-1 text-xs text-[var(--color-primary)] shrink-0">
                                                     <x-icon-heart class="w-3.5 h-3.5" />
                                                     {{ $fiche->kudos_count }}
-                                                </span>
-                                            @endif
-                                            @if($downloaded)
-                                                <span class="fiche-list-downloaded" title="Gedownload">
-                                                    <flux:icon name="arrow-down-tray" class="size-3.5" />
                                                 </span>
                                             @endif
                                         </a>

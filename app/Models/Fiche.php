@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Observers\FicheObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
-#[ObservedBy([FicheObserver::class])]
 class Fiche extends Model
 {
     use HasFactory, SoftDeletes;
@@ -33,7 +30,6 @@ class Fiche extends Model
         'download_count',
         'kudos_count',
         'featured_month',
-        'icon',
     ];
 
     protected function casts(): array

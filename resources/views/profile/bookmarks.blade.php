@@ -14,11 +14,7 @@
 
         <div class="space-y-2">
             @foreach($fiches as $fiche)
-                @php
-                    $viewed = isset($ficheInteractions[$fiche->id]) && in_array('view', $ficheInteractions[$fiche->id]);
-                    $downloaded = isset($ficheInteractions[$fiche->id]) && in_array('download', $ficheInteractions[$fiche->id]);
-                @endphp
-                <div class="fiche-list-item group {{ $viewed ? 'fiche-list-item-viewed' : '' }}">
+                <div class="fiche-list-item group">
                     <div class="fiche-list-icon">
                         <flux:icon name="bookmark" />
                     </div>
@@ -39,11 +35,6 @@
                             @endif
                         </div>
                     </div>
-                    @if($downloaded)
-                        <span class="fiche-list-downloaded" title="Gedownload">
-                            <flux:icon name="arrow-down-tray" class="size-3.5" />
-                        </span>
-                    @endif
                     <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}">
                         <flux:icon name="chevron-right" variant="mini" class="size-4 shrink-0 text-[var(--color-border-hover)] group-hover:text-[var(--color-primary)] transition-colors" />
                     </a>
