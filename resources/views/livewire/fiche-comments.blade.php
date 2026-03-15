@@ -10,40 +10,31 @@
     @if($this->comments->isNotEmpty())
         <div class="space-y-0 mb-6">
             @foreach($this->comments as $comment)
-                <div wire:key="comment-{{ $comment->id }}" class="flex gap-4 py-5 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
-                    <x-user-avatar :user="$comment->user" size="md" />
+                <div wire:key="comment-{{ $comment->id }}" class="flex gap-3 py-5 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
+                    <x-user-avatar :user="$comment->user" size="sm" class="mt-0.5" />
                     <div class="flex-1 min-w-0">
-                        <div class="flex items-start justify-between">
-                            <div class="text-sm">
-                                <span class="font-semibold">{{ $comment->user->full_name ?? 'Anoniem' }}</span>
-                                @if($comment->user?->organisation)
-                                    <span class="text-[var(--color-text-secondary)]"> &middot; {{ $comment->user->organisation }}</span>
-                                @endif
-                            </div>
-                            <span class="text-sm text-[var(--color-text-secondary)] shrink-0">{{ $comment->created_at->diffForHumans() }}</span>
+                        <p>{{ $comment->body }}</p>
+                        <div class="flex flex-wrap items-center gap-x-2 mt-1.5 text-xs text-[var(--color-text-secondary)]">
+                            <span class="font-semibold text-[var(--color-text-primary)]">{{ $comment->user->full_name ?? 'Anoniem' }}</span>
+                            <span>&middot;</span>
+                            <span>{{ $comment->created_at->diffForHumans() }}</span>
+                            <span>&middot;</span>
+                            <button wire:click="startReply({{ $comment->id }})" class="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] hover:underline transition-colors">Reageer</button>
                         </div>
-                        <p class="mt-2">{{ $comment->body }}</p>
-                        <button wire:click="startReply({{ $comment->id }})" class="mt-2 text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] hover:underline transition-colors">
-                            Reageer
-                        </button>
 
                         {{-- Replies --}}
                         @if($comment->replies->isNotEmpty())
-                            <div class="mt-4 space-y-4 pl-2 border-l-2 border-[var(--color-border-light)]">
+                            <div class="mt-4 space-y-3 pl-2 border-l-2 border-[var(--color-border-light)]">
                                 @foreach($comment->replies as $reply)
                                     <div wire:key="reply-{{ $reply->id }}" class="flex gap-3">
-                                        <x-user-avatar :user="$reply->user" size="sm" />
+                                        <x-user-avatar :user="$reply->user" size="sm" class="mt-0.5" />
                                         <div class="flex-1 min-w-0">
-                                            <div class="flex items-start justify-between">
-                                                <div class="text-sm">
-                                                    <span class="font-semibold">{{ $reply->user->full_name ?? 'Anoniem' }}</span>
-                                                    @if($reply->user?->organisation)
-                                                        <span class="text-[var(--color-text-secondary)]"> &middot; {{ $reply->user->organisation }}</span>
-                                                    @endif
-                                                </div>
-                                                <span class="text-xs text-[var(--color-text-secondary)] shrink-0">{{ $reply->created_at->diffForHumans() }}</span>
+                                            <p class="text-sm">{{ $reply->body }}</p>
+                                            <div class="flex flex-wrap items-center gap-x-2 mt-1 text-xs text-[var(--color-text-secondary)]">
+                                                <span class="font-semibold text-[var(--color-text-primary)]">{{ $reply->user->full_name ?? 'Anoniem' }}</span>
+                                                <span>&middot;</span>
+                                                <span>{{ $reply->created_at->diffForHumans() }}</span>
                                             </div>
-                                            <p class="mt-1 text-sm">{{ $reply->body }}</p>
                                         </div>
                                     </div>
                                 @endforeach
@@ -126,7 +117,7 @@
             <p class="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-3">Schrijf een reactie</p>
         </div>
         <div class="flex gap-3 items-start" x-data="{ focused: false }">
-            <x-user-avatar :user="auth()->user()" size="xs" class="mt-1" />
+            <x-user-avatar :user="auth()->user()" size="sm" class="mt-0.5" />
             <form wire:submit="addComment" class="flex-1">
                 <textarea
                     wire:model="body"
