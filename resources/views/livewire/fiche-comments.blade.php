@@ -1,10 +1,8 @@
 <div>
-    <span class="section-label mb-6">
-        {{ $this->commentCount }} {{ $this->commentCount === 1 ? 'reactie' : 'reacties' }}
-    </span>
-
-    {{-- Existing comments first --}}
     @if($this->comments->isNotEmpty())
+        <span class="section-label mb-6">
+            {{ $this->commentCount }} {{ $this->commentCount === 1 ? 'reactie' : 'reacties' }}
+        </span>
         <div class="space-y-0 mb-6">
             @foreach($this->comments as $comment)
                 <div wire:key="comment-{{ $comment->id }}" class="flex gap-3 py-4 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
@@ -110,8 +108,8 @@
 
     {{-- Compact comment form — below comments --}}
     @auth
-        <div class="border-t border-[var(--color-border-light)] pt-4 mt-0">
-            <span class="section-label mb-3">Schrijf een reactie</span>
+        <div class="{{ $this->comments->isNotEmpty() ? 'border-t border-[var(--color-border-light)] pt-4' : '' }}">
+            <span class="section-label mb-3">{{ $this->comments->isNotEmpty() ? 'Schrijf een reactie' : 'Wees de eerste die reageert' }}</span>
         </div>
         <div class="flex gap-3 items-start" x-data="{ focused: false }">
             <x-user-avatar :user="auth()->user()" size="sm" class="mt-0.5" />
