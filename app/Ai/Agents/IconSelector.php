@@ -13,7 +13,7 @@ use Stringable;
 
 #[Provider(Lab::Anthropic)]
 #[UseCheapestModel]
-#[MaxTokens(50)]
+#[MaxTokens(1024)]
 #[Temperature(0)]
 class IconSelector implements Agent
 {
