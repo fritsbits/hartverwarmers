@@ -107,27 +107,24 @@
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
                 {{-- A: title + meta + description — order-1 on mobile --}}
                 <div class="lg:col-span-3 order-1 lg:order-none">
-                    <div class="flex items-start gap-4 mb-2">
-                        <x-fiche-icon :fiche="$fiche" size="lg" class="shrink-0 mt-1" />
-                        <div>
-                            <div class="flex flex-wrap items-center gap-3">
-                                <h1 class="text-5xl">{{ $fiche->title }}</h1>
-                                @if($fiche->has_diamond)
-                                    <x-diamond-badge />
-                                @endif
-                            </div>
-                        </div>
+                    <div class="flex flex-wrap items-center gap-3 mb-4">
+                        <h1 class="text-5xl">{{ $fiche->title }}</h1>
+                        @if($fiche->has_diamond)
+                            <x-diamond-badge />
+                        @endif
                     </div>
 
-                    {{-- Author — inline below title --}}
+                    {{-- Author --}}
                     @if($fiche->user)
-                        <a href="{{ route('contributors.show', $fiche->user) }}" class="flex items-center gap-3 group mb-4">
-                            <x-user-avatar :user="$fiche->user" size="sm" class="transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30" />
+                        <a href="{{ route('contributors.show', $fiche->user) }}" class="flex items-center gap-4 group mb-6">
+                            <x-user-avatar :user="$fiche->user" size="lg" class="transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30" />
                             <div>
-                                <span class="text-sm font-semibold group-hover:text-[var(--color-primary)] transition-colors">{{ $fiche->user->full_name }}</span>
-                                @if($fiche->user->organisation)
-                                    <span class="text-sm text-[var(--color-text-secondary)]">&middot; {{ $fiche->user->organisation }}</span>
-                                @endif
+                                <div class="text-base font-semibold group-hover:text-[var(--color-primary)] transition-colors">
+                                    Door {{ $fiche->user->full_name }}@if($fiche->user->organisation) &middot; {{ $fiche->user->organisation }}@endif
+                                </div>
+                                <div class="text-sm text-[var(--color-text-secondary)]">
+                                    Toegevoegd {{ $fiche->created_at->translatedFormat('j M \'y') }}
+                                </div>
                             </div>
                         </a>
                     @endif
