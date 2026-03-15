@@ -7,7 +7,7 @@
             @foreach($this->comments as $comment)
                 <div wire:key="comment-{{ $comment->id }}" class="flex gap-3 py-4 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
                     <a href="{{ route('contributors.show', $comment->user) }}">
-                        <x-user-avatar :user="$comment->user" size="sm" class="mt-0.5 hover:ring-2 hover:ring-[var(--color-primary)]/30 transition-shadow" />
+                        <x-user-avatar :user="$comment->user" size="base" class="mt-0.5 hover:ring-2 hover:ring-[var(--color-primary)]/30 transition-shadow" />
                     </a>
                     <div class="flex-1 min-w-0">
                         <p class="text-base">{{ $comment->body }}</p>
@@ -25,7 +25,7 @@
                                 @foreach($comment->replies as $reply)
                                     <div wire:key="reply-{{ $reply->id }}" class="flex gap-3">
                                         <a href="{{ route('contributors.show', $reply->user) }}">
-                                            <x-user-avatar :user="$reply->user" size="sm" class="mt-0.5 hover:ring-2 hover:ring-[var(--color-primary)]/30 transition-shadow" />
+                                            <x-user-avatar :user="$reply->user" size="base" class="mt-0.5 hover:ring-2 hover:ring-[var(--color-primary)]/30 transition-shadow" />
                                         </a>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-base">{{ $reply->body }}</p>
@@ -45,7 +45,7 @@
                             <div class="mt-4 pl-2 border-l-2 border-[var(--color-primary)]" x-data="{ step: {{ auth()->check() ? '2' : '1' }} }">
                                 <div class="flex gap-3">
                                     @auth
-                                        <x-user-avatar :user="auth()->user()" size="sm" />
+                                        <x-user-avatar :user="auth()->user()" size="base" />
                                     @endauth
                                     <div class="flex-1">
                                         <div x-show="step === 1 || step === 2">
@@ -116,7 +116,7 @@
             <span class="section-label mb-3">{{ $this->comments->isNotEmpty() ? 'Jouw reactie' : 'Nog geen reacties' }}</span>
         </div>
         <div class="flex gap-3 items-start" x-data="{ focused: false }">
-            <x-user-avatar :user="auth()->user()" size="sm" class="mt-0.5" />
+            <x-user-avatar :user="auth()->user()" size="base" class="mt-0.5" />
             <form wire:submit="addComment" class="flex-1">
                 <textarea
                     wire:model="body"
