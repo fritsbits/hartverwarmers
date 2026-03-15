@@ -697,22 +697,14 @@
 
   .fiche-list-icon {
     @apply flex items-center justify-center shrink-0;
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-sm);
-    background: var(--color-bg-accent-light);
-    color: var(--color-text-secondary);
-    transition: color var(--transition-fast), background var(--transition-fast);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
   }
 
   .fiche-list-icon svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .fiche-list-item:hover .fiche-list-icon {
-    color: var(--color-primary);
-    background: #fde8dc;
+    width: 24px;
+    height: 24px;
   }
 
   .fiche-list-kudos {
