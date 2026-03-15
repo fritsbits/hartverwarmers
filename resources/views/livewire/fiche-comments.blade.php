@@ -109,14 +109,14 @@
     {{-- Compact comment form — below comments --}}
     @auth
         <div class="{{ $this->comments->isNotEmpty() ? 'border-t border-[var(--color-border-light)] pt-4' : '' }}">
-            <span class="section-label mb-3">{{ $this->comments->isNotEmpty() ? 'Schrijf een reactie' : 'Wees de eerste die reageert' }}</span>
+            <span class="section-label mb-3">{{ $this->comments->isNotEmpty() ? 'Jouw reactie' : 'Nog geen reacties' }}</span>
         </div>
         <div class="flex gap-3 items-start" x-data="{ focused: false }">
             <x-user-avatar :user="auth()->user()" size="sm" class="mt-0.5" />
             <form wire:submit="addComment" class="flex-1">
                 <textarea
                     wire:model="body"
-                    placeholder="Schrijf een reactie..."
+                    placeholder="Bedank de auteur, stel een vraag of deel een tip..."
                     rows="1"
                     x-on:focus="focused = true"
                     class="w-full rounded-xl border border-[var(--color-border-light)] bg-[var(--color-bg-cream)] px-4 py-2.5 text-sm placeholder:text-[var(--color-text-secondary)]/60 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent focus:bg-white resize-y transition-all"
