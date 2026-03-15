@@ -5,7 +5,11 @@
 
 ## Problem
 
-The profile sidebar has grown to 5 items (Persoonlijke info, Beveiliging, Favorieten, Downloads, Fiches), mixing account settings with content pages. Favorieten, Downloads, and Mijn fiches are not settings — they are content pages that belong in the main navigation.
+The profile sidebar has 4 items (Persoonlijke info, Beveiliging, Favorieten, Fiches) and was about to grow to 5 with the planned Downloads page. It mixes account settings with content pages. Favorieten and Fiches are not settings — they are content pages that belong in the main navigation, along with the planned Downloads feature.
+
+## Supersedes
+
+This spec supersedes `docs/superpowers/plans/2026-03-15-profile-downloads-page.md`. That plan placed downloads under the profile sidebar; this spec moves them to a standalone page at `/favorieten` combined with bookmarks. The downloads plan should be marked as canceled.
 
 ## Design
 
@@ -18,7 +22,7 @@ Rename the "Initiatieven" nav item to **"Ontdek"**. Convert it from a plain link
 | Item | Description | Route | URL |
 |------|-------------|-------|-----|
 | Initiatieven | Ontdek alle activiteiten en ideeën | `initiatives.index` | `/initiatieven` |
-| Downloads & favorieten | Jouw gedownloade en opgeslagen fiches | `bookmarks.index` | `/favorieten` |
+| Downloads & favorieten | Gedownloade en opgeslagen fiches | `bookmarks.index` | `/favorieten` |
 | Mijn fiches | Fiches die je hebt bijgedragen | `my-fiches.index` | `/mijn-fiches` |
 
 All 3 items are visible to everyone (logged in and anonymous). Anonymous users see a conversion CTA page on `/favorieten` and `/mijn-fiches`.
@@ -31,12 +35,12 @@ All 3 items are visible to everyone (logged in and anonymous). Anonymous users s
 
 **Remove from profile group:**
 - `/profiel/favorieten`
-- `/profiel/downloads`
 - `/profiel/fiches`
+
+Note: `/profiel/downloads` was never implemented (only planned). No redirect needed for it.
 
 **301 Redirects (preserve bookmarks):**
 - `/profiel/favorieten` → `/favorieten`
-- `/profiel/downloads` → `/favorieten`
 - `/profiel/fiches` → `/mijn-fiches`
 
 **Profile routes that remain:**
@@ -49,8 +53,8 @@ All 3 items are visible to everyone (logged in and anonymous). Anonymous users s
 **Page title:** "Downloads & favorieten"
 
 **Logged-in view:** Two-column layout using the base `layout` component (no sidebar).
-- **Left column (~60%):** Downloads — list of downloaded fiches, sorted by download date. Each row: fiche icon, title, download date.
-- **Right column (~40%):** Favorieten — bookmarked fiches, sorted by bookmark date. Each row: heart icon, title, save date.
+- **Left column (~60%):** Downloads — queried from `UserInteraction` model (`type=download`), eager loading `interactable` (the `Fiche`) with its `initiative` and `user`. Filter out records where the fiche has been deleted. Sorted by `created_at` descending. Each row: fiche icon, title, download date.
+- **Right column (~40%):** Favorieten — queried from the `$user->bookmarks()` relationship (polymorphic likes). Eager load the fiche with its `initiative` and `user`. Filter out records where the fiche has been deleted. Sorted by bookmark date. Each row: heart icon, title, save date.
 - Section headers with item counts.
 - On mobile: columns stack vertically, downloads first.
 
@@ -70,6 +74,8 @@ Moves from `/profiel/fiches` to `/mijn-fiches`. Same content and functionality a
 - Body: "Schrijf een fiche en help andere animatoren met praktische ideeën."
 - Primary button: "Maak een gratis account" → register page
 - Secondary link: "Al een account? Log in" → login page
+
+Remove the `$newFicheCommentsCount` query from `sidebar-layout.blade.php` (line 3) since the Fiches item that uses it is being removed. This avoids a wasted DB query on every profile page load.
 
 ### 5. Profile Sidebar
 
@@ -102,12 +108,15 @@ Remove "Favorieten" and "Fiches" entries from the user dropdown in the top-right
 - `resources/views/components/nav.blade.php` — rename Initiatieven to Ontdek dropdown (desktop + mobile)
 - `resources/views/components/sidebar-layout.blade.php` — remove Favorieten, Downloads, Fiches from sidebar
 - `routes/web.php` — add new routes, remove old profile routes, add redirects
-- `app/Http/Controllers/ProfileController.php` — remove `bookmarks()`, `downloads()`, `fiches()` methods
-- New: controller(s) for `/favorieten` and `/mijn-fiches`
+- `app/Http/Controllers/ProfileController.php` — move `bookmarks()` and `fiches()` methods to new controllers (no `downloads()` method exists on ProfileController)
+- New: `DownloadsAndBookmarksController` for `/favorieten` — receives the moved `bookmarks()` logic from ProfileController plus new downloads query
+- New: `MyFichesController` for `/mijn-fiches` — receives the moved `fiches()` logic from ProfileController (including eager loads, comment counting, stats, `fiches_comments_seen_at` update)
 - New: view for `/favorieten` (two-column layout)
 - New: view for `/mijn-fiches` (moved from profile)
 - New: anonymous CTA views (or inline conditionals in the views above)
-- Existing tests referencing old routes need updating
+- `tests/Feature/ProfileDownloadsTest.php` — this test references `profile.downloads` which was never implemented. Repurpose assertions into the new `bookmarks.index` tests or delete and rewrite
+- `tests/Feature/ProfileFichesTest.php` (if exists) — update route references from `profile.fiches` to `my-fiches.index`
+- Other tests referencing old profile routes need updating
 
 ## Out of Scope
 
