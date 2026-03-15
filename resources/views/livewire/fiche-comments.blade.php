@@ -10,11 +10,11 @@
     @if($this->comments->isNotEmpty())
         <div class="space-y-0 mb-6">
             @foreach($this->comments as $comment)
-                <div wire:key="comment-{{ $comment->id }}" class="flex gap-3 py-5 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
+                <div wire:key="comment-{{ $comment->id }}" class="flex gap-3 py-4 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
                     <x-user-avatar :user="$comment->user" size="sm" class="mt-0.5" />
                     <div class="flex-1 min-w-0">
-                        <p>{{ $comment->body }}</p>
-                        <div class="flex flex-wrap items-center gap-x-2 mt-1.5 text-xs text-[var(--color-text-secondary)]">
+                        <p class="text-base">{{ $comment->body }}</p>
+                        <div class="flex flex-wrap items-center gap-x-2 mt-1.5 text-sm text-[var(--color-text-secondary)]">
                             <span class="font-semibold text-[var(--color-text-primary)]">{{ $comment->user->full_name ?? 'Anoniem' }}</span>
                             <span>&middot;</span>
                             <span>{{ $comment->created_at->diffForHumans() }}</span>
@@ -24,13 +24,13 @@
 
                         {{-- Replies --}}
                         @if($comment->replies->isNotEmpty())
-                            <div class="mt-4 space-y-3 pl-2 border-l-2 border-[var(--color-border-light)]">
+                            <div class="mt-3 space-y-3 pl-2 border-l-2 border-[var(--color-border-light)]">
                                 @foreach($comment->replies as $reply)
                                     <div wire:key="reply-{{ $reply->id }}" class="flex gap-3">
                                         <x-user-avatar :user="$reply->user" size="sm" class="mt-0.5" />
                                         <div class="flex-1 min-w-0">
-                                            <p class="text-sm">{{ $reply->body }}</p>
-                                            <div class="flex flex-wrap items-center gap-x-2 mt-1 text-xs text-[var(--color-text-secondary)]">
+                                            <p class="text-base">{{ $reply->body }}</p>
+                                            <div class="flex flex-wrap items-center gap-x-2 mt-1 text-sm text-[var(--color-text-secondary)]">
                                                 <span class="font-semibold text-[var(--color-text-primary)]">{{ $reply->user->full_name ?? 'Anoniem' }}</span>
                                                 <span>&middot;</span>
                                                 <span>{{ $reply->created_at->diffForHumans() }}</span>
@@ -113,7 +113,7 @@
 
     {{-- Compact comment form — below comments --}}
     @auth
-        <div class="border-t border-[var(--color-border-light)] pt-5 mt-1">
+        <div class="border-t border-[var(--color-border-light)] pt-4 mt-0">
             <p class="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-3">Schrijf een reactie</p>
         </div>
         <div class="flex gap-3 items-start" x-data="{ focused: false }">
