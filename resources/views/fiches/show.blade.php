@@ -170,12 +170,15 @@
                                  :class="expanded ? 'bg-white' : 'bg-[var(--color-bg-cream)] hover:bg-white'">
                                 <button @click="expanded = !expanded" class="w-full text-left px-6 py-5 flex items-center gap-4 cursor-pointer group">
                                     <div class="flex-1 min-w-0">
-                                        <h2 class="text-xl" :class="expanded ? '' : 'mb-1'">Praktische informatie</h2>
-                                        <p x-show="!expanded" class="text-sm text-[var(--color-text-secondary)]">
+                                        <h2 class="text-2xl" :class="expanded ? '' : 'mb-1'">Praktische informatie</h2>
+                                        <div x-show="!expanded" class="flex flex-wrap gap-x-4 gap-y-1 mt-1">
                                             @foreach($fiche->practical_sections as $section)
-                                                <span>{{ $section['title'] }}</span>@if(!$loop->last)<span class="text-[var(--color-border-light)]"> &middot; </span>@endif
+                                                <span class="inline-flex items-center gap-1.5 text-sm text-[var(--color-primary)]">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                                    {{ $section['title'] }}
+                                                </span>
                                             @endforeach
-                                        </p>
+                                        </div>
                                     </div>
                                     <div class="shrink-0 w-8 h-8 rounded-full flex items-center justify-center border transition-colors"
                                          :class="expanded ? 'bg-[var(--color-bg-subtle)] border-[var(--color-border-light)]' : 'bg-white border-[var(--color-border-light)] group-hover:border-[var(--color-primary)]'">
