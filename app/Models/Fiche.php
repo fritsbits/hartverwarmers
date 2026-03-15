@@ -34,6 +34,7 @@ class Fiche extends Model
         'kudos_count',
         'featured_month',
         'icon',
+        'migration_id',
     ];
 
     protected function casts(): array
