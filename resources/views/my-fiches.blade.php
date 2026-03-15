@@ -61,11 +61,11 @@
                 {{-- Fiche list --}}
                 <div class="space-y-2">
                     @foreach($fiches as $fiche)
-                        <div class="fiche-list-item group">
+                        <div class="fiche-list-item group relative">
                             <x-fiche-icon :fiche="$fiche" :class="'fiche-list-icon' . ($fiche->published ? '' : ' opacity-50')" />
-                            <div class="flex-1 min-w-0">
+                            <div class="flex flex-col gap-0.5 min-w-0 flex-1">
                                 <div class="flex items-center gap-2 min-w-0">
-                                    <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-body font-semibold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors truncate">{{ $fiche->title }}</a>
+                                    <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="font-body font-semibold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors truncate after:absolute after:inset-0">{{ $fiche->title }}</a>
                                     @if($fiche->has_diamond)
                                         <x-diamond-badge class="shrink-0" />
                                     @endif
@@ -73,13 +73,9 @@
                                         <flux:badge size="sm" color="yellow" inset="top bottom" class="shrink-0">Concept</flux:badge>
                                     @endif
                                 </div>
-                                <div class="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
-                                    @if($fiche->initiative)
-                                        <span class="truncate">{{ $fiche->initiative->title }}</span>
-                                        <span class="text-[var(--color-border-light)]">&middot;</span>
-                                    @endif
-                                    <span class="whitespace-nowrap">{{ $fiche->created_at->format('d-m-Y') }}</span>
-                                </div>
+                                <span class="text-xs text-[var(--color-text-secondary)]">
+                                    @if($fiche->initiative){{ $fiche->initiative->title }}<span class="text-[var(--color-border-light)]"> &middot; </span>@endif{{ $fiche->created_at->format('d-m-Y') }}
+                                </span>
                             </div>
                             <div class="hidden sm:flex items-center gap-3 text-xs text-[var(--color-text-secondary)] shrink-0">
                                 <span class="flex items-center gap-1" title="Downloads">
@@ -95,7 +91,7 @@
                                     {{ $fiche->comments_count }}
                                 </span>
                             </div>
-                            <flux:button variant="ghost" href="{{ route('fiches.edit', $fiche) }}" icon="pencil-square" class="shrink-0" />
+                            <flux:button variant="ghost" href="{{ route('fiches.edit', $fiche) }}" icon="pencil-square" class="relative z-10 shrink-0" />
                         </div>
                     @endforeach
                 </div>
