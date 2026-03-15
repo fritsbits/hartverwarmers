@@ -5,12 +5,14 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\ContributorController;
 use App\Http\Controllers\DesignSystemController;
+use App\Http\Controllers\DownloadsAndBookmarksController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\FicheController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InitiativeController;
 use App\Http\Controllers\MailPreviewController;
+use App\Http\Controllers\MyFichesController;
 use App\Http\Controllers\ProfileController as HvProfileController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ThemeController;
@@ -40,6 +42,12 @@ Route::get('/themas', [ThemeController::class, 'index'])->name('themes.index');
 Route::get('/bijdragers', [ContributorController::class, 'index'])->name('contributors.index');
 Route::get('/bijdragers/{user}', [ContributorController::class, 'show'])->name('contributors.show');
 
+// Favorieten & downloads
+Route::get('/favorieten', DownloadsAndBookmarksController::class)->name('bookmarks.index');
+
+// Mijn fiches
+Route::get('/mijn-fiches', MyFichesController::class)->name('my-fiches.index');
+
 // Profile (authenticated)
 Route::middleware('auth')->group(function () {
     Route::get('/profiel', [HvProfileController::class, 'show'])->name('profile.show');
@@ -47,8 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/profiel/avatar', [HvProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
     Route::delete('/profiel/avatar', [HvProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
     Route::get('/profiel/beveiliging', [HvProfileController::class, 'security'])->name('profile.security');
-    Route::get('/profiel/favorieten', [HvProfileController::class, 'bookmarks'])->name('profile.bookmarks');
-    Route::get('/profiel/fiches', [HvProfileController::class, 'fiches'])->name('profile.fiches');
+    Route::redirect('/profiel/favorieten', '/favorieten', 301)->name('profile.bookmarks');
+    Route::redirect('/profiel/fiches', '/mijn-fiches', 301)->name('profile.fiches');
     Route::post('/fiches/{fiche}/favoriet', [BookmarkController::class, 'toggle'])->name('fiches.bookmark');
     Route::post('/fiches/{fiche}/comment', [CommentController::class, 'store'])->name('fiches.comment');
     Route::post('/initiatieven/{initiative:slug}/comment', [CommentController::class, 'storeForInitiative'])->name('initiatives.comment');
