@@ -101,6 +101,15 @@ class FicheController extends Controller
             );
         }
 
+        // Multi-file: serve pre-built ZIP or fall back to on-the-fly
+        if ($fiche->zip_path && Storage::disk('public')->exists($fiche->zip_path)) {
+            return response()->download(
+                Storage::disk('public')->path($fiche->zip_path),
+                $fiche->slug.'-bestanden.zip',
+            );
+        }
+
+        // Fallback: generate on-the-fly (for fiches without pre-built ZIP)
         $tempPath = tempnam(sys_get_temp_dir(), 'fiche-zip-');
         $zip = new ZipArchive;
         $zip->open($tempPath, ZipArchive::OVERWRITE);
@@ -111,9 +120,7 @@ class FicheController extends Controller
 
         $zip->close();
 
-        $zipFilename = $fiche->slug.'-bestanden.zip';
-
-        return response()->download($tempPath, $zipFilename, [
+        return response()->download($tempPath, $fiche->slug.'-bestanden.zip', [
             'Content-Type' => 'application/zip',
         ])->deleteFileAfterSend();
     }
