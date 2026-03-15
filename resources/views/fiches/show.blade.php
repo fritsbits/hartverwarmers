@@ -230,6 +230,11 @@
                                         </div>
                                     @endif
                                 </div>
+
+                                {{-- Kudos & bookmark --}}
+                                <div class="mt-4">
+                                    <livewire:fiche-kudos :fiche="$fiche" />
+                                </div>
                             </div>
                         @else
                             {{-- Files without preview — show file cards + download --}}
@@ -266,13 +271,13 @@
                                     </a>
                                     @include('fiches.partials.post-download-nudge')
                                 </div>
+
+                                {{-- Kudos & bookmark --}}
+                                <div class="mt-4">
+                                    <livewire:fiche-kudos :fiche="$fiche" />
+                                </div>
                             </div>
                         @endif
-
-                        {{-- Kudos & bookmark — below file card --}}
-                        <div class="mt-4">
-                            <livewire:fiche-kudos :fiche="$fiche" />
-                        </div>
                     </div>
                 @endif
             </div>
