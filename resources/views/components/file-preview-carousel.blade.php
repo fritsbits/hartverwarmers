@@ -51,7 +51,7 @@
         data-carousel
     >
         {{-- Carousel viewport --}}
-        <div class="relative bg-[var(--color-bg-cream)] rounded-2xl aspect-[4/3] overflow-hidden">
+        <div class="relative bg-[var(--color-bg-cream)] rounded-2xl aspect-[3/2] overflow-hidden">
             {{-- Preview badge (top-left) --}}
             @if($hasMoreSlides)
                 <span class="absolute top-3 left-0 z-10 text-[11px] font-semibold uppercase tracking-wide bg-[var(--color-bg-cream)] text-[var(--color-primary)] pl-3 pr-2.5 py-1 rounded-r border border-l-0 border-[var(--color-border-light)]" data-preview-counter>Preview</span>
