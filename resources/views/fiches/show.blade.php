@@ -114,6 +114,19 @@
                         @endif
                     </div>
 
+                    {{-- Author — inline below title --}}
+                    @if($fiche->user)
+                        <a href="{{ route('contributors.show', $fiche->user) }}" class="flex items-center gap-3 group mb-4">
+                            <x-user-avatar :user="$fiche->user" size="sm" class="transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30" />
+                            <div>
+                                <span class="text-sm font-semibold group-hover:text-[var(--color-primary)] transition-colors">{{ $fiche->user->full_name }}</span>
+                                @if($fiche->user->organisation)
+                                    <span class="text-sm text-[var(--color-text-secondary)]">&middot; {{ $fiche->user->organisation }}</span>
+                                @endif
+                            </div>
+                        </a>
+                    @endif
+
                     {{-- Meta line --}}
                     <div class="meta-group mb-4">
                         @if($fiche->materials['duration'] ?? null)
@@ -133,14 +146,14 @@
 
                     {{-- Description (lead text) --}}
                     @if($fiche->description)
-                        <div class="text-[var(--color-text-secondary)] text-2xl font-light mb-6 max-w-3xl">
+                        <div class="text-[var(--color-text-secondary)] text-2xl font-light max-w-3xl">
                             {!! $fiche->description !!}
                         </div>
                     @endif
 
                     {{-- Mobile-only download shortcut --}}
                     @if($uploadedFileCount > 0)
-                        <div class="lg:hidden mb-6">
+                        <div class="lg:hidden mt-6">
                             <flux:button variant="primary" icon="arrow-down-tray" size="sm"
                                 href="{{ route('fiches.download', [$initiative, $fiche]) }}">
                                 Download {{ $uploadedFileCount === 1 ? 'bestand' : $uploadedFileCount . ' bestanden' }}@if($hasGeneratedPdfs) (incl. PDF)@endif
@@ -217,37 +230,13 @@
                                 </div>
                             </div>
                         @endif
+
+                        {{-- Kudos & bookmark — below file card --}}
+                        <div class="mt-4">
+                            <livewire:fiche-kudos :fiche="$fiche" />
+                        </div>
                     </div>
                 @endif
-
-                {{-- C: author + kudos + practical info — order-2 on mobile (before preview) --}}
-                <div class="lg:col-span-3 order-2 lg:order-none">
-                    {{-- Author --}}
-                    @if($fiche->user)
-                        <a href="{{ route('contributors.show', $fiche->user) }}" class="flex items-center gap-4 group mt-2">
-                            <x-user-avatar :user="$fiche->user" size="base" class="transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30" />
-                            <div>
-                                <div class="text-base font-semibold group-hover:text-[var(--color-primary)] transition-colors">{{ $fiche->user->full_name }}</div>
-                                <div class="text-sm text-[var(--color-text-secondary)]">
-                                    @if($fiche->user->function_title)
-                                        {{ $fiche->user->function_title }}
-                                    @endif
-                                    @if($fiche->user->function_title && $fiche->user->organisation)
-                                        &middot;
-                                    @endif
-                                    @if($fiche->user->organisation)
-                                        {{ $fiche->user->organisation }}
-                                    @endif
-                                </div>
-                            </div>
-                        </a>
-                    @endif
-
-                    {{-- Kudos & bookmark --}}
-                    <div class="mt-6 pt-6 border-t border-[var(--color-border-light)]">
-                        <livewire:fiche-kudos :fiche="$fiche" />
-                    </div>
-                </div>
             </div>
         </div>
     </section>
