@@ -1,6 +1,5 @@
 @props(['title', 'heading' => null, 'description' => null, 'sectionLabel' => null])
 
-@php($newFicheCommentsCount = auth()->user()->newFicheCommentsCount())
 
 <x-layout :title="$title" bg-class="bg-[var(--color-bg-cream)]">
 
@@ -21,17 +20,6 @@
                             <a href="{{ route('profile.security') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('profile.security') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
                                 <flux:icon name="lock-closed" variant="mini" class="size-4" />
                                 Beveiliging
-                            </a>
-                            <a href="{{ route('profile.bookmarks') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('profile.bookmarks') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
-                                <flux:icon name="bookmark" variant="mini" class="size-4" />
-                                Favorieten
-                            </a>
-                            <a href="{{ route('profile.fiches') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('profile.fiches') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
-                                <flux:icon name="document-text" variant="mini" class="size-4" />
-                                Fiches
-                                @if($newFicheCommentsCount > 0)
-                                    <span class="inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full text-xs font-semibold bg-[var(--color-primary)] text-white">{{ $newFicheCommentsCount }}</span>
-                                @endif
                             </a>
                             @if(auth()->user()->isAdmin())
                                 <span class="w-px h-6 bg-[var(--color-border-light)] mx-1 shrink-0"></span>
@@ -72,8 +60,6 @@
                             <flux:navlist.group heading="Profiel">
                                 <flux:navlist.item href="{{ route('profile.show') }}" icon="user" :current="request()->routeIs('profile.show')">Persoonlijke info</flux:navlist.item>
                                 <flux:navlist.item href="{{ route('profile.security') }}" icon="lock-closed" :current="request()->routeIs('profile.security')">Beveiliging</flux:navlist.item>
-                                <flux:navlist.item href="{{ route('profile.bookmarks') }}" icon="bookmark" :current="request()->routeIs('profile.bookmarks')">Favorieten</flux:navlist.item>
-                                <flux:navlist.item href="{{ route('profile.fiches') }}" icon="document-text" :current="request()->routeIs('profile.fiches')" :badge="$newFicheCommentsCount > 0 ? $newFicheCommentsCount : null">Fiches</flux:navlist.item>
                             </flux:navlist.group>
 
                             @if(auth()->user()->isAdmin())
