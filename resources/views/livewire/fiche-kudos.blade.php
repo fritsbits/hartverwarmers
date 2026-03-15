@@ -112,14 +112,14 @@
             <button
                 x-on:mousedown.prevent="startHold()"
                 x-on:touchstart.prevent="startHold()"
-                class="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border-light)] select-none"
+                class="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full border select-none"
                 :class="[
                     ready && 'transition-all',
                     disabled
                         ? 'border-[var(--color-primary)] bg-[var(--color-bg-accent-light)] cursor-default opacity-60'
                         : holding
                             ? 'border-[var(--color-primary)] bg-[var(--color-bg-accent-light)] scale-105 cursor-pointer'
-                            : 'border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)] cursor-pointer'
+                            : 'border-[var(--color-border-light)] bg-white hover:border-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)] cursor-pointer'
                 ]"
             >
                 <svg
@@ -134,9 +134,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                 </svg>
                 <span class="text-sm font-medium" style="color: var(--color-primary)">
-                    <span wire:ignore x-show="displayTotal > 0" class="font-semibold tabular-nums" x-text="displayTotal">{{ $this->totalKudos > 0 ? $this->totalKudos : '' }}</span>
-                    <span x-show="displayTotal === 0">Geef kudos</span>
-                    <span x-show="displayTotal > 0" x-cloak> kudos</span>
+                    <span x-show="displayTotal === 0">Geef een hartje</span>
+                    <span x-show="displayTotal > 0" x-cloak><span wire:ignore class="font-semibold tabular-nums" x-text="displayTotal">{{ $this->totalKudos > 0 ? $this->totalKudos : '' }}</span> hartjes gekregen</span>
                 </span>
             </button>
             <flux:tooltip.content>
