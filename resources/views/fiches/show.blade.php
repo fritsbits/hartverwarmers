@@ -129,22 +129,6 @@
                                 {{ $fiche->materials['group_size'] }} pers.
                             </span>
                         @endif
-
-                        @if($uploadedFileCount > 0)
-                            <span class="meta-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-                                {{ $uploadedFileCount }} {{ $uploadedFileCount === 1 ? 'bestand' : 'bestanden' }}@if($hasGeneratedPdfs) + PDF @endif
-                            </span>
-                        @endif
-
-                        @feature(\App\Features\DiamantGoals::class)
-                            @foreach($fiche->tags->where('type', 'goal') as $tag)
-                                <a href="{{ route('goals.show', Str::after($tag->slug, 'doel-')) }}" class="diamant-pill diamant-pill-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="color: var(--color-primary)" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" /></svg>
-                                    {{ $tag->name }}
-                                </a>
-                            @endforeach
-                        @endfeature
                     </div>
 
                     {{-- Description (lead text) --}}
@@ -167,7 +151,7 @@
 
                 {{-- B: preview + download — order-3 on mobile (after description), right column on desktop --}}
                 @if($hasPreviewCarousel || $fiche->files->isNotEmpty())
-                    <div class="lg:col-span-2 lg:row-span-2 order-3 lg:order-none">
+                    <div class="lg:col-span-2 order-3 lg:order-none">
                         @if($hasPreviewCarousel)
                             <div class="lg:sticky lg:top-24">
                                 <div class="bg-white rounded-2xl border border-[var(--color-border-light)] overflow-hidden shadow-[0_4px_24px_-4px_rgba(120,90,60,0.08)]">
@@ -241,13 +225,7 @@
                     {{-- Author --}}
                     @if($fiche->user)
                         <a href="{{ route('contributors.show', $fiche->user) }}" class="flex items-center gap-4 group mt-2">
-                            @if($fiche->user->avatar_path)
-                                <img src="{{ $fiche->user->avatarUrl() }}" alt="{{ $fiche->user->full_name }}" class="w-12 h-12 rounded-full object-cover transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30">
-                            @else
-                                <div class="w-12 h-12 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-xl font-semibold transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30">
-                                    {{ substr($fiche->user->first_name, 0, 1) }}
-                                </div>
-                            @endif
+                            <x-user-avatar :user="$fiche->user" size="base" class="transition-shadow group-hover:ring-2 group-hover:ring-[var(--color-primary)]/30" />
                             <div>
                                 <div class="text-base font-semibold group-hover:text-[var(--color-primary)] transition-colors">{{ $fiche->user->full_name }}</div>
                                 <div class="text-sm text-[var(--color-text-secondary)]">
