@@ -17,7 +17,7 @@ class ImpersonationTest extends TestCase
 
         $response = $this->actingAs($admin)->post(route('admin.impersonate.start', $target));
 
-        $response->assertRedirect();
+        $response->assertRedirect(route('home'));
         $this->assertAuthenticatedAs($target);
         $this->assertEquals($admin->id, session('original_user_id'));
     }
@@ -117,7 +117,7 @@ class ImpersonationTest extends TestCase
 
         $response = $this->actingAs($admin1)->post(route('admin.impersonate.start', $admin2));
 
-        $response->assertRedirect();
+        $response->assertRedirect(route('home'));
         $this->assertAuthenticatedAs($admin2);
         $this->assertEquals($admin1->id, session('original_user_id'));
     }
