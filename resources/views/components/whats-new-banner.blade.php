@@ -12,7 +12,7 @@
         x-cloak
         class="bg-[var(--color-bg-cream)]"
     >
-        <div class="max-w-6xl mx-auto px-6 py-8">
+        <div class="max-w-6xl mx-auto px-6 pt-4 pb-2">
             <div class="relative bg-white rounded-[var(--radius-md)] border border-[var(--color-border-light)] shadow-card overflow-hidden">
                 {{-- Warm accent stripe --}}
                 <div class="absolute top-0 left-0 right-0 h-1 bg-[var(--color-primary)]"></div>
