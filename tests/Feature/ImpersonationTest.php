@@ -73,4 +73,52 @@ class ImpersonationTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    public function test_admin_can_stop_impersonation(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $target = User::factory()->create();
+
+        // Start impersonation
+        $this->actingAs($admin)->post(route('admin.impersonate.start', $target));
+
+        // Stop impersonation
+        $response = $this->post(route('admin.impersonate.stop'));
+
+        $response->assertRedirect();
+        $this->assertAuthenticatedAs($admin);
+        $this->assertNull(session('original_user_id'));
+    }
+
+    public function test_stop_without_impersonation_returns_403(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('admin.impersonate.stop'));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_logout_while_impersonating_ends_session(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $target = User::factory()->create();
+
+        $this->actingAs($admin)->post(route('admin.impersonate.start', $target));
+        $this->post(route('logout'));
+
+        $this->assertGuest();
+    }
+
+    public function test_admin_can_impersonate_another_admin(): void
+    {
+        $admin1 = User::factory()->admin()->create();
+        $admin2 = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin1)->post(route('admin.impersonate.start', $admin2));
+
+        $response->assertRedirect();
+        $this->assertAuthenticatedAs($admin2);
+        $this->assertEquals($admin1->id, session('original_user_id'));
+    }
 }
