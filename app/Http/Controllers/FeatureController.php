@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Features\DiamantGoals;
 use App\Features\WizardDevMode;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Laravel\Pennant\Feature;
 
@@ -34,7 +35,8 @@ class FeatureController extends Controller
             'name' => $name,
             'label' => $meta['label'],
             'description' => $meta['description'],
-            'active' => Feature::for(null)->active($meta['class']),
+            'globally_active' => $this->isGloballyActive($name),
+            'active' => Feature::active($meta['class']),
         ]);
 
         return view('admin.features', ['features' => $features]);
@@ -48,15 +50,31 @@ class FeatureController extends Controller
 
         $class = self::FEATURES[$feature]['class'];
 
-        if (Feature::for(null)->active($class)) {
-            Feature::deactivateForEveryone($class);
+        if ($this->isGloballyActive($feature)) {
+            // Back to beta: purge all stored values, resolver takes over
+            Feature::purge($class);
             $status = 'uitgeschakeld';
         } else {
-            Feature::activateForEveryone($class);
+            // Go live: purge stale per-user values, then activate null scope
+            Feature::purge($class);
+            Feature::for(null)->activate($class);
             $status = 'ingeschakeld';
         }
 
         return redirect()->route('admin.features')
             ->with('success', self::FEATURES[$feature]['label']." is {$status}.");
+    }
+
+    /**
+     * Check if a feature has been globally activated (null-scope stored true).
+     * Queries DB directly to avoid triggering Pennant's resolve-and-store cycle.
+     */
+    private function isGloballyActive(string $featureName): bool
+    {
+        return DB::table('features')
+            ->where('name', $featureName)
+            ->where('scope', '__laravel_null')
+            ->where('value', 'true')
+            ->exists();
     }
 }
