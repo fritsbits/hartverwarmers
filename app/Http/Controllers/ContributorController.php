@@ -16,27 +16,20 @@ class ContributorController extends Controller
     {
         $user->load(['fiches' => function ($query) {
             $query->published()
-                ->withCount('comments')
+                ->withCount([
+                    'comments',
+                    'likes as bookmarks_count' => fn ($q) => $q->where('type', 'bookmark'),
+                ])
                 ->with('initiative', 'tags', 'files');
         }]);
 
-        $fichesByInitiative = $user->fiches
-            ->groupBy('initiative.title')
-            ->sortBy(fn ($fiches) => $fiches->min('created_at'));
+        $fiches = $user->fiches->sortByDesc('created_at')->values();
 
         $stats = [
-            'fiches_count' => $user->fiches->count(),
-            'kudos_total' => $user->fiches->sum('kudos_count'),
+            'fiches_count' => $fiches->count(),
+            'kudos_total' => $fiches->sum('kudos_count'),
+            'initiative_count' => $fiches->pluck('initiative_id')->unique()->count(),
         ];
-
-        // Assign deterministic colors per initiative (0–5)
-        $initiativeColors = $fichesByInitiative->keys()
-            ->values()
-            ->mapWithKeys(fn ($title, $index) => [$title => $index % 6]);
-
-        // Dominant initiative color (for avatar placeholder)
-        $dominantInitiative = $fichesByInitiative->map->count()->sortDesc()->keys()->first();
-        $dominantColorIndex = $dominantInitiative ? ($initiativeColors[$dominantInitiative] ?? 0) : 0;
 
         // Related contributors: users sharing the same initiatives
         $initiativeIds = $user->fiches->pluck('initiative_id')->unique()->filter();
@@ -64,11 +57,9 @@ class ContributorController extends Controller
 
         return view('contributors.show', [
             'contributor' => $user,
-            'fichesByInitiative' => $fichesByInitiative,
+            'fiches' => $fiches,
             'stats' => $stats,
-            'initiativeColors' => $initiativeColors,
             'relatedContributors' => $relatedContributors,
-            'dominantColorIndex' => $dominantColorIndex,
         ]);
     }
 }

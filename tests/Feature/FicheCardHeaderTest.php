@@ -90,7 +90,7 @@ class FicheCardHeaderTest extends TestCase
         $response->assertSee('fiche-card-header');
     }
 
-    public function test_contributor_show_page_shows_fiche_card_header(): void
+    public function test_contributor_show_page_shows_fiche_list_items(): void
     {
         $user = User::factory()->create();
         $initiative = Initiative::factory()->create(['published' => true]);
@@ -103,6 +103,6 @@ class FicheCardHeaderTest extends TestCase
         $response = $this->get(route('contributors.show', $user));
 
         $response->assertStatus(200);
-        $response->assertSee('fiche-card-header');
+        $response->assertSee('fiche-list-item', escape: false);
     }
 }
