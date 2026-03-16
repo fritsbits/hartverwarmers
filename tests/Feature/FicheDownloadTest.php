@@ -153,8 +153,8 @@ class FicheDownloadTest extends TestCase
         $response = $this->get(route('fiches.show', [$this->initiative, $this->fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('1 bestand');
-        $response->assertSee('+ PDF');
+        $response->assertSee('Download bestand');
+        $response->assertSee('(incl. PDF)');
     }
 
     public function test_show_page_displays_type_pills_for_multiple_files(): void

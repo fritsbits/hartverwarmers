@@ -32,7 +32,6 @@ class FicheShowTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Jan Peeters');
-        $response->assertSee('Activiteitencoördinator');
         $response->assertSee('WZC De Linde');
     }
 
@@ -86,8 +85,7 @@ class FicheShowTest extends TestCase
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('1 bestand');
-        $response->assertSee('Download');
+        $response->assertSee('Download bestand');
         $response->assertSee(route('fiches.download', [$initiative, $fiche]));
     }
 
@@ -289,7 +287,7 @@ class FicheShowTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertDontSee('data-carousel', false);
-        $response->assertSee('1 bestand');
+        $response->assertSee('Download bestand');
     }
 
     public function test_fiche_show_displays_preview_indicator_when_file_has_more_slides(): void

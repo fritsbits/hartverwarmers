@@ -9,6 +9,7 @@ use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
 class InitiativeTest extends TestCase
@@ -43,6 +44,8 @@ class InitiativeTest extends TestCase
 
     public function test_initiatives_index_passes_goal_data(): void
     {
+        Feature::define('diamant-goals', true);
+
         $response = $this->get(route('initiatives.index'));
 
         $response->assertStatus(200);
@@ -479,6 +482,8 @@ class InitiativeTest extends TestCase
 
     public function test_initiative_show_displays_diamant_analyse_for_known_slug(): void
     {
+        Feature::define('diamant-goals', true);
+
         $initiative = Initiative::factory()->published()->create(['slug' => 'quiz']);
 
         $response = $this->get(route('initiatives.show', $initiative));
@@ -492,6 +497,8 @@ class InitiativeTest extends TestCase
 
     public function test_initiative_show_displays_multiple_diamant_goals(): void
     {
+        Feature::define('diamant-goals', true);
+
         $initiative = Initiative::factory()->published()->create(['slug' => 'quiz']);
 
         $response = $this->get(route('initiatives.show', $initiative));
@@ -518,6 +525,8 @@ class InitiativeTest extends TestCase
 
     public function test_initiative_show_displays_card_with_image_but_no_analyse(): void
     {
+        Feature::define('diamant-goals', true);
+
         $initiative = Initiative::factory()->published()->create([
             'slug' => 'onbekend-initiatief',
             'image' => '/img/initiatives/test.webp',

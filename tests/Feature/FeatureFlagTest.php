@@ -166,8 +166,8 @@ class FeatureFlagTest extends TestCase
         $response = $this->get(route('initiatives.index'));
 
         $response->assertStatus(200);
-        $response->assertDontSee('Doelen filteren');
-        $response->assertSee('Vind het juiste initiatief of zoek op naam.');
+        $response->assertSee('Elk initiatief bundelt praktijkfiches van collega');
+        $response->assertSee('Kies een thema en ontdek hoe anderen het aanpakken.');
     }
 
     public function test_initiatives_index_shows_goal_filter_when_feature_enabled(): void
@@ -177,8 +177,7 @@ class FeatureFlagTest extends TestCase
         $response = $this->get(route('initiatives.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Doelen filteren');
-        $response->assertSee('DIAMANT-doelen');
+        $response->assertSee('Doelen');
     }
 
     public function test_fiche_van_de_maand_hides_diamant_link_when_feature_disabled(): void

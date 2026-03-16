@@ -46,7 +46,9 @@ class PasswordUpdateTest extends TestCase
             'password_confirmation' => 'newpassword123',
         ]);
 
-        $response->assertSessionHas('success', 'Wachtwoord succesvol bijgewerkt.');
+        $response->assertSessionHas('toast', fn (array $toast) => $toast['heading'] === 'Wachtwoord bijgewerkt'
+            && $toast['variant'] === 'success'
+        );
     }
 
     public function test_security_page_renders_error_after_wrong_password(): void
