@@ -6,6 +6,7 @@ use App\Livewire\OnboardingBanner;
 use App\Models\Fiche;
 use App\Models\Initiative;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -24,7 +25,7 @@ class OnboardingBannerTest extends TestCase
 
     public function test_new_user_sees_level_1_banner(): void
     {
-        $user = User::factory()->member()->create(['onboarded_at' => null]);
+        $user = User::factory()->member()->create(['onboarded_at' => null, 'created_at' => Carbon::parse(config('hartverwarmers.launch_date'))]);
 
         Livewire::actingAs($user)
             ->test(OnboardingBanner::class)
@@ -35,7 +36,7 @@ class OnboardingBannerTest extends TestCase
 
     public function test_dismissing_level_1_sets_onboarded_at(): void
     {
-        $user = User::factory()->member()->create(['onboarded_at' => null]);
+        $user = User::factory()->member()->create(['onboarded_at' => null, 'created_at' => Carbon::parse(config('hartverwarmers.launch_date'))]);
 
         Livewire::actingAs($user)
             ->test(OnboardingBanner::class)
@@ -48,7 +49,7 @@ class OnboardingBannerTest extends TestCase
 
     public function test_onboarded_user_sees_no_level_1_banner(): void
     {
-        $user = User::factory()->member()->create(['onboarded_at' => now()]);
+        $user = User::factory()->member()->create(['onboarded_at' => now(), 'created_at' => Carbon::parse(config('hartverwarmers.launch_date'))]);
 
         Livewire::actingAs($user)
             ->test(OnboardingBanner::class)
@@ -63,6 +64,7 @@ class OnboardingBannerTest extends TestCase
             'contributor_onboarded_at' => null,
             'avatar_path' => null,
             'bio' => null,
+            'created_at' => Carbon::parse(config('hartverwarmers.launch_date')),
         ]);
         $initiative = Initiative::factory()->published()->create();
         Fiche::factory()->published()->create([
@@ -82,6 +84,7 @@ class OnboardingBannerTest extends TestCase
         $user = User::factory()->create([
             'onboarded_at' => now(),
             'contributor_onboarded_at' => null,
+            'created_at' => Carbon::parse(config('hartverwarmers.launch_date')),
         ]);
         $initiative = Initiative::factory()->published()->create();
         Fiche::factory()->published()->create([
@@ -103,6 +106,7 @@ class OnboardingBannerTest extends TestCase
         $user = User::factory()->create([
             'onboarded_at' => now(),
             'contributor_onboarded_at' => now(),
+            'created_at' => Carbon::parse(config('hartverwarmers.launch_date')),
         ]);
 
         Livewire::actingAs($user)
@@ -119,6 +123,7 @@ class OnboardingBannerTest extends TestCase
             'bio' => null,
             'function_title' => 'Animator',
             'organisation' => 'WZC De Zon',
+            'created_at' => Carbon::parse(config('hartverwarmers.launch_date')),
         ]);
         $initiative = Initiative::factory()->published()->create();
         Fiche::factory()->published()->create([
@@ -141,6 +146,7 @@ class OnboardingBannerTest extends TestCase
             'bio' => 'Ik ben animator.',
             'function_title' => 'Animator',
             'organisation' => 'WZC De Zon',
+            'created_at' => Carbon::parse(config('hartverwarmers.launch_date')),
         ]);
         $initiative = Initiative::factory()->published()->create();
         Fiche::factory()->published()->create([
@@ -161,6 +167,19 @@ class OnboardingBannerTest extends TestCase
         $user = User::factory()->create([
             'onboarded_at' => now(),
             'contributor_onboarded_at' => null,
+            'created_at' => Carbon::parse(config('hartverwarmers.launch_date')),
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(OnboardingBanner::class)
+            ->assertSet('level', null);
+    }
+
+    public function test_existing_user_does_not_see_onboarding_banner(): void
+    {
+        $user = User::factory()->member()->create([
+            'onboarded_at' => null,
+            'created_at' => Carbon::parse(config('hartverwarmers.launch_date'))->subDay(),
         ]);
 
         Livewire::actingAs($user)

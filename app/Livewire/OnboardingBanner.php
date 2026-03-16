@@ -20,6 +20,11 @@ class OnboardingBanner extends Component
 
         $user = auth()->user();
 
+        // Existing users (pre-launch) see the whats-new banner instead
+        if ($user->created_at->lt(\Carbon\Carbon::parse(config('hartverwarmers.launch_date')))) {
+            return;
+        }
+
         if ($user->onboarded_at === null) {
             $this->level = 1;
         } elseif ($user->contributor_onboarded_at === null && $user->fiches()->published()->exists()) {
