@@ -13,7 +13,7 @@ class FicheCardHeaderTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_fiche_card_shows_preview_header_when_files_have_previews(): void
+    public function test_contributor_show_displays_fiche_list_items_with_previews(): void
     {
         $user = User::factory()->create();
         $initiative = Initiative::factory()->create(['published' => true]);
@@ -24,8 +24,7 @@ class FicheCardHeaderTest extends TestCase
         $response = $this->get(route('contributors.show', $user));
 
         $response->assertStatus(200);
-        $response->assertSee('fiche-card-header');
-        $response->assertSee('fiche-paper');
+        $response->assertSee('fiche-list-item', escape: false);
     }
 
     public function test_fiche_card_hides_header_when_no_preview_images(): void
@@ -75,7 +74,7 @@ class FicheCardHeaderTest extends TestCase
         $this->assertEmpty($fiche->cardPreviewImages());
     }
 
-    public function test_initiative_page_shows_fiche_card_header_for_diamond_fiche_with_previews(): void
+    public function test_initiative_page_includes_fiche_data_for_diamond_fiche_with_previews(): void
     {
         $initiative = Initiative::factory()->create(['published' => true]);
         $fiche = Fiche::factory()->published()->create([
@@ -87,7 +86,10 @@ class FicheCardHeaderTest extends TestCase
         $response = $this->get(route('initiatives.show', $initiative));
 
         $response->assertStatus(200);
-        $response->assertSee('fiche-card-header');
+        $response->assertViewHas('ficheAlpineData');
+        $ficheData = $response->viewData('ficheAlpineData');
+        $this->assertCount(1, $ficheData);
+        $this->assertEquals($fiche->id, $ficheData[0]['id']);
     }
 
     public function test_contributor_show_page_shows_fiche_list_items(): void
