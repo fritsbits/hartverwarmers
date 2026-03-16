@@ -7,6 +7,7 @@ use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,7 +20,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Frederik',
             'last_name' => 'Vincx',
             'email' => 'admin@example.com',
-            'password' => 'fvx853',
+            'password' => Str::random(32),
             'organisation' => 'Hartverwarmers',
         ]);
 
