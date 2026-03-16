@@ -18,6 +18,8 @@ class AvatarUpload extends Component
 
     public ?string $existingAvatar = null;
 
+    public ?string $existingAvatarUrl = null;
+
     public string $initials = '';
 
     public int $colorIndex = 0;
@@ -26,6 +28,7 @@ class AvatarUpload extends Component
     {
         $user = auth()->user();
         $this->existingAvatar = $user->avatar_path;
+        $this->existingAvatarUrl = $user->avatarUrl();
         $this->initials = mb_strtoupper(mb_substr($user->first_name, 0, 1).mb_substr($user->last_name, 0, 1));
         $this->colorIndex = $user->id % 4;
     }
@@ -48,6 +51,7 @@ class AvatarUpload extends Component
         $user->update(['avatar_path' => $path]);
 
         $this->existingAvatar = $path;
+        $this->existingAvatarUrl = $user->avatarUrl();
         $this->photo = null;
 
         Flux::toast('Profielfoto bijgewerkt.', variant: 'success');
@@ -65,6 +69,7 @@ class AvatarUpload extends Component
         }
 
         $this->existingAvatar = null;
+        $this->existingAvatarUrl = null;
 
         Flux::toast('Profielfoto verwijderd.', variant: 'success');
         $this->dispatch('avatar-updated');

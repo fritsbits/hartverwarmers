@@ -19,7 +19,7 @@
                 @if ($photo && $photo->isPreviewable())
                     <img src="{{ $photo->temporaryUrl() }}" class="size-full object-cover rounded-full" />
                 @elseif ($existingAvatar)
-                    <img src="{{ Storage::url($existingAvatar) }}" class="size-full object-cover rounded-full" />
+                    <img src="{{ $existingAvatarUrl }}" class="size-full object-cover rounded-full" />
                 @else
                     <span class="text-2xl font-bold">{{ $initials }}</span>
                 @endif
