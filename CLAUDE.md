@@ -23,8 +23,8 @@ composer run dev
 # Build frontend assets
 npm run build
 
-# Run all tests
-php artisan test --compact
+# Run all tests (parallel required — sequential OOMs at ~500 tests)
+php artisan test --parallel --compact
 
 # Run a specific test file
 php artisan test --compact tests/Feature/GoalTest.php
@@ -126,7 +126,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.4.18
+- php - 8.4.19
 - laravel/ai (AI) - v0
 - laravel/framework (LARAVEL) - v12
 - laravel/pennant (PENNANT) - v1
