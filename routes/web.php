@@ -125,4 +125,3 @@ Route::get('/uitwerkingen/{slug}/bewerken', fn (string $slug) => redirect("/fich
 
 // Breeze auth routes
 require __DIR__.'/auth.php';
-
