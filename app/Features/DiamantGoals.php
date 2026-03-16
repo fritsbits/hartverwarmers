@@ -3,29 +3,25 @@
 namespace App\Features;
 
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Pennant\Attributes\Name;
 
 #[Name('diamant-goals')]
 class DiamantGoals
 {
+    public const CACHE_KEY = 'diamant-goals:live';
+
     private const ALLOWED_USER_IDS = [2623]; // Maite Mallentjer
 
     /**
      * Resolve the feature's initial value.
      *
-     * Checks if globally activated (null-scope stored true) first.
+     * Checks a cache flag for global activation first.
      * Falls back to beta tester list (admins + allowed IDs).
      */
     public function resolve(?User $scope): bool
     {
-        $globallyActive = DB::table('features')
-            ->where('name', 'diamant-goals')
-            ->where('scope', '__laravel_null')
-            ->where('value', 'true')
-            ->exists();
-
-        if ($globallyActive) {
+        if (Cache::get(self::CACHE_KEY)) {
             return true;
         }
 
