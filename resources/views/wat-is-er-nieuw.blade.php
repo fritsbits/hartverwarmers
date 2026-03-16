@@ -22,7 +22,7 @@
                 <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
                     <flux:icon.wrench-screwdriver class="size-5 text-[var(--color-primary)]" />
                 </span>
-                <h2>Eerst het praktische</h2>
+                <h2>Je moet opnieuw inloggen</h2>
                 <div class="mt-6">
                     <flux:callout icon="information-circle">
                         <flux:callout.text>
@@ -41,14 +41,14 @@
                 <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
                     <flux:icon.arrows-right-left class="size-5 text-[var(--color-primary)]" />
                 </span>
-                <h2>Wat er anders is</h2>
+                <h2>Nieuwe structuur, minder uploads</h2>
                 <div class="text-[var(--color-text-secondary)] mt-6 space-y-8" style="font-weight: var(--font-weight-light);">
                     <div>
-                        <h3 class="text-[var(--color-text-primary)]">Initiatieven en fiches</h3>
+                        <h3 class="text-[var(--color-text-primary)]">Activiteiten zijn nu anders gegroepeerd</h3>
                         <p class="mt-2">De structuur is iets veranderd, en dat vraagt even gewenning. Activiteiten zijn nu gegroepeerd onder <a href="{{ route('initiatives.index') }}" class="underline hover:text-[var(--color-primary)]">initiatieven</a>, een breed concept zoals &ldquo;Quiz&rdquo; of &ldquo;Muziek&rdquo;. Een concrete uitwerking van een collega noemen we een fiche. Zo zie je in één oogopslag wat het initiatief is én hoe anderen het al hebben toegepast.</p>
                     </div>
                     <div>
-                        <h3 class="text-[var(--color-text-primary)]">Geen foto-upload meer</h3>
+                        <h3 class="text-[var(--color-text-primary)]">Eigen foto's toevoegen kan niet meer</h3>
                         <p class="mt-2">Eén ding is ook verdwenen: je kan geen eigen foto meer toevoegen aan een fiche. Tot twee keer toe moesten we boetes betalen omdat er afbeeldingen waren opgeladen waarvoor de rechten niet klopten. Dat willen we niet opnieuw riskeren, en daarom hebben we die optie verwijderd.</p>
                     </div>
                 </div>
@@ -63,14 +63,14 @@
                 <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
                     <flux:icon.arrow-trending-up class="size-5 text-[var(--color-primary)]" />
                 </span>
-                <h2>Wat er beter is</h2>
+                <h2>Vlotter bladeren, geen gedoe met bestanden</h2>
                 <div class="text-[var(--color-text-secondary)] mt-6 space-y-8" style="font-weight: var(--font-weight-light);">
                     <div>
-                        <h3 class="text-[var(--color-text-primary)]">Beter bladeren en previews</h3>
+                        <h3 class="text-[var(--color-text-primary)]">Je ziet meteen wat er in een fiche zit</h3>
                         <p class="mt-2">Bladeren gaat een stuk vlotter. Je ziet meteen previews van wat er in een fiche zit, zonder eerst te moeten downloaden. En als je even wegklikt, vind je gemakkelijk de weg terug.</p>
                     </div>
                     <div>
-                        <h3 class="text-[var(--color-text-primary)]">Automatische PDF-conversie</h3>
+                        <h3 class="text-[var(--color-text-primary)]">Elk bestand opent nu voor iedereen</h3>
                         <p class="mt-2">Bestanden openen lukt nu ook voor iedereen. Vroeger zagen we regelmatig in de reacties dat mensen een PowerPoint niet konden openen. Nu zetten we elk bestand automatisch om naar PDF. Simpel, maar het scheelt een hoop gedoe.</p>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
                 <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
                     <flux:icon.sparkles class="size-5 text-[var(--color-primary)]" />
                 </span>
-                <h2>Wat er aankomt</h2>
+                <h2>Binnenkort: het DIAMANT-model</h2>
                 <p class="text-[var(--color-text-secondary)] mt-6" style="font-weight: var(--font-weight-light);">
                     Binnenkort introduceren we het DIAMANT-model, een kwaliteitskader rond zinvolle activiteiten in woonzorgcentra, ontwikkeld vanuit de expertise van Maite Mallentjer. Meer daarover volgt.
                 </p>
@@ -104,7 +104,7 @@
                     <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
                         <flux:icon.heart class="size-5 text-[var(--color-primary)]" />
                     </span>
-                    <h2>Jouw feedback telt</h2>
+                    <h2>Help ons beter worden</h2>
                     <div class="text-[var(--color-text-secondary)] mt-6 space-y-4" style="font-weight: var(--font-weight-light);">
                         <p>We hebben al gebruikerstests gedaan met echte activiteitenbegeleiders, en wat we leerden hebben we meteen verwerkt. Maar we zijn er nog niet. Heb jij een suggestie, een vraag, of iets dat niet klopt?</p>
                         <a href="mailto:info@hartverwarmers.be" class="cta-link inline-block">Stuur een mailtje</a>
