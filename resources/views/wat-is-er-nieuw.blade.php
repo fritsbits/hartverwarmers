@@ -15,18 +15,14 @@
         </div>
     </section>
 
-    <hr class="border-[var(--color-border-light)]">
-
     {{-- Block 2: Eerst het praktische --}}
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="max-w-3xl">
-                <h2 class="flex items-center gap-3">
-                    <span class="inline-flex w-9 h-9 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center shrink-0">
-                        <flux:icon.wrench-screwdriver class="size-4 text-[var(--color-primary)]" />
-                    </span>
-                    Eerst het praktische
-                </h2>
+                <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
+                    <flux:icon.wrench-screwdriver class="size-5 text-[var(--color-primary)]" />
+                </span>
+                <h2>Eerst het praktische</h2>
                 <div class="mt-6">
                     <flux:callout icon="information-circle">
                         <flux:callout.text>
@@ -38,18 +34,14 @@
         </div>
     </section>
 
-    <hr class="border-[var(--color-border-light)]">
-
     {{-- Block 3: Wat er anders is --}}
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="max-w-3xl">
-                <h2 class="flex items-center gap-3">
-                    <span class="inline-flex w-9 h-9 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center shrink-0">
-                        <flux:icon.arrows-right-left class="size-4 text-[var(--color-primary)]" />
-                    </span>
-                    Wat er anders is
-                </h2>
+                <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
+                    <flux:icon.arrows-right-left class="size-5 text-[var(--color-primary)]" />
+                </span>
+                <h2>Wat er anders is</h2>
                 <div class="text-[var(--color-text-secondary)] mt-6 space-y-8" style="font-weight: var(--font-weight-light);">
                     <div>
                         <h3 class="text-[var(--color-text-primary)]">Initiatieven en fiches</h3>
@@ -64,18 +56,14 @@
         </div>
     </section>
 
-    <hr class="border-[var(--color-border-light)]">
-
     {{-- Block 4: Wat er beter is --}}
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="max-w-3xl">
-                <h2 class="flex items-center gap-3">
-                    <span class="inline-flex w-9 h-9 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center shrink-0">
-                        <flux:icon.arrow-trending-up class="size-4 text-[var(--color-primary)]" />
-                    </span>
-                    Wat er beter is
-                </h2>
+                <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
+                    <flux:icon.arrow-trending-up class="size-5 text-[var(--color-primary)]" />
+                </span>
+                <h2>Wat er beter is</h2>
                 <div class="text-[var(--color-text-secondary)] mt-6 space-y-8" style="font-weight: var(--font-weight-light);">
                     <div>
                         <h3 class="text-[var(--color-text-primary)]">Beter bladeren en previews</h3>
@@ -90,20 +78,16 @@
         </div>
     </section>
 
-    <hr class="border-[var(--color-border-light)]">
-
     {{-- Block 5: Wat er aankomt --}}
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="max-w-3xl">
-                <h2 class="flex items-center gap-3">
-                    <span class="inline-flex w-9 h-9 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
-                        </svg>
-                    </span>
-                    Wat er aankomt
-                </h2>
+                <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                    </svg>
+                </span>
+                <h2>Wat er aankomt</h2>
                 <p class="text-[var(--color-text-secondary)] mt-6" style="font-weight: var(--font-weight-light);">
                     Binnenkort introduceren we het DIAMANT-model, een kwaliteitskader rond zinvolle activiteiten in woonzorgcentra, ontwikkeld vanuit de expertise van Maite Mallentjer. Meer daarover volgt.
                 </p>
@@ -114,19 +98,15 @@
         </div>
     </section>
 
-    <hr class="border-[var(--color-border-light)]">
-
     {{-- Block 6: Jouw feedback telt — warm closing with polaroid + CTA --}}
     <section class="bg-[var(--color-bg-cream)]">
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
                 <div class="lg:col-span-2">
-                    <h2 class="flex items-center gap-3">
-                        <span class="inline-flex w-9 h-9 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center shrink-0">
-                            <flux:icon.heart class="size-4 text-[var(--color-primary)]" />
-                        </span>
-                        Jouw feedback telt
-                    </h2>
+                    <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
+                        <flux:icon.heart class="size-5 text-[var(--color-primary)]" />
+                    </span>
+                    <h2>Jouw feedback telt</h2>
                     <div class="text-[var(--color-text-secondary)] mt-6 space-y-4" style="font-weight: var(--font-weight-light);">
                         <p>We hebben al gebruikerstests gedaan met echte activiteitenbegeleiders, en wat we leerden hebben we meteen verwerkt. Maar we zijn er nog niet. Heb jij een suggestie, een vraag, of iets dat niet klopt?</p>
                         <a href="mailto:info@hartverwarmers.be" class="cta-link inline-block">Stuur een mailtje</a>
