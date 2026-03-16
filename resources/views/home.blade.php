@@ -16,7 +16,8 @@
         </div>
     </section>
 
-    <!-- Onboarding Banner -->
+    <!-- Banners (mutually exclusive: whats-new for returning users, onboarding for new users) -->
+    <x-whats-new-banner />
     <livewire:onboarding-banner />
 
     <!-- Featured Initiatives -->
