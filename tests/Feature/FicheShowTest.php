@@ -409,4 +409,36 @@ class FicheShowTest extends TestCase
         $response->assertSee(route('fiches.edit', $fiche));
         $response->assertSee('Admin');
     }
+
+    public function test_comment_placeholder_shows_author_copy_on_own_fiche(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Voeg een opmerking toe...');
+        $response->assertDontSee('Bedank de auteur');
+    }
+
+    public function test_comment_placeholder_shows_default_copy_for_non_author(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Bedank de auteur, stel een vraag of deel een tip...');
+    }
 }
