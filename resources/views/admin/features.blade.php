@@ -7,8 +7,10 @@
                     <div>
                         <div class="flex items-center gap-2 mb-1">
                             <span class="font-heading font-bold text-base">{{ $feature['label'] }}</span>
-                            @if($feature['active'])
+                            @if($feature['globally_active'])
                                 <flux:badge size="sm" color="green" inset="top bottom">Actief</flux:badge>
+                            @elseif($feature['active'])
+                                <flux:badge size="sm" color="yellow" inset="top bottom">Beta</flux:badge>
                             @else
                                 <flux:badge size="sm" color="zinc" inset="top bottom">Inactief</flux:badge>
                             @endif
@@ -17,9 +19,9 @@
                     </div>
 
                     <form action="{{ route('admin.features.toggle', $feature['name']) }}" method="POST" class="shrink-0"
-                          onsubmit="return confirm('{{ $feature['active'] ? 'Weet je zeker dat je \'' . $feature['label'] . '\' wilt uitschakelen?' : 'Weet je zeker dat je \'' . $feature['label'] . '\' wilt inschakelen?' }}')">
+                          onsubmit="return confirm('{{ $feature['globally_active'] ? 'Weet je zeker dat je \'' . $feature['label'] . '\' wilt uitschakelen?' : 'Weet je zeker dat je \'' . $feature['label'] . '\' wilt inschakelen?' }}')">
                         @csrf
-                        @if($feature['active'])
+                        @if($feature['globally_active'])
                             <flux:button variant="ghost" type="submit" size="sm">Uitschakelen</flux:button>
                         @else
                             <flux:button variant="primary" type="submit" size="sm">Inschakelen</flux:button>
