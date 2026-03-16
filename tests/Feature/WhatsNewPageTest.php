@@ -30,7 +30,7 @@ class WhatsNewPageTest extends TestCase
         $response = $this->get('/');
 
         $response->assertSee('Hartverwarmers is volledig vernieuwd');
-        $response->assertSee('Lees meer');
+        $response->assertSee('Ontdek wat er nieuw is');
     }
 
     public function test_existing_user_sees_whats_new_banner(): void
