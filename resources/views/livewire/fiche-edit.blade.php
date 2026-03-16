@@ -175,36 +175,6 @@
                         </flux:field>
                     </div>
 
-                    <hr class="border-[var(--color-border-light)]">
-
-                    {{-- Goal tags --}}
-                    @feature('diamant-goals')
-                    <flux:field>
-                        <flux:label class="text-base font-body font-bold">DIAMANT-doelen</flux:label>
-                        <flux:description class="text-sm">Welke doelen van het DIAMANT-model worden aangesproken?</flux:description>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            @foreach($allGoalTags as $tag)
-                                @php
-                                    $facetSlug = str_replace('doel-', '', $tag->slug);
-                                    $facet = config("diamant.facets.{$facetSlug}");
-                                @endphp
-                                <label wire:key="goal-{{ $tag->id }}" @class([
-                                    'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm cursor-pointer transition-colors border',
-                                    'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' => in_array($tag->id, $selectedGoalTags),
-                                    'bg-white border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] text-[var(--color-text-primary)]' => !in_array($tag->id, $selectedGoalTags),
-                                ])>
-                                    <input type="checkbox" wire:model.live="selectedGoalTags" value="{{ $tag->id }}" class="sr-only">
-                                    @if($facet)
-                                        <x-diamant-gem :letter="$facet['letter']" size="xxs"
-                                            :inverted="in_array($tag->id, $selectedGoalTags)" />
-                                    @endif
-                                    {{ $tag->name }}
-                                </label>
-                            @endforeach
-                        </div>
-                    </flux:field>
-                    @endfeature
-
                     {{-- Theme tags (hidden from UI — suggestions still applied automatically) --}}
 
                     <hr class="border-[var(--color-border-light)]">

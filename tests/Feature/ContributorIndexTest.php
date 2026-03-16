@@ -459,7 +459,7 @@ class ContributorIndexTest extends TestCase
         $response->assertSee('Fiche van de maand');
     }
 
-    public function test_show_page_displays_initiative_colors(): void
+    public function test_show_page_displays_fiche_list_items(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $user = User::factory()->create();
@@ -468,7 +468,8 @@ class ContributorIndexTest extends TestCase
         $response = $this->get(route('contributors.show', $user));
 
         $response->assertStatus(200);
-        $response->assertSee('initiative-color-', escape: false);
+        $response->assertSee('fiche-list-item', escape: false);
+        $response->assertSee('fiche-list-icon', escape: false);
     }
 
     public function test_show_page_shows_related_contributors(): void
