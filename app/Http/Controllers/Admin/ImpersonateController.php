@@ -28,7 +28,7 @@ class ImpersonateController extends Controller
             'ip' => $request->ip(),
         ]);
 
-        return redirect()->back()->with('success', "Je bekijkt de site nu als {$user->full_name}.");
+        return redirect()->route('home')->with('success', "Je bekijkt de site nu als {$user->full_name}.");
     }
 
     public function stop(Request $request): RedirectResponse
