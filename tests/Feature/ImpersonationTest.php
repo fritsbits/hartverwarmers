@@ -85,7 +85,7 @@ class ImpersonationTest extends TestCase
         // Stop impersonation
         $response = $this->post(route('admin.impersonate.stop'));
 
-        $response->assertRedirect();
+        $response->assertRedirect(route('admin.users.index'));
         $this->assertAuthenticatedAs($admin);
         $this->assertNull(session('original_user_id'));
     }
@@ -182,5 +182,26 @@ class ImpersonationTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertDontSee(route('admin.impersonate.stop'));
+    }
+
+    public function test_admin_can_view_user_list(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $contributor = User::factory()->create(['first_name' => 'Marie', 'last_name' => 'Janssen']);
+
+        $response = $this->actingAs($admin)->get(route('admin.users.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Marie Janssen');
+        $response->assertSee('Nabootsen');
+    }
+
+    public function test_non_admin_cannot_view_user_list(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('admin.users.index'));
+
+        $response->assertStatus(403);
     }
 }
