@@ -49,6 +49,7 @@ class AnalyzeFileCommandTest extends TestCase
 
     public function test_command_runs_successfully_with_valid_file(): void
     {
+        $this->mockAiAvailable();
         AnalyzeFileContentAgent::fake();
         MatchInitiativeAgent::fake();
 
@@ -64,6 +65,7 @@ class AnalyzeFileCommandTest extends TestCase
 
     public function test_command_accepts_title_and_description_options(): void
     {
+        $this->mockAiAvailable();
         AnalyzeFileContentAgent::fake();
         MatchInitiativeAgent::fake();
 
@@ -84,6 +86,7 @@ class AnalyzeFileCommandTest extends TestCase
 
     public function test_command_outputs_table_headers(): void
     {
+        $this->mockAiAvailable();
         AnalyzeFileContentAgent::fake();
         MatchInitiativeAgent::fake();
 
