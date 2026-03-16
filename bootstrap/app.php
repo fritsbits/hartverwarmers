@@ -16,7 +16,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         ]);
         $middleware->appendToGroup('web', \App\Http\Middleware\EnsureQueueWorkerRunning::class);
-        $middleware->appendToGroup('web', \App\Http\Middleware\HandleImpersonation::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

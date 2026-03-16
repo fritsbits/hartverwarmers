@@ -13,12 +13,12 @@ class HomeController extends Controller
 {
     public function __invoke(DiamantService $diamant): View
     {
-        $initiatives = Cache::remember('home:initiatives', 600, fn () => Initiative::query()
+        $initiatives = Initiative::query()
             ->published()
             ->with(['tags' => fn ($q) => $q->where('type', 'goal')], 'creator')
             ->withCount(['fiches' => fn ($q) => $q->published()])
             ->latest()
-            ->get());
+            ->get();
 
         $inspiratieTitels = [
             'doen' => 'actief mee te doen',
@@ -38,7 +38,7 @@ class HomeController extends Controller
             'inspiratie' => $inspiratieTitels[$facet['slug']] ?? $facet['keyword'],
         ])->values()->all();
 
-        $goalCounts = Cache::remember('home:goal-counts', 600, fn () => Initiative::query()
+        $goalCounts = Initiative::query()
             ->published()
             ->join('taggables', fn ($j) => $j->on('initiatives.id', 'taggables.taggable_id')
                 ->where('taggables.taggable_type', Initiative::class))
@@ -46,7 +46,7 @@ class HomeController extends Controller
                 ->where('tags.slug', 'like', 'doel-%'))
             ->groupBy('tags.slug')
             ->selectRaw('tags.slug, count(distinct initiatives.id) as count')
-            ->pluck('count', 'slug'));
+            ->pluck('count', 'slug');
 
         $eligibleGoals = collect($goals)->filter(fn ($g) => ($goalCounts[$g['tagSlug']] ?? 0) >= 3)->values()->all();
         $defaultGoal = count($eligibleGoals) > 0
@@ -61,13 +61,11 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        $ficheVanDeMaand = Cache::remember('home:fiche-van-de-maand', 600, function () {
-            $currentMonth = now()->format('Y-m');
-
-            return Fiche::query()
+        try {
+            $ficheVanDeMaand = Fiche::query()
                 ->published()
                 ->ficheOfMonth()
-                ->where('featured_month', $currentMonth)
+                ->where('featured_month', now()->format('Y-m'))
                 ->with('initiative', 'user', 'tags', 'files')
                 ->withCount('comments')
                 ->first()
@@ -78,7 +76,9 @@ class HomeController extends Controller
                     ->withCount('comments')
                     ->orderByDesc('featured_month')
                     ->first();
-        });
+        } catch (\Illuminate\Database\QueryException) {
+            $ficheVanDeMaand = null;
+        }
 
         $stats = Cache::remember('home:stats', 300, fn () => [
             'fiches' => Fiche::published()->count(),

@@ -46,8 +46,9 @@ class ContributorController extends Controller
                 ->orderByDesc('fiches_count')
                 ->limit(3)
                 ->get()
-                ->each(function ($related) {
+                ->each(function ($related) use ($initiativeIds) {
                     $related->shared_initiatives = $related->fiches
+                        ->whereIn('initiative_id', $initiativeIds)
                         ->pluck('initiative.title')
                         ->unique()
                         ->values();

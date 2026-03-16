@@ -79,18 +79,6 @@
                         </div>
                     @endif
 
-                    {{-- Admin: impersonate --}}
-                    @auth
-                        @if(auth()->user()->isAdmin() && !$isOwnProfile)
-                            <form method="POST" action="{{ route('admin.impersonate.start', $contributor) }}" class="mt-5">
-                                @csrf
-                                <button type="submit" class="btn-pill text-xs">
-                                    Bekijk als deze gebruiker
-                                </button>
-                            </form>
-                        @endif
-                    @endauth
-
                 </div>
             </div>
         </div>
