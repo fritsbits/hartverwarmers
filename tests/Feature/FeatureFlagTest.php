@@ -8,6 +8,7 @@ use App\Models\Initiative;
 use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Pennant\Feature;
 use Tests\TestCase;
 
@@ -101,27 +102,28 @@ class FeatureFlagTest extends TestCase
 
     public function test_admin_can_toggle_feature_on(): void
     {
-        Feature::define('diamant-goals', false);
-
         $admin = User::factory()->admin()->create();
 
         $response = $this->actingAs($admin)->post(route('admin.features.toggle', 'diamant-goals'));
 
         $response->assertRedirect(route('admin.features'));
-        $this->assertTrue(Feature::for(null)->active(DiamantGoals::class));
+        $this->assertTrue(Cache::get(DiamantGoals::CACHE_KEY, false));
     }
 
     public function test_admin_can_toggle_feature_off(): void
     {
-        Feature::define('diamant-goals', true);
-        Feature::activateForEveryone(DiamantGoals::class);
+        // Simulate "live" state
+        Cache::forever(DiamantGoals::CACHE_KEY, true);
 
         $admin = User::factory()->admin()->create();
 
         $response = $this->actingAs($admin)->post(route('admin.features.toggle', 'diamant-goals'));
 
         $response->assertRedirect(route('admin.features'));
-        $this->assertFalse(Feature::for(null)->active(DiamantGoals::class));
+        $this->assertFalse(Cache::get(DiamantGoals::CACHE_KEY, false));
+        // Admin still sees it via resolver
+        Feature::flushCache();
+        $this->assertTrue(Feature::for($admin)->active(DiamantGoals::class));
     }
 
     public function test_unknown_feature_toggle_returns_404(): void
@@ -197,6 +199,53 @@ class FeatureFlagTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Het DIAMANT-kompas');
+    }
+
+    public function test_beta_regular_user_cannot_see_goals(): void
+    {
+        Feature::purge(DiamantGoals::class);
+
+        $user = User::factory()->create();
+
+        $this->assertFalse(Feature::for($user)->active(DiamantGoals::class));
+        $this->actingAs($user)->get(route('goals.index'))->assertStatus(404);
+    }
+
+    public function test_beta_admin_can_see_goals(): void
+    {
+        Feature::purge(DiamantGoals::class);
+
+        $admin = User::factory()->admin()->create();
+
+        $this->assertTrue(Feature::for($admin)->active(DiamantGoals::class));
+        $this->actingAs($admin)->get(route('goals.index'))->assertStatus(200);
+    }
+
+    public function test_live_regular_user_can_see_goals(): void
+    {
+        Cache::forever(DiamantGoals::CACHE_KEY, true);
+        Feature::purge(DiamantGoals::class);
+
+        $user = User::factory()->create();
+
+        $this->assertTrue(Feature::for($user)->active(DiamantGoals::class));
+        $this->actingAs($user)->get(route('goals.index'))->assertStatus(200);
+    }
+
+    public function test_back_to_beta_regular_user_loses_access(): void
+    {
+        Cache::forever(DiamantGoals::CACHE_KEY, true);
+        Feature::purge(DiamantGoals::class);
+
+        // Now go back to beta
+        Cache::forget(DiamantGoals::CACHE_KEY);
+        Feature::flushCache();
+
+        $user = User::factory()->create();
+        $admin = User::factory()->admin()->create();
+
+        $this->assertFalse(Feature::for($user)->active(DiamantGoals::class));
+        $this->assertTrue(Feature::for($admin)->active(DiamantGoals::class));
     }
 
     public function test_fiche_edit_preserves_goal_tags_when_feature_disabled(): void
