@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\ImpersonateController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContentController;
@@ -65,6 +67,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/fiches/nieuw', [FicheController::class, 'create'])->name('fiches.create');
     Route::get('/fiches/{fiche:slug}/bewerken', [FicheController::class, 'edit'])->name('fiches.edit');
 
+    Route::post('/admin/impersonate/stop', [ImpersonateController::class, 'stop'])->name('admin.impersonate.stop');
+
     // Admin actions
     Route::middleware('admin')->group(function () {
         Route::get('/admin/design-systeem', [DesignSystemController::class, 'index'])->name('admin.design-system');
@@ -78,6 +82,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/initiatieven/{initiative:slug}/{fiche:slug}/fiche-van-de-maand', [FicheController::class, 'setFicheOfMonth'])->name('fiches.setFicheOfMonth');
         Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}/fiche-van-de-maand', [FicheController::class, 'unsetFicheOfMonth'])->name('fiches.unsetFicheOfMonth');
         Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'destroy'])->name('fiches.destroy');
+        Route::get('/admin/gebruikers', [AdminUserController::class, 'index'])->name('admin.users.index');
+        Route::post('/admin/impersonate/{user}', [ImpersonateController::class, 'start'])
+            ->where('user', '[0-9]+')
+            ->name('admin.impersonate.start');
     });
 });
 
@@ -99,6 +107,9 @@ Route::middleware(EnsureFeaturesAreActive::using('diamant-goals'))->group(functi
 Route::get('/{slug}', [ContentController::class, 'content'])
     ->where('slug', '(lessenreeks|wonen-en-leven).*')
     ->name('content');
+
+// What's new (launch communication)
+Route::view('/wat-is-er-nieuw', 'wat-is-er-nieuw')->name('whats-new');
 
 // About
 Route::view('/over-ons', 'about')->name('about');
