@@ -68,8 +68,7 @@ class ContributorIndex extends Component
     {
         return Cache::remember('contributors:newcomers', 1800, function () {
             $results = User::query()
-                ->whereHas('fiches', fn ($q) => $q->published())
-                ->withCount(['fiches as fiches_count' => fn ($q) => $q->published()])
+                ->whereHas('fiches', fn ($q) => $q->published(), '=', 1)
                 ->addSelect(['latest_fiche_at' => Fiche::query()
                     ->select('created_at')
                     ->whereColumn('user_id', 'users.id')
@@ -84,10 +83,8 @@ class ContributorIndex extends Component
                     ->with('initiative:id,title'),
                 ])
                 ->orderByDesc('latest_fiche_at')
-                ->get()
-                ->where('fiches_count', 1)
-                ->take(4)
-                ->values();
+                ->limit(4)
+                ->get();
 
             return $results->count() >= 3 ? $results : collect();
         });
