@@ -48,6 +48,7 @@ class ImpersonateController extends Controller
         session()->forget('original_user_id');
         session()->regenerate();
 
-        return redirect()->route('admin.users.index')->with('success', 'Je bent terug als jezelf.');
+        // TODO: update to admin.users.index once Task 5 registers that route
+        return redirect()->route('admin.features')->with('success', 'Je bent terug als jezelf.');
     }
 }
