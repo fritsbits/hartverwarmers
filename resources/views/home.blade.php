@@ -16,9 +16,11 @@
         </div>
     </section>
 
-    <!-- Banners (mutually exclusive: whats-new for returning users, onboarding for new users) -->
-    <x-whats-new-banner />
+    <!-- Onboarding Banner (new users only) -->
     <livewire:onboarding-banner />
+
+    <!-- Whats-new Banner (returning users only, white zone) -->
+    <x-whats-new-banner />
 
     <!-- Featured Initiatives -->
     @if($initiatives->isNotEmpty())
