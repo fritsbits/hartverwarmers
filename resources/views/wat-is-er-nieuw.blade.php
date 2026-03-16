@@ -5,9 +5,9 @@
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="max-w-3xl">
                 <span class="section-label section-label-hero">Nieuw</span>
-                <h1 class="mt-1">Een nieuwe Hartverwarmers. Gebouwd door jullie.</h1>
-                <div class="text-[var(--color-text-secondary)] mt-6 space-y-4" style="font-weight: var(--font-weight-light);">
-                    <p>Bijna 500 activiteiten. Dat hebben jullie samen opgebouwd, activiteitenbegeleiders uit heel Vlaanderen en Nederland. Vaak zonder dat iemand van ons daar iets voor deed. Dat verdient erkenning.</p>
+                <h1 class="mt-1">Een nieuwe Hartverwarmers.<br>Gebouwd door jullie.</h1>
+                <div class="text-[var(--color-text-secondary)] mt-6 space-y-4 text-xl" style="font-weight: var(--font-weight-light);">
+                    <p>Bijna 500 activiteiten. Dat hebben jullie samen opgebouwd, activiteitenbegeleiders uit heel Vlaanderen en Nederland. Dat verdient erkenning.</p>
                     <p>Het verhaal van Hartverwarmers begon in maart 2020, in de eerste week van de lockdown. Frederik Vincx bouwde het platform in één week, samen met Maite Mallentjer. Wat begon als een crisisinitiatief, groeide uit tot een community van meer dan 4.800 collega's. Na 2022 liep het platform even op de achtergrond. De community bleef groeien, maar de beheerders hadden minder tijd en middelen. Nu slaan Frederik en Maite opnieuw de handen in elkaar. Meer over hun verhaal lees je op de <a href="{{ route('about') }}" class="underline hover:text-[var(--color-primary)]">over ons-pagina</a>.</p>
                     <p>Dit is de eerste versie van de vernieuwde website. En er komt nog meer aan.</p>
                 </div>
@@ -25,7 +25,7 @@
                 <div class="mt-6">
                     <flux:callout icon="information-circle">
                         <flux:callout.text>
-                            Je moet opnieuw inloggen. Dat is normaal, de website is volledig herbouwd. Je bestaand wachtwoord werkt gewoon nog. Alles wat er stond, is er nog.
+                            Je moet opnieuw <a href="{{ route('login') }}" class="underline hover:text-[var(--color-primary)]">inloggen</a>. Dat is normaal, de website is volledig herbouwd. Je bestaand wachtwoord werkt gewoon nog. Alles wat er stond, is er nog.
                         </flux:callout.text>
                     </flux:callout>
                 </div>
@@ -43,11 +43,11 @@
                 <div class="text-[var(--color-text-secondary)] mt-6 space-y-8" style="font-weight: var(--font-weight-light);">
                     <div>
                         <h3 class="text-[var(--color-text-primary)]">Initiatieven en fiches</h3>
-                        <p class="mt-2">De structuur is iets veranderd, en dat vraagt even gewenning. Activiteiten zijn nu gegroepeerd onder initiatieven, een breed concept zoals &ldquo;Quiz&rdquo; of &ldquo;Muziek&rdquo;. Een concrete uitwerking van een collega noemen we een fiche. Zo zie je in één oogopslag wat het initiatief is én hoe anderen het al hebben toegepast.</p>
+                        <p class="mt-2">De structuur is iets veranderd, en dat vraagt even gewenning. Activiteiten zijn nu gegroepeerd onder <a href="{{ route('initiatives.index') }}" class="underline hover:text-[var(--color-primary)]">initiatieven</a>, een breed concept zoals &ldquo;Quiz&rdquo; of &ldquo;Muziek&rdquo;. Een concrete uitwerking van een collega noemen we een fiche. Zo zie je in één oogopslag wat het initiatief is én hoe anderen het al hebben toegepast.</p>
                     </div>
                     <div>
                         <h3 class="text-[var(--color-text-primary)]">Geen foto-upload meer</h3>
-                        <p class="mt-2">Eén ding is ook verdwenen: je kan geen eigen foto meer toevoegen aan een fiche. Tot twee keer toe moesten we boetes betalen omdat er afbeeldingen waren opgeladen waarvoor de rechten niet klopten. Dat willen we niemand aandoen, en het was niet meer houdbaar.</p>
+                        <p class="mt-2">Eén ding is ook verdwenen: je kan geen eigen foto meer toevoegen aan een fiche. Tot twee keer toe moesten we boetes betalen omdat er afbeeldingen waren opgeladen waarvoor de rechten niet klopten. Dat willen we niet opnieuw riskeren, en daarom hebben we die optie verwijderd.</p>
                     </div>
                 </div>
             </div>
@@ -103,7 +103,7 @@
                     <p>We hebben al gebruikerstests gedaan met echte activiteitenbegeleiders, en wat we leerden hebben we meteen verwerkt. Maar we zijn er nog niet. Heb jij een suggestie, een vraag, of iets dat niet klopt?</p>
                     <a href="mailto:info@hartverwarmers.be" class="cta-link inline-block">Stuur een mailtje</a>
                     <p>We lezen alles.</p>
-                    <p>En dan nog dit: we zijn benieuwd welke activiteit de 500ste wordt. Die mijlpaal is van jullie, niet van ons.</p>
+                    <p>En dan nog dit: we naderen de 500 activiteiten. Welke activiteit <a href="{{ route('fiches.create') }}" class="underline hover:text-[var(--color-primary)]">deel jij</a>?</p>
                 </div>
             </div>
         </div>
