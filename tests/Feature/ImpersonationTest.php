@@ -121,4 +121,41 @@ class ImpersonationTest extends TestCase
         $this->assertAuthenticatedAs($admin2);
         $this->assertEquals($admin1->id, session('original_user_id'));
     }
+
+    public function test_admin_routes_blocked_while_impersonating(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $target = User::factory()->create();
+
+        $this->actingAs($admin)->post(route('admin.impersonate.start', $target));
+
+        $response = $this->get(route('admin.features'));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_admin_post_routes_blocked_while_impersonating(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $target = User::factory()->create();
+
+        $this->actingAs($admin)->post(route('admin.impersonate.start', $target));
+
+        $response = $this->post(route('admin.features.toggle', 'some-feature'));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_stop_route_accessible_while_impersonating(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $target = User::factory()->create();
+
+        $this->actingAs($admin)->post(route('admin.impersonate.start', $target));
+
+        $response = $this->post(route('admin.impersonate.stop'));
+
+        $response->assertRedirect();
+        $this->assertAuthenticatedAs($admin);
+    }
 }
