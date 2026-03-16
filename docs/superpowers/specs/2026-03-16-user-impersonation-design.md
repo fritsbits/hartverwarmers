@@ -10,15 +10,15 @@ Session-based user impersonation. Admins can "become" any user via two entry poi
 
 ## Routes & Controller
 
-### Routes (admin-only)
+### Routes
 
 ```
-POST /admin/impersonate/{user}   → ImpersonateController@start
-POST /admin/impersonate/stop     → ImpersonateController@stop
+POST /admin/impersonate/{user}   → ImpersonateController@start   (name: admin.impersonate.start)
+POST /admin/impersonate/stop     → ImpersonateController@stop    (name: admin.impersonate.stop)
 ```
 
-- `start` is protected by the existing `admin` middleware.
-- `stop` is NOT behind `admin` middleware (since the logged-in user is the impersonated non-admin). Instead, it checks for `session('original_user_id')`.
+- `start` is protected by the existing `admin` middleware (which includes `auth`).
+- `stop` is behind `auth` middleware only (not `admin`, since the logged-in user is the impersonated non-admin). It checks for `session('original_user_id')`.
 
 ### ImpersonateController
 
@@ -27,15 +27,24 @@ POST /admin/impersonate/stop     → ImpersonateController@stop
 2. Reject if `session('original_user_id')` already set (no nesting)
 3. Reject if `$user->trashed()` (no soft-deleted users)
 4. Store `session('original_user_id', auth()->id())`
-5. `Auth::login($user)`
-6. Redirect back with flash message
+5. `Auth::login($user)` (without remember — remember-me state is intentionally not preserved)
+6. `Log::info('Impersonation started', ['admin_id' => $originalId, 'target_id' => $user->id, 'ip' => $request->ip()])`
+7. Redirect back with flash message
 
 **`stop()`**:
 1. Read `session('original_user_id')`
 2. Abort 403 if not set
-3. `Auth::login(User::findOrFail($originalId))`
-4. `session()->forget('original_user_id')`
-5. Redirect to `/admin/gebruikers` with flash message
+3. `Auth::login(User::findOrFail($originalId))` (without remember)
+4. `Log::info('Impersonation stopped', ['admin_id' => $originalId, 'ip' => $request->ip()])`
+5. `session()->forget('original_user_id')`
+6. `session()->regenerate()` (safe here — session key no longer needed)
+7. Redirect to `/admin/gebruikers` with flash message
+
+### Session regeneration strategy
+
+- **In `start()`**: Do NOT regenerate session after `Auth::login()`, because `original_user_id` was just stored and would be lost.
+- **In `stop()`**: Regenerate session after forgetting the key — restores clean session state for the admin.
+- **CSRF tokens**: Blade's `@csrf` renders a fresh token on each page load, so the stop-form always has a valid token.
 
 ## Middleware: HandleImpersonation
 
@@ -43,7 +52,9 @@ Registered globally in `bootstrap/app.php`.
 
 Responsibilities:
 - Share `is_impersonating` and `original_user_id` with all views via `View::share()`
-- Block access to all `/admin/*` routes while impersonating, EXCEPT `POST /admin/impersonate/stop` — returns 403 with message explaining they must stop impersonating first
+- Block access to admin routes (by route name prefix `admin.`, except `admin.impersonate.stop`) while impersonating — returns 403 with message explaining they must stop impersonating first
+
+Uses route-name-based checking (not URL prefix) to avoid fragility with future route changes.
 
 ## Floating Badge
 
@@ -57,10 +68,12 @@ Included in the main layout (`components/layout.blade.php`). Only renders when `
 - Shows: user avatar (small circle, or initials fallback) + full name + role badge + "Stop" button
 - Inline styles matching the queue badge pattern
 - `z-index: 9999`
+- `role="status"` and `aria-label` for screen reader accessibility
 
 ### Stop button
 - Small form inside the badge: `POST /admin/impersonate/stop` with CSRF token
 - Styled as a small white/light button within the pill
+- Keyboard-accessible
 
 ## User Selection Entry Points
 
@@ -71,10 +84,10 @@ New admin-only page (route name: `admin.users.index`).
 - Simple table: avatar, name, email, role, organisation
 - Each row has an "Impersonate" button (POST form) — not shown for the current admin's own row
 - Protected by existing `admin` middleware
-- Controller: `AdminUserController@index` (or similar)
+- Controller: `AdminUserController@index`
 - Basic search/filter not required for v1 but the page structure should allow it later
 
-### b) Contributor profile pages: `/bijdragers/{slug}`
+### b) Contributor profile pages: `/bijdragers/{user}`
 
 - When an admin views another user's profile, show a "Bekijk als deze gebruiker" button
 - Only visible when `auth()->user()->isAdmin()` and the profile is NOT the admin's own
@@ -86,12 +99,15 @@ New admin-only page (route name: `admin.users.index`).
 | Rule | Implementation |
 |------|---------------|
 | Admin-only initiation | `admin` middleware on `start` route |
+| Auth required for stop | `auth` middleware on `stop` route |
 | No self-impersonation | Controller check: reject if target === self |
 | No nesting | Controller check: reject if session key exists |
 | No trashed users | Controller check: `$user->trashed()` |
 | Session-scoped | Ends on logout or session expiry |
-| Admin routes blocked | `HandleImpersonation` middleware blocks `/admin/*` except stop route |
+| Admin routes blocked | Middleware blocks routes with `admin.*` name prefix, except stop |
 | Stop always available | `stop` route checks session key, not admin role |
+| Audit trail | `Log::info()` on start and stop with admin ID, target ID, IP |
+| No remember-me | `Auth::login()` called without remember flag in both directions |
 
 ## Testing
 
@@ -104,9 +120,12 @@ New admin-only page (route name: `admin.users.index`).
 5. **Can't nest impersonation**: Already impersonating, POST to start again gets rejected
 6. **Can't impersonate trashed user**: Soft-deleted user target gets rejected
 7. **Admin routes blocked while impersonating**: GET `/admin/gebruikers` returns 403 while impersonating
-8. **Stop route accessible while impersonating**: POST to stop succeeds even though auth user is non-admin
-9. **Badge renders when impersonating**: Response contains impersonation badge markup when session key set
-10. **Badge hidden when not impersonating**: Response does NOT contain badge markup normally
+8. **Admin POST routes blocked while impersonating**: POST to admin feature toggle returns 403 while impersonating
+9. **Stop route accessible while impersonating**: POST to stop succeeds even though auth user is non-admin
+10. **Badge renders when impersonating**: Response contains impersonation badge markup when session key set
+11. **Badge hidden when not impersonating**: Response does NOT contain badge markup normally
+12. **Logout while impersonating ends impersonation**: Session destroyed, admin must re-login as themselves
+13. **Admin can impersonate another admin**: Impersonated admin is blocked from admin routes like any other impersonated user
 
 ## Files to Create/Modify
 
