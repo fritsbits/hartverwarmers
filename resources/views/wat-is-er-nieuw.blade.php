@@ -23,7 +23,7 @@
                     <flux:icon.wrench-screwdriver class="size-5 text-[var(--color-primary)]" />
                 </span>
                 <h2>Je moet opnieuw inloggen</h2>
-                <div class="mt-6">
+                <div class="mt-6 text-lg">
                     <flux:callout icon="information-circle">
                         <flux:callout.text>
                             Je moet opnieuw <a href="{{ route('login') }}" class="underline hover:text-[var(--color-primary)]">inloggen</a>. Dat is normaal, de website is volledig herbouwd. Je bestaand wachtwoord werkt gewoon nog. Alles wat er stond, is er nog.
