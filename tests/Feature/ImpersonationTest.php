@@ -158,4 +158,29 @@ class ImpersonationTest extends TestCase
         $response->assertRedirect();
         $this->assertAuthenticatedAs($admin);
     }
+
+    public function test_badge_renders_when_impersonating(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $target = User::factory()->create(['first_name' => 'Jan', 'last_name' => 'Peeters']);
+
+        $this->actingAs($admin)->post(route('admin.impersonate.start', $target));
+
+        $response = $this->get(route('home'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Jan Peeters');
+        $response->assertSee('Stop');
+        $response->assertSee(route('admin.impersonate.stop'));
+    }
+
+    public function test_badge_hidden_when_not_impersonating(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('home'));
+
+        $response->assertStatus(200);
+        $response->assertDontSee(route('admin.impersonate.stop'));
+    }
 }
