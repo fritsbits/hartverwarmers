@@ -21,7 +21,12 @@
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="max-w-3xl">
-                <h2>Eerst het praktische</h2>
+                <h2 class="flex items-center gap-3">
+                    <span class="inline-flex w-9 h-9 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center shrink-0">
+                        <flux:icon.wrench-screwdriver class="size-4 text-[var(--color-primary)]" />
+                    </span>
+                    Eerst het praktische
+                </h2>
                 <div class="mt-6">
                     <flux:callout icon="information-circle">
                         <flux:callout.text>
@@ -39,7 +44,12 @@
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="max-w-3xl">
-                <h2>Wat er anders is</h2>
+                <h2 class="flex items-center gap-3">
+                    <span class="inline-flex w-9 h-9 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center shrink-0">
+                        <flux:icon.arrows-right-left class="size-4 text-[var(--color-primary)]" />
+                    </span>
+                    Wat er anders is
+                </h2>
                 <div class="text-[var(--color-text-secondary)] mt-6 space-y-8" style="font-weight: var(--font-weight-light);">
                     <div>
                         <h3 class="text-[var(--color-text-primary)]">Initiatieven en fiches</h3>
@@ -60,7 +70,12 @@
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="max-w-3xl">
-                <h2>Wat er beter is</h2>
+                <h2 class="flex items-center gap-3">
+                    <span class="inline-flex w-9 h-9 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center shrink-0">
+                        <flux:icon.arrow-trending-up class="size-4 text-[var(--color-primary)]" />
+                    </span>
+                    Wat er beter is
+                </h2>
                 <div class="text-[var(--color-text-secondary)] mt-6 space-y-8" style="font-weight: var(--font-weight-light);">
                     <div>
                         <h3 class="text-[var(--color-text-primary)]">Beter bladeren en previews</h3>
@@ -81,7 +96,14 @@
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="max-w-3xl">
-                <h2>Wat er aankomt</h2>
+                <h2 class="flex items-center gap-3">
+                    <span class="inline-flex w-9 h-9 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                        </svg>
+                    </span>
+                    Wat er aankomt
+                </h2>
                 <p class="text-[var(--color-text-secondary)] mt-6" style="font-weight: var(--font-weight-light);">
                     Binnenkort introduceren we het DIAMANT-model, een kwaliteitskader rond zinvolle activiteiten in woonzorgcentra, ontwikkeld vanuit de expertise van Maite Mallentjer. Meer daarover volgt.
                 </p>
@@ -94,16 +116,39 @@
 
     <hr class="border-[var(--color-border-light)]">
 
-    {{-- Block 6: Jouw feedback telt --}}
-    <section>
+    {{-- Block 6: Jouw feedback telt — warm closing with polaroid + CTA --}}
+    <section class="bg-[var(--color-bg-cream)]">
         <div class="max-w-6xl mx-auto px-6 py-16">
-            <div class="max-w-3xl">
-                <h2>Jouw feedback telt</h2>
-                <div class="text-[var(--color-text-secondary)] mt-6 space-y-4" style="font-weight: var(--font-weight-light);">
-                    <p>We hebben al gebruikerstests gedaan met echte activiteitenbegeleiders, en wat we leerden hebben we meteen verwerkt. Maar we zijn er nog niet. Heb jij een suggestie, een vraag, of iets dat niet klopt?</p>
-                    <a href="mailto:info@hartverwarmers.be" class="cta-link inline-block">Stuur een mailtje</a>
-                    <p>We lezen alles.</p>
-                    <p>En dan nog dit: we naderen de 500 activiteiten. Welke activiteit <a href="{{ route('fiches.create') }}" class="underline hover:text-[var(--color-primary)]">deel jij</a>?</p>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                <div class="lg:col-span-2">
+                    <h2 class="flex items-center gap-3">
+                        <span class="inline-flex w-9 h-9 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center shrink-0">
+                            <flux:icon.heart class="size-4 text-[var(--color-primary)]" />
+                        </span>
+                        Jouw feedback telt
+                    </h2>
+                    <div class="text-[var(--color-text-secondary)] mt-6 space-y-4" style="font-weight: var(--font-weight-light);">
+                        <p>We hebben al gebruikerstests gedaan met echte activiteitenbegeleiders, en wat we leerden hebben we meteen verwerkt. Maar we zijn er nog niet. Heb jij een suggestie, een vraag, of iets dat niet klopt?</p>
+                        <a href="mailto:info@hartverwarmers.be" class="cta-link inline-block">Stuur een mailtje</a>
+                        <p>We lezen alles.</p>
+                    </div>
+
+                    <div class="mt-8 pt-8 border-t border-[var(--color-border-light)]">
+                        <p class="text-[var(--color-text-primary)] text-lg font-heading font-bold">We naderen de 500 activiteiten. Welke activiteit deel jij?</p>
+                        <a href="{{ route('fiches.create') }}" class="btn-pill mt-4 inline-block">Deel een activiteit</a>
+                    </div>
+                </div>
+
+                {{-- Polaroid accent --}}
+                <div class="hidden lg:flex flex-col items-center justify-center gap-4">
+                    <figure class="photo-polaroid" style="transform: rotate(2deg)">
+                        <img src="/img/about/frederik-vincx.webp" alt="Frederik Vincx" class="w-36 aspect-[4/3] object-cover object-top">
+                        <figcaption><strong class="text-[var(--color-text-primary)]">Frederik</strong></figcaption>
+                    </figure>
+                    <figure class="photo-polaroid -mt-2" style="transform: rotate(-2.5deg)">
+                        <img src="/img/wonen-en-leven/maitemallentjer.jpg" alt="Maite Mallentjer" class="w-36 aspect-square object-cover">
+                        <figcaption><strong class="text-[var(--color-text-primary)]">Maite</strong></figcaption>
+                    </figure>
                 </div>
             </div>
         </div>
