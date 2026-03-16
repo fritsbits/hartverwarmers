@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Initiative;
 use App\Models\Tag;
 use App\Services\DiamantService;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class GoalController extends Controller
@@ -47,25 +46,19 @@ class GoalController extends Controller
         $facetInitiativeCount = 0;
 
         if ($goalTag) {
-            $facetInitiativeCount = Cache::remember(
-                "goal:{$facetSlug}:initiative-count",
-                3600,
-                fn () => $goalTag->initiatives()->where('published', true)->count()
-            );
-
             $initiatives = $goalTag->initiatives()
                 ->where('published', true)
                 ->with('tags', 'creator')
                 ->latest()
                 ->limit(6)
                 ->get();
+
+            $facetInitiativeCount = $initiatives->count() < 6
+                ? $initiatives->count()
+                : $goalTag->initiatives()->where('published', true)->count();
         }
 
-        $totalInitiativeCount = Cache::remember(
-            'goals:total-initiative-count',
-            3600,
-            fn () => Initiative::where('published', true)->count()
-        );
+        $totalInitiativeCount = Initiative::where('published', true)->count();
 
         $allFacets = $this->diamantService->all();
 

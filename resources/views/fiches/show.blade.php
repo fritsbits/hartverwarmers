@@ -54,12 +54,7 @@
                     <flux:breadcrumbs.item>{{ $fiche->title }}</flux:breadcrumbs.item>
                 </flux:breadcrumbs>
 
-                <div class="flex items-center gap-2">
-                    @can('update', $fiche)
-                        <flux:button variant="ghost" size="sm" icon="pencil-square" href="{{ route('fiches.edit', $fiche) }}" class="border border-[var(--color-border-light)] text-xs text-[var(--color-text-secondary)]">Bewerk</flux:button>
-                    @endcan
-
-                    @auth
+                @auth
                     @if(auth()->user()->isAdmin())
                         <flux:dropdown>
                             <flux:button variant="ghost" size="sm" icon="cog-6-tooth" icon-trailing="chevron-down" class="text-xs text-[var(--color-text-secondary)]">
@@ -67,6 +62,10 @@
                             </flux:button>
 
                             <flux:menu>
+                                @can('update', $fiche)
+                                    <flux:menu.item icon="pencil-square" href="{{ route('fiches.edit', $fiche) }}">Bewerk</flux:menu.item>
+                                @endcan
+
                                 <form action="{{ route('fiches.toggleDiamond', [$initiative, $fiche]) }}" method="POST">
                                     @csrf
                                     <flux:menu.item type="submit" icon="sparkles">
@@ -102,8 +101,7 @@
                             </flux:menu>
                         </flux:dropdown>
                     @endif
-                    @endauth
-                </div>
+                @endauth
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">

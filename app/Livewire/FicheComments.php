@@ -151,12 +151,6 @@ class FicheComments extends Component
             + $this->comments->sum(fn ($c) => $c->replies->count());
     }
 
-    #[Computed]
-    public function isAuthor(): bool
-    {
-        return auth()->id() === $this->fiche->user_id;
-    }
-
     public function render()
     {
         return view('livewire.fiche-comments');

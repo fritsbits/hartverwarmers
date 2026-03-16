@@ -156,7 +156,6 @@
     <livewire:search />
 
     <x-dev.queue-badge />
-    <x-impersonation-badge />
 
     @fluxScripts
 </body>
