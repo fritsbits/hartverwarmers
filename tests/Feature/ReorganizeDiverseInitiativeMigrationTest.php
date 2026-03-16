@@ -18,16 +18,17 @@ class ReorganizeDiverseInitiativeMigrationTest extends TestCase
     {
         parent::setUp();
 
-        // Roll back our migration so we can test it
+        // Roll back the correction migration so we can test it
         Artisan::call('migrate:rollback', ['--step' => 1, '--no-interaction' => true]);
     }
 
     /**
-     * Create the "Diverse" initiative and target initiatives, then seed fiches.
+     * Seed the state as if the old migration already ran:
+     * "Diverse" is soft-deleted, "Teamondersteuning" exists, fiches in wrong places.
      *
-     * @return array{diverse: Initiative, fiches: array<string, Fiche>}
+     * @return array{diverse: Initiative, teamondersteuning: Initiative}
      */
-    private function seedDiverseData(): array
+    private function seedPostOldMigrationState(): array
     {
         $user = User::factory()->create();
 
@@ -35,9 +36,17 @@ class ReorganizeDiverseInitiativeMigrationTest extends TestCase
             'title' => 'Diverse',
             'slug' => 'diverse',
             'created_by' => $user->id,
+            'deleted_at' => now(),
+        ]);
+
+        $teamondersteuning = Initiative::factory()->published()->create([
+            'title' => 'Teamondersteuning',
+            'slug' => 'teamondersteuning',
+            'created_by' => $user->id,
         ]);
 
         // Create all target initiatives
+        $targets = [];
         foreach ([
             'raadspellen' => 'Raadspellen',
             'bordspellen' => 'Bordspellen',
@@ -47,57 +56,64 @@ class ReorganizeDiverseInitiativeMigrationTest extends TestCase
             'zorg-verzorging' => 'Zorg & verzorging',
             'gesprekken-voeren' => 'Gesprekken voeren',
             'beweging-fit' => 'Beweging & fit',
+            'feesten-vieren' => 'Feesten vieren',
+            'creatief-atelier' => 'Creatief atelier',
         ] as $slug => $title) {
-            Initiative::factory()->published()->create([
+            $targets[$slug] = Initiative::factory()->published()->create([
                 'title' => $title,
                 'slug' => $slug,
             ]);
         }
 
-        // Create fiches in Diverse with the specific IDs the migration expects.
-        // We use DB::table to control the IDs.
-        $ficheData = [
-            // Team support (9)
-            590 => 'Bedank de medewerkers',
-            578 => 'Bespreek mentale veerkracht met je team',
-            587 => 'Bied meeneemmaaltijden aan voor medewerkers',
-            586 => 'Boodschappen bestellen op het werk',
-            577 => 'Doe een snelcursus psychosociale opvang',
-            581 => 'Fris verpleegkundige kennis op',
-            575 => 'Nodig een vertrouwenspersoon uit voor medewerkers',
-            588 => 'Maak een overzicht van alle steunbetuigingen',
-            591 => 'Maak een apart email adres voor boodschappen',
-            // Mantelzorg (3)
-            571 => 'Geef mantelzorgers tips',
-            582 => 'Geef zelfzorgopdrachten aan mantelzorgers',
-            584 => 'Stem de zorg af',
-            // Spelletjes (3)
-            569 => 'Visspel',
-            568 => 'Wat is er fout?',
-            567 => 'Spelnamiddag',
-            // Herinneringen (3)
-            570 => 'De koffer van je leven',
-            574 => 'Verzamel levensverhalen met families',
-            576 => 'Geef virtuele rondleiding legerdienst',
-            // Overig (7)
-            572 => 'High tea afternoon',
-            589 => 'Doe cursus handen wassen',
-            573 => 'Gebruik Zilverwijzer',
-            579 => 'Organiseer een carwash',
-            585 => 'Inspireer activiteiten aan het raam',
-            583 => 'Neem deel aan #hallovanhier',
-            580 => 'Stel een verrassingspakket samen',
+        // Simulate old migration results: fiches in wrong initiatives
+        $wrongPlacements = [
+            // These 9 went to Teamondersteuning, should go to Zorg & verzorging
+            [$teamondersteuning->id, 'bedank-de-medewerkers'],
+            [$teamondersteuning->id, 'bespreek-mentale-veerkracht-met-je-team'],
+            [$teamondersteuning->id, 'bied-meeneemmaaltijden-aan-voor-medewerkers'],
+            [$teamondersteuning->id, 'boodschappen-bestellen-op-het-werk'],
+            [$teamondersteuning->id, 'doe-een-snelcursus-psychosociale-opvang'],
+            [$teamondersteuning->id, 'fris-verpleegkundige-kennis-op'],
+            [$teamondersteuning->id, 'nodig-een-vertrouwenspersoon-uit-voor-medewerkers'],
+            [$teamondersteuning->id, 'maak-een-overzicht-van-alle-steunbetuigingen'],
+            [$teamondersteuning->id, 'maak-een-apart-email-adres-voor-boodschappen-aan-bewoners'],
+            // Correctly in Zorg & verzorging
+            [$targets['zorg-verzorging']->id, 'geef-mantelzorgers-tips-om-de-zorg-vol-te-houden'],
+            [$targets['zorg-verzorging']->id, 'geef-zelfzorgopdrachten-aan-mantelzorgers'],
+            [$targets['zorg-verzorging']->id, 'stem-de-zorg-af-tussen-bewoner-mantelzorger-en-het-woonzorgcentrum'],
+            [$targets['zorg-verzorging']->id, 'doe-cursus-handen-wassen'],
+            // Wrong: Raadspellen, should be Bordspellen
+            [$targets['raadspellen']->id, 'visspel'],
+            // Correctly in Raadspellen
+            [$targets['raadspellen']->id, 'wat-is-er-fout'],
+            // Correctly in Bordspellen
+            [$targets['bordspellen']->id, 'spelnamiddag-ik-zet-deze-er-nogmaals-op-omdat-men-deze-niet-kon-downloaden-hopelijk-nu-dan-meer-succes'],
+            // Correctly in Herinneringen delen
+            [$targets['herinneringen-delen']->id, 'de-koffer-van-je-leven'],
+            [$targets['herinneringen-delen']->id, 'verzamel-levensverhalen-met-families'],
+            // Wrong: Herinneringen delen, should be Foto's & herinneringen
+            [$targets['herinneringen-delen']->id, 'geef-virtuele-rondleiding-legerdienst'],
+            // Wrong: Samen koken, should be Feesten vieren
+            [$targets['samen-koken']->id, 'high-tea-afternoon'],
+            // Wrong: Gesprekken voeren, should be Zorg & verzorging
+            [$targets['gesprekken-voeren']->id, 'gebruik-zilverwijzer-om-veerkracht-en-zelfmanagement-van-bewoners-te-versterken'],
+            // Wrong: Beweging & fit, should be soft-deleted
+            [$targets['beweging-fit']->id, 'organiseer-een-carwash'],
+            // Wrong: Gesprekken voeren, should be Creatief atelier
+            [$targets['gesprekken-voeren']->id, 'inspireer-activiteiten-aan-het-raam'],
+            // Wrong: Foto's & herinneringen, should be Creatief atelier
+            [$targets['fotos-herinneringen']->id, 'neem-deel-aan-hallovanhier-uitdagingen-op-sociale-media'],
+            // Wrong: Zorg & verzorging, should be Feesten vieren
+            [$targets['zorg-verzorging']->id, 'stel-een-verrassingspakket-samen'],
         ];
 
-        $fiches = [];
-        foreach ($ficheData as $id => $title) {
+        foreach ($wrongPlacements as [$initiativeId, $slug]) {
             DB::table('fiches')->insert([
-                'id' => $id,
-                'initiative_id' => $diverse->id,
+                'initiative_id' => $initiativeId,
                 'user_id' => $user->id,
-                'title' => $title,
-                'slug' => \Str::slug($title).'-'.$id,
-                'description' => 'Test beschrijving',
+                'title' => ucfirst(str_replace('-', ' ', $slug)),
+                'slug' => $slug,
+                'description' => 'Test',
                 'published' => true,
                 'has_diamond' => false,
                 'download_count' => 0,
@@ -107,103 +123,150 @@ class ReorganizeDiverseInitiativeMigrationTest extends TestCase
             ]);
         }
 
-        return ['diverse' => $diverse];
+        return ['diverse' => $diverse, 'teamondersteuning' => $teamondersteuning];
     }
 
-    public function test_migration_creates_teamondersteuning_initiative(): void
+    public function test_migration_moves_teamondersteuning_fiches_to_zorg_verzorging(): void
     {
-        $this->seedDiverseData();
-
-        Artisan::call('migrate', ['--no-interaction' => true]);
-
-        $initiative = Initiative::where('slug', 'teamondersteuning')->first();
-        $this->assertNotNull($initiative);
-        $this->assertEquals('Teamondersteuning', $initiative->title);
-        $this->assertTrue((bool) $initiative->published);
-    }
-
-    public function test_migration_moves_team_fiches_to_teamondersteuning(): void
-    {
-        $this->seedDiverseData();
-
-        Artisan::call('migrate', ['--no-interaction' => true]);
-
-        $initiative = Initiative::where('slug', 'teamondersteuning')->first();
-        $ficheIds = $initiative->fiches()->pluck('id')->toArray();
-
-        $this->assertCount(9, $ficheIds);
-        foreach ([590, 578, 587, 586, 577, 581, 575, 588, 591] as $id) {
-            $this->assertContains($id, $ficheIds);
-        }
-    }
-
-    public function test_migration_moves_mantelzorg_fiches_to_zorg_verzorging(): void
-    {
-        $this->seedDiverseData();
+        $this->seedPostOldMigrationState();
 
         Artisan::call('migrate', ['--no-interaction' => true]);
 
         $zorg = Initiative::where('slug', 'zorg-verzorging')->first();
-        $ficheIds = $zorg->fiches()->pluck('id')->toArray();
+        $ficheSlugs = $zorg->fiches()->pluck('slug')->toArray();
 
-        foreach ([571, 582, 584] as $id) {
-            $this->assertContains($id, $ficheIds);
+        foreach ([
+            'bedank-de-medewerkers',
+            'bespreek-mentale-veerkracht-met-je-team',
+            'bied-meeneemmaaltijden-aan-voor-medewerkers',
+            'boodschappen-bestellen-op-het-werk',
+            'doe-een-snelcursus-psychosociale-opvang',
+            'fris-verpleegkundige-kennis-op',
+            'nodig-een-vertrouwenspersoon-uit-voor-medewerkers',
+            'maak-een-overzicht-van-alle-steunbetuigingen',
+            'maak-een-apart-email-adres-voor-boodschappen-aan-bewoners',
+            'geef-mantelzorgers-tips-om-de-zorg-vol-te-houden',
+            'geef-zelfzorgopdrachten-aan-mantelzorgers',
+            'stem-de-zorg-af-tussen-bewoner-mantelzorger-en-het-woonzorgcentrum',
+            'doe-cursus-handen-wassen',
+            'gebruik-zilverwijzer-om-veerkracht-en-zelfmanagement-van-bewoners-te-versterken',
+        ] as $slug) {
+            $this->assertContains($slug, $ficheSlugs, "Fiche '{$slug}' should be in Zorg & verzorging");
         }
     }
 
-    public function test_migration_soft_deletes_diverse(): void
+    public function test_migration_deletes_teamondersteuning_initiative(): void
     {
-        $this->seedDiverseData();
+        $this->seedPostOldMigrationState();
 
         Artisan::call('migrate', ['--no-interaction' => true]);
 
-        $this->assertNull(Initiative::where('slug', 'diverse')->first());
-        $this->assertNotNull(Initiative::withTrashed()->where('slug', 'diverse')->first());
+        $this->assertNull(Initiative::where('slug', 'teamondersteuning')->first());
+        // Hard delete, not soft delete
+        $this->assertNull(Initiative::withTrashed()->where('slug', 'teamondersteuning')->first());
     }
 
-    public function test_migration_leaves_no_fiches_in_diverse(): void
+    public function test_migration_moves_visspel_to_bordspellen(): void
     {
-        $data = $this->seedDiverseData();
+        $this->seedPostOldMigrationState();
 
         Artisan::call('migrate', ['--no-interaction' => true]);
 
-        $this->assertEquals(0, Fiche::where('initiative_id', $data['diverse']->id)->count());
+        $bordspellen = Initiative::where('slug', 'bordspellen')->first();
+        $this->assertTrue($bordspellen->fiches()->where('slug', 'visspel')->exists());
     }
 
-    public function test_migration_moves_all_25_fiches_to_correct_destinations(): void
+    public function test_migration_moves_rondleiding_to_fotos_herinneringen(): void
     {
-        $this->seedDiverseData();
+        $this->seedPostOldMigrationState();
 
         Artisan::call('migrate', ['--no-interaction' => true]);
 
-        $expected = [
-            'teamondersteuning' => [590, 578, 587, 586, 577, 581, 575, 588, 591],
-            'zorg-verzorging' => [571, 582, 584, 589, 580],
-            'raadspellen' => [569, 568],
-            'bordspellen' => [567],
-            'herinneringen-delen' => [570, 574, 576],
-            'samen-koken' => [572],
-            'gesprekken-voeren' => [573, 585],
-            'beweging-fit' => [579],
-            'fotos-herinneringen' => [583],
-        ];
+        $fotos = Initiative::where('slug', 'fotos-herinneringen')->first();
+        $this->assertTrue($fotos->fiches()->where('slug', 'geef-virtuele-rondleiding-legerdienst')->exists());
+    }
 
-        foreach ($expected as $slug => $expectedIds) {
-            $initiative = Initiative::where('slug', $slug)->first();
-            $ficheIds = $initiative->fiches()->pluck('id')->toArray();
+    public function test_migration_moves_high_tea_and_verrassingspakket_to_feesten_vieren(): void
+    {
+        $this->seedPostOldMigrationState();
 
-            foreach ($expectedIds as $id) {
-                $this->assertContains($id, $ficheIds, "Fiche $id should be in initiative '$slug'");
-            }
-        }
+        Artisan::call('migrate', ['--no-interaction' => true]);
+
+        $feesten = Initiative::where('slug', 'feesten-vieren')->first();
+        $this->assertTrue($feesten->fiches()->where('slug', 'high-tea-afternoon')->exists());
+        $this->assertTrue($feesten->fiches()->where('slug', 'stel-een-verrassingspakket-samen')->exists());
+    }
+
+    public function test_migration_moves_creative_fiches_to_creatief_atelier(): void
+    {
+        $this->seedPostOldMigrationState();
+
+        Artisan::call('migrate', ['--no-interaction' => true]);
+
+        $creatief = Initiative::where('slug', 'creatief-atelier')->first();
+        $this->assertTrue($creatief->fiches()->where('slug', 'inspireer-activiteiten-aan-het-raam')->exists());
+        $this->assertTrue($creatief->fiches()->where('slug', 'neem-deel-aan-hallovanhier-uitdagingen-op-sociale-media')->exists());
+    }
+
+    public function test_migration_soft_deletes_carwash(): void
+    {
+        $this->seedPostOldMigrationState();
+
+        Artisan::call('migrate', ['--no-interaction' => true]);
+
+        $this->assertNull(Fiche::where('slug', 'organiseer-een-carwash')->first());
+        $this->assertNotNull(Fiche::withTrashed()->where('slug', 'organiseer-een-carwash')->first());
     }
 
     public function test_migration_is_safe_when_diverse_does_not_exist(): void
     {
-        // Don't seed any data — Diverse doesn't exist
+        // Don't seed — Diverse doesn't exist
         Artisan::call('migrate', ['--no-interaction' => true]);
 
-        // Should not crash and should not create Teamondersteuning
-        $this->assertNull(Initiative::where('slug', 'teamondersteuning')->first());
+        // Should not crash
+        $this->assertNull(Initiative::where('slug', 'diverse')->first());
+    }
+
+    public function test_migration_is_idempotent_when_fiches_already_correct(): void
+    {
+        $user = User::factory()->create();
+
+        // Create initiatives and fiches already in correct positions
+        $zorg = Initiative::factory()->published()->create(['slug' => 'zorg-verzorging']);
+        $feesten = Initiative::factory()->published()->create(['slug' => 'feesten-vieren']);
+
+        DB::table('fiches')->insert([
+            'initiative_id' => $zorg->id,
+            'user_id' => $user->id,
+            'title' => 'Bedank de medewerkers',
+            'slug' => 'bedank-de-medewerkers',
+            'description' => 'Test',
+            'published' => true,
+            'has_diamond' => false,
+            'download_count' => 0,
+            'kudos_count' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('fiches')->insert([
+            'initiative_id' => $feesten->id,
+            'user_id' => $user->id,
+            'title' => 'High tea afternoon',
+            'slug' => 'high-tea-afternoon',
+            'description' => 'Test',
+            'published' => true,
+            'has_diamond' => false,
+            'download_count' => 0,
+            'kudos_count' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        Artisan::call('migrate', ['--no-interaction' => true]);
+
+        // Fiches should stay where they were
+        $this->assertTrue($zorg->fiches()->where('slug', 'bedank-de-medewerkers')->exists());
+        $this->assertTrue($feesten->fiches()->where('slug', 'high-tea-afternoon')->exists());
     }
 }
