@@ -31,6 +31,10 @@
                                     <flux:icon name="flag" variant="mini" class="size-4" />
                                     Features
                                 </a>
+                                <a href="{{ route('admin.users.index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.users.*') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="users" variant="mini" class="size-4" />
+                                    Gebruikers
+                                </a>
                                 <a href="{{ route('admin.mails.show', 'verify-email') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->is('*/mails/verify-email') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
                                     <flux:icon name="envelope" variant="mini" class="size-4" />
                                     Verificatie
@@ -66,6 +70,7 @@
                                 <flux:navlist.group heading="Admin" class="mt-4">
                                     <flux:navlist.item href="{{ route('admin.design-system') }}" icon="swatch" :current="request()->routeIs('admin.design-system')">Design Systeem</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.features') }}" icon="flag" :current="request()->routeIs('admin.features')">Features</flux:navlist.item>
+                                    <flux:navlist.item href="{{ route('admin.users.index') }}" icon="users" :current="request()->routeIs('admin.users.*')">Gebruikers</flux:navlist.item>
                                     <flux:navlist.group heading="E-mails" expandable :expanded="request()->routeIs('admin.mails*')">
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'verify-email') }}" :current="request()->is('*/mails/verify-email')">Verificatie</flux:navlist.item>
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'reset-password') }}" :current="request()->is('*/mails/reset-password')">Wachtwoord reset</flux:navlist.item>
