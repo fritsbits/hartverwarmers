@@ -1060,7 +1060,7 @@ class FicheWizardTest extends TestCase
             ->test(FicheWizard::class)
             ->set('uploads', [UploadedFile::fake()->create('first.pdf', 100, 'application/pdf')]);
 
-        // Simulate AI suggestions populated from first processing
+        // Simulate AI suggestions populated from first processing + user applied them
         $component->set('aiTitle', 'AI Titel')
             ->set('aiDescription', 'AI Beschrijving')
             ->set('aiPreparation', '<p>Voorbereiding</p>')
@@ -1072,6 +1072,10 @@ class FicheWizardTest extends TestCase
             ->set('aiAnalysis', ['description' => 'test'])
             ->set('suggestedThemeTagIds', [1, 2])
             ->set('suggestedGoalTagIds', [3, 4])
+            ->set('preparation', '<p>Applied quiz preparation</p>')
+            ->set('inventory', '<p>Applied quiz inventory</p>')
+            ->set('process', '<p>Applied quiz process</p>')
+            ->set('description', 'Applied quiz description')
             ->set('processingComplete', true)
             ->set('processingStep', 'done');
 
@@ -1090,6 +1094,12 @@ class FicheWizardTest extends TestCase
         $this->assertNull($component->get('aiAnalysis'));
         $this->assertEmpty($component->get('suggestedThemeTagIds'));
         $this->assertEmpty($component->get('suggestedGoalTagIds'));
+
+        // User content fields should also be cleared (stale from previous file)
+        $this->assertEmpty($component->get('preparation'));
+        $this->assertEmpty($component->get('inventory'));
+        $this->assertEmpty($component->get('process'));
+        $this->assertEmpty($component->get('description'));
     }
 
     public function test_subsequent_uploads_reset_processing_state(): void
