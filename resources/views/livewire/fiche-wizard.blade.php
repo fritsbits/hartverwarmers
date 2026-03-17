@@ -564,7 +564,7 @@
                                             <flux:icon.sparkles class="w-5 h-5 shrink-0 text-[var(--color-primary)] mt-0.5" />
                                             <div class="min-w-0">
                                                 <div class="text-xs font-semibold text-[var(--color-text-secondary)] mb-3 uppercase tracking-wider">Suggestie</div>
-                                                <div class="prose prose-sm max-w-none [&_strong]:text-[var(--color-text-primary)]/80">{!! $this->{$field['aiProp']} !!}</div>
+                                                <div class="text-sm max-w-none [&_strong]:text-[var(--color-text-primary)]/80 [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:space-y-1.5 [&_ol]:list-decimal [&_ol]:pl-4 [&_ol]:space-y-1.5 [&_p+p]:mt-2">{!! $this->{$field['aiProp']} !!}</div>
                                                 <div class="mt-3">
                                                     @if($isApplied)
                                                         <span class="inline-flex items-center gap-1 h-7 px-2 text-xs font-medium text-[var(--color-text-secondary)]">
