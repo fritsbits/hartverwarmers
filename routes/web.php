@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminFicheController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\ImpersonateController;
 use App\Http\Controllers\BookmarkController;
@@ -83,6 +84,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}/fiche-van-de-maand', [FicheController::class, 'unsetFicheOfMonth'])->name('fiches.unsetFicheOfMonth');
         Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'destroy'])->name('fiches.destroy');
         Route::get('/admin/gebruikers', [AdminUserController::class, 'index'])->name('admin.users.index');
+        Route::get('/admin/fiches', [AdminFicheController::class, 'index'])->name('admin.fiches.index');
         Route::post('/admin/impersonate/{user}', [ImpersonateController::class, 'start'])
             ->where('user', '[0-9]+')
             ->name('admin.impersonate.start');
