@@ -188,6 +188,20 @@ class FicheWizard extends Component
                 $this->previewFileId = ! empty($this->uploadedFiles) ? $this->uploadedFiles[0]['id'] : null;
             }
         }
+
+        // Fresh wizard — no valid uploaded files means no in-progress work, clear stale session data
+        if (empty($this->uploadedFiles)) {
+            $this->title = '';
+            $this->description = '';
+            $this->duration = '';
+            $this->groupSize = '';
+            $this->preparation = '';
+            $this->inventory = '';
+            $this->process = '';
+            $this->selectedThemeTags = [];
+            $this->selectedGoalTags = [];
+            $this->currentStep = 1;
+        }
     }
 
     public function updatedTitle(): void
