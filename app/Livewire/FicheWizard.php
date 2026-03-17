@@ -341,8 +341,8 @@ class FicheWizard extends Component
 
             $this->dispatchProcessing($allFileIds);
         } elseif (! empty($newFileIds)) {
-            $allFileIds = collect($this->uploadedFiles)->pluck('id')->toArray();
             $this->clearAiSuggestions();
+            $allFileIds = collect($this->uploadedFiles)->pluck('id')->toArray();
             $this->dispatchProcessing($allFileIds, skipPreview: true);
 
             if (count($this->uploadedFiles) >= 2) {
@@ -673,6 +673,17 @@ class FicheWizard extends Component
         $this->suggestedGoalTagIds = [];
         $this->dismissedSuggestions = [];
         $this->appliedSuggestions = [];
+
+        // Also clear user content that was derived from previous suggestions
+        $this->description = '';
+        $this->preparation = '';
+        $this->inventory = '';
+        $this->process = '';
+        $this->duration = '';
+        $this->groupSize = '';
+        $this->selectedInitiativeId = null;
+        $this->selectedThemeTags = [];
+        $this->selectedGoalTags = [];
     }
 
     /**
