@@ -74,6 +74,9 @@ class FicheWizard extends Component
 
     public bool $processingComplete = false;
 
+    /** Reason why AI suggestions are unavailable (no_text_extracted, ai_unavailable, error, no_suggestions) */
+    public ?string $processingFailReason = null;
+
     public ?int $processingStartedAt = null;
 
     public bool $processingStale = false;
@@ -461,11 +464,19 @@ class FicheWizard extends Component
         if ($status['step'] === 'done') {
             $this->processingComplete = true;
             $this->processingStale = false;
+            $this->processingFailReason = $status['reason'] ?? null;
             $this->aiAnalysis = $status['analysis'] ?? null;
             $this->loadAiSuggestions($status);
+
+            // If processing "succeeded" but produced no suggestions, flag it
+            if ($this->processingFailReason === null && $this->aiDescription === null && $this->aiPreparation === null && empty($this->matchedInitiatives)) {
+                $this->processingFailReason = 'no_suggestions';
+            }
+
             Cache::forget("fiche-processing:{$this->processingKey}");
         } elseif ($status['step'] === 'failed') {
             $this->processingComplete = true;
+            $this->processingFailReason = $status['reason'] ?? 'error';
             Cache::forget("fiche-processing:{$this->processingKey}");
         }
     }
@@ -659,6 +670,7 @@ class FicheWizard extends Component
 
     private function clearAiSuggestions(): void
     {
+        $this->processingFailReason = null;
         $this->aiTitle = null;
         $this->aiDescription = null;
         $this->aiPreparation = null;

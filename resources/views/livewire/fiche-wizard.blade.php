@@ -464,6 +464,18 @@
                                 </div>
                             @endif
 
+                            {{-- No suggestions feedback --}}
+                            @if($processingComplete && $processingFailReason && empty($matchedInitiatives))
+                                <div class="mt-3 mb-4 flex items-start gap-2.5 rounded-xl bg-[var(--color-bg-subtle)] border border-[var(--color-border-light)] px-4 py-3 text-sm text-[var(--color-text-secondary)]">
+                                    <flux:icon.information-circle class="w-5 h-5 shrink-0 mt-0.5" />
+                                    @if($processingFailReason === 'no_text_extracted')
+                                        <p>We konden geen tekst uitlezen uit je bestanden (bv. bij foto's of gescande PDF's). Kies hieronder zelf een initiatief.</p>
+                                    @else
+                                        <p>We konden geen initiatief voorstellen. Kies hieronder zelf een initiatief.</p>
+                                    @endif
+                                </div>
+                            @endif
+
                             {{-- Matched initiatives --}}
                             @if(!empty($matchedInitiatives))
                                 <div class="mt-3 mb-4">
@@ -582,6 +594,18 @@
                                                         </flux:button>
                                                     @endif
                                                 </div>
+                                            </div>
+                                        </div>
+                                    @elseif($index === 0 && $processingComplete && $processingFailReason)
+                                        <div class="flex gap-2.5 py-4 pl-2 pr-4 text-sm text-[var(--color-text-secondary)]">
+                                            <flux:icon.information-circle class="w-5 h-5 shrink-0 mt-0.5" />
+                                            <div class="min-w-0">
+                                                <div class="text-xs font-semibold text-[var(--color-text-secondary)] mb-2 uppercase tracking-wider">Geen suggesties</div>
+                                                @if($processingFailReason === 'no_text_extracted')
+                                                    <p>Je bestanden bevatten geen uitleesbare tekst (bv. foto's of gescande PDF's). Schrijf de inhoud zelf.</p>
+                                                @else
+                                                    <p>We konden geen suggesties genereren uit je bestanden. Schrijf de inhoud zelf.</p>
+                                                @endif
                                             </div>
                                         </div>
                                     @endif
@@ -716,17 +740,41 @@
                 </div>
 
                 {{-- Step 3 footer --}}
-                <div x-show="$wire.currentStep === 3" class="flex justify-between">
-                    <flux:button variant="ghost" wire:click="goToStep(2)" icon="arrow-left">
-                        Vorige
-                    </flux:button>
-                    <div class="flex gap-3">
-                        <flux:button variant="ghost" wire:click="saveDraft">
-                            Opslaan als concept
+                <div x-show="$wire.currentStep === 3">
+                    @if($errors->has('description') || $errors->has('title') || $errors->has('selectedInitiativeId'))
+                        <button
+                            type="button"
+                            class="w-full mb-3 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2.5 text-sm text-red-800 hover:bg-red-100 transition-colors text-left"
+                            x-on:click="
+                                const firstError = document.querySelector('[data-flux-error]');
+                                if (firstError) {
+                                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                            "
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                            </svg>
+                            <span>
+                                @error('description') {{ $message }} @enderror
+                                @error('title') {{ $message }} @enderror
+                                @error('selectedInitiativeId') {{ $message }} @enderror
+                                <span class="underline ml-1">Bekijk</span>
+                            </span>
+                        </button>
+                    @endif
+                    <div class="flex justify-between">
+                        <flux:button variant="ghost" wire:click="goToStep(2)" icon="arrow-left">
+                            Vorige
                         </flux:button>
-                        <flux:button variant="primary" wire:click="publish" icon="rocket-launch">
-                            Publiceer
-                        </flux:button>
+                        <div class="flex gap-3">
+                            <flux:button variant="ghost" wire:click="saveDraft">
+                                Opslaan als concept
+                            </flux:button>
+                            <flux:button variant="primary" wire:click="publish" icon="rocket-launch">
+                                Publiceer
+                            </flux:button>
+                        </div>
                     </div>
                 </div>
             </div>
