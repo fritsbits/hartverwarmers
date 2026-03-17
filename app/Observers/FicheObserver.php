@@ -40,6 +40,10 @@ class FicheObserver
 
     private function dispatchQualityAssessment(Fiche $fiche): void
     {
+        if (empty(config('ai.providers.anthropic.key'))) {
+            return;
+        }
+
         if ($fiche->quality_assessed_at && $fiche->quality_assessed_at->diffInMinutes(now()) < 10) {
             return;
         }

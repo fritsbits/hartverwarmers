@@ -16,7 +16,10 @@ class AssessFicheQuality implements ShouldQueue
 
     public int $backoff = 30;
 
-    public function __construct(public Fiche $fiche) {}
+    public function __construct(public Fiche $fiche)
+    {
+        $this->onConnection('database');
+    }
 
     public function handle(): void
     {

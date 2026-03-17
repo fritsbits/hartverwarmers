@@ -15,6 +15,14 @@ class FicheQualityScoreTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Ensure AI is "available" so the observer dispatches quality jobs
+        config(['ai.providers.anthropic.key' => 'test-key']);
+    }
+
     private function createPublishedFiche(array $overrides = []): Fiche
     {
         $user = User::factory()->create();
