@@ -300,7 +300,93 @@ class FicheWizardTest extends TestCase
 
         $component->call('checkProcessing')
             ->assertSet('processingStep', 'failed')
-            ->assertSet('processingComplete', true);
+            ->assertSet('processingComplete', true)
+            ->assertSet('processingFailReason', 'error');
+    }
+
+    public function test_check_processing_stores_fail_reason_for_no_text(): void
+    {
+        $user = User::factory()->create();
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('processingKey', 'test-key-notext')
+            ->set('processingStep', 'analyzing');
+
+        Cache::put('fiche-processing:test-key-notext', [
+            'step' => 'done',
+            'updated_at' => now()->timestamp,
+            'analysis' => null,
+            'matched_initiatives' => null,
+            'reason' => 'no_text_extracted',
+        ], 3600);
+
+        $component->call('checkProcessing')
+            ->assertSet('processingComplete', true)
+            ->assertSet('processingFailReason', 'no_text_extracted');
+    }
+
+    public function test_check_processing_detects_no_suggestions(): void
+    {
+        $user = User::factory()->create();
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('processingKey', 'test-key-nosug')
+            ->set('processingStep', 'analyzing');
+
+        Cache::put('fiche-processing:test-key-nosug', [
+            'step' => 'done',
+            'updated_at' => now()->timestamp,
+            'analysis' => null,
+            'matched_initiatives' => null,
+        ], 3600);
+
+        $component->call('checkProcessing')
+            ->assertSet('processingComplete', true)
+            ->assertSet('processingFailReason', 'no_suggestions');
+    }
+
+    public function test_fail_reason_shows_message_on_step2(): void
+    {
+        $user = User::factory()->create();
+        Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 2)
+            ->set('processingComplete', true)
+            ->set('processingFailReason', 'no_text_extracted')
+            ->assertSee('geen tekst uitlezen');
+    }
+
+    public function test_fail_reason_shows_message_on_step3(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('processingComplete', true)
+            ->set('processingFailReason', 'no_text_extracted')
+            ->assertSee('Geen suggesties')
+            ->assertSee('geen uitleesbare tekst');
+    }
+
+    public function test_fail_reason_cleared_on_new_upload(): void
+    {
+        Queue::fake();
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('processingFailReason', 'no_text_extracted')
+            ->set('processingComplete', true)
+            ->set('processingStep', 'done')
+            ->set('uploads', [UploadedFile::fake()->create('new.pdf', 100, 'application/pdf')]);
+
+        $this->assertNull($component->get('processingFailReason'));
     }
 
     public function test_apply_suggestion_appends_ai_value_to_empty_field(): void
