@@ -89,7 +89,7 @@ class ProcessFicheUploads implements ShouldQueue
         $aiService = app(FicheAiService::class);
 
         if (! $aiService->isAvailable()) {
-            return ['analysis' => null, 'matched_initiatives' => null];
+            return ['analysis' => null, 'matched_initiatives' => null, 'reason' => 'ai_unavailable'];
         }
 
         $texts = File::whereIn('id', $this->fileIds)
@@ -97,12 +97,16 @@ class ProcessFicheUploads implements ShouldQueue
             ->pluck('extracted_text')
             ->toArray();
 
+        if (empty($texts)) {
+            return ['analysis' => null, 'matched_initiatives' => null, 'reason' => 'no_text_extracted'];
+        }
+
         $pipelineStart = microtime(true);
 
         $analysis = $aiService->analyzeFiles($texts, $this->title, $this->description);
 
-        $summary = $analysis['summary'] ?? null;
-        $matchedInitiatives = $aiService->matchInitiatives($this->title, $this->description, $summary);
+        $aiDescription = $analysis['description'] ?? null;
+        $matchedInitiatives = $aiService->matchInitiatives($this->title, $this->description, $aiDescription);
 
         $pipelineElapsed = round(microtime(true) - $pipelineStart, 2);
 

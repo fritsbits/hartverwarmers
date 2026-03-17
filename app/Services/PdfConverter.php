@@ -21,7 +21,8 @@ class PdfConverter
         $basename = pathinfo($sourcePath, PATHINFO_FILENAME);
 
         $command = sprintf(
-            'soffice --headless --convert-to pdf --outdir %s %s 2>&1',
+            '%s --headless --convert-to pdf --outdir %s %s 2>&1',
+            escapeshellarg($this->resolveSofficeBinary()),
             escapeshellarg($outputDir),
             escapeshellarg($sourcePath)
         );
@@ -46,6 +47,29 @@ class PdfConverter
         }
 
         return $pdfPath;
+    }
+
+    /**
+     * Resolve the soffice binary path, checking common locations.
+     *
+     * Queue workers often run with a minimal PATH that excludes
+     * Homebrew's /opt/homebrew/bin, so bare `soffice` fails.
+     */
+    private function resolveSofficeBinary(): string
+    {
+        $candidates = [
+            '/opt/homebrew/bin/soffice',   // macOS (Apple Silicon Homebrew)
+            '/usr/local/bin/soffice',      // macOS (Intel Homebrew) / Linux
+            '/usr/bin/soffice',            // Linux (apt/yum)
+        ];
+
+        foreach ($candidates as $path) {
+            if (is_executable($path)) {
+                return $path;
+            }
+        }
+
+        return 'soffice';
     }
 
     /**

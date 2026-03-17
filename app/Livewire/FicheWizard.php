@@ -74,6 +74,9 @@ class FicheWizard extends Component
 
     public bool $processingComplete = false;
 
+    /** Reason why AI suggestions are unavailable (no_text_extracted, ai_unavailable, error, no_suggestions) */
+    public ?string $processingFailReason = null;
+
     public ?int $processingStartedAt = null;
 
     public bool $processingStale = false;
@@ -84,6 +87,9 @@ class FicheWizard extends Component
     public ?string $publishedFicheUrl = null;
 
     // Step 2 — Details (user's original input, never overwritten by AI)
+    /** Tracks whether the user manually typed a title (vs auto-filled from filename) */
+    public bool $titleManuallyEdited = false;
+
     #[Session(key: 'fiche-wizard.title')]
     #[Validate('required|string|max:255', message: [
         'required' => 'Geef je activiteit een titel.',
@@ -105,8 +111,10 @@ class FicheWizard extends Component
     public string $groupSize = '';
 
     // Step 3 — Review
-    #[Session(key: 'fiche-wizard.selectedInitiativeId')]
     public ?int $selectedInitiativeId = null;
+
+    /** Separate model for the manual dropdown — decoupled from AI radio cards */
+    public ?int $manualInitiativeId = null;
 
     /** @var array<int, int> */
     #[Session(key: 'fiche-wizard.selectedThemeTags')]
@@ -186,11 +194,41 @@ class FicheWizard extends Component
                 $this->previewFileId = ! empty($this->uploadedFiles) ? $this->uploadedFiles[0]['id'] : null;
             }
         }
+
+        // Every page load starts fresh — only uploaded files survive across sessions.
+        // Title, description, tags etc. are re-derived from file processing, not session.
+        $this->title = '';
+        $this->titleManuallyEdited = false;
+        $this->description = '';
+        $this->duration = '';
+        $this->groupSize = '';
+        $this->preparation = '';
+        $this->inventory = '';
+        $this->process = '';
+        $this->selectedThemeTags = [];
+        $this->selectedGoalTags = [];
+        $this->currentStep = 1;
     }
 
     public function updatedTitle(): void
     {
+        $this->titleManuallyEdited = true;
         $this->findSimilarFiches();
+    }
+
+    public function updatedManualInitiativeId(): void
+    {
+        $this->selectedInitiativeId = $this->manualInitiativeId;
+    }
+
+    public function updatedSelectedInitiativeId(): void
+    {
+        // When a radio card is selected, clear the manual dropdown so it shows the placeholder
+        $matchedIds = collect($this->matchedInitiatives)->pluck('id')->all();
+
+        if (in_array($this->selectedInitiativeId, $matchedIds)) {
+            $this->manualInitiativeId = null;
+        }
     }
 
     public function findSimilarFiches(): void
@@ -206,30 +244,29 @@ class FicheWizard extends Component
             return;
         }
 
-        $query = Fiche::published()->where(function ($q) use ($words) {
-            foreach ($words as $word) {
-                $q->orWhere('title', 'LIKE', "%{$word}%");
+        // Find the word with the most matching fiches so keyword, count, and examples stay consistent
+        $best = null;
+
+        foreach ($words as $word) {
+            $query = Fiche::published()->where('title', 'LIKE', "%{$word}%");
+            $count = $query->count();
+
+            if ($count > 0 && ($best === null || $count > $best['count'])) {
+                $best = [
+                    'count' => $count,
+                    'keyword' => $word,
+                    'examples' => (clone $query)->take(3)->pluck('title')->all(),
+                ];
             }
-        });
+        }
 
-        $count = $query->count();
-
-        if ($count === 0) {
+        if ($best === null) {
             $this->similarFiches = [];
 
             return;
         }
 
-        $examples = (clone $query)->take(3)->pluck('title')->all();
-
-        // Display keyword: longest word is most likely the topic
-        $keyword = $words->sortByDesc(fn (string $w) => Str::length($w))->first();
-
-        $this->similarFiches = [
-            'count' => $count,
-            'keyword' => $keyword,
-            'examples' => $examples,
-        ];
+        $this->similarFiches = $best;
     }
 
     public function updatedUploads(): void
@@ -283,10 +320,16 @@ class FicheWizard extends Component
 
         $this->uploads = [];
 
-        if ($this->title === '' && ! empty($this->uploadedFiles)) {
-            $name = pathinfo($this->uploadedFiles[0]['name'], PATHINFO_FILENAME);
-            $this->title = ucfirst(trim(preg_replace('/\s+/', ' ', str_replace(['-', '_', '.'], ' ', $name))));
-            $this->findSimilarFiches();
+        // Auto-fill title from the first new file, unless the user manually typed one
+        if (! $this->titleManuallyEdited && ! empty($newFileIds)) {
+            $newFile = collect($this->uploadedFiles)->first(fn ($f) => in_array($f['id'], $newFileIds));
+
+            if ($newFile) {
+                $name = pathinfo($newFile['name'], PATHINFO_FILENAME);
+                $this->title = ucfirst(trim(preg_replace('/\s+/', ' ', str_replace(['-', '_', '.'], ' ', $name))));
+                $this->titleManuallyEdited = false;
+                $this->findSimilarFiches();
+            }
         }
 
         if ($isFirstUploadBatch && ! empty($newFileIds)) {
@@ -301,8 +344,8 @@ class FicheWizard extends Component
 
             $this->dispatchProcessing($allFileIds);
         } elseif (! empty($newFileIds)) {
-            $allFileIds = collect($this->uploadedFiles)->pluck('id')->toArray();
             $this->clearAiSuggestions();
+            $allFileIds = collect($this->uploadedFiles)->pluck('id')->toArray();
             $this->dispatchProcessing($allFileIds, skipPreview: true);
 
             if (count($this->uploadedFiles) >= 2) {
@@ -421,11 +464,19 @@ class FicheWizard extends Component
         if ($status['step'] === 'done') {
             $this->processingComplete = true;
             $this->processingStale = false;
+            $this->processingFailReason = $status['reason'] ?? null;
             $this->aiAnalysis = $status['analysis'] ?? null;
             $this->loadAiSuggestions($status);
+
+            // If processing "succeeded" but produced no suggestions, flag it
+            if ($this->processingFailReason === null && $this->aiDescription === null && $this->aiPreparation === null && empty($this->matchedInitiatives)) {
+                $this->processingFailReason = 'no_suggestions';
+            }
+
             Cache::forget("fiche-processing:{$this->processingKey}");
         } elseif ($status['step'] === 'failed') {
             $this->processingComplete = true;
+            $this->processingFailReason = $status['reason'] ?? 'error';
             Cache::forget("fiche-processing:{$this->processingKey}");
         }
     }
@@ -619,6 +670,7 @@ class FicheWizard extends Component
 
     private function clearAiSuggestions(): void
     {
+        $this->processingFailReason = null;
         $this->aiTitle = null;
         $this->aiDescription = null;
         $this->aiPreparation = null;
@@ -627,11 +679,23 @@ class FicheWizard extends Component
         $this->aiDuration = null;
         $this->aiGroupSize = null;
         $this->matchedInitiatives = [];
+        $this->manualInitiativeId = null;
         $this->aiAnalysis = null;
         $this->suggestedThemeTagIds = [];
         $this->suggestedGoalTagIds = [];
         $this->dismissedSuggestions = [];
         $this->appliedSuggestions = [];
+
+        // Also clear user content that was derived from previous suggestions
+        $this->description = '';
+        $this->preparation = '';
+        $this->inventory = '';
+        $this->process = '';
+        $this->duration = '';
+        $this->groupSize = '';
+        $this->selectedInitiativeId = null;
+        $this->selectedThemeTags = [];
+        $this->selectedGoalTags = [];
     }
 
     /**
@@ -657,14 +721,15 @@ class FicheWizard extends Component
         $analysis = $status['analysis'] ?? null;
 
         if ($analysis) {
+            $this->aiDescription = self::markdownToHtml($analysis['description'] ?? null);
             $this->aiPreparation = self::markdownToHtml($analysis['preparation'] ?? null);
             $this->aiInventory = self::markdownToHtml($analysis['inventory'] ?? null);
             $this->aiProcess = self::markdownToHtml($analysis['process'] ?? null);
             $this->aiDuration = $analysis['duration_estimate'] ?? null;
             $this->aiGroupSize = $analysis['group_size_estimate'] ?? null;
 
-            $this->matchGoalTags($analysis['suggested_goals'] ?? []);
-            $this->matchThemeTags($analysis['suggested_themes'] ?? []);
+            $this->matchGoalTags((array) ($analysis['suggested_goals'] ?? []));
+            $this->matchThemeTags((array) ($analysis['suggested_themes'] ?? []));
         }
 
         $matchedInitiativeData = $status['matched_initiatives'] ?? null;
@@ -825,6 +890,7 @@ class FicheWizard extends Component
         $this->duration = '';
         $this->groupSize = '';
         $this->selectedInitiativeId = null;
+        $this->manualInitiativeId = null;
         $this->selectedThemeTags = [];
         $this->selectedGoalTags = [];
         $this->uploadedFiles = [];

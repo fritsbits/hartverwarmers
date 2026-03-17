@@ -22,6 +22,8 @@ class GenerateFilePreviewsCommand extends Command
 
     public function handle(): int
     {
+        $this->ensureGhostscriptInPath();
+
         if ($this->option('thumbnails-only')) {
             return $this->backfillThumbnails();
         }
@@ -61,6 +63,24 @@ class GenerateFilePreviewsCommand extends Command
         $this->error('Please specify --file=ID or --all');
 
         return self::FAILURE;
+    }
+
+    /**
+     * Ensure Ghostscript (gs) is reachable by ImageMagick.
+     *
+     * Queue workers often run with a minimal PATH that excludes
+     * Homebrew's /opt/homebrew/bin, causing Imagick PDF rendering to fail.
+     */
+    private function ensureGhostscriptInPath(): void
+    {
+        $extraPaths = ['/opt/homebrew/bin', '/usr/local/bin'];
+        $currentPath = getenv('PATH') ?: '';
+
+        $missing = array_filter($extraPaths, fn (string $p) => ! str_contains($currentPath, $p) && is_dir($p));
+
+        if (! empty($missing)) {
+            putenv('PATH='.implode(':', $missing).':'.$currentPath);
+        }
     }
 
     private function processFile(File $file, int $maxSlides): bool

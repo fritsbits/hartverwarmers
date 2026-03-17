@@ -75,8 +75,8 @@ class AnalyzeFileCommand extends Command
 
         // Call 2: Match initiatives
         $this->info('Running MatchInitiativeAgent...');
-        $summary = $analysis['summary'] ?? null;
-        $match = $aiService->matchInitiatives($title, $description, $summary);
+        $aiDescription = $analysis['description'] ?? null;
+        $match = $aiService->matchInitiatives($title, $description, $aiDescription);
 
         if ($match && isset($match['_meta'])) {
             $meta = $match['_meta'];
@@ -109,7 +109,7 @@ class AnalyzeFileCommand extends Command
 
         if ($analysis) {
             $this->newLine();
-            $this->info('Summary: '.($analysis['summary'] ?: '(empty)'));
+            $this->info('Description: '.($analysis['description'] ?: '(empty)'));
             $this->info('Goals: '.implode(', ', $analysis['suggested_goals'] ?? []));
             $this->info('Themes: '.implode(', ', $analysis['suggested_themes'] ?? []));
             $this->info('Duration: '.($analysis['duration_estimate'] ?: '(empty)'));

@@ -261,7 +261,7 @@ class FicheWizardTest extends TestCase
             'step' => 'done',
             'updated_at' => now()->timestamp,
             'analysis' => [
-                'summary' => 'Test samenvatting',
+                'description' => 'Test samenvatting',
                 'preparation' => 'AI voorbereiding',
                 'inventory' => 'AI benodigdheden',
                 'process' => 'AI werkwijze',
@@ -278,6 +278,7 @@ class FicheWizardTest extends TestCase
             ->assertSet('processingComplete', true);
 
         $this->assertStringContainsString('AI voorbereiding', $component->get('aiPreparation'));
+        $this->assertStringContainsString('Test samenvatting', $component->get('aiDescription'));
 
         $this->assertNull(Cache::get('fiche-processing:test-key-done'));
     }
@@ -299,7 +300,93 @@ class FicheWizardTest extends TestCase
 
         $component->call('checkProcessing')
             ->assertSet('processingStep', 'failed')
-            ->assertSet('processingComplete', true);
+            ->assertSet('processingComplete', true)
+            ->assertSet('processingFailReason', 'error');
+    }
+
+    public function test_check_processing_stores_fail_reason_for_no_text(): void
+    {
+        $user = User::factory()->create();
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('processingKey', 'test-key-notext')
+            ->set('processingStep', 'analyzing');
+
+        Cache::put('fiche-processing:test-key-notext', [
+            'step' => 'done',
+            'updated_at' => now()->timestamp,
+            'analysis' => null,
+            'matched_initiatives' => null,
+            'reason' => 'no_text_extracted',
+        ], 3600);
+
+        $component->call('checkProcessing')
+            ->assertSet('processingComplete', true)
+            ->assertSet('processingFailReason', 'no_text_extracted');
+    }
+
+    public function test_check_processing_detects_no_suggestions(): void
+    {
+        $user = User::factory()->create();
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('processingKey', 'test-key-nosug')
+            ->set('processingStep', 'analyzing');
+
+        Cache::put('fiche-processing:test-key-nosug', [
+            'step' => 'done',
+            'updated_at' => now()->timestamp,
+            'analysis' => null,
+            'matched_initiatives' => null,
+        ], 3600);
+
+        $component->call('checkProcessing')
+            ->assertSet('processingComplete', true)
+            ->assertSet('processingFailReason', 'no_suggestions');
+    }
+
+    public function test_fail_reason_shows_message_on_step2(): void
+    {
+        $user = User::factory()->create();
+        Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 2)
+            ->set('processingComplete', true)
+            ->set('processingFailReason', 'no_text_extracted')
+            ->assertSee('geen tekst uitlezen');
+    }
+
+    public function test_fail_reason_shows_message_on_step3(): void
+    {
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('processingComplete', true)
+            ->set('processingFailReason', 'no_text_extracted')
+            ->assertSee('Geen suggesties')
+            ->assertSee('geen uitleesbare tekst');
+    }
+
+    public function test_fail_reason_cleared_on_new_upload(): void
+    {
+        Queue::fake();
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('processingFailReason', 'no_text_extracted')
+            ->set('processingComplete', true)
+            ->set('processingStep', 'done')
+            ->set('uploads', [UploadedFile::fake()->create('new.pdf', 100, 'application/pdf')]);
+
+        $this->assertNull($component->get('processingFailReason'));
     }
 
     public function test_apply_suggestion_appends_ai_value_to_empty_field(): void
@@ -742,7 +829,7 @@ class FicheWizardTest extends TestCase
             'step' => 'done',
             'updated_at' => now()->timestamp,
             'analysis' => [
-                'summary' => 'Samenvatting',
+                'description' => 'Samenvatting',
                 'preparation' => "- Stap 1\n- Stap 2\n- Stap 3",
                 'inventory' => 'Een **mooie** beschrijving',
                 'process' => '',
@@ -773,7 +860,7 @@ class FicheWizardTest extends TestCase
             'step' => 'done',
             'updated_at' => now()->timestamp,
             'analysis' => [
-                'summary' => 'Samenvatting',
+                'description' => 'Samenvatting',
                 'preparation' => 'Test <script>alert("xss")</script>',
                 'inventory' => '',
                 'process' => '',
@@ -956,6 +1043,23 @@ class FicheWizardTest extends TestCase
             ->assertHasErrors(['description' => 'required']);
     }
 
+    public function test_publish_validation_error_banner_shows_near_buttons(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('title', 'Een titel')
+            ->set('description', '')
+            ->set('selectedInitiativeId', $initiative->id)
+            ->call('publish')
+            ->assertHasErrors(['description' => 'required'])
+            ->assertSee('Geef een beschrijving van je activiteit.')
+            ->assertSee('Bekijk');
+    }
+
     public function test_suggested_tags_are_auto_selected_from_processing(): void
     {
         $user = User::factory()->create();
@@ -972,7 +1076,7 @@ class FicheWizardTest extends TestCase
             'step' => 'done',
             'updated_at' => now()->timestamp,
             'analysis' => [
-                'summary' => 'Samenvatting',
+                'description' => 'Samenvatting',
                 'preparation' => '',
                 'inventory' => '',
                 'process' => '',
@@ -1059,7 +1163,7 @@ class FicheWizardTest extends TestCase
             ->test(FicheWizard::class)
             ->set('uploads', [UploadedFile::fake()->create('first.pdf', 100, 'application/pdf')]);
 
-        // Simulate AI suggestions populated from first processing
+        // Simulate AI suggestions populated from first processing + user applied them
         $component->set('aiTitle', 'AI Titel')
             ->set('aiDescription', 'AI Beschrijving')
             ->set('aiPreparation', '<p>Voorbereiding</p>')
@@ -1068,9 +1172,13 @@ class FicheWizardTest extends TestCase
             ->set('aiDuration', '30 minuten')
             ->set('aiGroupSize', '10-15')
             ->set('matchedInitiatives', [['id' => 1, 'title' => 'Init', 'reason' => 'Match']])
-            ->set('aiAnalysis', ['summary' => 'test'])
+            ->set('aiAnalysis', ['description' => 'test'])
             ->set('suggestedThemeTagIds', [1, 2])
             ->set('suggestedGoalTagIds', [3, 4])
+            ->set('preparation', '<p>Applied quiz preparation</p>')
+            ->set('inventory', '<p>Applied quiz inventory</p>')
+            ->set('process', '<p>Applied quiz process</p>')
+            ->set('description', 'Applied quiz description')
             ->set('processingComplete', true)
             ->set('processingStep', 'done');
 
@@ -1089,6 +1197,12 @@ class FicheWizardTest extends TestCase
         $this->assertNull($component->get('aiAnalysis'));
         $this->assertEmpty($component->get('suggestedThemeTagIds'));
         $this->assertEmpty($component->get('suggestedGoalTagIds'));
+
+        // User content fields should also be cleared (stale from previous file)
+        $this->assertEmpty($component->get('preparation'));
+        $this->assertEmpty($component->get('inventory'));
+        $this->assertEmpty($component->get('process'));
+        $this->assertEmpty($component->get('description'));
     }
 
     public function test_subsequent_uploads_reset_processing_state(): void
@@ -1197,9 +1311,9 @@ class FicheWizardTest extends TestCase
 
         $component->assertSet('currentStep', 1);
         $component->assertSet('processingStep', 'extracting');
-        $component->assertSee('Upload');
+        $component->assertSee('Opladen');
         $component->assertSee('Tekst uitlezen');
-        $component->assertSee('Suggesties');
+        $component->assertSee('Suggesties formuleren');
         $component->assertDontSee('Verwerking');
     }
 
@@ -1782,7 +1896,7 @@ class FicheWizardTest extends TestCase
             ->assertSet('similarFiches', []);
     }
 
-    public function test_similar_fiches_picks_longest_word_as_keyword(): void
+    public function test_similar_fiches_picks_word_with_most_matches_as_keyword(): void
     {
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
@@ -1796,6 +1910,30 @@ class FicheWizardTest extends TestCase
         $similarFiches = $component->get('similarFiches');
         $this->assertNotEmpty($similarFiches);
         $this->assertEquals('muziekbingo', $similarFiches['keyword']);
+    }
+
+    public function test_similar_fiches_keyword_matches_examples_for_multi_word_title(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        // 3 quiz fiches
+        Fiche::factory()->published()->create(['title' => 'Carnaval Quiz', 'initiative_id' => $initiative->id]);
+        Fiche::factory()->published()->create(['title' => 'Valentijnsquiz', 'initiative_id' => $initiative->id]);
+        Fiche::factory()->published()->create(['title' => 'Eurosongquiz', 'initiative_id' => $initiative->id]);
+
+        // 1 gezonde fiche
+        Fiche::factory()->published()->create(['title' => 'Gezonde smoothies', 'initiative_id' => $initiative->id]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('title', 'Quiz gezonde voeding');
+
+        $similarFiches = $component->get('similarFiches');
+        $this->assertNotEmpty($similarFiches);
+        // Should pick "quiz" (3 matches) over "gezonde" (1 match) or "voeding" (0 matches)
+        $this->assertEquals('quiz', $similarFiches['keyword']);
+        $this->assertEquals(3, $similarFiches['count']);
     }
 
     public function test_similar_fiches_filters_words_shorter_than_three_characters(): void
@@ -1830,5 +1968,60 @@ class FicheWizardTest extends TestCase
         $this->assertEquals(2, $similarFiches['count']);
         $this->assertEquals('bingo', $similarFiches['keyword']);
         $component->assertSet('currentStep', 2);
+    }
+
+    public function test_initiative_dropdown_shows_iets_anders_when_ai_suggestions_exist(): void
+    {
+        $user = User::factory()->create();
+        $matched = Initiative::factory()->published()->create(['title' => 'Quiz']);
+        Initiative::factory()->published()->create(['title' => 'Beweging en fit']);
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 2)
+            ->set('processingComplete', true)
+            ->set('matchedInitiatives', [['id' => $matched->id, 'title' => $matched->title, 'reason' => 'Past bij je activiteit']])
+            ->set('selectedInitiativeId', $matched->id)
+            ->assertSee('Iets anders...')
+            ->assertDontSee('Kies een initiatief...');
+    }
+
+    public function test_initiative_dropdown_shows_kies_placeholder_without_ai_suggestions(): void
+    {
+        $user = User::factory()->create();
+        Initiative::factory()->published()->create(['title' => 'Beweging en fit']);
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 2)
+            ->set('processingComplete', true)
+            ->set('matchedInitiatives', [])
+            ->assertSee('Kies een initiatief...')
+            ->assertDontSee('Iets anders...');
+    }
+
+    public function test_initiative_dropdown_excludes_matched_initiatives(): void
+    {
+        $user = User::factory()->create();
+        $matched = Initiative::factory()->published()->create(['title' => 'Quiz activiteit']);
+        Initiative::factory()->published()->create(['title' => 'Beweging en fit']);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 2)
+            ->set('processingComplete', true)
+            ->set('matchedInitiatives', [['id' => $matched->id, 'title' => $matched->title, 'reason' => 'Match']])
+            ->set('selectedInitiativeId', $matched->id);
+
+        $html = $component->html();
+
+        // The matched initiative appears once in the radio card, but should NOT appear in the listbox options
+        // Listbox options use data-flux-select-option attribute
+        preg_match_all('/data-flux-select-option[^>]*>/', $html, $optionMatches);
+        $optionHtml = implode(' ', $optionMatches[0]);
+        $this->assertStringNotContainsString('Quiz activiteit', $optionHtml, 'Matched initiative should not appear as a dropdown option');
+
+        // The non-matched initiative should be in the dropdown
+        $component->assertSee('Beweging en fit');
     }
 }
