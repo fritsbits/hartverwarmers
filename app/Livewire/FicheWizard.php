@@ -12,7 +12,6 @@ use App\Models\Initiative;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Pennant\Feature;
@@ -446,14 +445,7 @@ class FicheWizard extends Component
             return;
         }
 
-        $cacheKey = "fiche-processing:{$this->processingKey}";
-        $status = Cache::get($cacheKey);
-
-        Log::debug('checkProcessing', [
-            'key' => $cacheKey,
-            'has_status' => $status !== null,
-            'step' => $status['step'] ?? 'no-status',
-        ]);
+        $status = Cache::get("fiche-processing:{$this->processingKey}");
 
         if (! $status) {
             if ($this->processingStartedAt && (now()->timestamp - $this->processingStartedAt) >= 30) {
