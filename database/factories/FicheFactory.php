@@ -59,4 +59,14 @@ class FicheFactory extends Factory
             'icon' => $icon,
         ]);
     }
+
+    public function withScores(int $completeness = 100, int $quality = 75): static
+    {
+        return $this->state(fn () => [
+            'completeness_score' => $completeness,
+            'quality_score' => $quality,
+            'quality_justification' => 'Test justification.',
+            'quality_assessed_at' => now(),
+        ]);
+    }
 }
