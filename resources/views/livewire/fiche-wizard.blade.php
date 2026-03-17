@@ -256,7 +256,7 @@
                                     </div>
 
                                     {{-- Rotating hints --}}
-                                    <div class="rounded-xl bg-[var(--color-bg-cream)] border border-[var(--color-border-light)] p-4 relative overflow-hidden min-h-[3.5rem]">
+                                    <div x-show="hintIndex >= 0" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="rounded-xl bg-[var(--color-bg-cream)] border border-[var(--color-border-light)] p-4 relative overflow-hidden min-h-[3.5rem]">
                                         <template x-for="(hint, i) in activeHints" :key="i">
                                             <div x-show="hintIndex === i" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200 absolute inset-x-4 top-4" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="flex items-center gap-3">
                                                 <div class="w-8 h-8 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center shrink-0">
@@ -440,9 +440,9 @@
                             @if(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'skipped')
                                 @php
                                     $step2InlineSteps = [
-                                        ['label' => 'Upload', 'done' => true, 'active' => false],
+                                        ['label' => 'Opladen', 'done' => true, 'active' => false],
                                         ['label' => 'Tekst uitlezen', 'done' => in_array($processingStep, ['analyzing', 'done', 'failed']), 'active' => $processingStep === 'extracting'],
-                                        ['label' => 'Suggesties', 'done' => in_array($processingStep, ['done', 'failed']), 'active' => $processingStep === 'analyzing'],
+                                        ['label' => 'Suggesties formuleren', 'done' => in_array($processingStep, ['done', 'failed']), 'active' => $processingStep === 'analyzing'],
                                     ];
                                 @endphp
                                 <div class="mt-3 mb-4 flex items-center gap-3 text-sm text-[var(--color-text-secondary)]">
@@ -482,10 +482,22 @@
                             @endif
 
                             {{-- Manual initiative select (always visible as fallback) --}}
-                            <div class="mt-3">
-                                <flux:select wire:model.live="selectedInitiativeId" placeholder="Kies een initiatief...">
-                                    @foreach($allInitiatives as $initiative)
-                                        <flux:select.option :value="$initiative->id">{{ $initiative->title }}</flux:select.option>
+                            @php
+                                $hasAiSuggestions = !empty($matchedInitiatives);
+                                $matchedIds = $hasAiSuggestions ? collect($matchedInitiatives)->pluck('id')->all() : [];
+                                $initiativePlaceholder = $hasAiSuggestions ? 'Iets anders...' : 'Kies een initiatief...';
+                            @endphp
+                            <div class="mt-3 w-full sm:w-1/3">
+                                <flux:select
+                                    variant="listbox"
+                                    wire:model.live="manualInitiativeId"
+                                    wire:key="initiative-select-{{ $hasAiSuggestions ? 'ai' : 'manual' }}"
+                                    :placeholder="$initiativePlaceholder"
+                                >
+                                    @foreach($allInitiatives as $init)
+                                        @if(!in_array($init->id, $matchedIds))
+                                            <flux:select.option :value="$init->id">{{ $init->title }}</flux:select.option>
+                                        @endif
                                     @endforeach
                                 </flux:select>
                                 <flux:error name="selectedInitiativeId" />
@@ -652,9 +664,9 @@
                         @if(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'skipped')
                             @php
                                 $inlineSteps = [
-                                    ['label' => 'Upload', 'done' => true, 'active' => false],
+                                    ['label' => 'Opladen', 'done' => true, 'active' => false],
                                     ['label' => 'Tekst uitlezen', 'done' => in_array($processingStep, ['analyzing', 'done', 'failed']), 'active' => $processingStep === 'extracting'],
-                                    ['label' => 'Suggesties', 'done' => in_array($processingStep, ['done', 'failed']), 'active' => $processingStep === 'analyzing'],
+                                    ['label' => 'Suggesties formuleren', 'done' => in_array($processingStep, ['done', 'failed']), 'active' => $processingStep === 'analyzing'],
                                 ];
                             @endphp
                             <div class="flex items-center gap-3 text-sm text-[var(--color-text-secondary)]">
