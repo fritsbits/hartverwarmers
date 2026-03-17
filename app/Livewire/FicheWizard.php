@@ -84,6 +84,9 @@ class FicheWizard extends Component
     public ?string $publishedFicheUrl = null;
 
     // Step 2 — Details (user's original input, never overwritten by AI)
+    /** Tracks whether the user manually typed a title (vs auto-filled from filename) */
+    public bool $titleManuallyEdited = false;
+
     #[Session(key: 'fiche-wizard.title')]
     #[Validate('required|string|max:255', message: [
         'required' => 'Geef je activiteit een titel.',
@@ -192,6 +195,7 @@ class FicheWizard extends Component
         // Every page load starts fresh — only uploaded files survive across sessions.
         // Title, description, tags etc. are re-derived from file processing, not session.
         $this->title = '';
+        $this->titleManuallyEdited = false;
         $this->description = '';
         $this->duration = '';
         $this->groupSize = '';
@@ -205,6 +209,7 @@ class FicheWizard extends Component
 
     public function updatedTitle(): void
     {
+        $this->titleManuallyEdited = true;
         $this->findSimilarFiches();
     }
 
@@ -312,10 +317,16 @@ class FicheWizard extends Component
 
         $this->uploads = [];
 
-        if ($this->title === '' && ! empty($this->uploadedFiles)) {
-            $name = pathinfo($this->uploadedFiles[0]['name'], PATHINFO_FILENAME);
-            $this->title = ucfirst(trim(preg_replace('/\s+/', ' ', str_replace(['-', '_', '.'], ' ', $name))));
-            $this->findSimilarFiches();
+        // Auto-fill title from the first new file, unless the user manually typed one
+        if (! $this->titleManuallyEdited && ! empty($newFileIds)) {
+            $newFile = collect($this->uploadedFiles)->first(fn ($f) => in_array($f['id'], $newFileIds));
+
+            if ($newFile) {
+                $name = pathinfo($newFile['name'], PATHINFO_FILENAME);
+                $this->title = ucfirst(trim(preg_replace('/\s+/', ' ', str_replace(['-', '_', '.'], ' ', $name))));
+                $this->titleManuallyEdited = false;
+                $this->findSimilarFiches();
+            }
         }
 
         if ($isFirstUploadBatch && ! empty($newFileIds)) {
