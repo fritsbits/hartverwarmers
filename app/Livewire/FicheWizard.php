@@ -445,7 +445,14 @@ class FicheWizard extends Component
             return;
         }
 
-        $status = Cache::get("fiche-processing:{$this->processingKey}");
+        $cacheKey = "fiche-processing:{$this->processingKey}";
+        $status = Cache::get($cacheKey);
+
+        Log::debug('checkProcessing', [
+            'key' => $cacheKey,
+            'has_status' => $status !== null,
+            'step' => $status['step'] ?? 'no-status',
+        ]);
 
         if (! $status) {
             if ($this->processingStartedAt && (now()->timestamp - $this->processingStartedAt) >= 30) {
