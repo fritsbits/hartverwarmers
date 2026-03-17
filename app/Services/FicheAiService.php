@@ -20,7 +20,7 @@ class FicheAiService
 
     /**
      * @param  array<string>  $texts  Extracted texts from uploaded files
-     * @return array{summary: string, preparation: string, inventory: string, process: string, duration_estimate: string, group_size_estimate: string, suggested_themes: array, suggested_goals: array, suggested_target_audience: array, _meta: array}|null
+     * @return array{description: string, preparation: string, inventory: string, process: string, duration_estimate: string, group_size_estimate: string, suggested_themes: array, suggested_goals: array, suggested_target_audience: array, _meta: array}|null
      */
     public function analyzeFiles(array $texts, string $title, string $description): ?array
     {
@@ -45,7 +45,7 @@ class FicheAiService
             $elapsed = round(microtime(true) - $start, 2);
 
             return [
-                'summary' => $response['summary'] ?? '',
+                'description' => $response['description'] ?? '',
                 'preparation' => $response['preparation'] ?? '',
                 'inventory' => $response['inventory'] ?? '',
                 'process' => $response['process'] ?? '',
@@ -66,7 +66,7 @@ class FicheAiService
     /**
      * @return array{matched_initiative_ids: array, match_reasons: array, _meta: array}|null
      */
-    public function matchInitiatives(string $title, string $description, ?string $summary): ?array
+    public function matchInitiatives(string $title, string $description, ?string $aiDescription): ?array
     {
         if (! $this->isAvailable()) {
             return null;
@@ -89,8 +89,8 @@ class FicheAiService
             $prompt = "Koppel deze fiche aan de beste initiatieven.\n\n";
             $prompt .= "Fiche titel: {$title}\n";
             $prompt .= "Fiche beschrijving: {$description}\n";
-            if ($summary) {
-                $prompt .= "Samenvatting bestanden: {$summary}\n";
+            if ($aiDescription) {
+                $prompt .= "Samenvatting bestanden: {$aiDescription}\n";
             }
             $prompt .= "\nBeschikbare initiatieven:\n{$initiativeList}";
 

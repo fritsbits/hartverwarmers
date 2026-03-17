@@ -101,8 +101,8 @@ class ProcessFicheUploads implements ShouldQueue
 
         $analysis = $aiService->analyzeFiles($texts, $this->title, $this->description);
 
-        $summary = $analysis['summary'] ?? null;
-        $matchedInitiatives = $aiService->matchInitiatives($this->title, $this->description, $summary);
+        $aiDescription = $analysis['description'] ?? null;
+        $matchedInitiatives = $aiService->matchInitiatives($this->title, $this->description, $aiDescription);
 
         $pipelineElapsed = round(microtime(true) - $pipelineStart, 2);
 
