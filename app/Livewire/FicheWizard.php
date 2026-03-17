@@ -12,6 +12,7 @@ use App\Models\Initiative;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Pennant\Feature;
