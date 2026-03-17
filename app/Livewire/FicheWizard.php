@@ -189,19 +189,18 @@ class FicheWizard extends Component
             }
         }
 
-        // Fresh wizard — no valid uploaded files means no in-progress work, clear stale session data
-        if (empty($this->uploadedFiles)) {
-            $this->title = '';
-            $this->description = '';
-            $this->duration = '';
-            $this->groupSize = '';
-            $this->preparation = '';
-            $this->inventory = '';
-            $this->process = '';
-            $this->selectedThemeTags = [];
-            $this->selectedGoalTags = [];
-            $this->currentStep = 1;
-        }
+        // Every page load starts fresh — only uploaded files survive across sessions.
+        // Title, description, tags etc. are re-derived from file processing, not session.
+        $this->title = '';
+        $this->description = '';
+        $this->duration = '';
+        $this->groupSize = '';
+        $this->preparation = '';
+        $this->inventory = '';
+        $this->process = '';
+        $this->selectedThemeTags = [];
+        $this->selectedGoalTags = [];
+        $this->currentStep = 1;
     }
 
     public function updatedTitle(): void
