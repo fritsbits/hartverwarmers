@@ -36,6 +36,10 @@ class Fiche extends Model
         'icon',
         'migration_id',
         'zip_path',
+        'quality_score',
+        'quality_justification',
+        'quality_assessed_at',
+        'completeness_score',
     ];
 
     protected function casts(): array
@@ -45,6 +49,7 @@ class Fiche extends Model
             'target_audience' => 'array',
             'published' => 'boolean',
             'has_diamond' => 'boolean',
+            'quality_assessed_at' => 'datetime',
         ];
     }
 
@@ -165,5 +170,25 @@ class Fiche extends Model
     public function scopeFicheOfMonth($query)
     {
         return $query->whereNotNull('featured_month');
+    }
+
+    public function calculateCompletenessScore(): int
+    {
+        $score = 0;
+        $description = trim(strip_tags($this->description ?? ''));
+
+        if (mb_strlen($description) >= 100) {
+            $score += 25;
+        }
+
+        $materials = $this->materials ?? [];
+
+        foreach (['preparation', 'inventory', 'process'] as $field) {
+            if (trim(strip_tags($materials[$field] ?? '')) !== '') {
+                $score += 25;
+            }
+        }
+
+        return $score;
     }
 }
