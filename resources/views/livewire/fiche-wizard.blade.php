@@ -561,7 +561,7 @@
 
                             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                                 {{-- User's editable field --}}
-                                <div class="lg:col-span-8">
+                                <div class="lg:col-span-7">
                                     <flux:editor
                                         wire:model="{{ $field['userProp'] }}"
                                         toolbar="bold | bullet ordered | link"
@@ -570,7 +570,7 @@
                                 </div>
 
                                 {{-- Suggestion panel (always reserved) --}}
-                                <div class="lg:col-span-4">
+                                <div class="lg:col-span-5">
                                     @if($hasAiSuggestion)
                                         <div class="flex gap-2.5 py-4 pl-2 pr-4 text-sm text-[var(--color-text-primary)]/70">
                                             <flux:icon.sparkles class="w-5 h-5 shrink-0 text-[var(--color-primary)] mt-0.5" />

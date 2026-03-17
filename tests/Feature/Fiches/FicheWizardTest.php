@@ -1043,6 +1043,23 @@ class FicheWizardTest extends TestCase
             ->assertHasErrors(['description' => 'required']);
     }
 
+    public function test_publish_validation_error_banner_shows_near_buttons(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('title', 'Een titel')
+            ->set('description', '')
+            ->set('selectedInitiativeId', $initiative->id)
+            ->call('publish')
+            ->assertHasErrors(['description' => 'required'])
+            ->assertSee('Geef een beschrijving van je activiteit.')
+            ->assertSee('Bekijk');
+    }
+
     public function test_suggested_tags_are_auto_selected_from_processing(): void
     {
         $user = User::factory()->create();
