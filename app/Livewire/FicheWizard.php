@@ -105,8 +105,10 @@ class FicheWizard extends Component
     public string $groupSize = '';
 
     // Step 3 — Review
-    #[Session(key: 'fiche-wizard.selectedInitiativeId')]
     public ?int $selectedInitiativeId = null;
+
+    /** Separate model for the manual dropdown — decoupled from AI radio cards */
+    public ?int $manualInitiativeId = null;
 
     /** @var array<int, int> */
     #[Session(key: 'fiche-wizard.selectedThemeTags')]
@@ -193,6 +195,21 @@ class FicheWizard extends Component
         $this->findSimilarFiches();
     }
 
+    public function updatedManualInitiativeId(): void
+    {
+        $this->selectedInitiativeId = $this->manualInitiativeId;
+    }
+
+    public function updatedSelectedInitiativeId(): void
+    {
+        // When a radio card is selected, clear the manual dropdown so it shows the placeholder
+        $matchedIds = collect($this->matchedInitiatives)->pluck('id')->all();
+
+        if (in_array($this->selectedInitiativeId, $matchedIds)) {
+            $this->manualInitiativeId = null;
+        }
+    }
+
     public function findSimilarFiches(): void
     {
         $words = collect(explode(' ', Str::lower(trim($this->title))))
@@ -206,30 +223,29 @@ class FicheWizard extends Component
             return;
         }
 
-        $query = Fiche::published()->where(function ($q) use ($words) {
-            foreach ($words as $word) {
-                $q->orWhere('title', 'LIKE', "%{$word}%");
+        // Find the word with the most matching fiches so keyword, count, and examples stay consistent
+        $best = null;
+
+        foreach ($words as $word) {
+            $query = Fiche::published()->where('title', 'LIKE', "%{$word}%");
+            $count = $query->count();
+
+            if ($count > 0 && ($best === null || $count > $best['count'])) {
+                $best = [
+                    'count' => $count,
+                    'keyword' => $word,
+                    'examples' => (clone $query)->take(3)->pluck('title')->all(),
+                ];
             }
-        });
+        }
 
-        $count = $query->count();
-
-        if ($count === 0) {
+        if ($best === null) {
             $this->similarFiches = [];
 
             return;
         }
 
-        $examples = (clone $query)->take(3)->pluck('title')->all();
-
-        // Display keyword: longest word is most likely the topic
-        $keyword = $words->sortByDesc(fn (string $w) => Str::length($w))->first();
-
-        $this->similarFiches = [
-            'count' => $count,
-            'keyword' => $keyword,
-            'examples' => $examples,
-        ];
+        $this->similarFiches = $best;
     }
 
     public function updatedUploads(): void
@@ -627,6 +643,7 @@ class FicheWizard extends Component
         $this->aiDuration = null;
         $this->aiGroupSize = null;
         $this->matchedInitiatives = [];
+        $this->manualInitiativeId = null;
         $this->aiAnalysis = null;
         $this->suggestedThemeTagIds = [];
         $this->suggestedGoalTagIds = [];
@@ -657,14 +674,15 @@ class FicheWizard extends Component
         $analysis = $status['analysis'] ?? null;
 
         if ($analysis) {
+            $this->aiDescription = self::markdownToHtml($analysis['description'] ?? null);
             $this->aiPreparation = self::markdownToHtml($analysis['preparation'] ?? null);
             $this->aiInventory = self::markdownToHtml($analysis['inventory'] ?? null);
             $this->aiProcess = self::markdownToHtml($analysis['process'] ?? null);
             $this->aiDuration = $analysis['duration_estimate'] ?? null;
             $this->aiGroupSize = $analysis['group_size_estimate'] ?? null;
 
-            $this->matchGoalTags($analysis['suggested_goals'] ?? []);
-            $this->matchThemeTags($analysis['suggested_themes'] ?? []);
+            $this->matchGoalTags((array) ($analysis['suggested_goals'] ?? []));
+            $this->matchThemeTags((array) ($analysis['suggested_themes'] ?? []));
         }
 
         $matchedInitiativeData = $status['matched_initiatives'] ?? null;
@@ -825,6 +843,7 @@ class FicheWizard extends Component
         $this->duration = '';
         $this->groupSize = '';
         $this->selectedInitiativeId = null;
+        $this->manualInitiativeId = null;
         $this->selectedThemeTags = [];
         $this->selectedGoalTags = [];
         $this->uploadedFiles = [];
