@@ -69,4 +69,28 @@ class FicheFactory extends Factory
             'quality_assessed_at' => now(),
         ]);
     }
+
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
+    public function withSuggestions(array $overrides = []): static
+    {
+        return $this->state(fn () => [
+            'ai_suggestions' => array_merge([
+                'title' => 'Een pakkende titel voor deze activiteit',
+                'description' => 'Een heldere en uitnodigende beschrijving',
+                'preparation' => 'Stap-voor-stap voorbereiding',
+                'inventory' => 'Benodigde materialen',
+                'process' => 'De werkwijze uitgelegd',
+                'applied' => [],
+            ], $overrides),
+        ]);
+    }
+
+    public function withPresentationScore(int $score): static
+    {
+        return $this->state(fn () => [
+            'presentation_score' => $score,
+        ]);
+    }
 }

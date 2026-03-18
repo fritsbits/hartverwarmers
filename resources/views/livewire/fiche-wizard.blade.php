@@ -548,6 +548,32 @@
                     </div>
                 @endif
 
+                {{-- Title with AI suggestion --}}
+                @php
+                    $hasTitleSuggestion = $this->aiTitle !== null && !in_array('title', $dismissedSuggestions);
+                    $isTitleApplied = in_array('title', $appliedSuggestions);
+                @endphp
+                <div class="mb-9">
+                    <flux:label class="text-base font-body font-bold">Titel</flux:label>
+                    <flux:description>Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
+
+                    <div class="grid grid-cols-1 @if($hasTitleSuggestion || $isTitleApplied) lg:grid-cols-12 @endif gap-8">
+                        <div class="@if($hasTitleSuggestion || $isTitleApplied) lg:col-span-7 @endif">
+                            <flux:input wire:model="title" class="text-base" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
+                        </div>
+                        @if($this->aiTitle !== null)
+                            <div class="lg:col-span-5">
+                                <x-ai-suggestion-panel
+                                    :suggestion="e($this->aiTitle)"
+                                    field="title"
+                                    :is-applied="$isTitleApplied"
+                                />
+                            </div>
+                        @endif
+                    </div>
+                    <flux:error name="title" />
+                </div>
+
                 <div class="space-y-9">
                     @foreach($contentFields as $index => $field)
                         @php
@@ -572,30 +598,11 @@
                                 {{-- Suggestion panel (always reserved) --}}
                                 <div class="lg:col-span-5">
                                     @if($hasAiSuggestion)
-                                        <div class="flex gap-2.5 py-4 pl-2 pr-4 text-sm text-[var(--color-text-primary)]/70">
-                                            <flux:icon.sparkles class="w-5 h-5 shrink-0 text-[var(--color-primary)] mt-0.5" />
-                                            <div class="min-w-0">
-                                                <div class="text-xs font-semibold text-[var(--color-text-secondary)] mb-3 uppercase tracking-wider">Suggestie</div>
-                                                <div class="text-sm max-w-none [&_strong]:text-[var(--color-text-primary)]/80 [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:space-y-1.5 [&_ol]:list-decimal [&_ol]:pl-4 [&_ol]:space-y-1.5 [&_p+p]:mt-2">{!! $this->{$field['aiProp']} !!}</div>
-                                                <div class="mt-3">
-                                                    @if($isApplied)
-                                                        <span class="inline-flex items-center gap-1 h-7 px-2 text-xs font-medium text-[var(--color-text-secondary)]">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                                            </svg>
-                                                            Toegevoegd
-                                                        </span>
-                                                    @else
-                                                        <flux:button size="xs" variant="filled" x-on:click="let y = window.scrollY; $wire.applySuggestion('{{ $field['field'] }}').then(() => { requestAnimationFrame(() => window.scrollTo(0, y)) })">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-                                                            </svg>
-                                                            Toevoegen
-                                                        </flux:button>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <x-ai-suggestion-panel
+                                            :suggestion="$this->{$field['aiProp']}"
+                                            :field="$field['field']"
+                                            :is-applied="$isApplied"
+                                        />
                                     @elseif($index === 0 && $processingComplete && $processingFailReason)
                                         <div class="flex gap-2.5 py-4 pl-2 pr-4 text-sm text-[var(--color-text-secondary)]">
                                             <flux:icon.information-circle class="w-5 h-5 shrink-0 mt-0.5" />

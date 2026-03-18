@@ -42,6 +42,7 @@ class Fiche extends Model
         'completeness_score',
         'presentation_score',
         'presentation_justification',
+        'ai_suggestions',
     ];
 
     protected function casts(): array
@@ -52,6 +53,7 @@ class Fiche extends Model
             'published' => 'boolean',
             'has_diamond' => 'boolean',
             'quality_assessed_at' => 'datetime',
+            'ai_suggestions' => 'array',
         ];
     }
 
@@ -192,5 +194,26 @@ class Fiche extends Model
         }
 
         return $score;
+    }
+
+    public function hasUnusedSuggestions(): bool
+    {
+        if (! is_array($this->ai_suggestions)) {
+            return false;
+        }
+
+        $applied = $this->ai_suggestions['applied'] ?? [];
+        $fields = ['title', 'description', 'preparation', 'inventory', 'process'];
+
+        return collect($fields)->contains(function ($field) use ($applied) {
+            return ! empty($this->ai_suggestions[$field]) && ! in_array($field, $applied);
+        });
+    }
+
+    public function shouldShowSuggestionNudge(): bool
+    {
+        return $this->presentation_score !== null
+            && $this->presentation_score < 60
+            && $this->hasUnusedSuggestions();
     }
 }

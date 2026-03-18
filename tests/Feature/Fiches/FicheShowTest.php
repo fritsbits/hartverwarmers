@@ -342,4 +342,47 @@ class FicheShowTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Anna Janssens');
     }
+
+    public function test_author_sees_suggestion_nudge_when_low_score(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()
+            ->withSuggestions()
+            ->withPresentationScore(40)
+            ->create(['user_id' => $user->id, 'initiative_id' => $initiative->id]);
+
+        $this->actingAs($user)
+            ->get(route('fiches.show', [$initiative, $fiche]))
+            ->assertSee('Maak het makkelijker voor collega');
+    }
+
+    public function test_author_does_not_see_nudge_when_high_score(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()
+            ->withSuggestions()
+            ->withPresentationScore(80)
+            ->create(['user_id' => $user->id, 'initiative_id' => $initiative->id]);
+
+        $this->actingAs($user)
+            ->get(route('fiches.show', [$initiative, $fiche]))
+            ->assertDontSee('Maak het makkelijker voor collega');
+    }
+
+    public function test_non_author_does_not_see_nudge(): void
+    {
+        $author = User::factory()->create();
+        $viewer = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()
+            ->withSuggestions()
+            ->withPresentationScore(40)
+            ->create(['user_id' => $author->id, 'initiative_id' => $initiative->id]);
+
+        $this->actingAs($viewer)
+            ->get(route('fiches.show', [$initiative, $fiche]))
+            ->assertDontSee('Maak het makkelijker voor collega');
+    }
 }
