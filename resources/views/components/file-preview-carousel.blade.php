@@ -50,8 +50,8 @@
             if (diff > 50) next();
             if (diff < -50) prev();
         "
-        x-on:keydown.left.prevent="prev()"
-        x-on:keydown.right.prevent="next()"
+        x-on:keydown.left.prevent="lightboxOpen ? lightboxPrev() : prev()"
+        x-on:keydown.right.prevent="lightboxOpen ? lightboxNext() : next()"
         tabindex="0"
         role="region"
         aria-label="Bestandencarrousel"
@@ -78,6 +78,7 @@
                                 <div
                                     class="relative bg-white rounded-sm max-h-full max-w-full {{ $isOverlaySlide ? '' : 'cursor-pointer' }}"
                                     style="box-shadow: 0 4px 20px -4px rgba(120, 90, 60, 0.15), 0 1px 4px rgba(120, 90, 60, 0.08); border: 1px solid rgba(120, 90, 60, 0.1);"
+                                    {{-- $index matches $i in the lightbox @foreach because $slides === $previews when previews exist --}}
                                     @unless($isOverlaySlide) x-on:click="openLightbox({{ $index }})" @endunless
                                 >
                                     <img
@@ -221,7 +222,7 @@
         @endif
     </div>
 
-    {{-- Lightbox --}}
+    {{-- Lightbox: x-teleport moves this to <body> but Alpine retains scope access from the parent x-data --}}
     @if($previewCount > 0)
         <template x-teleport="body">
             <div
