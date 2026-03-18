@@ -243,17 +243,11 @@
         <section class="bg-[var(--color-bg-cream)]">
             <div class="max-w-6xl mx-auto px-6 py-16">
                 <div class="mb-8">
-                    <div class="flex items-center gap-2 mb-2">
-                        <x-diamant-gem letter="" size="xs" :pronounced="true" />
-                        <span class="section-label">Uitgekozen door ons team</span>
-                    </div>
-                    <div class="flex items-baseline justify-between gap-4">
+                    <span class="section-label">Uitgekozen door ons team</span>
+                    <div class="flex items-baseline justify-between gap-4 mt-2">
                         <h2 class="text-3xl">Diamantjes</h2>
                         <a href="{{ route('diamantjes.index') }}" class="cta-link shrink-0">Bekijk alle diamantjes</a>
                     </div>
-                    <p class="text-[var(--color-text-secondary)] mt-2">
-                        Fiches die ons team uitkoos als bijzonder mooie voorbeelden van wat mogelijk is.
-                    </p>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
