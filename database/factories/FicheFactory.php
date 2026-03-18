@@ -77,11 +77,11 @@ class FicheFactory extends Factory
     {
         return $this->state(fn () => [
             'ai_suggestions' => array_merge([
-                'title' => 'Een pakkende titel voor deze activiteit',
-                'description' => 'Een heldere en uitnodigende beschrijving',
-                'preparation' => 'Stap-voor-stap voorbereiding',
-                'inventory' => 'Benodigde materialen',
-                'process' => 'De werkwijze uitgelegd',
+                'title' => 'Verbeterde titel voor deze activiteit',
+                'description' => '<p>AI-suggestie voor de beschrijving.</p>',
+                'preparation' => '<p>AI-suggestie voor de voorbereiding.</p>',
+                'inventory' => '<p>AI-suggestie voor de benodigdheden.</p>',
+                'process' => '<p>AI-suggestie voor de werkwijze.</p>',
                 'applied' => [],
             ], $overrides),
         ]);
