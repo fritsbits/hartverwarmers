@@ -50,6 +50,12 @@
                                     @if(!$fiche->published)
                                         <flux:badge size="sm" color="yellow" inset="top bottom" class="shrink-0">Concept</flux:badge>
                                     @endif
+                                    @if($fiche->shouldShowSuggestionNudge())
+                                        <span class="flex items-center shrink-0" title="Suggesties beschikbaar">
+                                            <flux:icon name="light-bulb" variant="mini"
+                                                class="size-4 text-[var(--color-primary)]" />
+                                        </span>
+                                    @endif
                                 </div>
                                 <span class="text-xs text-[var(--color-text-secondary)]">
                                     @if($fiche->initiative){{ $fiche->initiative->title }}<span class="text-[var(--color-border-light)]"> &middot; </span>@endif{{ $fiche->created_at->format('d-m-Y') }}

@@ -104,6 +104,31 @@
                 @endauth
             </div>
 
+            @auth
+                @if(auth()->id() === $fiche->user_id && $fiche->shouldShowSuggestionNudge())
+                    <div x-data="{ dismissed: false }" x-show="!dismissed" x-cloak class="mb-6">
+                        <flux:callout variant="warning" icon="light-bulb">
+                            <flux:callout.heading>Maak het makkelijker voor collega's</flux:callout.heading>
+                            <flux:callout.text>
+                                Er zijn suggesties beschikbaar om deze fiche duidelijker te maken.
+                                Zo begrijpen andere begeleiders sneller wat de activiteit inhoudt
+                                en hoe ze ermee aan de slag kunnen.
+                            </flux:callout.text>
+                            <x-slot name="actions">
+                                <flux:button variant="primary" size="sm"
+                                    href="{{ route('fiches.edit', $fiche) }}">
+                                    Bekijk suggesties
+                                </flux:button>
+                            </x-slot>
+                            <x-slot name="controls">
+                                <flux:button icon="x-mark" variant="ghost"
+                                    x-on:click="dismissed = true" />
+                            </x-slot>
+                        </flux:callout>
+                    </div>
+                @endif
+            @endauth
+
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
                 {{-- A: title + meta + description — order-1 on mobile --}}
                 <div class="lg:col-span-3 order-1 lg:order-none">

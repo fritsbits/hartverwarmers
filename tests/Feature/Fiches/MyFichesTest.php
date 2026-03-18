@@ -89,4 +89,30 @@ class MyFichesTest extends TestCase
         $response->assertOk();
         $response->assertSee('Je hebt nog geen fiches geschreven');
     }
+
+    public function test_lightbulb_icon_shown_for_low_score_fiche_with_suggestions(): void
+    {
+        $user = User::factory()->create();
+        Fiche::factory()->published()
+            ->withSuggestions()
+            ->withPresentationScore(40)
+            ->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get(route('my-fiches.index'))
+            ->assertSee('Suggesties beschikbaar');
+    }
+
+    public function test_lightbulb_icon_hidden_for_high_score_fiche(): void
+    {
+        $user = User::factory()->create();
+        Fiche::factory()->published()
+            ->withSuggestions()
+            ->withPresentationScore(80)
+            ->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get(route('my-fiches.index'))
+            ->assertDontSee('Suggesties beschikbaar');
+    }
 }
