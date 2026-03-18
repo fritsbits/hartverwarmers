@@ -43,11 +43,11 @@ class AssessQuality extends Command
             $fiche->refresh();
 
             if ($fiche->quality_score !== null) {
-                $score = str_pad($fiche->quality_score.'/100', 7);
-                $justification = Str::limit($fiche->quality_justification ?? '', 80);
-                $this->line(" {$number}  <info>{$score}</info>  ".Str::limit($fiche->title, 30)."  <comment>\"{$justification}\"</comment>");
+                $q = str_pad('Q:'.$fiche->quality_score, 5);
+                $p = str_pad('P:'.$fiche->presentation_score, 5);
+                $this->line(" {$number}  <info>{$q}</info>  <info>{$p}</info>  ".Str::limit($fiche->title, 25).'  <comment>'.Str::limit($fiche->quality_justification ?? '', 60).'</comment>');
             } else {
-                $this->line(" {$number}  <error>MISLUKT</error>  ".Str::limit($fiche->title, 30));
+                $this->line(" {$number}  <error>MISLUKT</error>  ".Str::limit($fiche->title, 25));
             }
 
             if ($i < $count - 1) {

@@ -117,7 +117,7 @@ class AdminFicheOverview extends Component
     #[Computed]
     public function fiches(): LengthAwarePaginator
     {
-        $allowedSorts = ['created_at', 'completeness_score', 'quality_score'];
+        $allowedSorts = ['created_at', 'completeness_score', 'quality_score', 'presentation_score'];
         $sort = in_array($this->sortBy, $allowedSorts) ? $this->sortBy : 'created_at';
 
         $query = Fiche::query()

@@ -40,6 +40,8 @@ class Fiche extends Model
         'quality_justification',
         'quality_assessed_at',
         'completeness_score',
+        'presentation_score',
+        'presentation_justification',
     ];
 
     protected function casts(): array

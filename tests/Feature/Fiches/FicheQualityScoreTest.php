@@ -135,7 +135,12 @@ class FicheQualityScoreTest extends TestCase
         // Use laravel/ai's built-in fake to avoid real API calls.
         // Responses must be a list of response arrays — wrap in an outer array.
         FicheQualityAgent::fake([
-            ['score' => 75, 'justification' => 'Goede aansluiting bij DIAMANT.'],
+            [
+                'quality_score' => 75,
+                'quality_justification' => 'Goede aansluiting bij DIAMANT.',
+                'presentation_score' => 60,
+                'presentation_justification' => 'Titel is voldoende specifiek.',
+            ],
         ]);
 
         $job = new AssessFicheQuality($fiche);
@@ -144,6 +149,8 @@ class FicheQualityScoreTest extends TestCase
         $fiche->refresh();
         $this->assertEquals(75, $fiche->quality_score);
         $this->assertEquals('Goede aansluiting bij DIAMANT.', $fiche->quality_justification);
+        $this->assertEquals(60, $fiche->presentation_score);
+        $this->assertEquals('Titel is voldoende specifiek.', $fiche->presentation_justification);
         $this->assertNotNull($fiche->quality_assessed_at);
     }
 }

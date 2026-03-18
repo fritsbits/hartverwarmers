@@ -64,8 +64,10 @@ class AssessFicheQuality implements ShouldQueue
             $response = app(FicheQualityAgent::class)->prompt($prompt);
 
             $fiche->updateQuietly([
-                'quality_score' => max(0, min(100, (int) $response['score'])),
-                'quality_justification' => Str::limit((string) $response['justification'], 1000),
+                'quality_score' => max(0, min(100, (int) $response['quality_score'])),
+                'quality_justification' => Str::limit((string) $response['quality_justification'], 1000),
+                'presentation_score' => max(0, min(100, (int) $response['presentation_score'])),
+                'presentation_justification' => Str::limit((string) $response['presentation_justification'], 1000),
                 'quality_assessed_at' => now(),
             ]);
         } catch (\Throwable) {

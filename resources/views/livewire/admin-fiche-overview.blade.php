@@ -32,6 +32,7 @@
             <flux:table.column>Fiche</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'completeness_score'" :direction="$sortBy === 'completeness_score' ? $sortDirection : null" wire:click="sortBy('completeness_score')">Volledigheid</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'quality_score'" :direction="$sortBy === 'quality_score' ? $sortDirection : null" wire:click="sortBy('quality_score')">Kwaliteit</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'presentation_score'" :direction="$sortBy === 'presentation_score' ? $sortDirection : null" wire:click="sortBy('presentation_score')">Presentatie</flux:table.column>
             <flux:table.column>Kudos</flux:table.column>
             <flux:table.column>Bestanden</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'created_at'" :direction="$sortBy === 'created_at' ? $sortDirection : null" wire:click="sortBy('created_at')">Toegevoegd</flux:table.column>
@@ -78,6 +79,20 @@
                     </flux:table.cell>
 
                     <flux:table.cell>
+                        @if($fiche->presentation_score !== null)
+                            <flux:badge size="sm" :color="match(true) {
+                                $fiche->presentation_score >= 70 => 'green',
+                                $fiche->presentation_score >= 40 => 'blue',
+                                default => 'red',
+                            }">{{ $fiche->presentation_score }}</flux:badge>
+                        @elseif($fiche->quality_assessed_at)
+                            <span class="text-xs text-red-400">mislukt</span>
+                        @else
+                            <span class="text-xs text-zinc-400">—</span>
+                        @endif
+                    </flux:table.cell>
+
+                    <flux:table.cell>
                         <span class="text-sm text-zinc-500">{{ $fiche->kudos_count }}</span>
                     </flux:table.cell>
 
@@ -96,30 +111,21 @@
                 {{-- Expanded detail row --}}
                 @if($expandedFiche === $fiche->id)
                     <flux:table.row :key="'detail-'.$fiche->id" class="!border-t-0 bg-white">
-                        <flux:table.cell colspan="6" class="!pt-0">
+                        <flux:table.cell colspan="7" class="!pt-0">
                             {{-- Quality --}}
                             <p class="text-xs font-semibold uppercase text-zinc-500 mb-1">Kwaliteit @if($fiche->quality_score !== null) — {{ $fiche->quality_score }}/100 @endif</p>
                             @if($fiche->quality_justification)
-                                <p class="text-sm text-zinc-700 leading-relaxed" style="width: 400px; text-wrap: auto;">{{ $fiche->quality_justification }}</p>
-                                <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="assess({{ $fiche->id }})" wire:loading.attr="disabled" wire:target="assess({{ $fiche->id }})" class="mt-1">
-                                    <span wire:loading.remove wire:target="assess({{ $fiche->id }})">Herbeoordeel</span>
-                                    <span wire:loading wire:target="assess({{ $fiche->id }})">Bezig...</span>
-                                </flux:button>
+                                <p class="text-sm text-zinc-700 leading-relaxed" style="max-width: 500px; text-wrap: auto;">{{ $fiche->quality_justification }}</p>
                             @elseif($fiche->quality_assessed_at)
                                 <p class="text-sm text-red-500">Beoordeling mislukt.</p>
-                                <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="assess({{ $fiche->id }})" wire:loading.attr="disabled" wire:target="assess({{ $fiche->id }})" class="mt-1">
-                                    <span wire:loading.remove wire:target="assess({{ $fiche->id }})">Opnieuw proberen</span>
-                                    <span wire:loading wire:target="assess({{ $fiche->id }})">Bezig...</span>
-                                </flux:button>
                             @else
-                                <div wire:loading.remove wire:target="assess({{ $fiche->id }})">
-                                    <p class="text-sm text-zinc-400">Nog niet beoordeeld.</p>
-                                    <flux:button size="xs" variant="ghost" icon="sparkles" wire:click.stop="assess({{ $fiche->id }})" class="mt-1">Beoordeel</flux:button>
-                                </div>
-                                <div wire:loading wire:target="assess({{ $fiche->id }})" class="flex items-center gap-2 text-sm text-zinc-500">
-                                    <flux:icon name="arrow-path" class="size-4 animate-spin" />
-                                    Bezig met beoordelen...
-                                </div>
+                                <p class="text-sm text-zinc-400">Nog niet beoordeeld.</p>
+                            @endif
+
+                            {{-- Presentation --}}
+                            @if($fiche->presentation_justification)
+                                <p class="text-xs font-semibold uppercase text-zinc-500 mb-1 mt-3">Presentatie — {{ $fiche->presentation_score }}/100</p>
+                                <p class="text-sm text-zinc-700 leading-relaxed" style="max-width: 500px; text-wrap: auto;">{{ $fiche->presentation_justification }}</p>
                             @endif
 
                             {{-- Completeness (only show missing) --}}
@@ -136,7 +142,22 @@
                                 <p class="text-sm text-zinc-500 mt-2">Ontbreekt: <span class="text-red-500">{{ $missing->implode(', ') }}</span></p>
                             @endif
 
-                            {{-- Actions --}}
+                            {{-- Assess / Actions --}}
+                            @if($fiche->quality_assessed_at)
+                                <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="assess({{ $fiche->id }})" wire:loading.attr="disabled" wire:target="assess({{ $fiche->id }})" class="mt-2">
+                                    <span wire:loading.remove wire:target="assess({{ $fiche->id }})">Herbeoordeel</span>
+                                    <span wire:loading wire:target="assess({{ $fiche->id }})">Bezig...</span>
+                                </flux:button>
+                            @else
+                                <div wire:loading.remove wire:target="assess({{ $fiche->id }})" class="mt-2">
+                                    <flux:button size="xs" variant="ghost" icon="sparkles" wire:click.stop="assess({{ $fiche->id }})">Beoordeel</flux:button>
+                                </div>
+                                <div wire:loading wire:target="assess({{ $fiche->id }})" class="flex items-center gap-2 text-sm text-zinc-500 mt-2">
+                                    <flux:icon name="arrow-path" class="size-4 animate-spin" />
+                                    Bezig met beoordelen...
+                                </div>
+                            @endif
+
                             <div class="flex items-center gap-1 mt-2">
                                 <flux:button size="xs" variant="ghost" icon="eye" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop>Bekijk</flux:button>
                                 @if(! $fiche->featured_month)
@@ -148,7 +169,7 @@
                 @endif
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="6" class="text-center py-8">
+                    <flux:table.cell colspan="7" class="text-center py-8">
                         <div class="text-[var(--color-text-secondary)]">
                             <flux:icon name="magnifying-glass" class="size-8 mx-auto mb-2 opacity-40" />
                             <p>Geen fiches gevonden</p>
