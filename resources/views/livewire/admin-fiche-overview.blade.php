@@ -102,60 +102,37 @@
                 @if($expandedFiche === $fiche->id)
                     <flux:table.row :key="'detail-'.$fiche->id">
                         <flux:table.cell colspan="6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-                                {{-- Quality --}}
-                                <div>
-                                    <p class="text-xs font-semibold uppercase text-zinc-500 mb-2">
-                                        Kwaliteitsscore
-                                        @if($fiche->quality_score !== null) — {{ $fiche->quality_score }}/100 @endif
-                                    </p>
-                                    @if($fiche->quality_justification)
-                                        <div class="bg-zinc-50 rounded-lg p-3 text-sm text-zinc-700 leading-relaxed">
-                                            {{ $fiche->quality_justification }}
-                                        </div>
-                                    @elseif($fiche->quality_assessed_at)
-                                        <p class="text-sm text-red-500">Beoordeling mislukt.</p>
-                                    @else
-                                        <p class="text-sm text-zinc-400">Nog niet beoordeeld.</p>
-                                    @endif
-                                </div>
+                            <div class="py-2 space-y-2">
+                                {{-- Quality + Completeness inline --}}
+                                @if($fiche->quality_justification)
+                                    <p class="text-sm text-zinc-700"><span class="font-medium text-zinc-500">Kwaliteit {{ $fiche->quality_score }}/100:</span> {{ $fiche->quality_justification }}</p>
+                                @elseif($fiche->quality_assessed_at)
+                                    <p class="text-sm text-red-500">Kwaliteitsbeoordeling mislukt.</p>
+                                @else
+                                    <p class="text-sm text-zinc-400">Kwaliteit: nog niet beoordeeld.</p>
+                                @endif
 
-                                {{-- Completeness --}}
-                                <div>
-                                    <p class="text-xs font-semibold uppercase text-zinc-500 mb-2">
-                                        Volledigheid — {{ $fiche->completeness_score ?? 0 }}%
-                                    </p>
+                                @if(($fiche->completeness_score ?? 0) < 100)
                                     @php
                                         $materials = $fiche->materials ?? [];
-                                        $checks = [
-                                            ['label' => 'Beschrijving (≥100 tekens)', 'pass' => mb_strlen(trim(strip_tags($fiche->description ?? ''))) >= 100],
-                                            ['label' => 'Voorbereiding', 'pass' => trim(strip_tags($materials['preparation'] ?? '')) !== ''],
-                                            ['label' => 'Benodigdheden', 'pass' => trim(strip_tags($materials['inventory'] ?? '')) !== ''],
-                                            ['label' => 'Werkwijze', 'pass' => trim(strip_tags($materials['process'] ?? '')) !== ''],
-                                        ];
+                                        $missing = collect([
+                                            ['label' => 'beschrijving (≥100 tekens)', 'pass' => mb_strlen(trim(strip_tags($fiche->description ?? ''))) >= 100],
+                                            ['label' => 'voorbereiding', 'pass' => trim(strip_tags($materials['preparation'] ?? '')) !== ''],
+                                            ['label' => 'benodigdheden', 'pass' => trim(strip_tags($materials['inventory'] ?? '')) !== ''],
+                                            ['label' => 'werkwijze', 'pass' => trim(strip_tags($materials['process'] ?? '')) !== ''],
+                                        ])->reject(fn ($c) => $c['pass'])->pluck('label');
                                     @endphp
-                                    <div class="space-y-1.5">
-                                        @foreach($checks as $check)
-                                            <div class="flex items-center gap-2 text-sm">
-                                                @if($check['pass'])
-                                                    <flux:icon name="check" class="size-4 text-green-600" />
-                                                @else
-                                                    <flux:icon name="x-mark" class="size-4 text-red-400" />
-                                                @endif
-                                                {{ $check['label'] }}
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Actions --}}
-                            <div class="flex items-center gap-2 pt-3 border-t border-zinc-100">
-                                <flux:button size="xs" variant="ghost" icon="eye" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop>Bekijk</flux:button>
-                                @if(! $fiche->featured_month)
-                                    <flux:button size="xs" variant="primary" icon="star" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">Maak FvdM</flux:button>
+                                    <p class="text-sm text-zinc-500">Ontbreekt: <span class="text-red-500">{{ $missing->implode(', ') }}</span></p>
                                 @endif
-                                <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="reassess({{ $fiche->id }})">Herbeoordeel</flux:button>
+
+                                {{-- Actions --}}
+                                <div class="flex items-center gap-2 pt-1">
+                                    <flux:button size="xs" variant="ghost" icon="eye" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop>Bekijk</flux:button>
+                                    @if(! $fiche->featured_month)
+                                        <flux:button size="xs" variant="primary" icon="star" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">Maak FvdM</flux:button>
+                                    @endif
+                                    <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="reassess({{ $fiche->id }})">Herbeoordeel</flux:button>
+                                </div>
                             </div>
                         </flux:table.cell>
                     </flux:table.row>
