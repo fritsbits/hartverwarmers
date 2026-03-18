@@ -150,21 +150,12 @@
                             </div>
 
                             {{-- Actions --}}
-                            <div class="flex items-center justify-between pt-2 border-t border-zinc-100">
-                                <div class="flex items-center gap-3">
-                                    <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="text-sm text-[var(--color-primary)] hover:underline">Bekijk fiche</a>
-                                    @if(! $fiche->featured_month)
-                                        <flux:button size="xs" variant="primary" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">
-                                            Maak FvdM
-                                        </flux:button>
-                                    @endif
-                                </div>
-                                <flux:dropdown position="bottom" align="end">
-                                    <flux:button variant="ghost" size="xs" icon="ellipsis-horizontal" wire:click.stop />
-                                    <flux:menu>
-                                        <flux:menu.item wire:click.stop="reassess({{ $fiche->id }})" icon="arrow-path">Herbeoordeel</flux:menu.item>
-                                    </flux:menu>
-                                </flux:dropdown>
+                            <div class="flex items-center gap-2 pt-3 border-t border-zinc-100">
+                                <flux:button size="xs" variant="ghost" icon="eye" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop>Bekijk</flux:button>
+                                @if(! $fiche->featured_month)
+                                    <flux:button size="xs" variant="primary" icon="star" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">Maak FvdM</flux:button>
+                                @endif
+                                <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="reassess({{ $fiche->id }})">Herbeoordeel</flux:button>
                             </div>
                         </flux:table.cell>
                     </flux:table.row>
