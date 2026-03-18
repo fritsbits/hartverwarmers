@@ -28,14 +28,14 @@ class AssessFicheQuality implements ShouldQueue
 
         $prompt = collect([
             "Titel: {$fiche->title}",
-            'Beschrijving: '.Str::limit(strip_tags($fiche->description ?? ''), 500),
-            $fiche->practical_tips ? 'Praktische tips: '.Str::limit(strip_tags($fiche->practical_tips), 300) : null,
-            ! empty($materials['preparation']) ? 'Voorbereiding: '.Str::limit(strip_tags($materials['preparation']), 300) : null,
-            ! empty($materials['inventory']) ? 'Benodigdheden: '.Str::limit(strip_tags($materials['inventory']), 300) : null,
-            ! empty($materials['process']) ? 'Werkwijze: '.Str::limit(strip_tags($materials['process']), 500) : null,
+            'Beschrijving: '.strip_tags($fiche->description ?? ''),
+            $fiche->practical_tips ? 'Praktische tips: '.strip_tags($fiche->practical_tips) : null,
+            ! empty($materials['preparation']) ? 'Voorbereiding: '.strip_tags($materials['preparation']) : null,
+            ! empty($materials['inventory']) ? 'Benodigdheden: '.strip_tags($materials['inventory']) : null,
+            ! empty($materials['process']) ? 'Werkwijze: '.strip_tags($materials['process']) : null,
             $fiche->target_audience ? 'Doelgroep: '.implode(', ', $fiche->target_audience) : null,
             $fiche->initiative ? "Initiatief: {$fiche->initiative->title}" : null,
-            $fiche->initiative?->description ? 'Initiatiefbeschrijving: '.Str::limit(strip_tags($fiche->initiative->description), 300) : null,
+            $fiche->initiative?->description ? 'Initiatiefbeschrijving: '.strip_tags($fiche->initiative->description) : null,
             $fiche->tags->isNotEmpty() ? 'Tags: '.$fiche->tags->pluck('name')->implode(', ') : null,
         ])->filter()->implode("\n\n");
 
@@ -45,7 +45,7 @@ class AssessFicheQuality implements ShouldQueue
             ->implode("\n\n---\n\n");
 
         if ($fileText) {
-            $prompt .= "\n\nInhoud van de bestanden:\n".Str::limit($fileText, 5000);
+            $prompt .= "\n\nInhoud van de bestanden (kan afgekapt zijn, beoordeel dit niet negatief):\n".Str::limit($fileText, 10000);
         }
 
         $diamantGuidance = $fiche->initiative?->diamant_guidance;
