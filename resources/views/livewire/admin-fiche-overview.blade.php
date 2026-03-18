@@ -104,10 +104,25 @@
                                         <p class="text-xs font-semibold uppercase text-zinc-500 mb-1">Kwaliteit @if($fiche->quality_score !== null) — {{ $fiche->quality_score }}/100 @endif</p>
                                         @if($fiche->quality_justification)
                                             <p class="text-sm text-zinc-700 leading-relaxed break-words">{{ $fiche->quality_justification }}</p>
+                                            <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="assess({{ $fiche->id }})" wire:loading.attr="disabled" wire:target="assess({{ $fiche->id }})" class="mt-1.5">
+                                                <span wire:loading.remove wire:target="assess({{ $fiche->id }})">Herbeoordeel</span>
+                                                <span wire:loading wire:target="assess({{ $fiche->id }})">Bezig...</span>
+                                            </flux:button>
                                         @elseif($fiche->quality_assessed_at)
                                             <p class="text-sm text-red-500">Beoordeling mislukt.</p>
+                                            <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="assess({{ $fiche->id }})" wire:loading.attr="disabled" wire:target="assess({{ $fiche->id }})" class="mt-1.5">
+                                                <span wire:loading.remove wire:target="assess({{ $fiche->id }})">Opnieuw proberen</span>
+                                                <span wire:loading wire:target="assess({{ $fiche->id }})">Bezig...</span>
+                                            </flux:button>
                                         @else
-                                            <p class="text-sm text-zinc-400">Nog niet beoordeeld.</p>
+                                            <div wire:loading.remove wire:target="assess({{ $fiche->id }})">
+                                                <p class="text-sm text-zinc-400">Nog niet beoordeeld.</p>
+                                                <flux:button size="xs" variant="ghost" icon="sparkles" wire:click.stop="assess({{ $fiche->id }})" class="mt-1.5">Beoordeel</flux:button>
+                                            </div>
+                                            <div wire:loading wire:target="assess({{ $fiche->id }})" class="flex items-center gap-2 text-sm text-zinc-500">
+                                                <flux:icon name="arrow-path" class="size-4 animate-spin" />
+                                                Bezig met beoordelen...
+                                            </div>
                                         @endif
                                     </div>
 
@@ -146,10 +161,6 @@
                                     @if(! $fiche->featured_month)
                                         <flux:button size="xs" variant="ghost" icon="star" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">Maak FvdM</flux:button>
                                     @endif
-                                    <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="reassess({{ $fiche->id }})" wire:loading.attr="disabled" wire:target="reassess({{ $fiche->id }})">
-                                        <span wire:loading.remove wire:target="reassess({{ $fiche->id }})">{{ $fiche->quality_assessed_at ? 'Herbeoordeel' : 'Beoordeel' }}</span>
-                                        <span wire:loading wire:target="reassess({{ $fiche->id }})">Bezig...</span>
-                                    </flux:button>
                                 </div>
                             </div>
                         </flux:table.cell>

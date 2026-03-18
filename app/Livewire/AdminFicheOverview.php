@@ -86,7 +86,7 @@ class AdminFicheOverview extends Component
         Flux::toast('Fiche van de maand ingesteld: "'.Str::limit($fiche?->title ?? '', 30).'"', variant: 'success');
     }
 
-    public function reassess(int $ficheId): void
+    public function assess(int $ficheId): void
     {
         $fiche = Fiche::findOrFail($ficheId);
         $fiche->updateQuietly([
@@ -94,9 +94,9 @@ class AdminFicheOverview extends Component
             'quality_justification' => null,
             'quality_assessed_at' => null,
         ]);
-        AssessFicheQuality::dispatch($fiche);
 
-        Flux::toast('Beoordeling gestart voor "'.Str::limit($fiche->title, 30).'". Dit kan even duren.');
+        // Run synchronously so the result appears immediately in the UI
+        (new AssessFicheQuality($fiche))->handle();
     }
 
     #[Computed]
