@@ -5,8 +5,8 @@
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center">
             {{-- Copy --}}
             <div class="flex-1 px-6 py-16">
-                <span class="section-label section-label-hero">Uitgelicht door ons team</span>
-                <h1 class="text-5xl mt-1">Diamantjes</h1>
+                <span class="section-label section-label-hero">Diamantjes</span>
+                <h1 class="text-5xl mt-1">Fiches uitgelicht door ons team</h1>
                 <p class="text-[var(--color-text-secondary)] text-2xl font-light mt-4 max-w-2xl">
                     Af en toe stoot ons team op een fiche die we gewoon te goed vinden om onopgemerkt te laten. Dit zijn ze.
                 </p>
@@ -15,8 +15,8 @@
                 </p>
             </div>
 
-            {{-- Hero visual --}}
-            <div class="flex-1 hidden md:flex items-center justify-center relative overflow-hidden min-h-64">
+            {{-- Hero image --}}
+            <div class="flex-1 hidden md:flex items-center justify-center overflow-hidden min-h-64">
                 <img
                     src="{{ asset('images/hero-diamantjes.webp') }}"
                     alt="Een collage van uitgelichte activiteitsfiches — de diamantjes van Hartverwarmers"
@@ -25,11 +25,6 @@
                     height="1024"
                     loading="eager"
                 />
-                {{-- Decorative diamonds --}}
-                <x-diamant-gem size="lg" :pronounced="true" class="absolute top-8 right-10 opacity-80" />
-                <x-diamant-gem size="md" :pronounced="false" class="absolute top-4 right-28 opacity-40" />
-                <x-diamant-gem size="sm" :pronounced="false" class="absolute bottom-12 right-6 opacity-50" />
-                <x-diamant-gem size="xs" :pronounced="false" class="absolute top-16 right-44 opacity-30" />
             </div>
         </div>
     </section>
@@ -68,7 +63,7 @@
                                                 <span class="truncate">{{ $featured->user->full_name }}</span>
                                             </div>
                                         @endif
-                                        <div class="flex items-center gap-3 shrink-0">
+                                        <div class="flex items-center gap-3 shrink-0 text-[var(--color-text-tertiary)]">
                                             @if($featured->kudos_count > 0)
                                                 <span class="flex items-center gap-1">
                                                     <x-icon-heart class="w-4 h-4" />
