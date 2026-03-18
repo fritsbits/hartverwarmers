@@ -529,6 +529,7 @@ class FicheWizard extends Component
     public function applySuggestion(string $field): void
     {
         $map = [
+            'title' => ['ai' => 'aiTitle', 'user' => 'title'],
             'description' => ['ai' => 'aiDescription', 'user' => 'description'],
             'preparation' => ['ai' => 'aiPreparation', 'user' => 'preparation'],
             'inventory' => ['ai' => 'aiInventory', 'user' => 'inventory'],
@@ -536,12 +537,16 @@ class FicheWizard extends Component
         ];
 
         if (isset($map[$field]) && $this->{$map[$field]['ai']} !== null) {
-            $currentValue = trim($this->{$map[$field]['user']});
             $aiValue = $this->{$map[$field]['ai']};
 
-            $this->{$map[$field]['user']} = $currentValue !== ''
-                ? $currentValue."\n".$aiValue
-                : $aiValue;
+            if ($field === 'title') {
+                $this->{$map[$field]['user']} = $aiValue;
+            } else {
+                $currentValue = trim($this->{$map[$field]['user']});
+                $this->{$map[$field]['user']} = $currentValue !== ''
+                    ? $currentValue."\n".$aiValue
+                    : $aiValue;
+            }
         }
 
         if (! in_array($field, $this->appliedSuggestions)) {
@@ -721,6 +726,7 @@ class FicheWizard extends Component
         $analysis = $status['analysis'] ?? null;
 
         if ($analysis) {
+            $this->aiTitle = $analysis['suggested_title'] ?? null;
             $this->aiDescription = self::markdownToHtml($analysis['description'] ?? null);
             $this->aiPreparation = self::markdownToHtml($analysis['preparation'] ?? null);
             $this->aiInventory = self::markdownToHtml($analysis['inventory'] ?? null);
@@ -832,6 +838,16 @@ class FicheWizard extends Component
                     'description' => $this->description,
                     'materials' => ! empty($materials) ? $materials : null,
                     'published' => $published,
+                    'ai_suggestions' => $this->aiAnalysis ? [
+                        'title' => $this->aiTitle,
+                        'description' => $this->aiDescription,
+                        'preparation' => $this->aiPreparation,
+                        'inventory' => $this->aiInventory,
+                        'process' => $this->aiProcess,
+                        'duration_estimate' => $this->aiDuration,
+                        'group_size_estimate' => $this->aiGroupSize,
+                        'applied' => $this->appliedSuggestions,
+                    ] : null,
                 ]);
 
                 $fileIds = collect($this->uploadedFiles)->pluck('id')->toArray();

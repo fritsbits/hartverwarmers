@@ -2024,4 +2024,34 @@ class FicheWizardTest extends TestCase
         // The non-matched initiative should be in the dropdown
         $component->assertSee('Beweging en fit');
     }
+
+    public function test_ai_suggestions_are_persisted_on_save(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('title', 'Muziekbingo')
+            ->set('description', '<p>Een leuke activiteit.</p>')
+            ->set('selectedInitiativeId', $initiative->id)
+            ->set('aiTitle', 'Muziekbingo met schlagers uit de jaren 60')
+            ->set('aiDescription', '<p>AI description</p>')
+            ->set('aiPreparation', '<p>AI preparation</p>')
+            ->set('aiInventory', null)
+            ->set('aiProcess', null)
+            ->set('aiDuration', '30 min')
+            ->set('aiGroupSize', '4-8')
+            ->set('aiAnalysis', ['some' => 'data'])
+            ->set('appliedSuggestions', ['description'])
+            ->call('publish');
+
+        $fiche = Fiche::where('title', 'Muziekbingo')->first();
+        $this->assertNotNull($fiche);
+        $this->assertNotNull($fiche->ai_suggestions);
+        $this->assertEquals('Muziekbingo met schlagers uit de jaren 60', $fiche->ai_suggestions['title']);
+        $this->assertEquals('<p>AI description</p>', $fiche->ai_suggestions['description']);
+        $this->assertEquals(['description'], $fiche->ai_suggestions['applied']);
+    }
 }

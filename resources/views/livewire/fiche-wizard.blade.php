@@ -548,6 +548,32 @@
                     </div>
                 @endif
 
+                {{-- Title with AI suggestion --}}
+                @php
+                    $hasTitleSuggestion = $this->aiTitle !== null && !in_array('title', $dismissedSuggestions);
+                    $isTitleApplied = in_array('title', $appliedSuggestions);
+                @endphp
+                <div class="mb-9">
+                    <flux:label class="text-base font-body font-bold">Titel</flux:label>
+                    <flux:description>Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
+
+                    <div class="grid grid-cols-1 @if($hasTitleSuggestion || $isTitleApplied) lg:grid-cols-12 @endif gap-8">
+                        <div class="@if($hasTitleSuggestion || $isTitleApplied) lg:col-span-7 @endif">
+                            <flux:input wire:model="title" class="text-base" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
+                        </div>
+                        @if($this->aiTitle !== null)
+                            <div class="lg:col-span-5">
+                                <x-ai-suggestion-panel
+                                    :suggestion="e($this->aiTitle)"
+                                    field="title"
+                                    :is-applied="$isTitleApplied"
+                                />
+                            </div>
+                        @endif
+                    </div>
+                    <flux:error name="title" />
+                </div>
+
                 <div class="space-y-9">
                     @foreach($contentFields as $index => $field)
                         @php
