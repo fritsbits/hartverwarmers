@@ -50,7 +50,7 @@
                         @php $featured = $fiches->first(); @endphp
                         <a href="{{ route('fiches.show', [$featured->initiative, $featured]) }}"
                            data-featured-card
-                           class="block mb-6 cursor-pointer no-underline text-inherit">
+                           class="block mb-6 no-underline text-inherit">
                             <flux:card class="!p-0 overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200">
                                 <div class="p-6">
                                     <flux:heading size="xl" class="font-heading font-bold">{{ $featured->title }}</flux:heading>
