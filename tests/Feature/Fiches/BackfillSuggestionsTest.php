@@ -75,6 +75,29 @@ class BackfillSuggestionsTest extends TestCase
             ->assertExitCode(0);
     }
 
+    public function test_export_import_round_trip_preserves_suggestions(): void
+    {
+        $fiche = Fiche::factory()->published()->withSuggestions()->create();
+        $path = storage_path('test-suggestions-export.json');
+
+        $this->artisan("fiches:export-suggestions {$path}")
+            ->assertExitCode(0);
+
+        // Clear suggestions
+        $fiche->updateQuietly(['ai_suggestions' => null]);
+        $this->assertNull($fiche->fresh()->ai_suggestions);
+
+        // Import
+        $this->artisan("fiches:import-suggestions {$path}")
+            ->assertExitCode(0);
+
+        $fiche->refresh();
+        $this->assertNotNull($fiche->ai_suggestions);
+        $this->assertEquals('Verbeterde titel voor deze activiteit', $fiche->ai_suggestions['title']);
+
+        @unlink($path);
+    }
+
     public function test_backfill_respects_limit_option(): void
     {
         for ($i = 0; $i < 3; $i++) {
