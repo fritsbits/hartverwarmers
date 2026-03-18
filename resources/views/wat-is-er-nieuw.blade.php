@@ -7,7 +7,7 @@
                 <span class="section-label section-label-hero">Nieuw</span>
                 <h1 class="mt-1">Een nieuwe Hartverwarmers.<br>Gebouwd door jullie.</h1>
                 <div class="text-[var(--color-text-secondary)] mt-6 space-y-4 text-xl" style="font-weight: var(--font-weight-light);">
-                    <p>Bijna 500 activiteiten. Dat hebben jullie samen opgebouwd, activiteitenbegeleiders uit heel Vlaanderen en Nederland. Dat verdient erkenning.</p>
+                    <p>Bijna 400 activiteiten. Dat hebben jullie samen opgebouwd, activiteitenbegeleiders uit heel Vlaanderen en Nederland. Dat verdient erkenning.</p>
                     <p>Het verhaal van Hartverwarmers begon in maart 2020, in de eerste week van de lockdown. Frederik Vincx bouwde het platform in één week, samen met Maite Mallentjer. Wat begon als een crisisinitiatief, groeide uit tot een community van meer dan 4.800 collega's. Na 2022 liep het platform even op de achtergrond. De community bleef groeien, maar de beheerders hadden minder tijd en middelen. Nu slaan Frederik en Maite opnieuw de handen in elkaar. Meer over hun verhaal lees je op de <a href="{{ route('about') }}" class="underline hover:text-[var(--color-primary)]">over ons-pagina</a>.</p>
                     <p>Dit is de eerste versie van de vernieuwde website. En er komt nog meer aan.</p>
                 </div>
@@ -112,7 +112,7 @@
                     </div>
 
                     <div class="mt-8 pt-8 border-t border-[var(--color-border-light)]">
-                        <p class="text-[var(--color-text-primary)] text-lg font-heading font-bold">We naderen de 500 activiteiten. Welke activiteit deel jij?</p>
+                        <p class="text-[var(--color-text-primary)] text-lg font-heading font-bold">We naderen de 400 activiteiten. Welke activiteit deel jij?</p>
                         <a href="{{ route('fiches.create') }}" class="btn-pill mt-4 inline-block">Deel een activiteit</a>
                     </div>
                 </div>
