@@ -89,4 +89,12 @@ class DiamantjesPageTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('1 fiche');
     }
+
+    public function test_diamantjes_link_appears_in_footer(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee(route('diamantjes.index'));
+    }
 }

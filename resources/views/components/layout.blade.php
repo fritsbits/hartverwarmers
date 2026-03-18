@@ -105,6 +105,7 @@
                         <li><a href="{{ route('themes.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Themakalender</a></li>
                         <li><a href="{{ route('contributors.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Bijdragers</a></li>
                         <li><a href="{{ route('fiches.ficheVanDeMaand') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Fiche van de maand</a></li>
+                        <li><a href="{{ route('diamantjes.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Diamantjes</a></li>
                     </ul>
                 </div>
 
