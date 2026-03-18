@@ -1,29 +1,24 @@
 <div>
     {{-- Warning banner --}}
     @unless($this->hasFicheOfMonth)
-        <div class="rounded-lg border border-amber-300 bg-amber-50 p-4 mb-6 flex items-center gap-3">
-            <flux:icon name="exclamation-triangle" class="size-5 text-amber-600 shrink-0" />
-            <p class="text-sm text-amber-800">
-                <strong>Geen fiche van de maand voor {{ now()->translatedFormat('F Y') }}.</strong>
-                Kies er hieronder één uit.
-            </p>
-        </div>
+        <flux:callout icon="exclamation-triangle" color="amber" class="mb-6">
+            <flux:callout.heading>Geen fiche van de maand voor {{ now()->translatedFormat('F Y') }}</flux:callout.heading>
+            <flux:callout.text>Kies er hieronder één uit.</flux:callout.text>
+        </flux:callout>
     @endunless
 
     {{-- Filters --}}
-    <div class="flex flex-col sm:flex-row gap-3 mb-6">
-        <div class="flex-1">
-            <flux:input wire:model.live.debounce.300ms="search" placeholder="Zoek op titel..." icon="magnifying-glass" clearable />
-        </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+        <flux:input wire:model.live.debounce.300ms="search" placeholder="Zoek op titel..." icon="magnifying-glass" clearable />
 
-        <flux:select wire:model.live="filter" class="sm:w-48">
+        <flux:select wire:model.live="filter">
             <flux:select.option value="">Alle fiches</flux:select.option>
             <flux:select.option value="unassessed">Niet beoordeeld</flux:select.option>
             <flux:select.option value="assessed">Beoordeeld</flux:select.option>
             <flux:select.option value="featured">Eerder uitgelicht</flux:select.option>
         </flux:select>
 
-        <flux:select wire:model.live="initiativeFilter" class="sm:w-56">
+        <flux:select wire:model.live="initiativeFilter">
             <flux:select.option value="">Alle initiatieven</flux:select.option>
             @foreach($this->initiatives as $id => $title)
                 <flux:select.option :value="$id">{{ $title }}</flux:select.option>
