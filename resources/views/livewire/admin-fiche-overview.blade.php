@@ -100,7 +100,7 @@
                             {{-- Quality --}}
                             <p class="text-xs font-semibold uppercase text-zinc-500 mb-1">Kwaliteit @if($fiche->quality_score !== null) — {{ $fiche->quality_score }}/100 @endif</p>
                             @if($fiche->quality_justification)
-                                <p class="text-sm text-zinc-700 leading-relaxed">{{ $fiche->quality_justification }}</p>
+                                <p class="text-sm text-zinc-700 leading-relaxed" style="width: 400px; text-wrap: auto;">{{ $fiche->quality_justification }}</p>
                                 <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="assess({{ $fiche->id }})" wire:loading.attr="disabled" wire:target="assess({{ $fiche->id }})" class="mt-1">
                                     <span wire:loading.remove wire:target="assess({{ $fiche->id }})">Herbeoordeel</span>
                                     <span wire:loading wire:target="assess({{ $fiche->id }})">Bezig...</span>
