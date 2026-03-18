@@ -299,7 +299,7 @@
 
                 {{-- Counter --}}
                 <div
-                    class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 text-sm font-semibold pointer-events-none px-3 py-1.5 rounded-full"
+                    class="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm font-semibold pointer-events-none px-3 py-1.5 rounded-full"
                     style="color: rgba(255, 255, 255, 0.9); background: rgba(0, 0, 0, 0.35);"
                 >
                     <span x-text="lightboxIndex + 1"></span> / {{ $previewCount }}
