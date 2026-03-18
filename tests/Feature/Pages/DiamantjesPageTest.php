@@ -97,4 +97,42 @@ class DiamantjesPageTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee(route('diamantjes.index'));
     }
+
+    public function test_first_fiche_is_shown_as_featured(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $first = Fiche::factory()->published()->withDiamond()->create([
+            'initiative_id' => $initiative->id,
+            'title' => 'Featured Fiche Title',
+        ]);
+        Fiche::factory()->published()->withDiamond()->create([
+            'initiative_id' => $initiative->id,
+            'title' => 'Second Fiche Title',
+        ]);
+
+        $response = $this->get('/diamantjes');
+
+        $response->assertStatus(200);
+        $response->assertSee('Featured Fiche Title');
+        // Featured card uses a data attribute to distinguish it from the grid cards
+        $response->assertSee('data-featured-card', false);
+    }
+
+    public function test_sidebar_shows_hoe_kiezen_we_box(): void
+    {
+        $response = $this->get('/diamantjes');
+
+        $response->assertStatus(200);
+        $response->assertSee('Hoe kiezen we?');
+        $response->assertSeeText('diamantjes zijn');
+    }
+
+    public function test_empty_state_still_shows_sidebar(): void
+    {
+        $response = $this->get('/diamantjes');
+
+        $response->assertStatus(200);
+        $response->assertSee('Hoe kiezen we?');
+        $response->assertSee('Er zijn nog geen diamantjes');
+    }
 }
