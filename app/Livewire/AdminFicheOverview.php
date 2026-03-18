@@ -123,13 +123,14 @@ class AdminFicheOverview extends Component
     #[Computed]
     public function fiches(): LengthAwarePaginator
     {
-        $allowedSorts = ['created_at', 'completeness_score', 'quality_score', 'presentation_score'];
+        $allowedSorts = ['created_at', 'quality_score', 'presentation_score', 'combined_score'];
         $sort = in_array($this->sortBy, $allowedSorts) ? $this->sortBy : 'created_at';
 
         $query = Fiche::query()
             ->published()
             ->with(['initiative', 'user'])
-            ->withCount('files');
+            ->withCount('files')
+            ->selectRaw('*, (COALESCE(quality_score, 0) + COALESCE(presentation_score, 0)) as combined_score');
 
         if (strlen(trim($this->search)) >= 2) {
             $term = trim($this->search);

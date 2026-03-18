@@ -30,7 +30,7 @@
     <flux:table :paginate="$this->fiches">
         <flux:table.columns>
             <flux:table.column>Fiche</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'completeness_score'" :direction="$sortBy === 'completeness_score' ? $sortDirection : null" wire:click="sortBy('completeness_score')">Volledigheid</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'combined_score'" :direction="$sortBy === 'combined_score' ? $sortDirection : null" wire:click="sortBy('combined_score')">Score</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'quality_score'" :direction="$sortBy === 'quality_score' ? $sortDirection : null" wire:click="sortBy('quality_score')">Kwaliteit</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'presentation_score'" :direction="$sortBy === 'presentation_score' ? $sortDirection : null" wire:click="sortBy('presentation_score')">Presentatie</flux:table.column>
             <flux:table.column>Kudos</flux:table.column>
@@ -53,12 +53,15 @@
                     </flux:table.cell>
 
                     <flux:table.cell>
-                        @if($fiche->completeness_score !== null)
+                        @if($fiche->quality_score !== null && $fiche->presentation_score !== null)
+                            @php $combined = $fiche->quality_score + $fiche->presentation_score; @endphp
                             <flux:badge size="sm" :color="match(true) {
-                                $fiche->completeness_score >= 75 => 'green',
-                                $fiche->completeness_score >= 50 => 'yellow',
+                                $combined >= 140 => 'green',
+                                $combined >= 80 => 'blue',
                                 default => 'red',
-                            }">{{ $fiche->completeness_score }}%</flux:badge>
+                            }">{{ $combined }}</flux:badge>
+                        @elseif($fiche->quality_assessed_at)
+                            <span class="text-xs text-red-400">mislukt</span>
                         @else
                             <span class="text-xs text-zinc-400">—</span>
                         @endif
