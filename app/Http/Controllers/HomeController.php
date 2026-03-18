@@ -61,24 +61,13 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        try {
-            $ficheVanDeMaand = Fiche::query()
-                ->published()
-                ->ficheOfMonth()
-                ->where('featured_month', now()->format('Y-m'))
-                ->with('initiative', 'user', 'tags', 'files')
-                ->withCount('comments')
-                ->first()
-                ?? Fiche::query()
-                    ->published()
-                    ->ficheOfMonth()
-                    ->with('initiative', 'user', 'tags', 'files')
-                    ->withCount('comments')
-                    ->orderByDesc('featured_month')
-                    ->first();
-        } catch (\Illuminate\Database\QueryException) {
-            $ficheVanDeMaand = null;
-        }
+        $recentDiamond = Fiche::query()
+            ->published()
+            ->where('has_diamond', true)
+            ->with(['initiative', 'user', 'tags', 'files'])
+            ->withCount('comments')
+            ->latest()
+            ->first();
 
         $diamondCount = Fiche::query()->published()->where('has_diamond', true)->count();
         $diamonds = $diamondCount >= 3
@@ -104,7 +93,7 @@ class HomeController extends Controller
             'goals' => $eligibleGoals,
             'defaultGoal' => $defaultGoal,
             'recentFiches' => $recentFiches,
-            'ficheVanDeMaand' => $ficheVanDeMaand,
+            'recentDiamond' => $recentDiamond,
             'diamonds' => $diamonds,
             'stats' => $stats,
         ]);

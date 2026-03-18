@@ -40,34 +40,19 @@ class HomeControllerTest extends TestCase
         $response->assertDontSee('DIAMANT-kompas');
     }
 
-    public function test_home_page_shows_current_month_featured_fiche(): void
+    public function test_home_page_shows_recent_diamond_widget(): void
     {
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()
             ->published()
-            ->ficheOfMonth(now()->format('Y-m'))
+            ->withDiamond()
             ->create(['initiative_id' => $initiative->id]);
 
         $response = $this->get('/');
 
         $response->assertStatus(200);
         $response->assertSee($fiche->title);
-        $response->assertSee('Fiche van de maand');
-    }
-
-    public function test_home_page_falls_back_to_most_recent_featured_fiche(): void
-    {
-        $initiative = Initiative::factory()->published()->create();
-        $fiche = Fiche::factory()
-            ->published()
-            ->ficheOfMonth('2025-06')
-            ->create(['initiative_id' => $initiative->id]);
-
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-        $response->assertSee($fiche->title);
-        $response->assertSee('Fiche van de maand');
+        $response->assertSee('Diamantje');
     }
 
     public function test_home_page_passes_goals_data_to_view(): void

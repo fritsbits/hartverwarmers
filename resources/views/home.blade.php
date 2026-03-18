@@ -169,27 +169,27 @@
                         </div>
                     </div>
 
-                    {{-- Right: Fiche van de maand --}}
-                    @if($ficheVanDeMaand ?? null)
+                    {{-- Right: Recent diamantje --}}
+                    @if($recentDiamond ?? null)
                         <div class="flex flex-col">
                             <div class="flex items-baseline justify-between mb-4">
-                                <h3 class="text-lg font-heading font-bold">Fiche van de maand</h3>
-                                <a href="{{ route('fiches.ficheVanDeMaand') }}" class="cta-link text-sm">Alle</a>
+                                <h3 class="text-lg font-heading font-bold">Diamantje</h3>
+                                <a href="{{ route('diamantjes.index') }}" class="cta-link text-sm">Alle</a>
                             </div>
-                            @php $previews = $ficheVanDeMaand->cardPreviewImages(3); @endphp
+                            @php $previews = $recentDiamond->cardPreviewImages(3); @endphp
                             <div class="group flex flex-row flex-1 rounded-[var(--radius-sm)] border border-[var(--color-border-light)] bg-[var(--color-bg-white)] overflow-hidden hover:shadow-card-hover hover:-translate-y-0.5 hover:border-[var(--color-border-hover)] transition-all duration-200">
                                 {{-- Left: preview --}}
                                 @if(count($previews) > 0)
-                                    <a href="{{ route('fiches.show', [$ficheVanDeMaand->initiative, $ficheVanDeMaand]) }}" class="relative bg-[var(--color-bg-cream)] shrink-0 w-1/2 min-h-[220px] overflow-hidden block">
+                                    <a href="{{ route('fiches.show', [$recentDiamond->initiative, $recentDiamond]) }}" class="relative bg-[var(--color-bg-cream)] shrink-0 w-1/2 min-h-[220px] overflow-hidden block">
                                         @foreach($previews as $i => $url)
                                             <div class="fiche-paper fiche-paper-{{ $i }}" style="z-index: {{ $i + 1 }}">
                                                 <img src="{{ $url }}" alt="" loading="lazy" draggable="false">
                                             </div>
                                         @endforeach
 
-                                        {{-- Diamant banner overlay --}}
+                                        {{-- Diamantje badge --}}
                                         <span class="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-white bg-[var(--color-primary)] rounded-full shadow-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 0 0-2.455 2.456Z"/></svg>
+                                            <x-diamant-gem size="xxs" :pronounced="false" :inverted="true" />
                                             Diamantje
                                         </span>
                                     </a>
@@ -197,35 +197,35 @@
 
                                 {{-- Right: info --}}
                                 <div class="flex-1 px-5 py-5 flex flex-col min-w-0">
-                                    <a href="{{ route('fiches.show', [$ficheVanDeMaand->initiative, $ficheVanDeMaand]) }}" class="no-underline text-inherit flex-1 overflow-hidden">
-                                        <span class="font-heading font-bold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors leading-snug">{{ $ficheVanDeMaand->title }}</span>
+                                    <a href="{{ route('fiches.show', [$recentDiamond->initiative, $recentDiamond]) }}" class="no-underline text-inherit flex-1 overflow-hidden">
+                                        <span class="font-heading font-bold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors leading-snug">{{ $recentDiamond->title }}</span>
 
-                                        @if($ficheVanDeMaand->description)
-                                            <p class="text-sm text-[var(--color-text-secondary)] mt-2 leading-relaxed">{{ strip_tags($ficheVanDeMaand->description) }}</p>
+                                        @if($recentDiamond->description)
+                                            <p class="text-sm text-[var(--color-text-secondary)] mt-2 leading-relaxed">{{ strip_tags($recentDiamond->description) }}</p>
                                         @endif
                                     </a>
 
                                     <div class="mt-auto pt-4 border-t border-[var(--color-border-light)] text-sm">
-                                        @if($ficheVanDeMaand->user)
+                                        @if($recentDiamond->user)
                                             <div class="flex items-center gap-2 min-w-0">
-                                                @if($ficheVanDeMaand->user->avatar_path)
-                                                    <img src="{{ $ficheVanDeMaand->user->avatarUrl() }}" alt="{{ $ficheVanDeMaand->user->first_name }}" class="w-6 h-6 rounded-full object-cover shrink-0">
+                                                @if($recentDiamond->user->avatar_path)
+                                                    <img src="{{ $recentDiamond->user->avatarUrl() }}" alt="{{ $recentDiamond->user->first_name }}" class="w-6 h-6 rounded-full object-cover shrink-0">
                                                 @else
                                                     <div class="w-6 h-6 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center text-[10px] font-semibold shrink-0">
-                                                        {{ strtoupper(substr($ficheVanDeMaand->user->first_name, 0, 1)) }}
+                                                        {{ strtoupper(substr($recentDiamond->user->first_name, 0, 1)) }}
                                                     </div>
                                                 @endif
-                                                <span class="text-xs text-[var(--color-text-secondary)] truncate">{{ $ficheVanDeMaand->user->full_name }}</span>
+                                                <span class="text-xs text-[var(--color-text-secondary)] truncate">{{ $recentDiamond->user->full_name }}</span>
                                             </div>
                                         @endif
                                         <div class="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--color-border-light)]">
-                                            <span class="fiche-list-kudos @if($ficheVanDeMaand->kudos_count > 0) fiche-list-kudos-active @endif">
+                                            <span class="fiche-list-kudos @if($recentDiamond->kudos_count > 0) fiche-list-kudos-active @endif">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg>
-                                                {{ $ficheVanDeMaand->kudos_count }}
+                                                {{ $recentDiamond->kudos_count }}
                                             </span>
                                             <span class="flex items-center gap-1">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path fill-rule="evenodd" d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.721 6.721 0 0 0 3.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-8.25S17.322 4.5 12 4.5 2.25 8.47 2.25 12.75c0 2.534 1.221 4.745 3.065 6.232-.097.99-.616 2.048-1.395 2.795a.684.684 0 0 0 .884.867Z" clip-rule="evenodd"/></svg>
-                                                {{ $ficheVanDeMaand->comments_count }}
+                                                {{ $recentDiamond->comments_count }}
                                             </span>
                                         </div>
                                     </div>
@@ -240,19 +240,19 @@
 
     {{-- Diamantjes --}}
     @if($diamonds->isNotEmpty())
-        <section class="bg-[var(--color-bg-cream)]">
+        <section class="bg-[var(--color-bg-cream)] border-b border-[var(--color-border-light)]">
             <div class="max-w-6xl mx-auto px-6 py-16">
                 <div class="mb-8">
-                    <span class="section-label">Uitgekozen door ons team</span>
+                    <span class="section-label">Diamantjes</span>
                     <div class="flex items-baseline justify-between gap-4 mt-2">
-                        <h2 class="text-3xl">Diamantjes</h2>
+                        <h2 class="text-3xl">Uitgekozen door ons team</h2>
                         <a href="{{ route('diamantjes.index') }}" class="cta-link shrink-0">Bekijk alle diamantjes</a>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($diamonds as $fiche)
-                        <x-fiche-card :fiche="$fiche" />
+                        <x-fiche-card :fiche="$fiche" :hideDiamond="true" />
                     @endforeach
                 </div>
             </div>
