@@ -159,6 +159,7 @@
                                 <flux:menu.item href="{{ route('admin.features') }}" icon="flag">Features</flux:menu.item>
                                 <flux:menu.item href="{{ route('pulse') }}" icon="chart-bar">Pulse</flux:menu.item>
                                 <flux:menu.item href="{{ route('admin.users.index') }}" icon="users">Gebruikers</flux:menu.item>
+                                <flux:menu.item href="{{ route('admin.fiches.index') }}" icon="document-text">Fiches</flux:menu.item>
                             @endif
                             <flux:menu.separator />
                             <form method="POST" action="{{ route('logout') }}">

@@ -49,10 +49,10 @@
                 <flux:table.row :key="$fiche->id" wire:click="toggleExpanded({{ $fiche->id }})" class="cursor-pointer {{ $fiche->featured_month ? 'bg-amber-50' : '' }}">
                     <flux:table.cell>
                         <div>
-                            <span class="font-medium">
+                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="font-medium hover:text-[var(--color-primary)] transition-colors">
                                 @if($fiche->featured_month) 🌟 @endif
                                 {{ $fiche->title }}
-                            </span>
+                            </a>
                             <span class="text-xs text-[var(--color-text-secondary)] block">door {{ $fiche->user->full_name }}</span>
                         </div>
                     </flux:table.cell>
@@ -161,10 +161,11 @@
                                 </div>
                             </div>
 
-                            {{-- Overflow menu --}}
-                            <div class="flex justify-end pt-2 border-t border-zinc-100">
-                                <flux:dropdown>
-                                    <flux:button variant="ghost" size="xs" icon="ellipsis-horizontal" />
+                            {{-- Actions --}}
+                            <div class="flex items-center justify-between pt-2 border-t border-zinc-100">
+                                <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="text-sm text-[var(--color-primary)] hover:underline">Bekijk fiche</a>
+                                <flux:dropdown position="bottom" align="end">
+                                    <flux:button variant="ghost" size="xs" icon="ellipsis-horizontal" wire:click.stop />
                                     <flux:menu>
                                         <flux:menu.item wire:click.stop="reassess({{ $fiche->id }})" icon="arrow-path">Herbeoordeel</flux:menu.item>
                                     </flux:menu>
