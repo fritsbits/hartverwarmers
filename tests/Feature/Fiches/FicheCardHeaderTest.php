@@ -107,4 +107,18 @@ class FicheCardHeaderTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('fiche-list-item', escape: false);
     }
+
+    public function test_diamond_badge_tooltip_does_not_link_to_goals(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->withDiamond()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('DIAMANT-filosofie');
+        $response->assertDontSee(route('goals.index'));
+    }
 }
