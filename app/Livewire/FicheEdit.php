@@ -62,6 +62,11 @@ class FicheEdit extends Component
     )]
     public array $newUploads = [];
 
+    public ?array $aiSuggestions = null;
+
+    /** @var array<int, string> */
+    public array $appliedSuggestions = [];
+
     public function mount(Fiche $fiche): void
     {
         $this->authorize('update', $fiche);
@@ -88,6 +93,9 @@ class FicheEdit extends Component
             'size' => $f->size_bytes,
             'type' => $f->typeLabel(),
         ])->toArray();
+
+        $this->aiSuggestions = $fiche->ai_suggestions;
+        $this->appliedSuggestions = $fiche->ai_suggestions['applied'] ?? [];
     }
 
     public function updatedNewUploads(): void
@@ -150,6 +158,36 @@ class FicheEdit extends Component
         }
     }
 
+    public function applySuggestion(string $field): void
+    {
+        $map = [
+            'title' => ['ai' => 'title', 'user' => 'title'],
+            'description' => ['ai' => 'description', 'user' => 'description'],
+            'preparation' => ['ai' => 'preparation', 'user' => 'preparation'],
+            'inventory' => ['ai' => 'inventory', 'user' => 'inventory'],
+            'process' => ['ai' => 'process', 'user' => 'process'],
+        ];
+
+        if (! isset($map[$field]) || empty($this->aiSuggestions[$map[$field]['ai']])) {
+            return;
+        }
+
+        $aiValue = $this->aiSuggestions[$map[$field]['ai']];
+
+        if ($field === 'title') {
+            $this->{$map[$field]['user']} = $aiValue;
+        } else {
+            $currentValue = trim($this->{$map[$field]['user']});
+            $this->{$map[$field]['user']} = $currentValue !== ''
+                ? $currentValue."\n".$aiValue
+                : $aiValue;
+        }
+
+        if (! in_array($field, $this->appliedSuggestions)) {
+            $this->appliedSuggestions[] = $field;
+        }
+    }
+
     public function save(): void
     {
         $this->validate([
@@ -165,12 +203,17 @@ class FicheEdit extends Component
             'group_size' => $this->groupSize,
         ]);
 
+        if ($this->aiSuggestions) {
+            $this->aiSuggestions['applied'] = $this->appliedSuggestions;
+        }
+
         $this->fiche->update([
             'initiative_id' => $this->selectedInitiativeId,
             'title' => $this->title,
             'description' => $this->description,
             'materials' => ! empty($materials) ? $materials : null,
             'target_audience' => ! empty($this->targetAudience) ? $this->targetAudience : null,
+            'ai_suggestions' => $this->aiSuggestions,
         ]);
 
         if (Feature::active('diamant-goals')) {

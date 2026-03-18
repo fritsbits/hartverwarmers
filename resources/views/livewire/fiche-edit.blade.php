@@ -3,19 +3,53 @@
 
         {{-- Top zone: Title + Description (always visible) --}}
         <div class="bg-white rounded-xl border border-[var(--color-border-light)] shadow-[var(--shadow-card)] p-6 space-y-6">
-            <flux:field>
-                <flux:label class="text-base font-body font-bold">Titel</flux:label>
-                <flux:description class="text-sm">Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
-                <flux:input wire:model="title" class="text-base" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
-                <flux:error name="title" />
-            </flux:field>
+            @php
+                $hasTitleSuggestion = !empty($aiSuggestions['title']);
+                $isTitleApplied = in_array('title', $appliedSuggestions);
+            @endphp
+            <div class="grid grid-cols-1 @if($hasTitleSuggestion) lg:grid-cols-12 @endif gap-8">
+                <div class="@if($hasTitleSuggestion) lg:col-span-7 @endif">
+                    <flux:field>
+                        <flux:label class="text-base font-body font-bold">Titel</flux:label>
+                        <flux:description class="text-sm">Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
+                        <flux:input wire:model="title" class="text-base" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
+                        <flux:error name="title" />
+                    </flux:field>
+                </div>
+                @if($hasTitleSuggestion)
+                    <div class="lg:col-span-5">
+                        <x-ai-suggestion-panel
+                            :suggestion="e($aiSuggestions['title'])"
+                            field="title"
+                            :is-applied="$isTitleApplied"
+                        />
+                    </div>
+                @endif
+            </div>
 
-            <flux:field>
-                <flux:label class="text-base font-body font-bold">Beschrijving</flux:label>
-                <flux:description class="text-sm">Wat is je bedoeling met deze activiteit? Voor wie is ze bedoeld?</flux:description>
-                <flux:editor wire:model="description" toolbar="bold | bullet ordered | link" placeholder="bijv. Een interactieve quiz waarbij bewoners liedjes herkennen. Geschikt voor groepen van 8-15 personen." />
-                <flux:error name="description" />
-            </flux:field>
+            @php
+                $hasDescriptionSuggestion = !empty($aiSuggestions['description']);
+                $isDescriptionApplied = in_array('description', $appliedSuggestions);
+            @endphp
+            <div class="grid grid-cols-1 @if($hasDescriptionSuggestion) lg:grid-cols-12 @endif gap-8">
+                <div class="@if($hasDescriptionSuggestion) lg:col-span-7 @endif">
+                    <flux:field>
+                        <flux:label class="text-base font-body font-bold">Beschrijving</flux:label>
+                        <flux:description class="text-sm">Wat is je bedoeling met deze activiteit? Voor wie is ze bedoeld?</flux:description>
+                        <flux:editor wire:model="description" toolbar="bold | bullet ordered | link" placeholder="bijv. Een interactieve quiz waarbij bewoners liedjes herkennen. Geschikt voor groepen van 8-15 personen." />
+                        <flux:error name="description" />
+                    </flux:field>
+                </div>
+                @if($hasDescriptionSuggestion)
+                    <div class="lg:col-span-5">
+                        <x-ai-suggestion-panel
+                            :suggestion="$aiSuggestions['description']"
+                            field="description"
+                            :is-applied="$isDescriptionApplied"
+                        />
+                    </div>
+                @endif
+            </div>
         </div>
 
         {{-- Tabbed sections --}}
@@ -29,23 +63,74 @@
             {{-- Tab: Praktische informatie --}}
             <flux:tab.panel name="praktische-informatie">
                 <div class="space-y-6 pt-2">
-                    <flux:field>
-                        <flux:label class="text-base font-body font-bold">Voorbereiding</flux:label>
-                        <flux:description class="text-sm">Wat moet er klaargezet of voorbereid worden?</flux:description>
-                        <flux:editor wire:model="preparation" toolbar="bold | bullet ordered | link" placeholder="bijv. Print de bingokaarten uit en test het geluid van de muziekinstallatie." />
-                    </flux:field>
+                    @php
+                        $hasPreparationSuggestion = !empty($aiSuggestions['preparation']);
+                        $isPreparationApplied = in_array('preparation', $appliedSuggestions);
+                    @endphp
+                    <div class="grid grid-cols-1 @if($hasPreparationSuggestion) lg:grid-cols-12 @endif gap-8">
+                        <div class="@if($hasPreparationSuggestion) lg:col-span-7 @endif">
+                            <flux:field>
+                                <flux:label class="text-base font-body font-bold">Voorbereiding</flux:label>
+                                <flux:description class="text-sm">Wat moet er klaargezet of voorbereid worden?</flux:description>
+                                <flux:editor wire:model="preparation" toolbar="bold | bullet ordered | link" placeholder="bijv. Print de bingokaarten uit en test het geluid van de muziekinstallatie." />
+                            </flux:field>
+                        </div>
+                        @if($hasPreparationSuggestion)
+                            <div class="lg:col-span-5">
+                                <x-ai-suggestion-panel
+                                    :suggestion="$aiSuggestions['preparation']"
+                                    field="preparation"
+                                    :is-applied="$isPreparationApplied"
+                                />
+                            </div>
+                        @endif
+                    </div>
 
-                    <flux:field>
-                        <flux:label class="text-base font-body font-bold">Benodigdheden</flux:label>
-                        <flux:description class="text-sm">Welke materialen heb je nodig?</flux:description>
-                        <flux:editor wire:model="inventory" toolbar="bold | bullet ordered | link" placeholder="bijv. Bingokaarten, stiften, muziekinstallatie, prijsjes." />
-                    </flux:field>
+                    @php
+                        $hasInventorySuggestion = !empty($aiSuggestions['inventory']);
+                        $isInventoryApplied = in_array('inventory', $appliedSuggestions);
+                    @endphp
+                    <div class="grid grid-cols-1 @if($hasInventorySuggestion) lg:grid-cols-12 @endif gap-8">
+                        <div class="@if($hasInventorySuggestion) lg:col-span-7 @endif">
+                            <flux:field>
+                                <flux:label class="text-base font-body font-bold">Benodigdheden</flux:label>
+                                <flux:description class="text-sm">Welke materialen heb je nodig?</flux:description>
+                                <flux:editor wire:model="inventory" toolbar="bold | bullet ordered | link" placeholder="bijv. Bingokaarten, stiften, muziekinstallatie, prijsjes." />
+                            </flux:field>
+                        </div>
+                        @if($hasInventorySuggestion)
+                            <div class="lg:col-span-5">
+                                <x-ai-suggestion-panel
+                                    :suggestion="$aiSuggestions['inventory']"
+                                    field="inventory"
+                                    :is-applied="$isInventoryApplied"
+                                />
+                            </div>
+                        @endif
+                    </div>
 
-                    <flux:field>
-                        <flux:label class="text-base font-body font-bold">Werkwijze</flux:label>
-                        <flux:description class="text-sm">Beschrijf stap voor stap hoe de activiteit verloopt.</flux:description>
-                        <flux:editor wire:model="process" toolbar="bold | bullet ordered | link" placeholder="bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment. 3. Laat bewoners het liedje raden..." />
-                    </flux:field>
+                    @php
+                        $hasProcessSuggestion = !empty($aiSuggestions['process']);
+                        $isProcessApplied = in_array('process', $appliedSuggestions);
+                    @endphp
+                    <div class="grid grid-cols-1 @if($hasProcessSuggestion) lg:grid-cols-12 @endif gap-8">
+                        <div class="@if($hasProcessSuggestion) lg:col-span-7 @endif">
+                            <flux:field>
+                                <flux:label class="text-base font-body font-bold">Werkwijze</flux:label>
+                                <flux:description class="text-sm">Beschrijf stap voor stap hoe de activiteit verloopt.</flux:description>
+                                <flux:editor wire:model="process" toolbar="bold | bullet ordered | link" placeholder="bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment. 3. Laat bewoners het liedje raden..." />
+                            </flux:field>
+                        </div>
+                        @if($hasProcessSuggestion)
+                            <div class="lg:col-span-5">
+                                <x-ai-suggestion-panel
+                                    :suggestion="$aiSuggestions['process']"
+                                    field="process"
+                                    :is-applied="$isProcessApplied"
+                                />
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </flux:tab.panel>
 
@@ -166,12 +251,22 @@
                             <flux:label class="text-base font-body font-bold">Duur</flux:label>
                             <flux:description class="text-sm">Hoelang duurt het?</flux:description>
                             <flux:input wire:model="duration" class="text-base" placeholder="bijv. 30 min" />
+                            @if(!empty($aiSuggestions['duration_estimate']))
+                                <flux:description class="mt-1">
+                                    <span class="text-xs text-[var(--color-primary)]">✨ Suggestie: {{ $aiSuggestions['duration_estimate'] }}</span>
+                                </flux:description>
+                            @endif
                         </flux:field>
 
                         <flux:field>
                             <flux:label class="text-base font-body font-bold">Groepsgrootte</flux:label>
                             <flux:description class="text-sm">Voor hoeveel personen?</flux:description>
                             <flux:input wire:model="groupSize" class="text-base" placeholder="bijv. 4-8" />
+                            @if(!empty($aiSuggestions['group_size_estimate']))
+                                <flux:description class="mt-1">
+                                    <span class="text-xs text-[var(--color-primary)]">✨ Suggestie: {{ $aiSuggestions['group_size_estimate'] }}</span>
+                                </flux:description>
+                            @endif
                         </flux:field>
                     </div>
 
