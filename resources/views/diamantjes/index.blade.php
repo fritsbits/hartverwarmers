@@ -2,7 +2,7 @@
 
     {{-- Hero --}}
     <section class="bg-[var(--color-bg-cream)] border-b border-[var(--color-border-light)] overflow-hidden">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-stretch">
             {{-- Copy --}}
             <div class="flex-1 px-6 py-16">
                 <span class="section-label section-label-hero">Diamantjes</span>
@@ -16,7 +16,7 @@
             </div>
 
             {{-- Hero image --}}
-            <div class="flex-1 hidden md:flex items-center justify-center overflow-hidden min-h-64">
+            <div class="flex-1 hidden md:block overflow-hidden min-h-64">
                 <img
                     src="{{ asset('images/hero-diamantjes.webp') }}"
                     alt="Een collage van uitgelichte activiteitsfiches — de diamantjes van Hartverwarmers"
