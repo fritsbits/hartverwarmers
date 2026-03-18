@@ -76,4 +76,17 @@ class DiamantjesPageTest extends TestCase
         $response->assertStatus(200);
         $response->assertDontSee($unpublished->title);
     }
+
+    public function test_diamantjes_page_shows_singular_count(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        Fiche::factory()->published()->withDiamond()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+
+        $response = $this->get('/diamantjes');
+
+        $response->assertStatus(200);
+        $response->assertSee('1 fiche');
+    }
 }

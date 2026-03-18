@@ -11,7 +11,7 @@
                 Af en toe stoot ons team op een fiche die we gewoon te goed vinden om onopgemerkt te laten. Dit zijn ze.
             </p>
             <p class="mt-4 text-sm text-[var(--color-text-secondary)]">
-                {{ $fiches->count() }} fiches uitgekozen door het team
+                {{ $fiches->count() }} {{ $fiches->count() === 1 ? 'fiche' : 'fiches' }} uitgekozen door het team
             </p>
         </div>
     </section>
