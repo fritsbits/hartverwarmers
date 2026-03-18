@@ -5,8 +5,10 @@ namespace App\Livewire;
 use App\Jobs\AssessFicheQuality;
 use App\Models\Fiche;
 use App\Models\Initiative;
+use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -79,13 +81,22 @@ class AdminFicheOverview extends Component
         Fiche::where('id', $ficheId)->update(['featured_month' => $month]);
 
         $this->ficheOfMonthId = null;
+
+        $fiche = Fiche::find($ficheId);
+        Flux::toast('Fiche van de maand ingesteld: "'.Str::limit($fiche?->title ?? '', 30).'"', variant: 'success');
     }
 
     public function reassess(int $ficheId): void
     {
         $fiche = Fiche::findOrFail($ficheId);
-        $fiche->updateQuietly(['quality_assessed_at' => null]);
+        $fiche->updateQuietly([
+            'quality_score' => null,
+            'quality_justification' => null,
+            'quality_assessed_at' => null,
+        ]);
         AssessFicheQuality::dispatch($fiche);
+
+        Flux::toast('Beoordeling gestart voor "'.Str::limit($fiche->title, 30).'". Dit kan even duren.');
     }
 
     #[Computed]

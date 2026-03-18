@@ -73,7 +73,7 @@
                         @elseif($fiche->quality_assessed_at)
                             <span class="text-xs text-red-400">mislukt</span>
                         @else
-                            <span class="text-xs text-zinc-400">wacht…</span>
+                            <span class="text-xs text-zinc-400">—</span>
                         @endif
                     </flux:table.cell>
 
@@ -146,7 +146,10 @@
                                     @if(! $fiche->featured_month)
                                         <flux:button size="xs" variant="ghost" icon="star" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">Maak FvdM</flux:button>
                                     @endif
-                                    <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="reassess({{ $fiche->id }})">Herbeoordeel</flux:button>
+                                    <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="reassess({{ $fiche->id }})" wire:loading.attr="disabled" wire:target="reassess({{ $fiche->id }})">
+                                        <span wire:loading.remove wire:target="reassess({{ $fiche->id }})">{{ $fiche->quality_assessed_at ? 'Herbeoordeel' : 'Beoordeel' }}</span>
+                                        <span wire:loading wire:target="reassess({{ $fiche->id }})">Bezig...</span>
+                                    </flux:button>
                                 </div>
                             </div>
                         </flux:table.cell>
