@@ -30,12 +30,12 @@
     <flux:table :paginate="$this->fiches">
         <flux:table.columns>
             <flux:table.column>Fiche</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'combined_score'" :direction="$sortBy === 'combined_score' ? $sortDirection : null" wire:click="sortBy('combined_score')">Score</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'quality_score'" :direction="$sortBy === 'quality_score' ? $sortDirection : null" wire:click="sortBy('quality_score')">Kwaliteit</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'presentation_score'" :direction="$sortBy === 'presentation_score' ? $sortDirection : null" wire:click="sortBy('presentation_score')">Presentatie</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'combined_score'" :direction="$sortBy === 'combined_score' ? $sortDirection : null" wire:click="sort('combined_score')">Score</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'quality_score'" :direction="$sortBy === 'quality_score' ? $sortDirection : null" wire:click="sort('quality_score')">Kwaliteit</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'presentation_score'" :direction="$sortBy === 'presentation_score' ? $sortDirection : null" wire:click="sort('presentation_score')">Presentatie</flux:table.column>
             <flux:table.column>Kudos</flux:table.column>
             <flux:table.column>Bestanden</flux:table.column>
-            <flux:table.column sortable :sorted="$sortBy === 'created_at'" :direction="$sortBy === 'created_at' ? $sortDirection : null" wire:click="sortBy('created_at')">Toegevoegd</flux:table.column>
+            <flux:table.column sortable :sorted="$sortBy === 'created_at'" :direction="$sortBy === 'created_at' ? $sortDirection : null" wire:click="sort('created_at')">Toegevoegd</flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
