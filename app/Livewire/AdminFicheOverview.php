@@ -130,7 +130,7 @@ class AdminFicheOverview extends Component
             ->published()
             ->with(['initiative', 'user'])
             ->withCount('files')
-            ->selectRaw('*, (COALESCE(quality_score, 0) + COALESCE(presentation_score, 0)) as combined_score');
+            ->addSelect(\Illuminate\Support\Facades\DB::raw('(COALESCE(quality_score, 0) + COALESCE(presentation_score, 0)) as combined_score'));
 
         if (strlen(trim($this->search)) >= 2) {
             $term = trim($this->search);
