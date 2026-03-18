@@ -1,13 +1,13 @@
-<x-layout title="Diamantjes" description="Fiches die ons team uitkoos als bijzonder mooie voorbeelden van wat mogelijk is.">
+<x-layout title="Diamantjes" description="Fiches die ons team uitkoos als bijzonder mooie voorbeelden van wat mogelijk is." :full-width="true">
 
     {{-- Hero --}}
-    <section class="bg-[var(--color-bg-cream)] overflow-hidden">
+    <section class="bg-[var(--color-bg-cream)] border-b border-[var(--color-border-light)] overflow-hidden">
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center">
             {{-- Copy --}}
-            <div class="flex-1 px-6 py-16 md:py-20">
+            <div class="flex-1 px-6 py-16">
                 <span class="section-label section-label-hero">Uitgelicht door ons team</span>
-                <h1 class="text-5xl mt-2">Diamantjes</h1>
-                <p class="text-[var(--color-text-secondary)] text-xl font-light mt-4 max-w-xl">
+                <h1 class="text-5xl mt-1">Diamantjes</h1>
+                <p class="text-[var(--color-text-secondary)] text-2xl font-light mt-4 max-w-2xl">
                     Af en toe stoot ons team op een fiche die we gewoon te goed vinden om onopgemerkt te laten. Dit zijn ze.
                 </p>
                 <p class="mt-3 text-sm text-[var(--color-text-secondary)]">
