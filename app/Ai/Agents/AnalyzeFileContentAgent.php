@@ -49,12 +49,16 @@ class AnalyzeFileContentAgent implements Agent, HasStructuredOutput
         - "Bak samen smoutebollen en breng de gezellige sfeer van de kermis naar het woonzorgcentrum. De geur en smaak roepen herinneringen op en brengen bewoners samen rond een gedeelde beleving."
         - "Laat bewoners inschatten hoeveel dagelijkse voorwerpen vandaag kosten en vergelijk met de prijzen van vroeger. Een leuke manier om herinneringen op te halen en gesprekken op gang te brengen over het dagelijks leven van toen."
         - "Tover de tuin om tot een lichtjesparadijs en trek er in de late namiddag samen op uit. Met een jenever, streepje muziek en braadworst aan het vuur wordt het een gezellig wintermoment voor alle bewoners."
+
+        Voor het veld 'suggested_title', stel een verbeterde versie van de titel voor.
+        Een goede titel is specifiek (niet "Knutselen" maar "Lentebloemenkrans maken met crêpepapier"), benoemt de kern van de activiteit, en maakt nieuwsgierig. Maximaal 80 tekens.
         PROMPT;
     }
 
     public function schema(JsonSchema $schema): array
     {
         return [
+            'suggested_title' => $schema->string()->description('Voorgestelde verbeterde titel: specifieker, concreter, en aantrekkelijker dan de huidige titel. Max 80 tekens.'),
             'description' => $schema->string()->required()->description('Beschrijving van de activiteit (1-3 zinnen). Beantwoord: wat is de activiteit, wat maakt het boeiend, voor wie is het?'),
             'preparation' => $schema->string()->description('Voorbereidingsstappen in Markdown'),
             'inventory' => $schema->string()->description('Benodigdheden als Markdown-lijst'),

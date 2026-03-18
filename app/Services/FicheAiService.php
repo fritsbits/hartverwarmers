@@ -20,7 +20,7 @@ class FicheAiService
 
     /**
      * @param  array<string>  $texts  Extracted texts from uploaded files
-     * @return array{description: string, preparation: string, inventory: string, process: string, duration_estimate: string, group_size_estimate: string, suggested_themes: array, suggested_goals: array, suggested_target_audience: array, _meta: array}|null
+     * @return array{suggested_title: string, description: string, preparation: string, inventory: string, process: string, duration_estimate: string, group_size_estimate: string, suggested_themes: array, suggested_goals: array, suggested_target_audience: array, _meta: array}|null
      */
     public function analyzeFiles(array $texts, string $title, string $description): ?array
     {
@@ -45,6 +45,7 @@ class FicheAiService
             $elapsed = round(microtime(true) - $start, 2);
 
             return [
+                'suggested_title' => $response['suggested_title'] ?? '',
                 'description' => $response['description'] ?? '',
                 'preparation' => $response['preparation'] ?? '',
                 'inventory' => $response['inventory'] ?? '',
