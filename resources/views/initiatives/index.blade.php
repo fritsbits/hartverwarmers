@@ -66,7 +66,7 @@
     }" x-init="$watch('search', () => updateUrl()); $watch('sortMode', () => updateUrl()); $watch('selectedGoals', () => updateUrl())">
         {{-- Zone 1: Hero (cream bg) --}}
         <section class="bg-[var(--color-bg-cream)] border-b border-[var(--color-border-light)]">
-            <div class="max-w-6xl mx-auto px-6 pt-8 pb-10">
+            <div class="max-w-6xl mx-auto px-6 pt-8 pb-8">
                 <flux:breadcrumbs class="mb-6">
                     <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
                     <flux:breadcrumbs.item>Initiatieven</flux:breadcrumbs.item>
@@ -74,7 +74,7 @@
 
                 <div class="max-w-3xl mb-8">
                     <span class="section-label section-label-hero">Initiatieven</span>
-                    <h1 class="text-5xl mt-1">Praktijkfiches van collega's, gebundeld per initiatief</h1>
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl mt-1">Praktijkfiches van collega's, gebundeld per initiatief</h1>
                 </div>
 
                 {{-- Toolbar: Filter + Search + Sort --}}
@@ -126,12 +126,12 @@
                         <flux:input icon="magnifying-glass" placeholder="Zoek..." x-model.debounce.200ms="search" class="sm:max-w-48" />
 
                         {{-- Sort pills --}}
-                        <div class="inline-flex rounded-full bg-[var(--color-bg-subtle)] p-1 sm:ml-auto flex-wrap">
+                        <div class="flex overflow-x-auto rounded-full bg-[var(--color-bg-subtle)] p-1 sm:ml-auto shrink-0">
                             <flux:tooltip content="Alle initiatieven op alfabetische volgorde" position="bottom">
                                 <button
                                     @click="sortMode = 'az'"
                                     :class="sortMode === 'az' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all cursor-pointer"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all cursor-pointer whitespace-nowrap"
                                     type="button"
                                 >
                                     <flux:icon name="bars-3-bottom-left" class="size-4" />
@@ -164,7 +164,7 @@
                                 <button
                                     @click="sortMode = 'random'"
                                     :class="sortMode === 'random' ? 'bg-white shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'"
-                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all cursor-pointer"
+                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-all cursor-pointer whitespace-nowrap"
                                     type="button"
                                 >
                                     <flux:icon name="arrows-right-left" class="size-4" />
@@ -196,20 +196,23 @@
                     @endif
                 </div>
 
-                {{-- Active sort clarification --}}
-                <p class="text-sm text-[var(--color-text-secondary)] mt-2" x-cloak>
-                    <span x-show="sortMode === 'az'">Alle initiatieven op alfabetische volgorde</span>
-                    <span x-show="sortMode === 'rich'">Initiatieven met de meeste uitwerkingen</span>
-                    <span x-show="sortMode === 'needs-love'">Initiatieven die nog uitwerkingen zoeken</span>
-                    <span x-show="sortMode === 'random'">Willekeurige volgorde</span>
-                </p>
 
             </div>
         </section>
 
         {{-- Grid section --}}
         <section>
-            <div class="max-w-6xl mx-auto px-6 py-16">
+            {{-- Active sort clarification --}}
+            <div class="max-w-6xl mx-auto px-6">
+                <p class="text-sm text-[var(--color-text-secondary)] py-8" x-cloak>
+                    <span x-show="sortMode === 'az'">Alle initiatieven op alfabetische volgorde</span>
+                    <span x-show="sortMode === 'rich'">Initiatieven met de meeste uitwerkingen</span>
+                    <span x-show="sortMode === 'needs-love'">Initiatieven die nog uitwerkingen zoeken</span>
+                    <span x-show="sortMode === 'random'">Willekeurige volgorde</span>
+                </p>
+            </div>
+
+            <div class="max-w-6xl mx-auto px-6 pt-0 pb-16">
 
                 {{-- Initiatives grid --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -255,7 +258,7 @@
 
                 {{-- Empty state --}}
                 <div x-show="visibleCount === 0" x-cloak class="text-center py-16">
-                    <flux:icon.magnifying-glass class="mx-auto mb-4 text-[var(--color-border-light)]" variant="outline" />
+                    <flux:icon.magnifying-glass class="mx-auto mb-4 size-12 text-[var(--color-border-light)]" variant="outline" />
                     <p class="text-[var(--color-text-secondary)] mb-4">Geen initiatieven gevonden met deze filters.</p>
                     <flux:button variant="outline" size="sm" @click="clearAll()">Alle filters wissen</flux:button>
                 </div>
