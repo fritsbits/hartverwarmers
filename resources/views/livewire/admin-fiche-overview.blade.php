@@ -96,10 +96,11 @@
                 {{-- Expanded detail row --}}
                 @if($expandedFiche === $fiche->id)
                     <flux:table.row :key="'detail-'.$fiche->id" class="!border-t-0 bg-white">
-                        <flux:table.cell colspan="6" class="!pt-0" style="max-width: 0;">
-                            <div class="py-2 grid grid-cols-2 gap-4">
+                        <flux:table.cell colspan="6" class="!pt-0">
+                            <div class="py-2">
+                              <div class="flex gap-4" style="width: 100%; overflow: hidden;">
                                     {{-- Quality --}}
-                                    <div class="min-w-0">
+                                    <div style="width: 50%; min-width: 0; overflow-wrap: break-word; word-break: break-word;">
                                         <p class="text-xs font-semibold uppercase text-zinc-500 mb-1">Kwaliteit @if($fiche->quality_score !== null) — {{ $fiche->quality_score }}/100 @endif</p>
                                         @if($fiche->quality_justification)
                                             <p class="text-sm text-zinc-700 leading-relaxed break-words">{{ $fiche->quality_justification }}</p>
@@ -126,7 +127,7 @@
                                     </div>
 
                                     {{-- Completeness --}}
-                                    <div>
+                                    <div style="width: 50%; min-width: 0;">
                                         <p class="text-xs font-semibold uppercase text-zinc-500 mb-1">Volledigheid — {{ $fiche->completeness_score ?? 0 }}%</p>
                                         @if(($fiche->completeness_score ?? 0) < 100)
                                             @php
@@ -153,6 +154,7 @@
                                         @endif
                                     </div>
                                 </div>
+                              </div>
 
                                 {{-- Actions --}}
                                 <div class="flex items-center gap-1 mt-3">
