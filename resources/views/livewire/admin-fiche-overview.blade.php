@@ -96,9 +96,8 @@
                 {{-- Expanded detail row --}}
                 @if($expandedFiche === $fiche->id)
                     <flux:table.row :key="'detail-'.$fiche->id" class="!border-t-0 bg-white">
-                        <flux:table.cell colspan="6" class="!pt-0 !overflow-hidden">
-                            <div class="py-2 max-w-full overflow-hidden">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-full">
+                        <flux:table.cell colspan="6" class="!pt-0" style="max-width: 0;">
+                            <div class="py-2 grid grid-cols-2 gap-4">
                                     {{-- Quality --}}
                                     <div class="min-w-0">
                                         <p class="text-xs font-semibold uppercase text-zinc-500 mb-1">Kwaliteit @if($fiche->quality_score !== null) — {{ $fiche->quality_score }}/100 @endif</p>
