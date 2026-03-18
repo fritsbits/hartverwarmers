@@ -39,7 +39,7 @@
 
         <flux:table.rows>
             @forelse($this->fiches as $fiche)
-                <flux:table.row :key="$fiche->id" wire:click="toggleExpanded({{ $fiche->id }})" class="cursor-pointer {{ $fiche->featured_month ? 'bg-amber-50' : '' }}">
+                <flux:table.row :key="$fiche->id" wire:click="toggleExpanded({{ $fiche->id }})" class="cursor-pointer {{ $expandedFiche === $fiche->id ? 'bg-white' : ($fiche->featured_month ? 'bg-amber-50' : '') }}">
                     <flux:table.cell>
                         <div>
                             <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="font-medium hover:text-[var(--color-primary)] transition-colors {{ $expandedFiche === $fiche->id ? 'text-zinc-900 font-bold' : '' }}" title="{{ $fiche->title }}">
@@ -95,15 +95,15 @@
 
                 {{-- Expanded detail row --}}
                 @if($expandedFiche === $fiche->id)
-                    <flux:table.row :key="'detail-'.$fiche->id" class="!border-t-0">
+                    <flux:table.row :key="'detail-'.$fiche->id" class="!border-t-0 bg-white">
                         <flux:table.cell colspan="6" class="!pt-0">
-                            <div class="bg-zinc-50/50 rounded-lg p-4 -mt-1">
+                            <div class="py-2">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {{-- Quality --}}
-                                    <div>
+                                    <div class="min-w-0">
                                         <p class="text-xs font-semibold uppercase text-zinc-500 mb-1">Kwaliteit @if($fiche->quality_score !== null) — {{ $fiche->quality_score }}/100 @endif</p>
                                         @if($fiche->quality_justification)
-                                            <p class="text-sm text-zinc-700 leading-relaxed">{{ $fiche->quality_justification }}</p>
+                                            <p class="text-sm text-zinc-700 leading-relaxed break-words">{{ $fiche->quality_justification }}</p>
                                         @elseif($fiche->quality_assessed_at)
                                             <p class="text-sm text-red-500">Beoordeling mislukt.</p>
                                         @else
