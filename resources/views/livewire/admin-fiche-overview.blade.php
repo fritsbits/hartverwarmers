@@ -42,7 +42,7 @@
                 <flux:table.row :key="$fiche->id" wire:click="toggleExpanded({{ $fiche->id }})" class="cursor-pointer {{ $fiche->featured_month ? 'bg-amber-50' : '' }}">
                     <flux:table.cell>
                         <div>
-                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="font-medium hover:text-[var(--color-primary)] transition-colors" title="{{ $fiche->title }}">
+                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="font-medium hover:text-[var(--color-primary)] transition-colors {{ $expandedFiche === $fiche->id ? 'text-zinc-900 font-bold' : '' }}" title="{{ $fiche->title }}">
                                 @if($fiche->featured_month) 🌟 @endif
                                 {{ Str::limit($fiche->title, 25) }}
                             </a>
@@ -98,18 +98,6 @@
                     <flux:table.row :key="'detail-'.$fiche->id" class="!border-t-0">
                         <flux:table.cell colspan="6" class="!pt-0">
                             <div class="bg-zinc-50/50 rounded-lg p-4 -mt-1">
-                                {{-- Title header --}}
-                                <div class="flex items-center justify-between mb-3">
-                                    <h3 class="font-heading font-bold text-base text-zinc-900">{{ $fiche->title }}</h3>
-                                    <div class="flex items-center gap-1">
-                                        <flux:button size="xs" variant="ghost" icon="eye" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop>Bekijk</flux:button>
-                                        @if(! $fiche->featured_month)
-                                            <flux:button size="xs" variant="ghost" icon="star" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">Maak FvdM</flux:button>
-                                        @endif
-                                        <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="reassess({{ $fiche->id }})">Herbeoordeel</flux:button>
-                                    </div>
-                                </div>
-
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {{-- Quality --}}
                                     <div>
@@ -150,6 +138,15 @@
                                             <p class="text-sm text-green-600">Alles ingevuld</p>
                                         @endif
                                     </div>
+                                </div>
+
+                                {{-- Actions --}}
+                                <div class="flex items-center gap-1 mt-3">
+                                    <flux:button size="xs" variant="ghost" icon="eye" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop>Bekijk</flux:button>
+                                    @if(! $fiche->featured_month)
+                                        <flux:button size="xs" variant="ghost" icon="star" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">Maak FvdM</flux:button>
+                                    @endif
+                                    <flux:button size="xs" variant="ghost" icon="arrow-path" wire:click.stop="reassess({{ $fiche->id }})">Herbeoordeel</flux:button>
                                 </div>
                             </div>
                         </flux:table.cell>
