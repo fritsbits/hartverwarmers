@@ -8,6 +8,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\ContributorController;
 use App\Http\Controllers\DesignSystemController;
+use App\Http\Controllers\DiamantjesController;
 use App\Http\Controllers\DownloadsAndBookmarksController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\FicheController;
@@ -44,6 +45,9 @@ Route::get('/themas', [ThemeController::class, 'index'])->name('themes.index');
 // Contributors
 Route::get('/bijdragers', [ContributorController::class, 'index'])->name('contributors.index');
 Route::get('/bijdragers/{user}', [ContributorController::class, 'show'])->name('contributors.show');
+
+// Diamantjes
+Route::get('/diamantjes', DiamantjesController::class)->name('diamantjes.index');
 
 // Favorieten & downloads
 Route::get('/favorieten', DownloadsAndBookmarksController::class)->name('bookmarks.index');
