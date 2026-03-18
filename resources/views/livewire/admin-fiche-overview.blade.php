@@ -163,6 +163,9 @@
                                 @if(! $fiche->featured_month)
                                     <flux:button size="xs" variant="ghost" icon="star" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">Maak FvdM</flux:button>
                                 @endif
+                                <flux:button size="xs" :variant="$fiche->has_diamond ? 'filled' : 'ghost'" icon="gem" wire:click.stop="toggleDiamond({{ $fiche->id }})">
+                                    {{ $fiche->has_diamond ? 'Diamant verwijderen' : 'Maak diamant' }}
+                                </flux:button>
                             </div>
                         </flux:table.cell>
                     </flux:table.row>

@@ -86,6 +86,12 @@ class AdminFicheOverview extends Component
         Flux::toast('Fiche van de maand ingesteld: "'.Str::limit($fiche?->title ?? '', 30).'"', variant: 'success');
     }
 
+    public function toggleDiamond(int $ficheId): void
+    {
+        $fiche = Fiche::findOrFail($ficheId);
+        $fiche->updateQuietly(['has_diamond' => ! $fiche->has_diamond]);
+    }
+
     public function assess(int $ficheId): void
     {
         $fiche = Fiche::findOrFail($ficheId);
