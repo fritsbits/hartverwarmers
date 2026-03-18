@@ -32,7 +32,6 @@ class Fiche extends Model
         'has_diamond',
         'download_count',
         'kudos_count',
-        'featured_month',
         'icon',
         'migration_id',
         'zip_path',
@@ -169,11 +168,6 @@ class Fiche extends Model
     public function scopePublished($query)
     {
         return $query->where('published', true);
-    }
-
-    public function scopeFicheOfMonth($query)
-    {
-        return $query->whereNotNull('featured_month');
     }
 
     public function calculateCompletenessScore(): int

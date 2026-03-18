@@ -35,7 +35,6 @@ Route::get('/initiatieven', [InitiativeController::class, 'index'])->name('initi
 Route::get('/initiatieven/{initiative:slug}', [InitiativeController::class, 'show'])->name('initiatives.show');
 
 // Fiches
-Route::get('/fiches-van-de-maand', [FicheController::class, 'ficheVanDeMaandArchive'])->name('fiches.ficheVanDeMaand');
 Route::get('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'show'])->name('fiches.show');
 Route::get('/initiatieven/{initiative:slug}/{fiche:slug}/download', [FicheController::class, 'downloadFiles'])->name('fiches.download');
 
@@ -84,8 +83,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/mails/{email}/preview', [MailPreviewController::class, 'preview'])->name('admin.mails.preview');
         Route::delete('/initiatieven/{initiative:slug}', [InitiativeController::class, 'destroy'])->name('initiatives.destroy');
         Route::post('/initiatieven/{initiative:slug}/{fiche:slug}/diamant', [FicheController::class, 'toggleDiamond'])->name('fiches.toggleDiamond');
-        Route::post('/initiatieven/{initiative:slug}/{fiche:slug}/fiche-van-de-maand', [FicheController::class, 'setFicheOfMonth'])->name('fiches.setFicheOfMonth');
-        Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}/fiche-van-de-maand', [FicheController::class, 'unsetFicheOfMonth'])->name('fiches.unsetFicheOfMonth');
         Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'destroy'])->name('fiches.destroy');
         Route::get('/admin/gebruikers', [AdminUserController::class, 'index'])->name('admin.users.index');
         Route::get('/admin/fiches', [AdminFicheController::class, 'index'])->name('admin.fiches.index');

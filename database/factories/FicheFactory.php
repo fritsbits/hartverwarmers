@@ -46,13 +46,6 @@ class FicheFactory extends Factory
         ]);
     }
 
-    public function ficheOfMonth(?string $month = null): static
-    {
-        return $this->state(fn () => [
-            'featured_month' => $month ?? now()->format('Y-m'),
-        ]);
-    }
-
     public function withIcon(string $icon = 'file-text'): static
     {
         return $this->state(fn (array $attributes) => [

@@ -5,10 +5,8 @@ namespace App\Livewire;
 use App\Jobs\AssessFicheQuality;
 use App\Models\Fiche;
 use App\Models\Initiative;
-use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -34,15 +32,6 @@ class AdminFicheOverview extends Component
     public string $sortDirection = 'desc';
 
     public ?int $expandedFiche = null;
-
-    public ?int $ficheOfMonthId = null;
-
-    public string $ficheOfMonthMonth = '';
-
-    public function mount(): void
-    {
-        $this->ficheOfMonthMonth = now()->format('Y-m');
-    }
 
     public function updatedSearch(): void
     {
@@ -74,18 +63,6 @@ class AdminFicheOverview extends Component
         $this->expandedFiche = $this->expandedFiche === $id ? null : $id;
     }
 
-    public function setFicheOfMonth(int $ficheId, string $month): void
-    {
-        // Raw update intentionally bypasses observers — no need to recalculate scores for metadata change
-        Fiche::where('featured_month', $month)->update(['featured_month' => null]);
-        Fiche::where('id', $ficheId)->update(['featured_month' => $month]);
-
-        $this->ficheOfMonthId = null;
-
-        $fiche = Fiche::find($ficheId);
-        Flux::toast('Fiche van de maand ingesteld: "'.Str::limit($fiche?->title ?? '', 30).'"', variant: 'success');
-    }
-
     public function toggleDiamond(int $ficheId): void
     {
         $fiche = Fiche::findOrFail($ficheId);
@@ -103,12 +80,6 @@ class AdminFicheOverview extends Component
 
         // Run synchronously so the result appears immediately in the UI
         (new AssessFicheQuality($fiche))->handle();
-    }
-
-    #[Computed]
-    public function hasFicheOfMonth(): bool
-    {
-        return Fiche::where('featured_month', now()->format('Y-m'))->exists();
     }
 
     #[Computed]
@@ -140,7 +111,6 @@ class AdminFicheOverview extends Component
         match ($this->filter) {
             'unassessed' => $query->whereNull('quality_assessed_at'),
             'assessed' => $query->whereNotNull('quality_assessed_at'),
-            'featured' => $query->whereNotNull('featured_month'),
             default => null,
         };
 

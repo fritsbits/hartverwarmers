@@ -443,22 +443,6 @@ class ContributorIndexTest extends TestCase
         $response->assertSee('Lid sinds '.$user->created_at->format('Y'));
     }
 
-    public function test_show_page_highlights_featured_fiches(): void
-    {
-        $initiative = Initiative::factory()->published()->create();
-        $user = User::factory()->create();
-        Fiche::factory()->published()->create([
-            'user_id' => $user->id,
-            'initiative_id' => $initiative->id,
-            'featured_month' => '2025-06',
-        ]);
-
-        $response = $this->get(route('contributors.show', $user));
-
-        $response->assertStatus(200);
-        $response->assertSee('Fiche van de maand');
-    }
-
     public function test_show_page_displays_fiche_list_items(): void
     {
         $initiative = Initiative::factory()->published()->create();

@@ -95,12 +95,6 @@
                             <div class="flex flex-col gap-0.5 min-w-0 flex-1">
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <span class="font-body font-semibold text-lg text-[var(--color-text-primary)] truncate">{{ $fiche->title }}</span>
-                                    @if($fiche->featured_month)
-                                        <span class="featured-badge">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>
-                                            Fiche van de maand
-                                        </span>
-                                    @endif
                                 </div>
                                 <span class="text-xs text-[var(--color-text-secondary)]">{{ $fiche->initiative?->title }} · {{ $fiche->created_at->translatedFormat('M Y') }}</span>
                             </div>

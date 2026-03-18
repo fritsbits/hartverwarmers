@@ -1,12 +1,4 @@
 <div>
-    {{-- Warning banner --}}
-    @unless($this->hasFicheOfMonth)
-        <flux:callout icon="exclamation-triangle" color="amber" class="mb-6">
-            <flux:callout.heading>Geen fiche van de maand voor {{ now()->translatedFormat('F Y') }}</flux:callout.heading>
-            <flux:callout.text>Kies er hieronder één uit.</flux:callout.text>
-        </flux:callout>
-    @endunless
-
     {{-- Filters --}}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
         <flux:input wire:model.live.debounce.300ms="search" placeholder="Zoek op titel..." icon="magnifying-glass" clearable />
@@ -15,7 +7,6 @@
             <flux:select.option value="">Alle fiches</flux:select.option>
             <flux:select.option value="unassessed">Niet beoordeeld</flux:select.option>
             <flux:select.option value="assessed">Beoordeeld</flux:select.option>
-            <flux:select.option value="featured">Eerder uitgelicht</flux:select.option>
         </flux:select>
 
         <flux:select wire:model.live="initiativeFilter">
@@ -40,11 +31,10 @@
 
         <flux:table.rows>
             @forelse($this->fiches as $fiche)
-                <flux:table.row :key="$fiche->id" wire:click="toggleExpanded({{ $fiche->id }})" class="cursor-pointer {{ $expandedFiche === $fiche->id ? 'bg-white' : ($fiche->featured_month ? 'bg-amber-50' : '') }}">
+                <flux:table.row :key="$fiche->id" wire:click="toggleExpanded({{ $fiche->id }})" class="cursor-pointer {{ $expandedFiche === $fiche->id ? 'bg-white' : '' }}">
                     <flux:table.cell>
                         <div>
                             <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="font-medium hover:text-[var(--color-primary)] transition-colors {{ $expandedFiche === $fiche->id ? 'text-zinc-900 font-bold' : '' }}" title="{{ $fiche->title }}">
-                                @if($fiche->featured_month) 🌟 @endif
                                 {{ Str::limit($fiche->title, 25) }}
                             </a>
                             <span class="text-xs text-[var(--color-text-secondary)] block">{{ Str::limit($fiche->initiative?->title, 30) }}</span>
@@ -105,9 +95,6 @@
 
                     <flux:table.cell>
                         <span class="text-sm text-zinc-500">{{ $fiche->created_at->format('d M Y') }}</span>
-                        @if($fiche->featured_month)
-                            <span class="text-xs font-medium text-amber-700 block">FvdM {{ $fiche->featured_month }}</span>
-                        @endif
                     </flux:table.cell>
                 </flux:table.row>
 
@@ -163,9 +150,6 @@
 
                             <div class="flex items-center gap-1 mt-2">
                                 <flux:button size="xs" variant="ghost" icon="eye" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop>Bekijk</flux:button>
-                                @if(! $fiche->featured_month)
-                                    <flux:button size="xs" variant="ghost" icon="star" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">Maak FvdM</flux:button>
-                                @endif
                                 <flux:button size="xs" :variant="$fiche->has_diamond ? 'filled' : 'ghost'" icon="sparkles" wire:click.stop="toggleDiamond({{ $fiche->id }})">
                                     {{ $fiche->has_diamond ? 'Diamant verwijderen' : 'Maak diamant' }}
                                 </flux:button>
@@ -186,17 +170,4 @@
         </flux:table.rows>
     </flux:table>
 
-    {{-- FvdM month picker modal --}}
-    @if($ficheOfMonthId)
-        <flux:modal :open="$ficheOfMonthId !== null" @close="$set('ficheOfMonthId', null)">
-            <div class="space-y-4">
-                <flux:heading>Fiche van de maand instellen</flux:heading>
-                <flux:input type="month" wire:model="ficheOfMonthMonth" label="Maand" />
-                <div class="flex justify-end gap-2">
-                    <flux:button variant="ghost" wire:click="$set('ficheOfMonthId', null)">Annuleer</flux:button>
-                    <flux:button variant="primary" wire:click="setFicheOfMonth({{ $ficheOfMonthId }}, '{{ $ficheOfMonthMonth }}')">Bevestig</flux:button>
-                </div>
-            </div>
-        </flux:modal>
-    @endif
 </div>

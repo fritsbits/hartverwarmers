@@ -166,8 +166,7 @@ class FeatureFlagTest extends TestCase
         $response = $this->get(route('initiatives.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Elk initiatief bundelt praktijkfiches van collega');
-        $response->assertSee('Kies een thema en ontdek hoe anderen het aanpakken.');
+        $response->assertSee('Praktijkfiches van collega');
     }
 
     public function test_initiatives_index_shows_goal_filter_when_feature_enabled(): void
@@ -178,26 +177,6 @@ class FeatureFlagTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Doelen');
-    }
-
-    public function test_fiche_van_de_maand_hides_diamant_link_when_feature_disabled(): void
-    {
-        Feature::define('diamant-goals', false);
-
-        $response = $this->get(route('fiches.ficheVanDeMaand'));
-
-        $response->assertStatus(200);
-        $response->assertDontSee('Het DIAMANT-kompas');
-    }
-
-    public function test_fiche_van_de_maand_shows_diamant_link_when_feature_enabled(): void
-    {
-        Feature::define('diamant-goals', true);
-
-        $response = $this->get(route('fiches.ficheVanDeMaand'));
-
-        $response->assertStatus(200);
-        $response->assertSee('Het DIAMANT-kompas');
     }
 
     public function test_beta_regular_user_cannot_see_goals(): void

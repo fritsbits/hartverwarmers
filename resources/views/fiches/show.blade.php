@@ -77,27 +77,6 @@
                                     <flux:menu.item variant="danger" icon="trash">Verwijder</flux:menu.item>
                                 </flux:modal.trigger>
 
-                                <flux:menu.separator />
-
-                                @if($fiche->featured_month)
-                                    <flux:menu.heading>
-                                        Fiche van de maand &middot; {{ \Carbon\Carbon::createFromFormat('Y-m', $fiche->featured_month)->translatedFormat('M Y') }}
-                                    </flux:menu.heading>
-                                    <form action="{{ route('fiches.unsetFicheOfMonth', [$initiative, $fiche]) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <flux:menu.item type="submit" icon="x-mark">Verwijder als fiche van de maand</flux:menu.item>
-                                    </form>
-                                @else
-                                    <flux:menu.heading>Fiche van de maand</flux:menu.heading>
-                                    <div class="px-2 py-1.5">
-                                        <form action="{{ route('fiches.setFicheOfMonth', [$initiative, $fiche]) }}" method="POST" class="flex items-center gap-2">
-                                            @csrf
-                                            <input type="month" name="month" value="{{ now()->format('Y-m') }}" class="text-xs font-medium bg-transparent border border-[var(--color-border-light)] rounded-md px-2 py-1 w-[8rem] focus:outline-none text-[var(--color-text-secondary)]" required>
-                                            <flux:button type="submit" size="xs" variant="filled">Stel in</flux:button>
-                                        </form>
-                                    </div>
-                                @endif
                             </flux:menu>
                         </flux:dropdown>
                     @endif
