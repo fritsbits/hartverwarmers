@@ -313,14 +313,13 @@
                                 <p class="text-xs text-[var(--color-text-secondary)] mt-2">Standaard</p>
                             </div>
                             <div class="text-center">
-                                <x-fiche-card :fiche="$fiche" :showDiamond="true" />
-                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Met diamond</p>
+                                <x-fiche-card :fiche="$fiche" />
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Met diamond (auto)</p>
                             </div>
                         </div>
                         <details class="mb-8">
                             <summary class="text-sm font-semibold text-[var(--color-text-secondary)] cursor-pointer">Toon markup</summary>
-                            <pre class="mt-2 p-4 bg-zinc-50 rounded-lg text-sm overflow-x-auto"><code>&lt;x-fiche-card :fiche="$fiche" /&gt;
-&lt;x-fiche-card :fiche="$fiche" :showDiamond="true" /&gt;</code></pre>
+                            <pre class="mt-2 p-4 bg-zinc-50 rounded-lg text-sm overflow-x-auto"><code>&lt;x-fiche-card :fiche="$fiche" /&gt;</code></pre>
                         </details>
 
                         <h3 class="mb-4">Fiche List (compact)</h3>

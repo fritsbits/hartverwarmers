@@ -1,4 +1,4 @@
-@props(['fiche', 'showTags' => true, 'showDiamond' => false, 'compact' => false])
+@props(['fiche', 'showTags' => true, 'compact' => false])
 
 @php
     $previews = $compact ? [] : $fiche->cardPreviewImages(3);
@@ -19,7 +19,7 @@
     @endif
 
     <div class="fiche-card-body">
-        @if($showDiamond)
+        @if($fiche->has_diamond)
             <div class="mb-2">
                 <x-diamond-badge />
             </div>

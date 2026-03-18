@@ -108,6 +108,33 @@ class FicheCardHeaderTest extends TestCase
         $response->assertSee('fiche-list-item', escape: false);
     }
 
+    public function test_fiche_card_shows_diamond_badge_automatically_for_diamond_fiche(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->withDiamond()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+        $fiche->load('user', 'initiative', 'tags', 'files');
+
+        $html = $this->blade('<x-fiche-card :fiche="$fiche" />', ['fiche' => $fiche]);
+
+        $html->assertSee('diamond-indicator', escape: false);
+    }
+
+    public function test_fiche_card_hides_diamond_badge_for_regular_fiche(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'has_diamond' => false,
+        ]);
+        $fiche->load('user', 'initiative', 'tags', 'files');
+
+        $html = $this->blade('<x-fiche-card :fiche="$fiche" />', ['fiche' => $fiche]);
+
+        $html->assertDontSee('diamond-indicator', escape: false);
+    }
+
     public function test_diamond_badge_tooltip_does_not_link_to_goals(): void
     {
         $initiative = Initiative::factory()->published()->create();
