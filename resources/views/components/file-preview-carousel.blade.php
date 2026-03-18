@@ -31,10 +31,18 @@
         x-data="{
             current: 0,
             total: {{ $total }},
+            previewCount: {{ $previewCount }},
             touchStartX: 0,
             next() { if (this.current < this.total - 1) this.current++ },
             prev() { if (this.current > 0) this.current-- },
             goTo(i) { this.current = i },
+            lightboxOpen: false,
+            lightboxIndex: 0,
+            lightboxTouchStartX: 0,
+            openLightbox(i) { this._lightboxTrigger = document.activeElement; this.lightboxIndex = i; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; this.$nextTick(() => this.$refs.lightbox?.focus()); },
+            closeLightbox() { this.lightboxOpen = false; document.body.style.overflow = ''; this.$nextTick(() => this._lightboxTrigger?.focus()); },
+            lightboxNext() { if (this.lightboxIndex < this.previewCount - 1) this.lightboxIndex++; },
+            lightboxPrev() { if (this.lightboxIndex > 0) this.lightboxIndex--; },
         }"
         x-on:touchstart="touchStartX = $event.changedTouches[0].screenX"
         x-on:touchend="
@@ -66,7 +74,12 @@
                     @foreach($slides as $index => $slide)
                         <div class="w-full shrink-0 h-full flex items-center justify-center p-4 sm:p-6">
                             @if($slide['type'] === 'preview')
-                                <div class="relative bg-white rounded-sm max-h-full max-w-full" style="box-shadow: 0 4px 20px -4px rgba(120, 90, 60, 0.15), 0 1px 4px rgba(120, 90, 60, 0.08); border: 1px solid rgba(120, 90, 60, 0.1);">
+                                @php $isOverlaySlide = $hasMoreSlides && $loop->last; @endphp
+                                <div
+                                    class="relative bg-white rounded-sm max-h-full max-w-full {{ $isOverlaySlide ? '' : 'cursor-pointer' }}"
+                                    style="box-shadow: 0 4px 20px -4px rgba(120, 90, 60, 0.15), 0 1px 4px rgba(120, 90, 60, 0.08); border: 1px solid rgba(120, 90, 60, 0.1);"
+                                    @unless($isOverlaySlide) x-on:click="openLightbox({{ $index }})" @endunless
+                                >
                                     <img
                                         src="{{ $slide['url'] }}"
                                         alt="Preview van {{ $slide['filename'] }}"
@@ -75,6 +88,17 @@
                                         style="max-height: calc(100% - 0px);"
                                         data-preview-image
                                     >
+                                    @unless($isOverlaySlide)
+                                        <div
+                                            class="absolute bottom-2 right-2 flex items-center gap-1 rounded px-1.5 py-0.5 pointer-events-none"
+                                            style="background: rgba(0,0,0,0.45);"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+                                            </svg>
+                                            <span class="text-white text-[9px] font-bold tracking-wide uppercase">Zoom</span>
+                                        </div>
+                                    @endunless
                                     @if($hasMoreSlides && $loop->last)
                                         <div class="absolute inset-0 rounded-sm bg-white/95 flex flex-col items-center justify-center" style="border: 1px solid rgba(120, 90, 60, 0.1);" data-preview-overlay>
                                             <span class="text-3xl font-heading font-bold text-[var(--color-primary)]">+{{ $remaining }}</span>
@@ -196,4 +220,94 @@
             </div>
         @endif
     </div>
+
+    {{-- Lightbox --}}
+    @if($previewCount > 0)
+        <template x-teleport="body">
+            <div
+                x-show="lightboxOpen"
+                x-transition
+                x-ref="lightbox"
+                tabindex="0"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Afbeeldingsviewer"
+                x-on:keydown.left.prevent="lightboxPrev()"
+                x-on:keydown.right.prevent="lightboxNext()"
+                x-on:keydown.escape="closeLightbox()"
+                x-on:click.self="closeLightbox()"
+                x-on:touchstart="lightboxTouchStartX = $event.changedTouches[0].screenX"
+                x-on:touchend="
+                    let diff = lightboxTouchStartX - $event.changedTouches[0].screenX;
+                    if (diff > 50) lightboxNext();
+                    if (diff < -50) lightboxPrev();
+                "
+                class="fixed inset-0 z-50 flex items-center justify-center focus:outline-none"
+                style="background: rgba(30, 15, 5, 0.92);"
+            >
+                {{-- Close button --}}
+                <button
+                    x-on:click="closeLightbox()"
+                    aria-label="Sluiten"
+                    class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer hover:bg-white/25"
+                    style="background: rgba(255,255,255,0.15);"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                {{-- Prev button --}}
+                <button
+                    x-show="lightboxIndex > 0"
+                    x-on:click="lightboxPrev()"
+                    aria-label="Vorige afbeelding"
+                    class="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95"
+                    style="background: rgba(230, 120, 50, 0.3); border: 1px solid rgba(230, 120, 50, 0.4);"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
+
+                {{-- Images --}}
+                <div class="flex items-center justify-center w-full h-full px-20 py-16">
+                    @foreach($previews as $i => $preview)
+                        <img
+                            x-show="lightboxIndex === {{ $i }}"
+                            src="{{ $preview['url'] }}"
+                            alt="Preview van {{ $preview['filename'] }}"
+                            class="max-w-full max-h-full rounded-sm select-none"
+                            style="max-width: 90vw; max-height: 85vh; box-shadow: 0 8px 40px rgba(0,0,0,0.5);"
+                            draggable="false"
+                        >
+                    @endforeach
+                </div>
+
+                {{-- Next button --}}
+                <button
+                    x-show="lightboxIndex < previewCount - 1"
+                    x-on:click="lightboxNext()"
+                    aria-label="Volgende afbeelding"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full flex items-center justify-center transition-all cursor-pointer hover:scale-105 active:scale-95"
+                    style="background: rgba(230, 120, 50, 0.3); border: 1px solid rgba(230, 120, 50, 0.4);"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </button>
+
+                {{-- Counter --}}
+                <div
+                    class="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm font-semibold pointer-events-none"
+                    style="color: rgba(230, 160, 90, 0.8);"
+                >
+                    <span x-text="lightboxIndex + 1"></span> / {{ $previewCount }}
+                </div>
+
+                {{-- Screen reader counter --}}
+                <div class="sr-only" aria-live="polite" x-text="`Afbeelding ${lightboxIndex + 1} van {{ $previewCount }}`"></div>
+            </div>
+        </template>
+    @endif
 @endif
