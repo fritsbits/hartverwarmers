@@ -23,7 +23,7 @@ class AssessFicheQuality implements ShouldQueue
 
     public function handle(): void
     {
-        $fiche = $this->fiche->loadMissing(['initiative', 'tags']);
+        $fiche = $this->fiche->loadMissing(['initiative', 'tags', 'files']);
         $materials = $fiche->materials ?? [];
 
         $prompt = collect([
@@ -38,6 +38,15 @@ class AssessFicheQuality implements ShouldQueue
             $fiche->initiative?->description ? 'Initiatiefbeschrijving: '.Str::limit(strip_tags($fiche->initiative->description), 300) : null,
             $fiche->tags->isNotEmpty() ? 'Tags: '.$fiche->tags->pluck('name')->implode(', ') : null,
         ])->filter()->implode("\n\n");
+
+        $fileText = $fiche->files
+            ->pluck('extracted_text')
+            ->filter()
+            ->implode("\n\n---\n\n");
+
+        if ($fileText) {
+            $prompt .= "\n\nInhoud van de bestanden:\n".Str::limit($fileText, 5000);
+        }
 
         $diamantGuidance = $fiche->initiative?->diamant_guidance;
         if ($diamantGuidance) {
