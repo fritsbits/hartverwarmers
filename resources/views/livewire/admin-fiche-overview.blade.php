@@ -35,13 +35,11 @@
     <flux:table :paginate="$this->fiches">
         <flux:table.columns>
             <flux:table.column>Fiche</flux:table.column>
-            <flux:table.column>Initiatief</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'completeness_score'" :direction="$sortBy === 'completeness_score' ? $sortDirection : null" wire:click="sortBy('completeness_score')">Volledigheid</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'quality_score'" :direction="$sortBy === 'quality_score' ? $sortDirection : null" wire:click="sortBy('quality_score')">Kwaliteit</flux:table.column>
             <flux:table.column>Kudos</flux:table.column>
             <flux:table.column>Bestanden</flux:table.column>
             <flux:table.column sortable :sorted="$sortBy === 'created_at'" :direction="$sortBy === 'created_at' ? $sortDirection : null" wire:click="sortBy('created_at')">Toegevoegd</flux:table.column>
-            <flux:table.column></flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -49,16 +47,13 @@
                 <flux:table.row :key="$fiche->id" wire:click="toggleExpanded({{ $fiche->id }})" class="cursor-pointer {{ $fiche->featured_month ? 'bg-amber-50' : '' }}">
                     <flux:table.cell>
                         <div>
-                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="font-medium hover:text-[var(--color-primary)] transition-colors">
+                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="font-medium hover:text-[var(--color-primary)] transition-colors" title="{{ $fiche->title }}">
                                 @if($fiche->featured_month) 🌟 @endif
-                                {{ $fiche->title }}
+                                {{ Str::limit($fiche->title, 25) }}
                             </a>
+                            <span class="text-xs text-[var(--color-text-secondary)] block">{{ Str::limit($fiche->initiative?->title, 30) }}</span>
                             <span class="text-xs text-[var(--color-text-secondary)] block">door {{ $fiche->user->full_name }}</span>
                         </div>
-                    </flux:table.cell>
-
-                    <flux:table.cell>
-                        <span class="text-sm">{{ $fiche->initiative?->title }}</span>
                     </flux:table.cell>
 
                     <flux:table.cell>
@@ -97,15 +92,8 @@
 
                     <flux:table.cell>
                         <span class="text-sm text-zinc-500">{{ $fiche->created_at->format('d M Y') }}</span>
-                    </flux:table.cell>
-
-                    <flux:table.cell>
                         @if($fiche->featured_month)
-                            <span class="text-xs font-medium text-amber-700">FvdM {{ $fiche->featured_month }}</span>
-                        @else
-                            <flux:button size="xs" variant="primary" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">
-                                Maak FvdM
-                            </flux:button>
+                            <span class="text-xs font-medium text-amber-700 block">FvdM {{ $fiche->featured_month }}</span>
                         @endif
                     </flux:table.cell>
                 </flux:table.row>
@@ -113,7 +101,7 @@
                 {{-- Expanded detail row --}}
                 @if($expandedFiche === $fiche->id)
                     <flux:table.row :key="'detail-'.$fiche->id">
-                        <flux:table.cell colspan="8">
+                        <flux:table.cell colspan="6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
                                 {{-- Quality --}}
                                 <div>
@@ -163,7 +151,14 @@
 
                             {{-- Actions --}}
                             <div class="flex items-center justify-between pt-2 border-t border-zinc-100">
-                                <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="text-sm text-[var(--color-primary)] hover:underline">Bekijk fiche</a>
+                                <div class="flex items-center gap-3">
+                                    <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" wire:click.stop class="text-sm text-[var(--color-primary)] hover:underline">Bekijk fiche</a>
+                                    @if(! $fiche->featured_month)
+                                        <flux:button size="xs" variant="primary" wire:click.stop="$set('ficheOfMonthId', {{ $fiche->id }})">
+                                            Maak FvdM
+                                        </flux:button>
+                                    @endif
+                                </div>
                                 <flux:dropdown position="bottom" align="end">
                                     <flux:button variant="ghost" size="xs" icon="ellipsis-horizontal" wire:click.stop />
                                     <flux:menu>
@@ -176,7 +171,7 @@
                 @endif
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="8" class="text-center py-8">
+                    <flux:table.cell colspan="6" class="text-center py-8">
                         <div class="text-[var(--color-text-secondary)]">
                             <flux:icon name="magnifying-glass" class="size-8 mx-auto mb-2 opacity-40" />
                             <p>Geen fiches gevonden</p>
