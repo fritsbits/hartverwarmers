@@ -65,107 +65,20 @@
         }
     }" x-init="$watch('search', () => updateUrl()); $watch('sortMode', () => updateUrl()); $watch('selectedGoals', () => updateUrl())">
         {{-- Zone 1: Hero (cream bg) --}}
-        <section class="bg-[var(--color-bg-cream)]">
-            <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
+        <section class="bg-[var(--color-bg-cream)] border-b border-[var(--color-border-light)]">
+            <div class="max-w-6xl mx-auto px-6 pt-8 pb-10">
                 <flux:breadcrumbs class="mb-6">
                     <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
                     <flux:breadcrumbs.item>Initiatieven</flux:breadcrumbs.item>
                 </flux:breadcrumbs>
 
-                <div class="max-w-3xl">
+                <div class="max-w-3xl mb-8">
                     <span class="section-label section-label-hero">Initiatieven</span>
-                    <h1 class="text-5xl mt-1">Van idee tot activiteit</h1>
-                    <p class="text-xl text-[var(--color-text-secondary)] mt-4 font-light leading-relaxed">
-                        Elk initiatief bundelt praktijkfiches van collega's. Kies een thema en ontdek hoe anderen het aanpakken.
-                    </p>
+                    <h1 class="text-5xl mt-1">Praktijkfiches van collega's, gebundeld per initiatief</h1>
                 </div>
-
-            </div>
-        </section>
-
-        <hr class="border-[var(--color-border-light)]">
-
-        {{-- Zone 2: Recent activity with inline initiative switcher --}}
-        @if($recentByInitiative->isNotEmpty())
-            <section x-data="{
-                selected: '{{ $recentByInitiative->keys()->first() }}',
-                headingOpen: false,
-                hoverTimeout: null,
-                data: @js($recentByInitiative),
-                openHeading() {
-                    clearTimeout(this.hoverTimeout);
-                    this.headingOpen = true;
-                },
-                closeHeading() {
-                    this.hoverTimeout = setTimeout(() => this.headingOpen = false, 150);
-                },
-                get currentTitle() {
-                    return this.data[this.selected]?.title ?? '';
-                },
-                get currentFiches() {
-                    return this.data[this.selected]?.fiches ?? [];
-                }
-            }">
-                <div class="max-w-6xl mx-auto px-6 py-16">
-                    <span class="section-label">Recent gedeeld</span>
-                    <h2 class="text-3xl mt-1 mb-8">
-                        Collega's deelden over <span class="relative inline" @mouseenter="openHeading()" @mouseleave="closeHeading()">
-                            <span class="italic cursor-pointer transition-colors hover:text-[var(--color-primary)] border-b border-dotted border-[var(--color-border-light)]"
-                                  x-text="currentTitle"></span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="inline h-4 w-4 -mt-0.5 ml-0.5 text-[var(--color-text-secondary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-
-                            <div x-cloak x-show="headingOpen"
-                                 x-transition:enter="transition ease-out duration-100"
-                                 x-transition:enter-start="opacity-0 scale-95"
-                                 x-transition:enter-end="opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-75"
-                                 x-transition:leave-start="opacity-100 scale-100"
-                                 x-transition:leave-end="opacity-0 scale-95"
-                                 class="absolute left-0 top-full pt-2 z-50">
-                                <div class="bg-white rounded-lg shadow-lg border border-[var(--color-border-light)] py-1 whitespace-nowrap">
-                                    @foreach($recentByInitiative as $slug => $item)
-                                        <button class="block w-full px-4 py-2 text-left text-base font-heading font-bold hover:bg-[var(--color-bg-cream)] hover:text-[var(--color-primary)] transition-colors cursor-pointer"
-                                                :class="selected === '{{ $slug }}' ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-primary)]'"
-                                                @click="selected = '{{ $slug }}'; headingOpen = false">
-                                            {{ $item['title'] }}
-                                        </button>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </span>
-                    </h2>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <template x-for="fiche in currentFiches" :key="fiche.id">
-                            <a :href="fiche.url" class="flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--color-bg-cream)] transition-colors group">
-                                <div class="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                                     :style="'background-color: ' + fiche.icon_color_bg + '; color: ' + fiche.icon_color_text"
-                                     x-html="fiche.icon_svg"></div>
-                                <div class="min-w-0">
-                                    <p class="font-semibold text-[var(--color-text-primary)] truncate group-hover:text-[var(--color-primary)] transition-colors" x-text="fiche.title"></p>
-                                    <p class="text-sm text-[var(--color-text-secondary)] mt-0.5"><span x-text="fiche.user_name"></span></p>
-                                    <p class="text-xs text-[var(--color-text-secondary)] opacity-60 mt-0.5" x-text="fiche.time_ago"></p>
-                                </div>
-                            </a>
-                        </template>
-                    </div>
-                </div>
-            </section>
-
-            <hr class="border-[var(--color-border-light)] max-w-6xl mx-auto">
-        @endif
-
-        {{-- Zone 3: Grid section --}}
-        <section>
-            <div class="max-w-6xl mx-auto px-6 py-16">
-
-                <span class="section-label">Alle initiatieven</span>
-                <h2 class="text-3xl mt-1 mb-8">Blader door het aanbod</h2>
 
                 {{-- Toolbar: Filter + Search + Sort --}}
-                <div class="space-y-4 mb-8">
+                <div class="space-y-4">
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         {{-- DIAMANT goal filter dropdown --}}
                         @if(count($goals) > 0)
@@ -284,12 +197,19 @@
                 </div>
 
                 {{-- Active sort clarification --}}
-                <p class="text-sm text-[var(--color-text-secondary)] -mt-4 mb-6" x-cloak>
+                <p class="text-sm text-[var(--color-text-secondary)] mt-2" x-cloak>
                     <span x-show="sortMode === 'az'">Alle initiatieven op alfabetische volgorde</span>
                     <span x-show="sortMode === 'rich'">Initiatieven met de meeste uitwerkingen</span>
                     <span x-show="sortMode === 'needs-love'">Initiatieven die nog uitwerkingen zoeken</span>
                     <span x-show="sortMode === 'random'">Willekeurige volgorde</span>
                 </p>
+
+            </div>
+        </section>
+
+        {{-- Grid section --}}
+        <section>
+            <div class="max-w-6xl mx-auto px-6 py-16">
 
                 {{-- Initiatives grid --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

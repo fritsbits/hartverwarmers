@@ -10,9 +10,9 @@
         x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-2"
         x-cloak
-        class="bg-[var(--color-bg-base)]"
+        class="relative z-10 -mt-5"
     >
-        <div class="max-w-6xl mx-auto px-6 pt-8 pb-0">
+        <div class="max-w-6xl mx-auto px-6 pt-0 pb-0">
             <div class="relative bg-white rounded-[var(--radius-md)] border border-[var(--color-border-light)] shadow-card overflow-hidden">
                 {{-- Warm accent stripe --}}
                 <div class="absolute top-0 left-0 right-0 h-1 bg-[var(--color-primary)]"></div>

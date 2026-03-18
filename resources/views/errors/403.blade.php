@@ -21,33 +21,50 @@
             background-color: var(--color-bg-white, #FFFFFF);
             -webkit-font-smoothing: antialiased;
         }
-        .error-page {
+        .error-layout {
+            display: grid;
             min-height: 100vh;
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 768px) {
+            .error-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .error-image-panel {
+            display: none;
+            position: relative;
+            border-right: 1px solid var(--color-border-light, #EBE4DE);
+        }
+        @media (min-width: 768px) {
+            .error-image-panel {
+                display: block;
+            }
+        }
+        .error-image-panel img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        .error-content-panel {
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
-        .error-topbar {
-            padding: 1.25rem 1.5rem;
-        }
-        .error-topbar a {
-            font-family: 'Aleo', system-ui, serif;
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: var(--color-text-primary, #231E1A);
-            text-decoration: none;
-        }
-        .error-hero {
-            background-color: var(--color-bg-cream, #FEF8F4);
-            border-bottom: 1px solid var(--color-border-light, #EBE4DE);
+        .error-center {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            padding: 4rem 1.5rem;
+            padding: 3rem 2rem;
+            background-color: var(--color-bg-cream, #FEF8F4);
         }
         .error-content {
-            max-width: 32rem;
+            max-width: 28rem;
+            width: 100%;
         }
         .section-label {
             font-size: 0.7rem;
@@ -94,7 +111,7 @@
         .error-actions {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-start;
             gap: 1rem;
         }
         @media (min-width: 640px) {
@@ -105,22 +122,27 @@
     </style>
 </head>
 <body>
-    <div class="error-page">
-        <div class="error-topbar">
-            <a href="/">Hartverwarmers</a>
+    <div class="error-layout">
+        <div class="error-image-panel">
+            <img
+                src="/images/error-illustration.webp"
+                alt="Een vergrootglas, puzzelstukjes en een kaartje met 'Oooops'"
+            >
         </div>
 
-        <section class="error-hero">
-            <div class="error-content">
-                <span class="section-label">Fout 403</span>
-                <h1>Je hebt geen toegang tot deze pagina</h1>
-                <p>Misschien moet je eerst inloggen om deze pagina te bekijken. Heb je al een account? Log dan in en probeer opnieuw.</p>
-                <div class="error-actions">
-                    <a href="/login" class="btn-primary">Inloggen</a>
-                    <a href="/" class="cta-link">Terug naar de startpagina</a>
+        <div class="error-content-panel">
+            <div class="error-center">
+                <div class="error-content">
+                    <span class="section-label">Fout 403</span>
+                    <h1>Je hebt geen toegang tot deze pagina</h1>
+                    <p>Misschien moet je eerst inloggen om deze pagina te bekijken. Heb je al een account? Log dan in en probeer opnieuw.</p>
+                    <div class="error-actions">
+                        <a href="/login" class="btn-primary">Log in</a>
+                        <a href="/" class="cta-link">Terug naar de startpagina</a>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
     </div>
 </body>
 </html>

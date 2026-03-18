@@ -26,6 +26,7 @@
   /* Colors - Text (warm-tinted, hue ~24° toward orange/cream) */
   --color-text-primary: #231E1A;
   --color-text-secondary: #756C65;
+  --color-text-tertiary: #C0B5AE;
 
   /* Colors - Backgrounds */
   --color-bg-white: #FFFFFF;
@@ -305,14 +306,14 @@
     position: relative;
     height: 140px;
     background: var(--color-bg-subtle);
-    overflow: visible;
+    overflow: hidden;
   }
 
   .fiche-card-body {
     position: relative;
     z-index: 10;
     background: var(--color-bg-white);
-    padding: var(--space-lg);
+    padding: var(--space-sm) var(--space-md);
   }
 
   .fiche-paper {
@@ -711,7 +712,7 @@
     @apply flex items-center gap-1 shrink-0 justify-end;
     min-width: 36px;
     font-size: 13px;
-    color: var(--color-border-hover);
+    color: var(--color-text-tertiary);
   }
 
   .fiche-list-kudos svg {
@@ -720,7 +721,7 @@
   }
 
   .fiche-list-kudos-active {
-    color: var(--color-primary);
+    color: var(--color-text-tertiary);
   }
 
   .fiche-list-expand {

@@ -22,13 +22,11 @@
                 <span class="inline-flex w-10 h-10 rounded-full bg-[var(--color-bg-accent-light)] items-center justify-center mb-4">
                     <flux:icon.wrench-screwdriver class="size-5 text-[var(--color-primary)]" />
                 </span>
-                <h2>Je moet opnieuw inloggen</h2>
-                <div class="mt-6 text-lg">
-                    <flux:callout icon="information-circle">
-                        <flux:callout.text>
-                            Je moet opnieuw <a href="{{ route('login') }}" class="underline hover:text-[var(--color-primary)]">inloggen</a>. Dat is normaal, de website is volledig herbouwd. Je bestaand wachtwoord werkt gewoon nog. Alles wat er stond, is er nog.
-                        </flux:callout.text>
-                    </flux:callout>
+                <h2>Praktisch: log opnieuw in</h2>
+                <div class="text-[var(--color-text-secondary)] mt-6 space-y-8" style="font-weight: var(--font-weight-light);">
+                    <p class="mt-2">
+                            <a href="{{ route('login') }}" class="underline hover:text-[var(--color-primary)]">Meld je opnieuw aan</a>. Dat is normaal, de website is volledig herbouwd. Je bestaand wachtwoord werkt gewoon nog. Alles wat er stond, is er nog.
+                    </p>
                 </div>
             </div>
         </div>

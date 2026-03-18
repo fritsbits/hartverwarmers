@@ -104,7 +104,7 @@
                         <li><a href="{{ route('initiatives.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Alle initiatieven</a></li>
                         <li><a href="{{ route('themes.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Themakalender</a></li>
                         <li><a href="{{ route('contributors.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Bijdragers</a></li>
-                        <li><a href="{{ route('diamantjes.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Diamantjes</a></li>
+                        <li><a href="{{ route('diamantjes.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Diamantjes – Sterke fiches</a></li>
                     </ul>
                 </div>
 

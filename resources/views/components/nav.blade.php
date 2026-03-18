@@ -44,8 +44,15 @@
                                 </a>
 
                                 <a href="{{ route('diamantjes.index') }}" class="flex items-center gap-3 w-full px-4 py-3 hover:bg-[var(--color-bg-cream)] transition-colors">
-                                    <span class="shrink-0 w-7 flex items-center justify-center text-[var(--color-primary)]">
-                                        <x-diamant-gem letter="" size="xs" />
+                                    <span class="shrink-0 w-7 flex items-center justify-center">
+                                        <svg class="h-5 w-5 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                            <polygon points="30,0 70,0 100,35 50,100 0,35" fill="none" stroke="var(--color-primary)" stroke-width="8" stroke-linejoin="round" />
+                                            <line x1="0" y1="35" x2="100" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                                            <line x1="30" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                                            <line x1="70" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                                            <line x1="25" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                                            <line x1="75" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                                        </svg>
                                     </span>
                                     <div class="flex-1 min-w-0">
                                         <span class="font-semibold text-sm text-[var(--color-text-primary)]">Diamantjes</span>
@@ -224,7 +231,14 @@
                         <span class="text-sm font-medium text-[var(--color-text-primary)]">Initiatieven</span>
                     </a>
                     <a href="{{ route('diamantjes.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-bg-cream)]">
-                        <x-diamant-gem letter="" size="xs" class="shrink-0 text-[var(--color-primary)]" />
+                        <svg class="h-5 w-5 shrink-0" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="30,0 70,0 100,35 50,100 0,35" fill="none" stroke="var(--color-primary)" stroke-width="8" stroke-linejoin="round" />
+                            <line x1="0" y1="35" x2="100" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                            <line x1="30" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                            <line x1="70" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                            <line x1="25" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                            <line x1="75" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" stroke-linejoin="round" />
+                        </svg>
                         <span class="text-sm font-medium text-[var(--color-text-primary)]">Diamantjes</span>
                     </a>
                     <a href="{{ route('bookmarks.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-bg-cream)]">

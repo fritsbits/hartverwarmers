@@ -8,7 +8,7 @@
                     <div class="sticky top-8">
                         <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-secondary)] mb-4">Inhoud</p>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="#kleuren" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Kleuren</a></li>
+                            <li><a href="#kleuren" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Kleuren & Iconen</a></li>
                             <li><a href="#typografie" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Typografie</a></li>
                             <li><a href="#knoppen" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Knoppen & Links</a></li>
                             <li><a href="#badges" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Badges & Tags</a></li>
@@ -58,9 +58,49 @@
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             <x-design-system.swatch color="var(--color-text-primary)" name="Text Primary" hex="#231E1A" />
                             <x-design-system.swatch color="var(--color-text-secondary)" name="Text Secondary" hex="#756C65" />
-                            <x-design-system.swatch color="var(--color-border-light)" name="Border Light" hex="#EBE4DE" />
+                            <x-design-system.swatch color="var(--color-text-tertiary)" name="Text Tertiary" hex="#C0B5AE" />
                             <x-design-system.swatch color="var(--color-border-hover)" name="Border Hover" hex="#DDD5CD" />
+                            <x-design-system.swatch color="var(--color-border-light)" name="Border Light" hex="#EBE4DE" />
                         </div>
+
+                        <h3 class="mb-4 mt-8">Iconen</h3>
+                        <p class="text-meta mb-4">Meta-iconen (kudos, reacties, statistieken) gebruiken <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">--color-text-tertiary</code> (#C0B5AE) — lichter dan secondary tekst, zwaarder dan randen. Dit houdt het chrome zacht zonder te verdwijnen.</p>
+                        <div class="p-6 rounded-xl bg-[var(--color-bg-cream)] mb-4">
+                            <div class="flex items-center gap-4 text-sm text-[var(--color-text-tertiary)]">
+                                <span class="flex items-center gap-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                        <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                                    </svg>
+                                    13
+                                </span>
+                                <span class="flex items-center gap-1.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                        <path d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
+                                    </svg>
+                                    4
+                                </span>
+                            </div>
+                        </div>
+                        <p class="text-meta mb-2"><strong>Regels:</strong></p>
+                        <ul class="text-meta space-y-1 mb-4 list-disc list-inside">
+                            <li>Grootte: <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">w-4 h-4</code> (16px) voor inline meta</li>
+                            <li>Kleur: altijd <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">text-[var(--color-text-tertiary)]</code> op de container</li>
+                            <li>Gap: <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">gap-1.5</code> tussen icoon en getal, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">gap-4</code> tussen paren</li>
+                            <li>Gebruik <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">fill="currentColor"</code> — nooit hardcoded vulkleur</li>
+                        </ul>
+                        <details class="mb-8">
+                            <summary class="text-sm font-semibold text-[var(--color-text-secondary)] cursor-pointer">Toon markup</summary>
+                            <pre class="mt-2 p-4 bg-zinc-50 rounded-lg text-sm overflow-x-auto"><code>&lt;div class="flex items-center gap-4 text-sm text-[var(--color-text-tertiary)]"&gt;
+    &lt;span class="flex items-center gap-1.5"&gt;
+        &lt;svg ... class="w-4 h-4"&gt;...&lt;/svg&gt;
+        13
+    &lt;/span&gt;
+    &lt;span class="flex items-center gap-1.5"&gt;
+        &lt;svg ... class="w-4 h-4"&gt;...&lt;/svg&gt;
+        4
+    &lt;/span&gt;
+&lt;/div&gt;</code></pre>
+                        </details>
                     </div>
 
                     {{-- ============================================================

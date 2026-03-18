@@ -80,7 +80,7 @@ class InitiativeController extends Controller
                     'fiches' => $i->fiches
                         ->filter(fn ($f) => $f->created_at >= $sixtyDaysAgo && $f->user)
                         ->sortByDesc('created_at')
-                        ->take(3)
+                        ->take(2)
                         ->map(function ($f) use ($i) {
                             $ficheColors = config('fiche-icons.colors');
                             $ficheColor = $ficheColors[$f->id % count($ficheColors)];
@@ -98,6 +98,8 @@ class InitiativeController extends Controller
                                 'icon_color_bg' => $ficheColor['bg'],
                                 'icon_color_text' => $ficheColor['text'],
                                 'time_ago' => $f->created_at->diffForHumans(),
+                                'kudos_count' => $f->kudos_count ?? 0,
+                                'comments_count' => $f->comments_count ?? 0,
                             ];
                         })
                         ->values()
