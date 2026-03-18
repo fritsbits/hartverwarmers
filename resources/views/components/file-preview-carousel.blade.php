@@ -220,7 +220,6 @@
                 </template>
             </div>
         @endif
-    </div>
 
     {{-- Lightbox: x-teleport moves this to <body> but Alpine retains scope access from the parent x-data --}}
     @if($previewCount > 0)
@@ -311,4 +310,5 @@
             </div>
         </template>
     @endif
+    </div>
 @endif
