@@ -80,6 +80,18 @@ class HomeController extends Controller
             $ficheVanDeMaand = null;
         }
 
+        $diamondCount = Fiche::query()->published()->where('has_diamond', true)->count();
+        $diamonds = $diamondCount >= 3
+            ? Fiche::query()
+                ->published()
+                ->where('has_diamond', true)
+                ->with(['user', 'initiative', 'tags', 'files'])
+                ->withCount(['likes', 'comments'])
+                ->inRandomOrder()
+                ->limit(3)
+                ->get()
+            : collect();
+
         $stats = Cache::remember('home:stats', 300, fn () => [
             'fiches' => Fiche::published()->count(),
             'contributors' => User::whereHas('fiches')->count(),
@@ -93,6 +105,7 @@ class HomeController extends Controller
             'defaultGoal' => $defaultGoal,
             'recentFiches' => $recentFiches,
             'ficheVanDeMaand' => $ficheVanDeMaand,
+            'diamonds' => $diamonds,
             'stats' => $stats,
         ]);
     }

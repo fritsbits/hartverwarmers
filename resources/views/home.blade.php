@@ -1,17 +1,32 @@
 <x-layout title="Laat je bewoners schitteren" description="Hartverwarmers is hét platform voor activiteitenbegeleiders in woonzorgcentra. Ontdek en deel praktijkfiches rond deugddoende activiteiten." :full-width="true">
     <!-- Hero Section -->
-    <section class="bg-[var(--color-bg-cream)] text-center">
-        <div class="py-20 max-w-3xl mx-auto px-6">
-            <h1 class="text-5xl mb-4">Laat je bewoners schitteren</h1>
-            <p class="text-[var(--color-text-secondary)] text-2xl font-light mb-8">
-                Hartverwarmers helpt begeleiders in woonzorgcentra om elke dag iets betekenisvols mogelijk te maken. Met {{ $stats['fiches'] }} fiches gedeeld door {{ $stats['contributors'] }} collega's.
-            </p>
+    <section class="bg-[var(--color-bg-cream)] overflow-hidden">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center">
+            <!-- Copy -->
+            <div class="flex-1 px-6 py-16 md:py-20 text-center md:text-left">
+                <h1 class="text-5xl mb-4">Laat je bewoners schitteren</h1>
+                <p class="text-[var(--color-text-secondary)] text-2xl font-light mb-8">
+                    Hartverwarmers helpt begeleiders in woonzorgcentra om elke dag iets betekenisvols mogelijk te maken. Met {{ $stats['fiches'] }} fiches gedeeld door {{ $stats['contributors'] }} collega's.
+                </p>
 
-            <!-- Search bar (opens command palette modal) -->
-            <div class="max-w-xl mx-auto">
-                <flux:modal.trigger name="search">
-                    <flux:input as="button" icon="magnifying-glass" placeholder="Zoek initiatieven en fiches..." class="!rounded-full !py-3.5 !text-base" />
-                </flux:modal.trigger>
+                <!-- Search bar (opens command palette modal) -->
+                <div class="max-w-xl">
+                    <flux:modal.trigger name="search">
+                        <flux:input as="button" icon="magnifying-glass" placeholder="Zoek initiatieven en fiches..." class="!rounded-full !py-3.5 !text-base" />
+                    </flux:modal.trigger>
+                </div>
+            </div>
+
+            <!-- Hero image -->
+            <div class="flex-1 hidden md:block">
+                <img
+                    src="{{ asset('images/hero-binder.webp') }}"
+                    alt="Een map vol kleurrijke fiches en activiteitenkaarten voor bewoners"
+                    class="w-full h-full object-cover"
+                    width="1024"
+                    height="1024"
+                    loading="eager"
+                />
             </div>
         </div>
     </section>
@@ -70,8 +85,7 @@
             <div class="max-w-6xl mx-auto px-6 py-16">
                 <div class="mb-6">
                     <span class="section-label">
-                        <x-diamant-gem size="xxs" />
-                        Initiatieven per doel
+                        Initiatieven
                     </span>
                     <div class="flex items-baseline justify-between gap-4">
                         <h2 class="text-3xl">
@@ -123,9 +137,6 @@
             <div class="max-w-6xl mx-auto px-6 pb-16">
                 <div class="mb-10">
                     <span class="section-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
-                        </svg>
                         Uitgewerkte fiches
                     </span>
                     <h2 class="text-3xl">Activiteiten gedeeld door collega's</h2>
@@ -227,6 +238,33 @@
         </section>
     @endif
 
+    {{-- Diamantjes --}}
+    @if($diamonds->isNotEmpty())
+        <section class="bg-[var(--color-bg-cream)]">
+            <div class="max-w-6xl mx-auto px-6 py-16">
+                <div class="mb-8">
+                    <div class="flex items-center gap-2 mb-2">
+                        <x-diamant-gem letter="" size="xs" :pronounced="true" />
+                        <span class="section-label">Uitgekozen door ons team</span>
+                    </div>
+                    <div class="flex items-baseline justify-between gap-4">
+                        <h2 class="text-3xl">Diamantjes</h2>
+                        <a href="{{ route('diamantjes.index') }}" class="cta-link shrink-0">Bekijk alle diamantjes</a>
+                    </div>
+                    <p class="text-[var(--color-text-secondary)] mt-2">
+                        Fiches die ons team uitkoos als bijzonder mooie voorbeelden van wat mogelijk is.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($diamonds as $fiche)
+                        <x-fiche-card :fiche="$fiche" />
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     <!-- DIAMANT Kompas -->
     @feature('diamant-goals')
     <section class="bg-[var(--color-bg-cream)] py-16">
@@ -234,9 +272,6 @@
             <div class="grid md:grid-cols-2 gap-12 items-start">
                 <div>
                     <span class="section-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
-                        </svg>
                         Het DIAMANT-kompas
                     </span>
 
