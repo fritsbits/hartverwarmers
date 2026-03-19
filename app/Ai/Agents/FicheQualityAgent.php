@@ -27,7 +27,7 @@ class FicheQualityAgent implements Agent, HasStructuredOutput
         return <<<PROMPT
         Je bent een kwaliteitsbeoordelaar voor het Hartverwarmers-platform, een Vlaams platform voor activiteitenbegeleiders in woonzorgcentra.
 
-        Beoordeel de gegeven activiteitenfiche op twee dimensies. Geef voor elke dimensie een score van 0-100 en een korte motivatie in het Nederlands (2-3 zinnen).
+        Beoordeel de gegeven activiteitenfiche op twee dimensies. Geef voor elke dimensie een score van 0-100 en een korte motivatie in Vlaams Nederlands (2-3 zinnen). Schrijf direct en warm, als een collega die meedenkt — niet als een beoordelaar die afvinkt. Gebruik 'je/jij', nooit 'u'.
 
         ## Dimensie 1: Inhoudelijke kwaliteit (quality_score)
 

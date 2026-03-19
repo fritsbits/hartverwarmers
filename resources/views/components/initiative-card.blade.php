@@ -1,7 +1,9 @@
 @props(['initiative', 'variant' => 'compact', 'showFicheCount' => false, 'showNewBadge' => false, 'eager' => false])
 
 @php
-    $isNew = $showNewBadge && $initiative->latest_fiche_at && now()->diffInDays($initiative->latest_fiche_at) < 30;
+    $lastVisit = auth()->user()?->last_visited_at;
+    $newSince = $lastVisit ?? now()->subDays(7);
+    $isNew = $showNewBadge && $initiative->latest_fiche_at && \Carbon\Carbon::parse($initiative->latest_fiche_at)->gt($newSince);
     $isLowFiche = $initiative->fiches_count <= 2;
 @endphp
 

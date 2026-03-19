@@ -164,36 +164,85 @@
                         <h2 class="mt-1 mb-8">Knoppen & Links</h2>
 
                         <h3 class="mb-4">Flux Buttons</h3>
-                        <p class="text-meta mb-4">Gebruik <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">&lt;flux:button&gt;</code> voor formulieracties. Variant <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">primary</code> voor hoofdactie, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">ghost</code> voor secundair.</p>
-                        <div class="flex flex-wrap items-center gap-6 mb-4 p-6 rounded-xl bg-[var(--color-bg-cream)]">
+                        <p class="text-meta mb-4">Gebruik <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">&lt;flux:button&gt;</code> voor formulieracties. Variant <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">primary</code> voor hoofdactie, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">filled</code> voor secundaire acties (bijv. "Bewerk"), <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">ghost</code> voor tertiaire acties.</p>
+
+                        {{-- Without icons --}}
+                        <p class="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-3">Zonder icoon</p>
+                        <div class="flex flex-wrap items-center gap-6 mb-6 p-6 rounded-xl bg-[var(--color-bg-cream)]">
                             <div class="text-center">
                                 <flux:button variant="primary">Opslaan</flux:button>
-                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Primary</p>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Primary</p>
                             </div>
                             <div class="text-center">
-                                <flux:button variant="filled">Filled</flux:button>
-                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Filled</p>
+                                <flux:button variant="filled">Bewerk</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Filled</p>
                             </div>
                             <div class="text-center">
                                 <flux:button variant="ghost">Annuleren</flux:button>
-                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Ghost</p>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Ghost</p>
                             </div>
                             <div class="text-center">
                                 <flux:button variant="danger">Verwijderen</flux:button>
-                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Danger</p>
-                            </div>
-                            <div class="text-center">
-                                <flux:button variant="primary" size="sm">Klein</flux:button>
-                                <p class="text-xs text-[var(--color-text-secondary)] mt-1">Primary sm</p>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Danger</p>
                             </div>
                         </div>
+
+                        {{-- With icons --}}
+                        <p class="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-3">Met icoon</p>
+                        <div class="flex flex-wrap items-center gap-6 mb-6 p-6 rounded-xl bg-[var(--color-bg-cream)]">
+                            <div class="text-center">
+                                <flux:button variant="primary" icon="check">Opslaan</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Primary</p>
+                            </div>
+                            <div class="text-center">
+                                <flux:button variant="filled" icon="pencil-square">Bewerk</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Filled</p>
+                            </div>
+                            <div class="text-center">
+                                <flux:button variant="ghost" icon="x-mark">Annuleren</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Ghost</p>
+                            </div>
+                            <div class="text-center">
+                                <flux:button variant="danger" icon="trash">Verwijderen</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Danger</p>
+                            </div>
+                        </div>
+
+                        {{-- Small --}}
+                        <p class="text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-3">Klein (size="sm")</p>
+                        <div class="flex flex-wrap items-center gap-6 mb-4 p-6 rounded-xl bg-[var(--color-bg-cream)]">
+                            <div class="text-center">
+                                <flux:button variant="primary" size="sm" icon="plus">Toevoegen</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Primary sm</p>
+                            </div>
+                            <div class="text-center">
+                                <flux:button variant="filled" size="sm" icon="pencil-square">Bewerk</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Filled sm</p>
+                            </div>
+                            <div class="text-center">
+                                <flux:button variant="ghost" size="sm" icon="arrow-left">Vorige</flux:button>
+                                <p class="text-xs text-[var(--color-text-secondary)] mt-2">Ghost sm</p>
+                            </div>
+                        </div>
+
                         <details class="mb-8">
                             <summary class="text-sm font-semibold text-[var(--color-text-secondary)] cursor-pointer">Toon markup</summary>
-                            <pre class="mt-2 p-4 bg-zinc-50 rounded-lg text-sm overflow-x-auto"><code>&lt;flux:button variant="primary"&gt;Opslaan&lt;/flux:button&gt;
-&lt;flux:button variant="filled"&gt;Filled&lt;/flux:button&gt;
+                            <pre class="mt-2 p-4 bg-zinc-50 rounded-lg text-sm overflow-x-auto"><code>&lt;!-- Zonder icoon --&gt;
+&lt;flux:button variant="primary"&gt;Opslaan&lt;/flux:button&gt;
+&lt;flux:button variant="filled"&gt;Bewerk&lt;/flux:button&gt;
 &lt;flux:button variant="ghost"&gt;Annuleren&lt;/flux:button&gt;
 &lt;flux:button variant="danger"&gt;Verwijderen&lt;/flux:button&gt;
-&lt;flux:button variant="primary" size="sm"&gt;Klein&lt;/flux:button&gt;</code></pre>
+
+&lt;!-- Met icoon --&gt;
+&lt;flux:button variant="primary" icon="check"&gt;Opslaan&lt;/flux:button&gt;
+&lt;flux:button variant="filled" icon="pencil-square"&gt;Bewerk&lt;/flux:button&gt;
+&lt;flux:button variant="ghost" icon="x-mark"&gt;Annuleren&lt;/flux:button&gt;
+&lt;flux:button variant="danger" icon="trash"&gt;Verwijderen&lt;/flux:button&gt;
+
+&lt;!-- Klein --&gt;
+&lt;flux:button variant="primary" size="sm" icon="plus"&gt;Toevoegen&lt;/flux:button&gt;
+&lt;flux:button variant="filled" size="sm" icon="pencil-square"&gt;Bewerk&lt;/flux:button&gt;
+&lt;flux:button variant="ghost" size="sm" icon="arrow-left"&gt;Vorige&lt;/flux:button&gt;</code></pre>
                         </details>
 
                         <h3 class="mb-4">CTA Link</h3>

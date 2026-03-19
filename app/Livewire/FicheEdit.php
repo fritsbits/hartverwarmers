@@ -10,6 +10,7 @@ use App\Services\FileTextExtractor;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Pennant\Feature;
+use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -158,6 +159,16 @@ class FicheEdit extends Component
         }
     }
 
+    #[Renderless]
+    public function trackApplied(string $field): void
+    {
+        $validFields = ['title', 'description', 'preparation', 'inventory', 'process'];
+
+        if (in_array($field, $validFields) && ! in_array($field, $this->appliedSuggestions)) {
+            $this->appliedSuggestions[] = $field;
+        }
+    }
+
     public function applySuggestion(string $field): void
     {
         $map = [
@@ -190,6 +201,21 @@ class FicheEdit extends Component
 
     public function save(): void
     {
+        $this->saveWithStatus(null);
+    }
+
+    public function publish(): void
+    {
+        $this->saveWithStatus(true);
+    }
+
+    public function saveDraft(): void
+    {
+        $this->saveWithStatus(false);
+    }
+
+    private function saveWithStatus(?bool $published): void
+    {
         $this->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:5000',
@@ -207,14 +233,21 @@ class FicheEdit extends Component
             $this->aiSuggestions['applied'] = $this->appliedSuggestions;
         }
 
-        $this->fiche->update([
+        $updateData = [
             'initiative_id' => $this->selectedInitiativeId,
             'title' => $this->title,
             'description' => $this->description,
             'materials' => ! empty($materials) ? $materials : null,
             'target_audience' => ! empty($this->targetAudience) ? $this->targetAudience : null,
             'ai_suggestions' => $this->aiSuggestions,
-        ]);
+        ];
+
+        if ($published !== null) {
+            $updateData['published'] = $published;
+        }
+
+        $this->fiche->update($updateData);
+        $this->fiche->refresh();
 
         if (Feature::active('diamant-goals')) {
             $tagIds = array_merge($this->selectedThemeTags, $this->selectedGoalTags);
@@ -224,16 +257,25 @@ class FicheEdit extends Component
         }
         $this->fiche->tags()->sync($tagIds);
 
-        $route = $this->fiche->initiative
-            ? route('fiches.show', [$this->fiche->initiative, $this->fiche])
-            : route('home');
+        if (! $this->fiche->published) {
+            session()->flash('toast', [
+                'heading' => 'Concept opgeslagen',
+                'text' => 'Je kunt later verder werken aan je fiche.',
+                'variant' => 'success',
+            ]);
+            $this->redirect(route('fiches.edit', $this->fiche), navigate: false);
+        } else {
+            $route = $this->fiche->initiative
+                ? route('fiches.show', [$this->fiche->initiative, $this->fiche])
+                : route('home');
 
-        session()->flash('toast', [
-            'heading' => 'Fiche bijgewerkt',
-            'text' => 'Je wijzigingen zijn opgeslagen.',
-            'variant' => 'success',
-        ]);
-        $this->redirect($route, navigate: false);
+            session()->flash('toast', [
+                'heading' => 'Fiche bijgewerkt',
+                'text' => 'Je wijzigingen zijn opgeslagen.',
+                'variant' => 'success',
+            ]);
+            $this->redirect($route, navigate: false);
+        }
     }
 
     public function render()

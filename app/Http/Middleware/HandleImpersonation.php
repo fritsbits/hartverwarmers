@@ -19,7 +19,8 @@ class HandleImpersonation
         if ($isImpersonating) {
             $routeName = $request->route()?->getName() ?? '';
 
-            $blockedRoutes = str_starts_with($routeName, 'admin.') && $routeName !== 'admin.impersonate.stop';
+            $curatorRoutes = ['admin.fiches.index', 'fiches.toggleDiamond'];
+            $blockedRoutes = str_starts_with($routeName, 'admin.') && ! in_array($routeName, ['admin.impersonate.stop', ...$curatorRoutes]);
             $blockedRoutes = $blockedRoutes || $routeName === 'pulse';
 
             if ($blockedRoutes) {

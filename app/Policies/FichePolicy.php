@@ -24,6 +24,6 @@ class FichePolicy
 
     public function toggleDiamond(User $user, Fiche $fiche): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isCurator();
     }
 }

@@ -50,12 +50,6 @@
                                     @if(!$fiche->published)
                                         <flux:badge size="sm" color="yellow" inset="top bottom" class="shrink-0">Concept</flux:badge>
                                     @endif
-                                    @if($fiche->shouldShowSuggestionNudge())
-                                        <span class="flex items-center shrink-0" title="Suggesties beschikbaar">
-                                            <flux:icon name="light-bulb" variant="mini"
-                                                class="size-4 text-[var(--color-primary)]" />
-                                        </span>
-                                    @endif
                                 </div>
                                 <span class="text-xs text-[var(--color-text-secondary)]">
                                     @if($fiche->initiative){{ $fiche->initiative->title }}<span class="text-[var(--color-border-light)]"> &middot; </span>@endif{{ $fiche->created_at->format('d-m-Y') }}
@@ -83,7 +77,14 @@
                                     @endif
                                 </div>
                             @endif
-                            <flux:button variant="ghost" size="sm" href="{{ route('fiches.edit', $fiche) }}" icon="pencil-square" class="relative z-10 shrink-0">Bewerk</flux:button>
+                            @if($fiche->shouldShowSuggestionNudge())
+                                <flux:tooltip content="Zet je fiche nét wat scherper — bekijk de suggesties">
+                                    <a href="{{ route('fiches.edit', $fiche) }}" class="relative z-10 flex items-center justify-center size-8 rounded-full text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] transition-colors shrink-0">
+                                        <flux:icon.sparkles class="size-4" />
+                                    </a>
+                                </flux:tooltip>
+                            @endif
+                            <flux:button variant="filled" size="sm" href="{{ route('fiches.edit', $fiche) }}" icon="pencil-square" class="relative z-10 shrink-0">Bewerk</flux:button>
                         </div>
                     @endforeach
                 </div>

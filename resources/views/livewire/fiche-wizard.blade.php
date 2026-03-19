@@ -565,6 +565,7 @@
                             <div class="lg:col-span-5">
                                 <x-ai-suggestion-panel
                                     :suggestion="e($this->aiTitle)"
+                                    :rawSuggestion="$this->aiTitle"
                                     field="title"
                                     :is-applied="$isTitleApplied"
                                 />
@@ -600,6 +601,7 @@
                                     @if($hasAiSuggestion)
                                         <x-ai-suggestion-panel
                                             :suggestion="$this->{$field['aiProp']}"
+                                            :rawSuggestion="$this->{$field['aiProp']}"
                                             :field="$field['field']"
                                             :is-applied="$isApplied"
                                         />

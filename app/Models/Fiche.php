@@ -206,6 +206,15 @@ class Fiche extends Model
 
     public function shouldShowSuggestionNudge(): bool
     {
+        if (! is_array($this->ai_suggestions)) {
+            return false;
+        }
+
+        // If the user has already applied any suggestion, stop nudging
+        if (! empty($this->ai_suggestions['applied'] ?? [])) {
+            return false;
+        }
+
         return $this->presentation_score !== null
             && $this->presentation_score < 60
             && $this->hasUnusedSuggestions();

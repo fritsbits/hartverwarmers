@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Pennant\Feature;
+use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Session;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -526,6 +527,16 @@ class FicheWizard extends Component
         $this->submitStep2();
     }
 
+    #[Renderless]
+    public function trackApplied(string $field): void
+    {
+        $validFields = ['title', 'description', 'preparation', 'inventory', 'process'];
+
+        if (in_array($field, $validFields) && ! in_array($field, $this->appliedSuggestions)) {
+            $this->appliedSuggestions[] = $field;
+        }
+    }
+
     public function applySuggestion(string $field): void
     {
         $map = [
@@ -671,6 +682,15 @@ class FicheWizard extends Component
                 $this->aiDescription = '<p>Een interactieve muziekbingo waarbij bewoners bekende schlagers uit de jaren \'60 herkennen. De activiteit stimuleert het langetermijngeheugen en brengt veel gezelligheid.</p>';
             }
         }
+    }
+
+    private function hasAiSuggestions(): bool
+    {
+        return $this->aiTitle !== null
+            || $this->aiDescription !== null
+            || $this->aiPreparation !== null
+            || $this->aiInventory !== null
+            || $this->aiProcess !== null;
     }
 
     private function clearAiSuggestions(): void
@@ -838,7 +858,7 @@ class FicheWizard extends Component
                     'description' => $this->description,
                     'materials' => ! empty($materials) ? $materials : null,
                     'published' => $published,
-                    'ai_suggestions' => $this->aiAnalysis ? [
+                    'ai_suggestions' => $this->hasAiSuggestions() ? [
                         'title' => $this->aiTitle,
                         'description' => $this->aiDescription,
                         'preparation' => $this->aiPreparation,
@@ -876,24 +896,24 @@ class FicheWizard extends Component
 
         $this->clearWizardSession();
 
-        $route = $fiche->initiative
-            ? route('fiches.show', [$fiche->initiative, $fiche])
-            : route('home');
-
         if ($published) {
+            $showRoute = $fiche->initiative
+                ? route('fiches.show', [$fiche->initiative, $fiche])
+                : route('home');
+
             $this->publishedFicheId = $fiche->id;
-            $this->publishedFicheUrl = $route;
+            $this->publishedFicheUrl = $showRoute;
             $this->currentStep = 4;
 
             return;
         }
 
-        $this->redirect($route, navigate: false);
         session()->flash('toast', [
             'heading' => 'Concept opgeslagen',
             'text' => 'Je kunt later verder werken aan je fiche.',
             'variant' => 'success',
         ]);
+        $this->redirect(route('fiches.edit', $fiche), navigate: false);
     }
 
     private function clearWizardSession(): void

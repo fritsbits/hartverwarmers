@@ -1,4 +1,11 @@
 <div>
+    @if(! $fiche->published)
+        <div class="mb-6 flex items-center gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            <flux:icon.pencil-square class="size-4 shrink-0" />
+            <span>Dit is een <strong>concept</strong> — nog niet zichtbaar voor anderen.</span>
+        </div>
+    @endif
+
     <div class="space-y-8">
 
         {{-- Top zone: Title + Description (always visible) --}}
@@ -20,6 +27,7 @@
                     <div class="lg:col-span-5">
                         <x-ai-suggestion-panel
                             :suggestion="e($aiSuggestions['title'])"
+                            :rawSuggestion="$aiSuggestions['title']"
                             field="title"
                             :is-applied="$isTitleApplied"
                         />
@@ -46,6 +54,7 @@
                             :suggestion="$aiSuggestions['description']"
                             field="description"
                             :is-applied="$isDescriptionApplied"
+                            :rawSuggestion="$aiSuggestions['description']"
                         />
                     </div>
                 @endif
@@ -81,6 +90,7 @@
                                     :suggestion="$aiSuggestions['preparation']"
                                     field="preparation"
                                     :is-applied="$isPreparationApplied"
+                                    :rawSuggestion="$aiSuggestions['preparation']"
                                 />
                             </div>
                         @endif
@@ -104,6 +114,7 @@
                                     :suggestion="$aiSuggestions['inventory']"
                                     field="inventory"
                                     :is-applied="$isInventoryApplied"
+                                    :rawSuggestion="$aiSuggestions['inventory']"
                                 />
                             </div>
                         @endif
@@ -127,6 +138,7 @@
                                     :suggestion="$aiSuggestions['process']"
                                     field="process"
                                     :is-applied="$isProcessApplied"
+                                    :rawSuggestion="$aiSuggestions['process']"
                                 />
                             </div>
                         @endif
@@ -291,19 +303,35 @@
 
         {{-- Footer --}}
         <div class="flex items-center justify-between pt-2">
-            @if($fiche->initiative)
+            @if($fiche->published && $fiche->initiative)
                 <flux:button variant="ghost" icon="arrow-left" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}">
                     Annuleren
                 </flux:button>
             @else
-                <flux:button variant="ghost" icon="arrow-left" href="{{ route('home') }}">
+                <flux:button variant="ghost" icon="arrow-left" href="{{ route('my-fiches.index') }}">
                     Annuleren
                 </flux:button>
             @endif
 
-            <flux:button variant="primary" icon="check" wire:click="save">
-                Opslaan
-            </flux:button>
+            @if($fiche->published)
+                <div class="flex items-center gap-3">
+                    <flux:button variant="ghost" wire:click="saveDraft">
+                        Maak concept
+                    </flux:button>
+                    <flux:button variant="primary" icon="check" wire:click="save">
+                        Opslaan
+                    </flux:button>
+                </div>
+            @else
+                <div class="flex items-center gap-3">
+                    <flux:button variant="ghost" wire:click="saveDraft">
+                        Opslaan als concept
+                    </flux:button>
+                    <flux:button variant="primary" icon="rocket-launch" wire:click="publish">
+                        Publiceer
+                    </flux:button>
+                </div>
+            @endif
         </div>
     </div>
 </div>

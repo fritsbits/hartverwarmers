@@ -111,7 +111,7 @@ The primary emotion to evoke is **belonging and pride** — "I'm part of somethi
 2. **Content is the hero** — Initiatives, elaborations, and the DIAMANT goals are the stars. UI chrome should recede. Large text, generous spacing, real photography over icons where possible.
 3. **Accessible by default** — WCAG AA compliance. Good contrast on warm backgrounds, generous click targets, readable font sizes (base 17px for forms). Many users are 40–60 and not digitally fluent.
 4. **Encourage, don't overwhelm** — Progressive disclosure. Show the essential path clearly. Use section labels + outcome-driven headings to guide rather than dump. Celebrate contributions (confetti, kudos hearts) to reinforce participation.
-5. **Dutch, direct, imperative** — All copy uses the Dutch imperative form ("Registreer", "Ontdek", "Deel"). Headings are outcome-driven, not descriptive. The voice is a peer, not an authority.
+5. **Flemish Dutch, direct, imperative** — All copy is written in Belgian Dutch (Flemish), not Holland Dutch. Use the Dutch imperative form ("Registreer", "Ontdek", "Deel"). Headings are outcome-driven, not descriptive. The voice is a peer, not an authority. Avoid Hollandisms: no "hartstikke", "gewoon" as an adverb, "lekker" for non-food contexts, "dat klopt", or "super" as an intensifier. Use Flemish care vocabulary: "woonzorgcentrum", "bewoners", "begeleidster", "animatoren".
 
 ===
 

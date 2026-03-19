@@ -78,7 +78,7 @@ class BackfillSuggestionsTest extends TestCase
     public function test_export_import_round_trip_preserves_suggestions(): void
     {
         $fiche = Fiche::factory()->published()->withSuggestions()->create();
-        $path = storage_path('test-suggestions-export.json');
+        $path = storage_path('test-suggestions-export-'.getmypid().'.json');
 
         $this->artisan("fiches:export-suggestions {$path}")
             ->assertExitCode(0);
@@ -96,6 +96,31 @@ class BackfillSuggestionsTest extends TestCase
         $this->assertEquals('Verbeterde titel voor deze activiteit', $fiche->ai_suggestions['title']);
 
         @unlink($path);
+    }
+
+    public function test_backfill_ignores_generated_pdf_files(): void
+    {
+        $fiche = Fiche::factory()->published()->create(['ai_suggestions' => null]);
+
+        // Source file without extracted text
+        $source = File::factory()->pptx()->create([
+            'fiche_id' => $fiche->id,
+            'extracted_text' => null,
+        ]);
+
+        // Generated PDF with extracted text — should be ignored
+        File::factory()->generatedPdf($source)->create([
+            'extracted_text' => 'Text from generated PDF that should be ignored.',
+        ]);
+
+        $this->mock(FicheAiService::class, function ($mock) {
+            $mock->shouldNotReceive('analyzeFiles');
+        });
+
+        $this->artisan('fiches:backfill-suggestions')
+            ->assertExitCode(0);
+
+        $this->assertNull($fiche->fresh()->ai_suggestions);
     }
 
     public function test_backfill_respects_limit_option(): void

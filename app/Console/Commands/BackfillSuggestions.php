@@ -18,8 +18,8 @@ class BackfillSuggestions extends Command
         $query = Fiche::query()
             ->published()
             ->whereNull('ai_suggestions')
-            ->whereHas('files', fn ($q) => $q->whereNotNull('extracted_text')->where('extracted_text', '!=', ''))
-            ->with('files')
+            ->whereHas('files', fn ($q) => $q->whereNull('source_file_id')->whereNotNull('extracted_text')->where('extracted_text', '!=', ''))
+            ->with(['files' => fn ($q) => $q->whereNull('source_file_id')])
             ->limit((int) $this->option('limit'));
 
         $fiches = $query->get();

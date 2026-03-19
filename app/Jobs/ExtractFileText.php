@@ -20,7 +20,7 @@ class ExtractFileText implements ShouldQueue
     {
         $file = File::find($this->fileId);
 
-        if (! $file || $file->extracted_text !== null) {
+        if (! $file || $file->extracted_text !== null || $file->source_file_id !== null) {
             return;
         }
 

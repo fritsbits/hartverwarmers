@@ -100,7 +100,7 @@ class MyFichesTest extends TestCase
 
         $this->actingAs($user)
             ->get(route('my-fiches.index'))
-            ->assertSee('Suggesties beschikbaar');
+            ->assertSee('Zet je fiche nét wat scherper');
     }
 
     public function test_lightbulb_icon_hidden_for_high_score_fiche(): void

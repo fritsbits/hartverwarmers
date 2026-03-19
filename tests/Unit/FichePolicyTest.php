@@ -91,7 +91,7 @@ class FichePolicyTest extends TestCase
         $this->assertFalse($this->policy->delete($curator, $fiche));
     }
 
-    public function test_only_admin_can_toggle_diamond(): void
+    public function test_admin_and_curator_can_toggle_diamond(): void
     {
         $admin = User::factory()->admin()->create();
         $curator = User::factory()->curator()->create();
@@ -99,7 +99,7 @@ class FichePolicyTest extends TestCase
         $fiche = Fiche::factory()->create();
 
         $this->assertTrue($this->policy->toggleDiamond($admin, $fiche));
-        $this->assertFalse($this->policy->toggleDiamond($curator, $fiche));
+        $this->assertTrue($this->policy->toggleDiamond($curator, $fiche));
         $this->assertFalse($this->policy->toggleDiamond($user, $fiche));
     }
 }

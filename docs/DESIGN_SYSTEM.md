@@ -200,10 +200,13 @@
 | Variant | Markup | Use for |
 |---------|--------|---------|
 | **Primary** | `<flux:button variant="primary">` | Main form actions (save, submit, confirm) |
-| **Filled** | `<flux:button variant="filled">` | Secondary emphasis actions |
+| **Filled** | `<flux:button variant="filled">` | Secondary actions on list rows and cards (e.g. "Bewerk") — use instead of custom outlined buttons |
 | **Ghost** | `<flux:button variant="ghost">` | Low-emphasis actions (cancel, dismiss, filters) |
 | **Danger** | `<flux:button variant="danger">` | Destructive actions (delete, remove) — always pair with confirmation |
-| **Primary sm** | `<flux:button variant="primary" size="sm">` | Compact contexts (table rows, card footers) |
+| **Primary sm** | `<flux:button variant="primary" size="sm">` | Compact primary actions (table rows, card footers) |
+| **Filled sm** | `<flux:button variant="filled" size="sm">` | Compact secondary actions on list rows (e.g. "Bewerk" on mijn-fiches) |
+
+All variants accept an `icon` prop: `<flux:button variant="filled" icon="pencil-square">Bewerk</flux:button>`
 
 ## Links
 

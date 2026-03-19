@@ -31,6 +31,7 @@ class User extends Authenticatable
         'terms_accepted_at',
         'onboarded_at',
         'contributor_onboarded_at',
+        'last_visited_at',
     ];
 
     /**
@@ -49,6 +50,7 @@ class User extends Authenticatable
             'terms_accepted_at' => 'datetime',
             'onboarded_at' => 'datetime',
             'contributor_onboarded_at' => 'datetime',
+            'last_visited_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

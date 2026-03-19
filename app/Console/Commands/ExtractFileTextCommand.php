@@ -31,11 +31,17 @@ class ExtractFileTextCommand extends Command
                 return self::FAILURE;
             }
 
+            if ($file->source_file_id !== null) {
+                $this->warn('Skipping: this is a generated PDF, not a source file.');
+
+                return self::SUCCESS;
+            }
+
             return $this->processFile($file) ? self::SUCCESS : self::FAILURE;
         }
 
         if ($this->option('all')) {
-            $files = File::whereNull('extracted_text')->get();
+            $files = File::whereNull('extracted_text')->whereNull('source_file_id')->get();
             $this->info("Processing {$files->count()} files...");
 
             $success = 0;
