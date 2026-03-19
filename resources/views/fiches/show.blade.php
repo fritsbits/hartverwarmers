@@ -54,57 +54,97 @@
                     <flux:breadcrumbs.item>{{ $fiche->title }}</flux:breadcrumbs.item>
                 </flux:breadcrumbs>
 
-                @auth
-                    @if(auth()->user()->isAdmin())
-                        <flux:dropdown>
-                            <flux:button variant="ghost" size="sm" icon="cog-6-tooth" icon-trailing="chevron-down" class="text-xs text-[var(--color-text-secondary)]">
-                                Admin
+                <div class="flex items-center gap-2">
+                    <flux:button variant="ghost" size="sm" icon="printer" onclick="window.print()">
+                        Afdrukken
+                    </flux:button>
+
+                    @auth
+                        @if(auth()->user()->isAdmin())
+                            <flux:dropdown>
+                                <flux:button variant="ghost" size="sm" icon="cog-6-tooth" icon-trailing="chevron-down" class="text-xs text-[var(--color-text-secondary)]">
+                                    Admin
+                                </flux:button>
+
+                                <flux:menu>
+                                    @can('update', $fiche)
+                                        <flux:menu.item icon="pencil-square" href="{{ route('fiches.edit', $fiche) }}">Bewerk</flux:menu.item>
+                                    @endcan
+
+                                    <form action="{{ route('fiches.toggleDiamond', [$initiative, $fiche]) }}" method="POST">
+                                        @csrf
+                                        <flux:menu.item type="submit" icon="sparkles">
+                                            {{ $fiche->has_diamond ? 'Diamantje verwijderen' : 'Diamantje toekennen' }}
+                                        </flux:menu.item>
+                                    </form>
+
+                                    <flux:modal.trigger name="delete-fiche">
+                                        <flux:menu.item variant="danger" icon="trash">Verwijder</flux:menu.item>
+                                    </flux:modal.trigger>
+
+                                </flux:menu>
+                            </flux:dropdown>
+                        @elsecan('update', $fiche)
+                            <flux:button variant="ghost" size="sm" icon="pencil-square" href="{{ route('fiches.edit', $fiche) }}">
+                                Bewerk
                             </flux:button>
-
-                            <flux:menu>
-                                @can('update', $fiche)
-                                    <flux:menu.item icon="pencil-square" href="{{ route('fiches.edit', $fiche) }}">Bewerk</flux:menu.item>
-                                @endcan
-
-                                <form action="{{ route('fiches.toggleDiamond', [$initiative, $fiche]) }}" method="POST">
-                                    @csrf
-                                    <flux:menu.item type="submit" icon="sparkles">
-                                        {{ $fiche->has_diamond ? 'Diamantje verwijderen' : 'Diamantje toekennen' }}
-                                    </flux:menu.item>
-                                </form>
-
-                                <flux:modal.trigger name="delete-fiche">
-                                    <flux:menu.item variant="danger" icon="trash">Verwijder</flux:menu.item>
-                                </flux:modal.trigger>
-
-                            </flux:menu>
-                        </flux:dropdown>
-                    @endif
-                @endauth
+                        @endcan
+                    @endauth
+                </div>
             </div>
 
             @auth
                 @if(auth()->id() === $fiche->user_id && $fiche->shouldShowSuggestionNudge())
-                    <div x-data="{ dismissed: false }" x-show="!dismissed" x-cloak class="mb-6">
-                        <flux:callout variant="warning" icon="light-bulb">
-                            <flux:callout.heading>Maak het makkelijker voor collega's</flux:callout.heading>
-                            <flux:callout.text>
-                                Er zijn suggesties beschikbaar om deze fiche duidelijker te maken.
-                                Zo begrijpen andere begeleiders sneller wat de activiteit inhoudt
-                                en hoe ze ermee aan de slag kunnen.
-                            </flux:callout.text>
-                            <x-slot name="actions">
-                                <flux:button variant="primary" size="sm"
-                                    href="{{ route('fiches.edit', $fiche) }}">
-                                    Bekijk suggesties
+                    <div
+                        x-data="{
+                            dismissed: localStorage.getItem('nudge-dismissed-{{ $fiche->id }}') === '1',
+                            dismiss() { this.dismissed = true; localStorage.setItem('nudge-dismissed-{{ $fiche->id }}', '1'); }
+                        }"
+                        x-show="!dismissed"
+                        x-cloak
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 -translate-y-2"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 scale-y-100"
+                        x-transition:leave-end="opacity-0 scale-y-95"
+                        class="mb-6 origin-top"
+                    >
+                        <div class="flex items-stretch gap-4 rounded-xl border border-[var(--color-border-light)] bg-[var(--color-bg-accent-light)] px-5 py-4">
+                            {{-- Icon disc — same height as text block --}}
+                            <div class="shrink-0 flex items-center justify-center self-stretch aspect-square rounded-full bg-[var(--color-primary)]/10 px-3">
+                                <flux:icon.sparkles
+                                    class="size-6 text-[var(--color-primary)]"
+                                    style="animation: nudge-pulse 2.5s ease-in-out infinite;"
+                                />
+                            </div>
+                            <div class="flex flex-1 min-w-0 items-center gap-6">
+                                <p class="flex-1 text-sm text-[var(--color-text-secondary)]">
+                                    <span class="font-heading font-bold text-[var(--color-text-primary)]">Zet je fiche nét wat scherper</span><br>
+                                    Zo begrijpen andere begeleiders sneller hoe ze ermee aan de slag kunnen.
+                                </p>
+                                <flux:button
+                                    size="sm"
+                                    variant="primary"
+                                    href="{{ route('fiches.edit', $fiche) }}"
+                                    class="shrink-0 transition-transform duration-150 hover:translate-x-0.5"
+                                >
+                                    Bekijk suggesties →
                                 </flux:button>
-                            </x-slot>
-                            <x-slot name="controls">
-                                <flux:button icon="x-mark" variant="ghost"
-                                    x-on:click="dismissed = true" />
-                            </x-slot>
-                        </flux:callout>
+                            </div>
+                            <flux:button icon="x-mark" variant="ghost" size="sm" x-on:click="dismiss()" class="-mr-2 shrink-0 self-start" />
+                        </div>
                     </div>
+
+                    <style>
+                        @keyframes nudge-pulse {
+                            0%, 100% { opacity: 1; }
+                            50% { opacity: 0.5; }
+                        }
+                        @media (prefers-reduced-motion: reduce) {
+                            @keyframes nudge-pulse { 0%, 100% { opacity: 1; } }
+                        }
+                    </style>
                 @endif
             @endauth
 
@@ -375,6 +415,54 @@
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
     @endphp
     </script>
+
+    {{-- Print view — hidden on screen, shown when printing --}}
+    <div id="print-view">
+        {{-- Header --}}
+        <div class="print-header">
+            <div class="print-title">{{ $fiche->title }}</div>
+            <div class="print-meta">
+                @if($fiche->user)
+                    Door {{ $fiche->user->full_name }}@if($fiche->user->organisation) &middot; {{ $fiche->user->organisation }}@endif
+                @endif
+                @if($fiche->materials['duration'] ?? null)
+                    &middot; &#x23F1; {{ $fiche->materials['duration'] }}
+                @endif
+                @if($fiche->materials['group_size'] ?? null)
+                    &middot; &#x1F465; {{ $fiche->materials['group_size'] }} personen
+                @endif
+            </div>
+        </div>
+
+        {{-- Lead text --}}
+        @if($fiche->description)
+            <div class="print-lead">
+                {!! $fiche->description !!}
+            </div>
+        @endif
+
+        {{-- Practical sections --}}
+        @if($fiche->practical_sections)
+            @foreach($fiche->practical_sections as $section)
+                <div class="print-section">
+                    <div class="print-section-label">{{ $section['title'] }}</div>
+                    <div class="print-section-content">{!! $section['content'] !!}</div>
+                </div>
+            @endforeach
+        @endif
+
+        {{-- CTA --}}
+        <div class="print-cta">
+            <p>&#x2665; <strong>Heb je deze activiteit uitgevoerd?</strong> Bedank de auteur &mdash; dat doet haar of hem veel plezier. Ga naar onderstaande link en geef een hartje of laat een berichtje achter.</p>
+            <div class="print-url">{{ route('fiches.show', [$initiative, $fiche]) }}</div>
+        </div>
+
+        {{-- Footer --}}
+        <div class="print-footer">
+            <span>hartverwarmers.be</span>
+            <span>Gedeeld via Hartverwarmers</span>
+        </div>
+    </div>
 
     {{-- Welcome toast for guest account creation --}}
     <div x-data="{ show: false, name: '' }"

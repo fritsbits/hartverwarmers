@@ -354,7 +354,21 @@ class FicheShowTest extends TestCase
 
         $this->actingAs($user)
             ->get(route('fiches.show', [$initiative, $fiche]))
-            ->assertSee('Maak het makkelijker voor collega');
+            ->assertSee('Zet je fiche nét wat scherper');
+    }
+
+    public function test_author_does_not_see_nudge_when_suggestions_applied(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()
+            ->withSuggestions(['applied' => ['description', 'preparation']])
+            ->withPresentationScore(40)
+            ->create(['user_id' => $user->id, 'initiative_id' => $initiative->id]);
+
+        $this->actingAs($user)
+            ->get(route('fiches.show', [$initiative, $fiche]))
+            ->assertDontSee('Zet je fiche nét wat scherper');
     }
 
     public function test_author_does_not_see_nudge_when_high_score(): void
@@ -384,5 +398,68 @@ class FicheShowTest extends TestCase
         $this->actingAs($viewer)
             ->get(route('fiches.show', [$initiative, $fiche]))
             ->assertDontSee('Maak het makkelijker voor collega');
+    }
+
+    public function test_fiche_show_has_print_button(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Afdrukken');
+        $response->assertSee('window.print()', false);
+    }
+
+    public function test_fiche_show_has_print_view_with_title(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'title' => 'Muziek en beweging',
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('id="print-view"', false);
+        $response->assertSeeText('Muziek en beweging');
+    }
+
+    public function test_fiche_show_print_view_contains_practical_sections(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'materials' => [
+                'preparation' => '<p>Zet muziek klaar</p>',
+                'inventory' => '<p>Bluetooth-speaker</p>',
+                'process' => '<p>Begin rustig</p>',
+            ],
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Zet muziek klaar', false);
+        $response->assertSee('Bluetooth-speaker', false);
+        $response->assertSee('Begin rustig', false);
+    }
+
+    public function test_fiche_show_print_view_contains_cta_and_url(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Heb je deze activiteit uitgevoerd', false);
+        $response->assertSee(route('fiches.show', [$initiative, $fiche]), false);
     }
 }
