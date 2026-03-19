@@ -7,6 +7,8 @@ use App\Models\Fiche;
 use App\Models\Initiative;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -15,6 +17,15 @@ use Livewire\WithPagination;
 class AdminFicheOverview extends Component
 {
     use WithPagination;
+
+    private const QUADRANT_THRESHOLD = 50;
+
+    private const QUADRANT_SORTS = [
+        'q-strong' => [['quality_score', 'desc'], ['presentation_score', 'desc']],
+        'q-quickwin' => [['presentation_score', 'asc'], ['quality_score', 'desc']],
+        'q-wellwritten' => [['quality_score', 'asc'], ['presentation_score', 'desc']],
+        'q-needswork' => [['quality_score', 'asc'], ['presentation_score', 'asc']],
+    ];
 
     #[Url(as: 'zoek')]
     public string $search = '';
@@ -41,6 +52,12 @@ class AdminFicheOverview extends Component
     public function updatedFilter(): void
     {
         $this->resetPage();
+
+        if (isset(self::QUADRANT_SORTS[$this->filter])) {
+            $primarySort = self::QUADRANT_SORTS[$this->filter][0];
+            $this->sortBy = $primarySort[0];
+            $this->sortDirection = $primarySort[1];
+        }
     }
 
     public function updatedInitiativeFilter(): void
@@ -83,7 +100,7 @@ class AdminFicheOverview extends Component
     }
 
     #[Computed]
-    public function initiatives(): \Illuminate\Support\Collection
+    public function initiatives(): Collection
     {
         return Initiative::query()
             ->whereHas('fiches', fn ($q) => $q->published())
@@ -100,8 +117,8 @@ class AdminFicheOverview extends Component
         $query = Fiche::query()
             ->published()
             ->with(['initiative', 'user'])
-            ->withCount('files')
-            ->addSelect(\Illuminate\Support\Facades\DB::raw('(COALESCE(quality_score, 0) + COALESCE(presentation_score, 0)) as combined_score'));
+            ->select('fiches.*')
+            ->addSelect(DB::raw('(COALESCE(quality_score, 0) + COALESCE(presentation_score, 0)) as combined_score'));
 
         if (strlen(trim($this->search)) >= 2) {
             $term = trim($this->search);
@@ -111,6 +128,18 @@ class AdminFicheOverview extends Component
         match ($this->filter) {
             'unassessed' => $query->whereNull('quality_assessed_at'),
             'assessed' => $query->whereNotNull('quality_assessed_at'),
+            'q-strong' => $query->whereNotNull('quality_score')->whereNotNull('presentation_score')
+                ->where('quality_score', '>=', self::QUADRANT_THRESHOLD)
+                ->where('presentation_score', '>=', self::QUADRANT_THRESHOLD),
+            'q-quickwin' => $query->whereNotNull('quality_score')->whereNotNull('presentation_score')
+                ->where('quality_score', '>=', self::QUADRANT_THRESHOLD)
+                ->where('presentation_score', '<', self::QUADRANT_THRESHOLD),
+            'q-wellwritten' => $query->whereNotNull('quality_score')->whereNotNull('presentation_score')
+                ->where('quality_score', '<', self::QUADRANT_THRESHOLD)
+                ->where('presentation_score', '>=', self::QUADRANT_THRESHOLD),
+            'q-needswork' => $query->whereNotNull('quality_score')->whereNotNull('presentation_score')
+                ->where('quality_score', '<', self::QUADRANT_THRESHOLD)
+                ->where('presentation_score', '<', self::QUADRANT_THRESHOLD),
             default => null,
         };
 
@@ -118,7 +147,15 @@ class AdminFicheOverview extends Component
             $query->where('initiative_id', (int) $this->initiativeFilter);
         }
 
-        return $query->orderBy($sort, $this->sortDirection)->paginate(25);
+        $quadrantSorts = self::QUADRANT_SORTS[$this->filter] ?? null;
+        if ($quadrantSorts) {
+            $query->orderBy($quadrantSorts[0][0], $quadrantSorts[0][1])
+                ->orderBy($quadrantSorts[1][0], $quadrantSorts[1][1]);
+        } else {
+            $query->orderBy($sort, $this->sortDirection);
+        }
+
+        return $query->paginate(25);
     }
 
     public function render(): View
