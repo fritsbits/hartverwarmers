@@ -7,6 +7,7 @@ use App\Models\Initiative;
 use App\Models\UserInteraction;
 use App\Services\FicheInteractionService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -124,13 +125,13 @@ class FicheController extends Controller
         ])->deleteFileAfterSend();
     }
 
-    public function toggleDiamond(Initiative $initiative, Fiche $fiche): RedirectResponse
+    public function toggleDiamond(Initiative $initiative, Fiche $fiche, Request $request): RedirectResponse
     {
         $fiche->update(['has_diamond' => ! $fiche->has_diamond]);
 
         $status = $fiche->has_diamond ? 'toegekend aan' : 'verwijderd van';
 
-        return redirect()->route('fiches.show', [$initiative, $fiche])
+        return redirect()->to($request->input('_redirect', route('fiches.show', [$initiative, $fiche])))
             ->with('success', "Diamantje {$status} \"{$fiche->title}\".");
     }
 
