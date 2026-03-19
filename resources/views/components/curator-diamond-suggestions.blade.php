@@ -77,7 +77,7 @@
                 <span class="text-xs bg-[var(--color-bg-subtle)] border border-[var(--color-border-light)] text-[var(--color-text-secondary)] px-1.5 py-0.5 rounded shrink-0" x-text="fiche.score"></span>
 
                 {{-- Three-dot menu --}}
-                <div class="relative shrink-0" @click.outside="openMenu = null">
+                <div class="relative shrink-0" @click.outside="if (openMenu === fiche.id) openMenu = null">
                     <button
                         @click="openMenu = openMenu === fiche.id ? null : fiche.id"
                         class="w-6 h-6 flex items-center justify-center rounded border border-[var(--color-border-light)] bg-[var(--color-bg-subtle)] text-[var(--color-text-tertiary)] hover:border-[var(--color-border-hover)] hover:text-[var(--color-text-secondary)] transition-colors text-sm font-bold"
