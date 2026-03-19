@@ -131,7 +131,13 @@ class FicheController extends Controller
 
         $status = $fiche->has_diamond ? 'toegekend aan' : 'verwijderd van';
 
-        return redirect()->to($request->input('_redirect', route('fiches.show', [$initiative, $fiche])))
+        $redirectTo = $request->input('_redirect');
+
+        if (! $redirectTo || ! str_starts_with($redirectTo, config('app.url'))) {
+            $redirectTo = route('fiches.show', [$initiative, $fiche]);
+        }
+
+        return redirect()->to($redirectTo)
             ->with('success', "Diamantje {$status} \"{$fiche->title}\".");
     }
 
