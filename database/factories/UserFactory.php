@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -26,6 +27,7 @@ class UserFactory extends Factory
             'bio' => fake()->optional()->paragraph(),
             'remember_token' => Str::random(10),
             'email_verified_at' => now(),
+            'notify_on_fiche_comments' => true,
         ];
     }
 

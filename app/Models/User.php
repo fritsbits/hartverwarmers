@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
@@ -32,6 +33,7 @@ class User extends Authenticatable
         'onboarded_at',
         'contributor_onboarded_at',
         'last_visited_at',
+        'notify_on_fiche_comments',
     ];
 
     /**
@@ -51,6 +53,7 @@ class User extends Authenticatable
             'onboarded_at' => 'datetime',
             'contributor_onboarded_at' => 'datetime',
             'last_visited_at' => 'datetime',
+            'notify_on_fiche_comments' => 'boolean',
             'password' => 'hashed',
         ];
     }
