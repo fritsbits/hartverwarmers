@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
+use App\Models\Fiche;
+use App\Models\User;
+use App\Notifications\FicheCommentNotification;
 use App\Notifications\WelcomeNotification;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
@@ -29,6 +33,10 @@ class MailPreviewController extends Controller
         'welcome' => [
             'label' => 'Welkomstmail',
             'description' => 'Na e-mailverificatie, oriënterend en warm.',
+        ],
+        'fiche-comment' => [
+            'label' => 'Reactie op fiche',
+            'description' => 'Notificatie naar de bijdrager wanneer iemand reageert op hun fiche.',
         ],
     ];
 
@@ -94,7 +102,20 @@ class MailPreviewController extends Controller
             'verify-email' => (new VerifyEmail)->toMail($user),
             'reset-password' => (new ResetPassword('fake-token-for-preview'))->toMail($user),
             'welcome' => (new WelcomeNotification)->toMail($user),
+            'fiche-comment' => $this->buildFicheCommentMailMessage(),
+            default => throw new \InvalidArgumentException("Unknown email key: {$email}"),
         };
+    }
+
+    private function buildFicheCommentMailMessage(): MailMessage
+    {
+        $fiche = Fiche::published()->with(['user', 'initiative'])->firstOrFail();
+        $commenter = User::factory()->make(['first_name' => 'Liesbet']);
+        $comment = new Comment(['body' => 'Wat een mooi initiatief!', 'user_id' => $commenter->id]);
+        $comment->setRelation('commentable', $fiche);
+        $comment->setRelation('user', $commenter);
+
+        return (new FicheCommentNotification($comment))->toMail($fiche->user);
     }
 
     private function renderMailMessage(MailMessage $message): string
