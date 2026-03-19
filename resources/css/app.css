@@ -1284,6 +1284,7 @@ details summary::-webkit-details-marker {
     font-family: var(--font-heading);
     font-size: 25px;
     font-weight: bold;
+    line-height: 1.15;
     letter-spacing: -0.3px;
     margin-bottom: 4px;
   }
