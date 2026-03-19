@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminFicheController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\HealthController;
 use App\Http\Controllers\Admin\ImpersonateController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\CommentController;
@@ -92,6 +93,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/impersonate/{user}', [ImpersonateController::class, 'start'])
             ->where('user', '[0-9]+')
             ->name('admin.impersonate.start');
+        Route::get('/admin/gezondheid', HealthController::class)->name('admin.health');
     });
 });
 
