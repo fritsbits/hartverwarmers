@@ -21,6 +21,12 @@
                                 <flux:icon name="lock-closed" variant="mini" class="size-4" />
                                 Beveiliging
                             </a>
+                            @if(!auth()->user()->isMember())
+                                <a href="{{ route('profile.notifications') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('profile.notifications') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="bell" variant="mini" class="size-4" />
+                                    Meldingen
+                                </a>
+                            @endif
                             @if(auth()->user()->isAdmin())
                                 <span class="w-px h-6 bg-[var(--color-border-light)] mx-1 shrink-0"></span>
                                 <a href="{{ route('admin.design-system') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.design-system') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
@@ -72,6 +78,9 @@
                             <flux:navlist.group heading="Profiel">
                                 <flux:navlist.item href="{{ route('profile.show') }}" icon="user" :current="request()->routeIs('profile.show')">Persoonlijke info</flux:navlist.item>
                                 <flux:navlist.item href="{{ route('profile.security') }}" icon="lock-closed" :current="request()->routeIs('profile.security')">Beveiliging</flux:navlist.item>
+                                @if(!auth()->user()->isMember())
+                                    <flux:navlist.item href="{{ route('profile.notifications') }}" icon="bell" :current="request()->routeIs('profile.notifications')">Meldingen</flux:navlist.item>
+                                @endif
                             </flux:navlist.group>
 
                             @if(auth()->user()->isAdmin())

@@ -26,7 +26,6 @@ class ProfileUpdateRequest extends FormRequest
             'bio' => ['nullable', 'string', 'max:5000'],
             'website' => ['nullable', 'url', 'max:255'],
             'linkedin' => ['nullable', 'url', 'max:255'],
-            'notify_on_fiche_comments' => ['nullable', 'boolean'],
         ];
     }
 }

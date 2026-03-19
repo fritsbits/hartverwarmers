@@ -62,6 +62,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/profiel/avatar', [HvProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
     Route::delete('/profiel/avatar', [HvProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
     Route::get('/profiel/beveiliging', [HvProfileController::class, 'security'])->name('profile.security');
+    Route::get('/profiel/meldingen', [HvProfileController::class, 'notifications'])->name('profile.notifications');
+    Route::post('/profiel/meldingen', [HvProfileController::class, 'updateNotifications'])->name('profile.notifications.update');
     Route::redirect('/profiel/favorieten', '/favorieten', 301);
     Route::redirect('/profiel/fiches', '/mijn-fiches', 301);
     Route::post('/fiches/{fiche}/favoriet', [BookmarkController::class, 'toggle'])->name('fiches.bookmark');

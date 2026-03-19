@@ -33,8 +33,8 @@ class FicheCommentNotificationTest extends TestCase
         $mail = (new FicheCommentNotification($comment))->toMail($ficheOwner);
 
         $this->assertStringContainsString("Nieuwe reactie op je fiche: {$fiche->title}", $mail->subject);
-        $this->assertStringContainsString('Hoi Marie!', $mail->greeting);
         $rendered = $mail->render()->toHtml();
+        $this->assertStringContainsString('Hoi Marie!', $rendered);
         $this->assertStringContainsString('Liesbet', $rendered);
     }
 

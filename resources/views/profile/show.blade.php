@@ -87,20 +87,6 @@
                         <x-input-error :messages="$errors->get('website')" />
                     </flux:field>
 
-                    <flux:separator class="my-2" />
-
-                    <div>
-                        <p class="text-sm font-medium text-[var(--color-text-primary)] mb-3">Meldingen</p>
-                        <flux:field variant="inline">
-                            <flux:checkbox
-                                name="notify_on_fiche_comments"
-                                value="1"
-                                :checked="old('notify_on_fiche_comments', $user->notify_on_fiche_comments)"
-                            />
-                            <flux:label>Stuur me een e-mail wanneer iemand reageert op mijn fiche</flux:label>
-                        </flux:field>
-                    </div>
-
                     <div class="flex justify-end">
                         <flux:button type="submit" variant="primary">Opslaan</flux:button>
                     </div>

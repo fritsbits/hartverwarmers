@@ -28,7 +28,6 @@ class ProfileController extends Controller
         }
 
         $user->fill($validated);
-        $user->notify_on_fiche_comments = $request->boolean('notify_on_fiche_comments');
         $user->save();
 
         return redirect()->route('profile.show')->with('toast', [
@@ -80,6 +79,26 @@ class ProfileController extends Controller
     {
         return view('profile.security', [
             'user' => $request->user(),
+        ]);
+    }
+
+    public function notifications(Request $request): View
+    {
+        return view('profile.notifications', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    public function updateNotifications(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $user->notify_on_fiche_comments = $request->boolean('notify_on_fiche_comments');
+        $user->save();
+
+        return redirect()->route('profile.notifications')->with('toast', [
+            'heading' => 'Meldingen bijgewerkt',
+            'text' => 'Je meldingsvoorkeuren zijn opgeslagen.',
+            'variant' => 'success',
         ]);
     }
 }
