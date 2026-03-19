@@ -17,7 +17,9 @@ class SendFicheCommentNotification
             return;
         }
 
-        if ($fiche->user === null) {
+        $owner = $fiche->user;
+
+        if ($owner === null) {
             return;
         }
 
@@ -25,10 +27,10 @@ class SendFicheCommentNotification
             return;
         }
 
-        if (! $fiche->user->notify_on_fiche_comments) {
+        if (! $owner->notify_on_fiche_comments) {
             return;
         }
 
-        $fiche->user->notify(new FicheCommentNotification($comment));
+        $owner->notify(new FicheCommentNotification($comment));
     }
 }

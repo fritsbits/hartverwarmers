@@ -40,7 +40,7 @@ class FicheCommentNotificationTest extends TestCase
 
     public function test_notification_is_sent_when_another_user_comments(): void
     {
-        \Illuminate\Support\Facades\Notification::fake();
+        Notification::fake();
 
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
@@ -55,14 +55,14 @@ class FicheCommentNotificationTest extends TestCase
             'parent_id' => null,
         ]);
 
-        \App\Events\CommentPosted::dispatch($comment);
+        CommentPosted::dispatch($comment);
 
-        \Illuminate\Support\Facades\Notification::assertSentTo($ficheOwner, FicheCommentNotification::class);
+        Notification::assertSentTo($ficheOwner, FicheCommentNotification::class);
     }
 
     public function test_notification_is_not_sent_when_owner_comments_on_own_fiche(): void
     {
-        \Illuminate\Support\Facades\Notification::fake();
+        Notification::fake();
 
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
@@ -76,14 +76,14 @@ class FicheCommentNotificationTest extends TestCase
             'parent_id' => null,
         ]);
 
-        \App\Events\CommentPosted::dispatch($comment);
+        CommentPosted::dispatch($comment);
 
-        \Illuminate\Support\Facades\Notification::assertNothingSent();
+        Notification::assertNothingSent();
     }
 
     public function test_notification_is_not_sent_when_owner_has_opted_out(): void
     {
-        \Illuminate\Support\Facades\Notification::fake();
+        Notification::fake();
 
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create(['notify_on_fiche_comments' => false]);
@@ -98,14 +98,14 @@ class FicheCommentNotificationTest extends TestCase
             'parent_id' => null,
         ]);
 
-        \App\Events\CommentPosted::dispatch($comment);
+        CommentPosted::dispatch($comment);
 
-        \Illuminate\Support\Facades\Notification::assertNothingSent();
+        Notification::assertNothingSent();
     }
 
     public function test_notification_is_not_sent_when_fiche_owner_is_soft_deleted(): void
     {
-        \Illuminate\Support\Facades\Notification::fake();
+        Notification::fake();
 
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
@@ -122,14 +122,14 @@ class FicheCommentNotificationTest extends TestCase
             'parent_id' => null,
         ]);
 
-        \App\Events\CommentPosted::dispatch($comment);
+        CommentPosted::dispatch($comment);
 
-        \Illuminate\Support\Facades\Notification::assertNothingSent();
+        Notification::assertNothingSent();
     }
 
     public function test_notification_is_sent_for_reply_on_another_users_fiche(): void
     {
-        \Illuminate\Support\Facades\Notification::fake();
+        Notification::fake();
 
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
@@ -152,14 +152,14 @@ class FicheCommentNotificationTest extends TestCase
             'parent_id' => $parentComment->id,
         ]);
 
-        \App\Events\CommentPosted::dispatch($reply);
+        CommentPosted::dispatch($reply);
 
-        \Illuminate\Support\Facades\Notification::assertSentTo($ficheOwner, FicheCommentNotification::class);
+        Notification::assertSentTo($ficheOwner, FicheCommentNotification::class);
     }
 
     public function test_notification_is_not_sent_when_owner_replies_on_own_fiche(): void
     {
-        \Illuminate\Support\Facades\Notification::fake();
+        Notification::fake();
 
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
@@ -173,14 +173,14 @@ class FicheCommentNotificationTest extends TestCase
             'parent_id' => null,
         ]);
 
-        \App\Events\CommentPosted::dispatch($reply);
+        CommentPosted::dispatch($reply);
 
-        \Illuminate\Support\Facades\Notification::assertNothingSent();
+        Notification::assertNothingSent();
     }
 
     public function test_notification_is_sent_for_guest_comment(): void
     {
-        \Illuminate\Support\Facades\Notification::fake();
+        Notification::fake();
 
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
@@ -198,9 +198,9 @@ class FicheCommentNotificationTest extends TestCase
             'parent_id' => null,
         ]);
 
-        \App\Events\CommentPosted::dispatch($comment);
+        CommentPosted::dispatch($comment);
 
-        \Illuminate\Support\Facades\Notification::assertSentTo($ficheOwner, FicheCommentNotification::class);
+        Notification::assertSentTo($ficheOwner, FicheCommentNotification::class);
     }
 
     public function test_new_user_has_notify_on_fiche_comments_true_by_default(): void
