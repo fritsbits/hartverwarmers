@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Events\CommentPosted;
 use App\Livewire\Concerns\CreatesGuestAccount;
 use App\Models\Comment;
 use App\Models\Fiche;
@@ -35,13 +36,14 @@ class FicheComments extends Component
     {
         $this->validate(['body' => 'required|string|max:1000']);
 
-        Comment::create([
+        $comment = Comment::create([
             'body' => $this->body,
             'user_id' => auth()->id(),
             'commentable_type' => Fiche::class,
             'commentable_id' => $this->fiche->id,
             'parent_id' => null,
         ]);
+        CommentPosted::dispatch($comment);
 
         $this->reset('body');
         unset($this->comments);
@@ -60,13 +62,14 @@ class FicheComments extends Component
 
         $user = $this->createGuestUser();
 
-        Comment::create([
+        $comment = Comment::create([
             'body' => $this->guestBody,
             'user_id' => $user->id,
             'commentable_type' => Fiche::class,
             'commentable_id' => $this->fiche->id,
             'parent_id' => null,
         ]);
+        CommentPosted::dispatch($comment);
 
         $this->reset('guestBody');
         unset($this->comments);
@@ -88,13 +91,14 @@ class FicheComments extends Component
         $parent = Comment::findOrFail($this->replyingTo);
         $user = $this->createGuestUser();
 
-        Comment::create([
+        $comment = Comment::create([
             'body' => $this->replyBody,
             'user_id' => $user->id,
             'commentable_type' => Fiche::class,
             'commentable_id' => $this->fiche->id,
             'parent_id' => $parent->id,
         ]);
+        CommentPosted::dispatch($comment);
 
         $this->replyingTo = null;
         $this->replyBody = '';
@@ -121,13 +125,14 @@ class FicheComments extends Component
 
         $parent = Comment::findOrFail($this->replyingTo);
 
-        Comment::create([
+        $comment = Comment::create([
             'body' => $this->replyBody,
             'user_id' => auth()->id(),
             'commentable_type' => Fiche::class,
             'commentable_id' => $this->fiche->id,
             'parent_id' => $parent->id,
         ]);
+        CommentPosted::dispatch($comment);
 
         $this->replyingTo = null;
         $this->replyBody = '';

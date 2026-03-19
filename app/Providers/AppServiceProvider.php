@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Events\CommentPosted;
+use App\Listeners\SendFicheCommentNotification;
 use App\Listeners\SendWelcomeNotification;
 use App\Notifications\QueueJobFailedNotification;
 use App\View\Composers\AboutComposer;
@@ -42,6 +44,11 @@ class AppServiceProvider extends ServiceProvider
         EnsureFeaturesAreActive::whenInactive(fn () => abort(404));
 
         Event::listen(Verified::class, SendWelcomeNotification::class);
+
+        Event::listen(
+            CommentPosted::class,
+            SendFicheCommentNotification::class,
+        );
 
         $this->listenForFailedJobs();
 
