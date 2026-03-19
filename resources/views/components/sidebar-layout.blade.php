@@ -51,10 +51,6 @@
                                     <flux:icon name="envelope" variant="mini" class="size-4" />
                                     Welkomst
                                 </a>
-                                <a href="/pulse" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]">
-                                    <flux:icon name="chart-bar" variant="mini" class="size-4" />
-                                    Pulse
-                                </a>
                             @endif
                             </div>
                         </div>
@@ -81,7 +77,6 @@
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'reset-password') }}" :current="request()->is('*/mails/reset-password')">Wachtwoord reset</flux:navlist.item>
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'welcome') }}" :current="request()->is('*/mails/welcome')">Welkomstmail</flux:navlist.item>
                                     </flux:navlist.group>
-                                    <flux:navlist.item href="/pulse" icon="chart-bar">Pulse</flux:navlist.item>
                                 </flux:navlist.group>
                             @endif
                         </flux:navlist>

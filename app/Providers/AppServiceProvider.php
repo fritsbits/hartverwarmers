@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Listeners\SendWelcomeNotification;
-use App\Models\User;
 use App\Notifications\QueueJobFailedNotification;
 use App\View\Composers\AboutComposer;
 use App\View\Composers\FooterComposer;
@@ -13,14 +12,12 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Pennant\Feature;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
-use Laravel\Pulse\Facades\Pulse;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,16 +40,6 @@ class AppServiceProvider extends ServiceProvider
         Feature::discover();
 
         EnsureFeaturesAreActive::whenInactive(fn () => abort(404));
-
-        Gate::define('viewPulse', function (User $user) {
-            return $user->isAdmin();
-        });
-
-        Pulse::user(fn ($user) => [
-            'name' => $user->full_name,
-            'extra' => $user->email,
-            'avatar' => null,
-        ]);
 
         Event::listen(Verified::class, SendWelcomeNotification::class);
 

@@ -177,7 +177,6 @@
                                 @if(auth()->user()->isAdmin())
                                     <flux:menu.item href="{{ route('admin.design-system') }}" icon="swatch">Design Systeem</flux:menu.item>
                                     <flux:menu.item href="{{ route('admin.features') }}" icon="flag">Features</flux:menu.item>
-                                    <flux:menu.item href="{{ route('pulse') }}" icon="chart-bar">Pulse</flux:menu.item>
                                     <flux:menu.item href="{{ route('admin.users.index') }}" icon="users">Gebruikers</flux:menu.item>
                                 @endif
                             @endif

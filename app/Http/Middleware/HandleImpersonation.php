@@ -21,7 +21,6 @@ class HandleImpersonation
 
             $curatorRoutes = ['admin.fiches.index', 'fiches.toggleDiamond'];
             $blockedRoutes = str_starts_with($routeName, 'admin.') && ! in_array($routeName, ['admin.impersonate.stop', ...$curatorRoutes]);
-            $blockedRoutes = $blockedRoutes || $routeName === 'pulse';
 
             if ($blockedRoutes) {
                 abort(403, 'Stop eerst met nabootsen voordat je admin-pagina\'s bezoekt.');

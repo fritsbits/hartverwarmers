@@ -6,7 +6,6 @@ use App\Ai\Agents\AnalyzeFileContentAgent;
 use App\Ai\Agents\MatchInitiativeAgent;
 use App\Models\Initiative;
 use Illuminate\Support\Facades\Log;
-use Laravel\Pulse\Facades\Pulse;
 
 class FicheAiService
 {
@@ -126,10 +125,6 @@ class FicheAiService
         $provider = $response->meta->provider ?? null;
         $cost = self::estimateCost($model, $inputTokens, $outputTokens);
         $totalTokens = $inputTokens + $outputTokens;
-
-        Pulse::record('ai_agent_call', $agentName, $cost)->sum()->count();
-        Pulse::record('ai_agent_tokens', $agentName, $totalTokens)->sum();
-        Pulse::record('ai_agent_duration', $agentName, (int) ($elapsed * 1000))->avg()->max();
 
         return array_merge([
             'agent' => $agentName,
