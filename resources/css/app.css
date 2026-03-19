@@ -1257,7 +1257,7 @@ details summary::-webkit-details-marker {
   #print-view {
     display: block !important;
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: 14.3px;
     line-height: 1.6;
     color: #1a1a1a;
   }
@@ -1282,7 +1282,7 @@ details summary::-webkit-details-marker {
 
   .print-title {
     font-family: var(--font-heading);
-    font-size: 20px;
+    font-size: 25px;
     font-weight: bold;
     letter-spacing: -0.3px;
     margin-bottom: 4px;
