@@ -196,7 +196,7 @@
                                 @endif
 
                                 {{-- Right: info --}}
-                                <div class="flex-1 px-5 flex flex-col min-w-0 rounded-r-[var(--radius-sm)] overflow-hidden {{ count($previews) === 0 ? 'pt-14 pb-5' : 'py-5' }}">
+                                <div class="flex-1 px-5 flex flex-col min-w-0 rounded-r-[var(--radius-sm)] overflow-hidden {{ count($previews) === 0 ? 'pt-16 pb-5' : 'py-5' }}">
                                     <a href="{{ route('fiches.show', [$recentDiamond->initiative, $recentDiamond]) }}" class="no-underline text-inherit flex-1 overflow-hidden">
                                         <span class="font-heading font-bold text-lg text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors leading-snug">{{ $recentDiamond->title }}</span>
 
