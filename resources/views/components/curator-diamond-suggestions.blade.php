@@ -31,22 +31,22 @@
         allFiches: @json($suggestions),
         dismissed: [],
         openMenu: null,
-        get visibleFiches() {
+        visibleFiches() {
             return this.allFiches
                 .filter(f => !this.dismissed.includes(f.id))
-                .slice(0, 3);
+                .slice(0, 3)
         },
         init() {
-            this.dismissed = JSON.parse(localStorage.getItem('dismissed_diamond_suggestions') || '[]');
+            this.dismissed = JSON.parse(localStorage.getItem('dismissed_diamond_suggestions') || '[]')
         },
         dismiss(id) {
-            this.dismissed.push(id);
-            localStorage.setItem('dismissed_diamond_suggestions', JSON.stringify(this.dismissed));
-            this.openMenu = null;
+            this.dismissed.push(id)
+            localStorage.setItem('dismissed_diamond_suggestions', JSON.stringify(this.dismissed))
+            this.openMenu = null
         }
     }"
     x-init="init()"
-    x-show="visibleFiches.length > 0"
+    x-show="visibleFiches().length > 0"
     class="rounded-xl overflow-hidden border border-[var(--color-border-light)]"
 >
     {{-- Header --}}
@@ -64,7 +64,7 @@
 
     {{-- List --}}
     <div class="bg-white divide-y divide-[var(--color-border-light)]">
-        <template x-for="fiche in visibleFiches" :key="fiche.id">
+        <template x-for="fiche in visibleFiches()" :key="fiche.id">
             <div class="flex items-center gap-2 px-4 py-2.5 relative">
                 {{-- Title link --}}
                 <a
