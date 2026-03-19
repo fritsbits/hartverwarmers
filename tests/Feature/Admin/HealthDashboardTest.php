@@ -44,7 +44,7 @@ class HealthDashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee('Gezondheid');
         $response->assertSee('Server');
-        $response->assertSee('Queue');
+        $response->assertSee('Wachtrij');
     }
 
     public function test_dashboard_shows_disk_info(): void
@@ -64,7 +64,7 @@ class HealthDashboardTest extends TestCase
         $response = $this->actingAs($user)->get(route('admin.health'));
 
         $response->assertOk();
-        $response->assertSee('Heartbeat');
+        $response->assertSee('Achtergrondtaken');
         $response->assertSee('Wachtend');
         $response->assertSee('Mislukt');
     }
