@@ -43,6 +43,13 @@ class UserFactory extends Factory
         ]);
     }
 
+    public function contributor(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'contributor',
+        ]);
+    }
+
     public function curator(): static
     {
         return $this->state(fn (array $attributes) => [
