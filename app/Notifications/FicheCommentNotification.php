@@ -37,7 +37,7 @@ class FicheCommentNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("Nieuwe reactie op je fiche: {$fiche->title}")
             ->greeting("Hoi {$notifiable->first_name}!")
-            ->line("{$commenter->first_name} heeft een reactie geplaatst op je fiche:")
+            ->line("{$commenter->full_name} heeft een reactie geplaatst op je fiche **{$fiche->title}**:")
             ->line('> '.$this->comment->body)
             ->action('Beantwoord de reactie', $url)
             ->salutation("Warme groet,\nHet Hartverwarmers-team");
