@@ -9,7 +9,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('themes:rollover')->daily()->at('00:05');
-Schedule::command('file:generate-previews --all')->everyFiveMinutes();
 Schedule::command('fiches:assign-icons')->everyFiveMinutes();
 Schedule::command('file:cleanup-orphans')->daily()->at('03:00');
 Schedule::command('queue:heartbeat')->everyFiveMinutes();

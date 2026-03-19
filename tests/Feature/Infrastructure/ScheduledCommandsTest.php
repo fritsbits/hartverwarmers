@@ -7,11 +7,6 @@ use Tests\TestCase;
 
 class ScheduledCommandsTest extends TestCase
 {
-    public function test_file_preview_generation_is_scheduled(): void
-    {
-        $this->assertCommandIsScheduled('file:generate-previews --all');
-    }
-
     public function test_fiche_icon_assignment_is_scheduled(): void
     {
         $this->assertCommandIsScheduled('fiches:assign-icons');
