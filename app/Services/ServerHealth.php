@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -81,9 +82,9 @@ class ServerHealth
     }
 
     /**
-     * Recent ERROR-level entries from the active log file.
+     * Recent ERROR-level entries from the active log file, grouped by message.
      *
-     * @return Collection<int, array{date: string, level: string, message: string}>
+     * @return Collection<int, array{date: string, level: string, message: string, count: int, relative_time: string}>
      */
     public static function recentErrors(int $limit = 10): Collection
     {
@@ -93,7 +94,6 @@ class ServerHealth
             return collect();
         }
 
-        // Read last ~50KB of the file to find recent errors
         $handle = fopen($path, 'r');
         if (! $handle) {
             return collect();
@@ -105,7 +105,6 @@ class ServerHealth
         $content = fread($handle, $readBytes);
         fclose($handle);
 
-        // Parse log entries: [YYYY-MM-DD HH:MM:SS] environment.LEVEL: message
         preg_match_all(
             '/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] \S+\.(ERROR|CRITICAL|ALERT|EMERGENCY): (.+)/m',
             $content,
@@ -115,13 +114,53 @@ class ServerHealth
 
         return collect($matches)
             ->reverse()
+            ->groupBy(fn ($match) => self::cleanErrorMessage($match[3]))
             ->take($limit)
-            ->values()
-            ->map(fn ($match) => [
-                'date' => $match[1],
-                'level' => $match[2],
-                'message' => str($match[3])->limit(200)->toString(),
-            ]);
+            ->map(function ($items) {
+                $newest = $items->first();
+
+                return [
+                    'date' => $newest[1],
+                    'level' => $newest[2],
+                    'message' => self::cleanErrorMessage($newest[3]),
+                    'count' => $items->count(),
+                    'relative_time' => self::relativeTime($newest[1]),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Human-readable Dutch label for server load.
+     */
+    public static function loadLabel(float $load1m): string
+    {
+        return match (self::statusForValue($load1m, 'load_average')) {
+            'red' => 'Overbelast',
+            'amber' => 'Druk',
+            default => 'Normaal',
+        };
+    }
+
+    /**
+     * Format a datetime string as relative time in Dutch.
+     */
+    public static function relativeTime(string $datetime, ?Carbon $now = null): string
+    {
+        $now ??= now();
+        $seconds = $now->timestamp - Carbon::parse($datetime)->timestamp;
+
+        if ($seconds < 60) {
+            return "{$seconds}s geleden";
+        }
+        if ($seconds < 3600) {
+            return round($seconds / 60).' min geleden';
+        }
+        if ($seconds < 86400) {
+            return round($seconds / 3600).' uur geleden';
+        }
+
+        return round($seconds / 86400).' dagen geleden';
     }
 
     /**
@@ -154,6 +193,16 @@ class ServerHealth
         }
 
         return 'green';
+    }
+
+    /**
+     * Clean an error message: remove namespace prefixes, trim length.
+     */
+    private static function cleanErrorMessage(string $message): string
+    {
+        $message = preg_replace('/^[\w\\\\]+\\\\(\w+)/', '$1', $message);
+
+        return str($message)->limit(200)->toString();
     }
 
     /**
