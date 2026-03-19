@@ -63,9 +63,9 @@
     </div>
 
     {{-- List --}}
-    <div class="bg-white divide-y divide-[var(--color-border-light)] rounded-b-xl overflow-hidden">
+    <div class="divide-y divide-[var(--color-border-light)]">
         <template x-for="fiche in visibleFiches()" :key="fiche.id">
-            <div class="flex items-center gap-2 px-4 py-2.5 relative">
+            <div class="flex items-center gap-2 px-4 py-2.5 relative bg-white last:rounded-b-xl">
                 {{-- Title link --}}
                 <a
                     :href="fiche.url"
