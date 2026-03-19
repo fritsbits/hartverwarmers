@@ -27,7 +27,7 @@
 @endphp
 
 <div
-    x-data="{
+    x-data='{
         allFiches: @json($suggestions),
         dismissed: [],
         openMenu: null,
@@ -37,14 +37,14 @@
                 .slice(0, 3)
         },
         init() {
-            this.dismissed = JSON.parse(localStorage.getItem('dismissed_diamond_suggestions') || '[]')
+            this.dismissed = JSON.parse(localStorage.getItem("dismissed_diamond_suggestions") || "[]")
         },
         dismiss(id) {
             this.dismissed.push(id)
-            localStorage.setItem('dismissed_diamond_suggestions', JSON.stringify(this.dismissed))
+            localStorage.setItem("dismissed_diamond_suggestions", JSON.stringify(this.dismissed))
             this.openMenu = null
         }
-    }"
+    }'
     x-init="init()"
     x-show="visibleFiches().length > 0"
     class="rounded-xl overflow-hidden border border-[var(--color-border-light)]"
