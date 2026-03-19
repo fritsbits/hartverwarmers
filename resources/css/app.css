@@ -1243,7 +1243,8 @@ details summary::-webkit-details-marker {
 @media print {
   /* Hide site chrome */
   nav,
-  footer {
+  footer,
+  #impersonation-badge {
     display: none !important;
   }
 
@@ -1255,7 +1256,7 @@ details summary::-webkit-details-marker {
   /* Show the print view */
   #print-view {
     display: block !important;
-    font-family: Georgia, serif;
+    font-family: var(--font-body);
     font-size: 13px;
     line-height: 1.6;
     color: #1a1a1a;
@@ -1280,6 +1281,7 @@ details summary::-webkit-details-marker {
   }
 
   .print-title {
+    font-family: var(--font-heading);
     font-size: 20px;
     font-weight: bold;
     letter-spacing: -0.3px;
