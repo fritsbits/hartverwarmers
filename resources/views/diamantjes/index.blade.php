@@ -96,6 +96,9 @@
                 {{-- Sidebar --}}
                 <div class="lg:col-span-1">
                     <div class="sticky top-8 space-y-6">
+                        {{-- Curator suggesties (alleen zichtbaar voor admin/curator) --}}
+                        <x-curator-diamond-suggestions />
+
                         {{-- Hoe kiezen we? --}}
                         <div class="rounded-xl bg-white border border-[var(--color-border-light)] overflow-hidden">
                             <div class="bg-[var(--color-bg-cream)] px-5 py-4 border-b border-[var(--color-border-light)]">
