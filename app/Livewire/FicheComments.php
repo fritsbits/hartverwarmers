@@ -16,6 +16,15 @@ class FicheComments extends Component
 
     public Fiche $fiche;
 
+    public function mount(): void
+    {
+        $replyId = request()->query('reply');
+
+        if ($replyId && $this->fiche->comments()->whereKey($replyId)->exists()) {
+            $this->replyingTo = (int) $replyId;
+        }
+    }
+
     #[Validate('required|string|max:1000', message: [
         'body.required' => 'Schrijf een reactie.',
         'body.max' => 'Je reactie mag maximaal 1000 tekens bevatten.',

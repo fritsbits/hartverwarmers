@@ -30,12 +30,16 @@ class FicheCommentNotification extends Notification implements ShouldQueue
         $fiche->loadMissing('initiative');
         $commenter = $this->comment->user;
 
+        $url = route('fiches.show', [$fiche->initiative, $fiche])
+            .'?reply='.$this->comment->id
+            .'#comment-'.$this->comment->id;
+
         return (new MailMessage)
             ->subject("Nieuwe reactie op je fiche: {$fiche->title}")
             ->greeting("Hoi {$notifiable->first_name}!")
-            ->line("{$commenter->first_name} heeft een reactie geplaatst op je fiche.")
-            ->line('Reageer terug en hou het gesprek gaande.')
-            ->action('Bekijk de reactie', route('fiches.show', [$fiche->initiative, $fiche]))
+            ->line("{$commenter->first_name} heeft een reactie geplaatst op je fiche:")
+            ->line('> '.$this->comment->body)
+            ->action('Beantwoord de reactie', $url)
             ->salutation("Warme groet,\nHet Hartverwarmers-team");
     }
 }

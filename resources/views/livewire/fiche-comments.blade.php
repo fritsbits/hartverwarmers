@@ -5,7 +5,7 @@
         </span>
         <div class="space-y-0 mb-6">
             @foreach($this->comments as $comment)
-                <div wire:key="comment-{{ $comment->id }}" class="flex gap-3 py-4 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
+                <div wire:key="comment-{{ $comment->id }}" id="comment-{{ $comment->id }}" class="flex gap-3 py-4 {{ !$loop->last ? 'border-b border-[var(--color-border-light)]' : '' }}">
                     <a href="{{ route('contributors.show', $comment->user) }}">
                         <x-user-avatar :user="$comment->user" size="base" class="mt-0.5 hover:ring-2 hover:ring-[var(--color-primary)]/30 transition-shadow" />
                     </a>
