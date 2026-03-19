@@ -28,6 +28,7 @@ class ProfileController extends Controller
         }
 
         $user->fill($validated);
+        $user->notify_on_fiche_comments = $request->boolean('notify_on_fiche_comments');
         $user->save();
 
         return redirect()->route('profile.show')->with('toast', [
