@@ -302,36 +302,122 @@
         </flux:tab.group>
 
         {{-- Footer --}}
-        <div class="flex items-center justify-between pt-2">
-            @if($fiche->published && $fiche->initiative)
-                <flux:button variant="ghost" icon="arrow-left" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}">
-                    Annuleren
-                </flux:button>
-            @else
-                <flux:button variant="ghost" icon="arrow-left" href="{{ route('my-fiches.index') }}">
-                    Annuleren
-                </flux:button>
-            @endif
+        <div
+            x-data="{
+                showNudge: false,
+                nudgeConfirmed: false,
+                pendingAction: null,
+                get hasAi() {
+                    return $wire.aiSuggestions !== null;
+                }
+            }"
+            class="space-y-3 pt-2"
+        >
+            {{-- Nudge banner: shown when 0 suggestions applied and AI was available --}}
+            <div
+                x-show="showNudge"
+                x-cloak
+                role="alert"
+                class="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col gap-3"
+            >
+                <div class="flex gap-3 items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                    </svg>
+                    <div>
+                        <p class="font-semibold text-amber-900 text-sm">Je hebt nog geen suggesties toegepast.</p>
+                        <p class="text-amber-800 text-sm mt-0.5">Je fiche is sterker als je een beschrijving, voorbereiding of materiaallijst toevoegt — dat maakt het veel makkelijker voor collega's om jouw activiteit over te nemen.</p>
+                        <p class="text-amber-800 text-sm mt-1 font-medium">Wil je even herbekijken?</p>
+                    </div>
+                </div>
+                <div class="flex gap-2 justify-end">
+                    <flux:button
+                        variant="ghost"
+                        size="sm"
+                        x-on:click="showNudge = false"
+                    >
+                        Ja, ik herbekijk het
+                    </flux:button>
+                    <flux:button
+                        variant="ghost"
+                        size="sm"
+                        class="bg-amber-600 hover:bg-amber-700 text-white"
+                        x-on:click="
+                            nudgeConfirmed = true;
+                            showNudge = false;
+                            if (pendingAction === 'publish') { $wire.publish(); }
+                            else if (pendingAction === 'save') { $wire.save(); }
+                            else { $wire.saveDraft(); }
+                        "
+                        x-text="pendingAction === 'publish' ? 'Nee, toch publiceren' : (pendingAction === 'save' ? 'Nee, toch opslaan' : 'Nee, toch opslaan als concept')"
+                    >
+                    </flux:button>
+                </div>
+            </div>
 
-            @if($fiche->published)
-                <div class="flex items-center gap-3">
-                    <flux:button variant="ghost" wire:click="saveDraft">
-                        Maak concept
+            <div class="flex items-center justify-between">
+                @if($fiche->published && $fiche->initiative)
+                    <flux:button variant="ghost" icon="arrow-left" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}">
+                        Annuleren
                     </flux:button>
-                    <flux:button variant="primary" icon="check" wire:click="save">
-                        Opslaan
+                @else
+                    <flux:button variant="ghost" icon="arrow-left" href="{{ route('my-fiches.index') }}">
+                        Annuleren
                     </flux:button>
-                </div>
-            @else
-                <div class="flex items-center gap-3">
-                    <flux:button variant="ghost" wire:click="saveDraft">
-                        Opslaan als concept
-                    </flux:button>
-                    <flux:button variant="primary" icon="rocket-launch" wire:click="publish">
-                        Publiceer
-                    </flux:button>
-                </div>
-            @endif
+                @endif
+
+                @if($fiche->published)
+                    <div class="flex items-center gap-3">
+                        <flux:button variant="ghost" wire:click="saveDraft">
+                            Maak concept
+                        </flux:button>
+                        <flux:button
+                            variant="primary"
+                            icon="check"
+                            x-on:click="
+                                if ($wire.appliedSuggestions.length === 0 && hasAi && !nudgeConfirmed) {
+                                    pendingAction = 'save';
+                                    showNudge = true;
+                                } else {
+                                    $wire.save();
+                                }
+                            "
+                        >
+                            Opslaan
+                        </flux:button>
+                    </div>
+                @else
+                    <div class="flex items-center gap-3">
+                        <flux:button
+                            variant="ghost"
+                            x-on:click="
+                                if ($wire.appliedSuggestions.length === 0 && hasAi && !nudgeConfirmed) {
+                                    pendingAction = 'saveDraft';
+                                    showNudge = true;
+                                } else {
+                                    $wire.saveDraft();
+                                }
+                            "
+                        >
+                            Opslaan als concept
+                        </flux:button>
+                        <flux:button
+                            variant="primary"
+                            icon="rocket-launch"
+                            x-on:click="
+                                if ($wire.appliedSuggestions.length === 0 && hasAi && !nudgeConfirmed) {
+                                    pendingAction = 'publish';
+                                    showNudge = true;
+                                } else {
+                                    $wire.publish();
+                                }
+                            "
+                        >
+                            Publiceer
+                        </flux:button>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 </div>
