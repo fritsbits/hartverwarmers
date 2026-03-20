@@ -356,9 +356,9 @@ class FicheWizardTest extends TestCase
         Livewire::actingAs($user)
             ->test(FicheWizard::class)
             ->set('currentStep', 2)
-            ->set('processingComplete', true)
-            ->set('processingFailReason', 'no_text_extracted')
-            ->assertSee('geen tekst uitlezen');
+            ->set('initiativeMatchComplete', true)
+            ->set('initiativeMatchFailReason', 'no_matches')
+            ->assertSee('geen initiatief voorstellen');
     }
 
     public function test_fail_reason_shows_message_on_step3(): void
@@ -1105,12 +1105,12 @@ class FicheWizardTest extends TestCase
         $component = Livewire::actingAs($user)
             ->test(FicheWizard::class)
             ->set('processingKey', 'test-init-key')
-            ->set('processingStep', 'analyzing');
+            ->set('processingStep', 'analyzing')
+            ->set('processingStartedAt', now()->timestamp);
 
-        Cache::put('fiche-processing:test-init-key', [
+        Cache::put('fiche-initiative-match:test-init-key', [
             'step' => 'done',
             'updated_at' => now()->timestamp,
-            'analysis' => null,
             'matched_initiatives' => [
                 'matched_initiative_ids' => [$initiative->id],
                 'match_reasons' => ['Past goed bij het thema'],
@@ -2102,5 +2102,48 @@ class FicheWizardTest extends TestCase
         $status = Cache::get("fiche-processing:{$key}");
         $this->assertNotNull($status);
         $this->assertArrayNotHasKey('matched_initiatives', $status);
+    }
+
+    public function test_file_upload_dispatches_match_initiative_by_title_job(): void
+    {
+        Queue::fake();
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('uploads', [UploadedFile::fake()->create('muziekbingo.pdf', 100, 'application/pdf')]);
+
+        Queue::assertPushed(MatchInitiativeByTitle::class, function ($job) {
+            return $job->title === 'Muziekbingo' && is_string($job->cacheKey) && strlen($job->cacheKey) > 0;
+        });
+    }
+
+    public function test_check_processing_populates_matched_initiatives_from_initiative_cache(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        $component = Livewire::actingAs($user)->test(FicheWizard::class);
+        $component->set('processingStep', 'extracting');
+        $component->set('processingKey', 'testkey');
+        $component->set('processingStartedAt', now()->timestamp);
+
+        Cache::put('fiche-initiative-match:testkey', [
+            'step' => 'done',
+            'updated_at' => now()->timestamp,
+            'matched_initiatives' => [
+                'matched_initiative_ids' => [$initiative->id],
+                'match_reasons' => ['Muziekactiviteit past bij dit initiatief'],
+            ],
+        ], 3600);
+
+        $component->call('checkProcessing');
+
+        $component->assertSet('initiativeMatchComplete', true);
+        $this->assertNotEmpty($component->get('matchedInitiatives'));
+        $this->assertEquals($initiative->id, $component->get('matchedInitiatives')[0]['id']);
+        // Full processing not yet done
+        $component->assertSet('processingComplete', false);
     }
 }

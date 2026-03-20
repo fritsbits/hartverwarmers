@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Features\WizardDevMode;
 use App\Jobs\GenerateFilePreview;
+use App\Jobs\MatchInitiativeByTitle;
 use App\Jobs\ProcessFicheUploads;
 use App\Models\Fiche;
 use App\Models\File;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Laravel\Pennant\Feature;
 use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Session;
@@ -81,6 +83,11 @@ class FicheWizard extends Component
     public ?int $processingStartedAt = null;
 
     public bool $processingStale = false;
+
+    public bool $initiativeMatchComplete = false;
+
+    /** Reason why initiative match is unavailable (ai_unavailable, timeout, no_matches, error) */
+    public ?string $initiativeMatchFailReason = null;
 
     // Step 4 — Celebration (after publish)
     public ?int $publishedFicheId = null;
@@ -278,7 +285,7 @@ class FicheWizard extends Component
                 'uploads.*.mimes' => 'Dit bestandstype wordt niet ondersteund. Kies een PDF, PPTX, DOCX of afbeelding (JPG/PNG).',
                 'uploads.*.file' => 'Dit bestand kon niet worden gelezen. Probeer het opnieuw te uploaden.',
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             $this->uploads = [];
             $this->dispatch('upload-rejected');
 
@@ -387,11 +394,14 @@ class FicheWizard extends Component
 
                 if (empty($this->uploadedFiles)) {
                     Cache::forget("fiche-processing:{$this->processingKey}");
+                    Cache::forget("fiche-initiative-match:{$this->processingKey}");
                     $this->processingComplete = false;
                     $this->processingStep = 'idle';
                     $this->processingKey = '';
                     $this->processingStartedAt = null;
                     $this->processingStale = false;
+                    $this->initiativeMatchComplete = false;
+                    $this->initiativeMatchFailReason = null;
                 } elseif (count($this->uploadedFiles) === 1) {
                     $this->previewFileId = $this->uploadedFiles[0]['id'];
                     GenerateFilePreview::dispatch($this->previewFileId);
@@ -430,6 +440,8 @@ class FicheWizard extends Component
         $this->processingStartedAt = now()->timestamp;
         $this->processingStale = false;
         $this->processingComplete = false;
+        $this->initiativeMatchComplete = false;
+        $this->initiativeMatchFailReason = null;
 
         ProcessFicheUploads::dispatch(
             $fileIds,
@@ -438,55 +450,85 @@ class FicheWizard extends Component
             $this->title,
             $this->description,
         );
+
+        MatchInitiativeByTitle::dispatch(
+            $this->processingKey,
+            $this->title,
+            $this->description,
+        );
     }
 
     public function checkProcessing(): void
     {
-        if ($this->processingComplete || $this->processingStep === 'idle') {
+        if (($this->processingComplete && $this->initiativeMatchComplete) || $this->processingStep === 'idle') {
             return;
         }
 
-        $status = Cache::get("fiche-processing:{$this->processingKey}");
+        // Poll fast initiative match job
+        if (! $this->initiativeMatchComplete && $this->processingKey !== '') {
+            $initiativeStatus = Cache::get("fiche-initiative-match:{$this->processingKey}");
 
-        if (! $status) {
-            if ($this->processingStartedAt && (now()->timestamp - $this->processingStartedAt) >= 30) {
+            if ($initiativeStatus && $initiativeStatus['step'] === 'done') {
+                $this->initiativeMatchComplete = true;
+                $this->loadInitiativeMatches($initiativeStatus);
+                Cache::forget("fiche-initiative-match:{$this->processingKey}");
+            } elseif ($initiativeStatus && $initiativeStatus['step'] === 'failed') {
+                $this->initiativeMatchComplete = true;
+                $this->initiativeMatchFailReason = $initiativeStatus['reason'] ?? 'error';
+                Cache::forget("fiche-initiative-match:{$this->processingKey}");
+            } elseif ($this->processingStartedAt && (now()->timestamp - $this->processingStartedAt) >= 30) {
+                // Stale: fast job never reported back — unblock step 2
+                $this->initiativeMatchComplete = true;
+                $this->initiativeMatchFailReason = 'timeout';
+                Cache::forget("fiche-initiative-match:{$this->processingKey}");
+            }
+        }
+
+        // Poll full analysis job
+        if (! $this->processingComplete) {
+            $status = Cache::get("fiche-processing:{$this->processingKey}");
+
+            if (! $status) {
+                if ($this->processingStartedAt && (now()->timestamp - $this->processingStartedAt) >= 30) {
+                    $this->processingStale = true;
+                }
+
+                return;
+            }
+
+            $this->processingStep = $status['step'];
+
+            if (isset($status['updated_at']) && (now()->timestamp - $status['updated_at']) >= 30) {
                 $this->processingStale = true;
             }
 
-            return;
-        }
+            if ($status['step'] === 'done') {
+                $this->processingComplete = true;
+                $this->processingStale = false;
+                $this->processingFailReason = $status['reason'] ?? null;
+                $this->aiAnalysis = $status['analysis'] ?? null;
+                $this->loadAiSuggestions($status);
 
-        $this->processingStep = $status['step'];
+                if ($this->processingFailReason === null && $this->aiDescription === null && $this->aiPreparation === null) {
+                    $this->processingFailReason = 'no_suggestions';
+                }
 
-        if (isset($status['updated_at']) && (now()->timestamp - $status['updated_at']) >= 30) {
-            $this->processingStale = true;
-        }
-
-        if ($status['step'] === 'done') {
-            $this->processingComplete = true;
-            $this->processingStale = false;
-            $this->processingFailReason = $status['reason'] ?? null;
-            $this->aiAnalysis = $status['analysis'] ?? null;
-            $this->loadAiSuggestions($status);
-
-            // If processing "succeeded" but produced no suggestions, flag it
-            if ($this->processingFailReason === null && $this->aiDescription === null && $this->aiPreparation === null && empty($this->matchedInitiatives)) {
-                $this->processingFailReason = 'no_suggestions';
+                Cache::forget("fiche-processing:{$this->processingKey}");
+            } elseif ($status['step'] === 'failed') {
+                $this->processingComplete = true;
+                $this->processingFailReason = $status['reason'] ?? 'error';
+                Cache::forget("fiche-processing:{$this->processingKey}");
             }
-
-            Cache::forget("fiche-processing:{$this->processingKey}");
-        } elseif ($status['step'] === 'failed') {
-            $this->processingComplete = true;
-            $this->processingFailReason = $status['reason'] ?? 'error';
-            Cache::forget("fiche-processing:{$this->processingKey}");
         }
     }
 
     public function skipProcessing(): void
     {
         $this->processingComplete = true;
+        $this->initiativeMatchComplete = true;
         $this->processingStep = 'skipped';
         Cache::forget("fiche-processing:{$this->processingKey}");
+        Cache::forget("fiche-initiative-match:{$this->processingKey}");
     }
 
     public function goToStep(int $step): void
@@ -621,6 +663,7 @@ class FicheWizard extends Component
     {
         $this->processingComplete = true;
         $this->processingStep = 'done';
+        $this->initiativeMatchComplete = true;
 
         if ($targetStep >= 2) {
             if ($this->title === '') {
@@ -696,6 +739,8 @@ class FicheWizard extends Component
     private function clearAiSuggestions(): void
     {
         $this->processingFailReason = null;
+        $this->initiativeMatchComplete = false;
+        $this->initiativeMatchFailReason = null;
         $this->aiTitle = null;
         $this->aiDescription = null;
         $this->aiPreparation = null;
@@ -757,26 +802,38 @@ class FicheWizard extends Component
             $this->matchGoalTags((array) ($analysis['suggested_goals'] ?? []));
             $this->matchThemeTags((array) ($analysis['suggested_themes'] ?? []));
         }
+    }
 
+    /**
+     * @param  array<string, mixed>  $status
+     */
+    private function loadInitiativeMatches(array $status): void
+    {
         $matchedInitiativeData = $status['matched_initiatives'] ?? null;
-        if ($matchedInitiativeData && ! empty($matchedInitiativeData['matched_initiative_ids'])) {
-            $initiatives = Initiative::whereIn('id', $matchedInitiativeData['matched_initiative_ids'])->get();
-            $this->matchedInitiatives = [];
 
-            foreach ($matchedInitiativeData['matched_initiative_ids'] as $index => $id) {
-                $initiative = $initiatives->firstWhere('id', $id);
-                if ($initiative) {
-                    $this->matchedInitiatives[] = [
-                        'id' => $initiative->id,
-                        'title' => $initiative->title,
-                        'reason' => $matchedInitiativeData['match_reasons'][$index] ?? '',
-                    ];
-                }
-            }
+        if (! $matchedInitiativeData || empty($matchedInitiativeData['matched_initiative_ids'])) {
+            $this->initiativeMatchFailReason = 'no_matches';
 
-            if (! empty($this->matchedInitiatives)) {
-                $this->selectedInitiativeId = $this->matchedInitiatives[0]['id'];
+            return;
+        }
+
+        $initiatives = Initiative::whereIn('id', $matchedInitiativeData['matched_initiative_ids'])->get();
+        $this->matchedInitiatives = [];
+
+        foreach ($matchedInitiativeData['matched_initiative_ids'] as $index => $id) {
+            $initiative = $initiatives->firstWhere('id', $id);
+
+            if ($initiative) {
+                $this->matchedInitiatives[] = [
+                    'id' => $initiative->id,
+                    'title' => $initiative->title,
+                    'reason' => $matchedInitiativeData['match_reasons'][$index] ?? '',
+                ];
             }
+        }
+
+        if (! empty($this->matchedInitiatives)) {
+            $this->selectedInitiativeId = $this->matchedInitiatives[0]['id'];
         }
     }
 
