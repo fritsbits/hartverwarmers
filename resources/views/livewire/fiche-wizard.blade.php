@@ -514,22 +514,7 @@
                 </div>
                 <p class="wizard-lead mb-8 relative z-10">Schrijf de inhoud van je fiche, of neem de suggesties over</p>
 
-                {{-- Still processing banner --}}
-                @if(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'failed' && $processingStep !== 'skipped')
-                    <div class="mb-6 p-3 rounded-xl border bg-[var(--color-primary)]/5 border-[var(--color-primary)]/20">
-                        <div class="flex items-center gap-2 text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)] animate-spin shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" />
-                            </svg>
-                            <span class="text-[var(--color-primary)] font-medium">Suggesties worden gegenereerd...</span>
-                            @if($processingStale)
-                                <flux:button size="xs" variant="ghost" wire:click="skipProcessing" class="ml-auto">Overslaan</flux:button>
-                            @endif
-                        </div>
-                    </div>
-                @endif
-
-                {{-- Title with AI suggestion --}}
+{{-- Title with AI suggestion --}}
                 @php
                     $hasTitleSuggestion = $this->aiTitle !== null && !in_array('title', $dismissedSuggestions);
                     $isTitleApplied = in_array('title', $appliedSuggestions);
@@ -589,11 +574,6 @@
                                             :field="$field['field']"
                                             :is-applied="$isApplied"
                                         />
-                                    @elseif(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'skipped')
-                                        <div class="flex items-center gap-2 py-3 pl-2 text-sm text-[var(--color-text-secondary)]">
-                                            <svg class="w-4 h-4 shrink-0 animate-spin text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" /></svg>
-                                            <span>Suggestie wordt geladen…</span>
-                                        </div>
                                     @elseif($index === 0 && $processingComplete && $processingFailReason)
                                         <div class="flex gap-2.5 py-4 pl-2 pr-4 text-sm text-[var(--color-text-secondary)]">
                                             <flux:icon.information-circle class="w-5 h-5 shrink-0 mt-0.5" />
@@ -788,7 +768,7 @@
 
                     {{-- Nudge banner: shown when majority of optional content fields are empty --}}
                     <div
-                        x-show="showNudge"
+                        x-show="showNudge && shouldNudge"
                         x-cloak
                         role="alert"
                         class="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl px-4 py-3 bg-[var(--color-bg-accent-light)] border border-[var(--color-border-light)]"
@@ -829,7 +809,7 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-between" x-bind:class="showNudge ? 'opacity-40 pointer-events-none select-none' : ''"
+                    <div class="flex justify-between" x-bind:class="showNudge && shouldNudge ? 'opacity-40 pointer-events-none select-none' : ''"
 >
                         <flux:button
                             variant="ghost"

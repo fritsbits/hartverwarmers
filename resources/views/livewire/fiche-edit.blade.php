@@ -330,7 +330,7 @@
         >
             {{-- Nudge banner: shown when majority of optional content fields are empty --}}
             <div
-                x-show="showNudge"
+                x-show="showNudge && shouldNudge"
                 x-cloak
                 role="alert"
                 class="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 rounded-xl bg-[var(--color-bg-accent-light)] border border-[var(--color-border-light)]"
@@ -365,7 +365,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between" x-bind:class="showNudge ? 'opacity-40 pointer-events-none select-none' : ''"
+            <div class="flex items-center justify-between" x-bind:class="showNudge && shouldNudge ? 'opacity-40 pointer-events-none select-none' : ''"
 >
                 @if($fiche->published && $fiche->initiative)
                     <flux:button variant="ghost" icon="arrow-left" href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}">
