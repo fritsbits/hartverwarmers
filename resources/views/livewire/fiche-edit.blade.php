@@ -326,7 +326,7 @@
                     return (this.descTooShort || this.contentMissing) && !this.nudgeConfirmed;
                 }
             }"
-            class="space-y-3 pt-2"
+            class="sticky bottom-0 z-10 bg-white border-t border-[var(--color-border-light)] space-y-3 pt-4 pb-4"
         >
             {{-- Nudge banner: shown when majority of optional content fields are empty --}}
             <div

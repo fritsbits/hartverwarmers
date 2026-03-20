@@ -1007,6 +1007,9 @@ select[data-flux-select-native] {
 .wizard-form-footer {
     border-top: 1px solid var(--color-border-light);
     background: white;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
 }
 
 /* ==========================================================================
