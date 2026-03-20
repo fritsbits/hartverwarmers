@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Fiche;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class AdminDashboardController extends Controller
@@ -12,10 +13,18 @@ class AdminDashboardController extends Controller
     {
         $weeklyTrend = $this->weeklyTrend();
         $trendDelta = $this->trendDelta($weeklyTrend);
+        $lastFiches = $this->lastFiches();
+        $lastFiveAvg = $lastFiches->isNotEmpty()
+            ? (int) round($lastFiches->avg('presentation_score'))
+            : null;
+        $globalAvg = $this->globalAvg();
 
         return view('admin.dashboard', [
             'weeklyTrend' => $weeklyTrend,
             'trendDelta' => $trendDelta,
+            'lastFiches' => $lastFiches,
+            'lastFiveAvg' => $lastFiveAvg,
+            'globalAvg' => $globalAvg,
         ]);
     }
 
@@ -62,6 +71,27 @@ class AdminDashboardController extends Controller
         }
 
         return $result;
+    }
+
+    private function lastFiches(): Collection
+    {
+        return Fiche::query()
+            ->published()
+            ->whereNotNull('presentation_score')
+            ->whereNotNull('quality_assessed_at')
+            ->orderBy('quality_assessed_at', 'desc')
+            ->limit(5)
+            ->get(['id', 'title', 'presentation_score', 'quality_assessed_at']);
+    }
+
+    private function globalAvg(): ?int
+    {
+        $avg = Fiche::query()
+            ->published()
+            ->whereNotNull('presentation_score')
+            ->avg('presentation_score');
+
+        return $avg !== null ? (int) round($avg) : null;
     }
 
     /** @param array<int, array{avg_score: int|null}> $trend */

@@ -110,4 +110,50 @@ class AdminDashboardTest extends TestCase
         $this->assertEmpty(array_filter($trend, fn ($w) => $w['avg_score'] !== null));
         $this->assertNull($response->viewData('trendDelta'));
     }
+
+    public function test_last_five_fiches_ordered_by_quality_assessed_at(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Create 6 fiches so we can confirm only 5 returned
+        for ($i = 1; $i <= 6; $i++) {
+            Fiche::factory()->published()->withPresentationScore($i * 10)->create([
+                'quality_assessed_at' => now()->subDays(7 - $i),
+            ]);
+        }
+        // Unpublished — excluded
+        Fiche::factory()->withPresentationScore(99)->create(['quality_assessed_at' => now()]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        $fiches = $response->viewData('lastFiches');
+        $this->assertCount(5, $fiches);
+        // Most recent first: score 60 (day 1), 50, 40, 30, 20
+        $this->assertEquals(60, $fiches->first()->presentation_score);
+    }
+
+    public function test_last_five_average_vs_global_average(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // 3 old fiches score 20 each, 5 recent score 80 each
+        for ($i = 0; $i < 3; $i++) {
+            Fiche::factory()->published()->withPresentationScore(20)->create([
+                'quality_assessed_at' => now()->subMonths(2),
+            ]);
+        }
+        for ($i = 0; $i < 5; $i++) {
+            Fiche::factory()->published()->withPresentationScore(80)->create([
+                'quality_assessed_at' => now()->subDays($i),
+            ]);
+        }
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        $this->assertEquals(80, $response->viewData('lastFiveAvg'));
+        // Global: (3*20 + 5*80) / 8 = 460/8 = 57.5 → rounds to 58
+        $this->assertEquals(58, $response->viewData('globalAvg'));
+    }
 }
