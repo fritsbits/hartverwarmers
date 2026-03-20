@@ -538,20 +538,25 @@
                     <flux:label class="text-base font-body font-bold">Titel</flux:label>
                     <flux:description>Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
 
-                    <div class="grid grid-cols-1 @if($hasTitleSuggestion || $isTitleApplied) lg:grid-cols-12 @endif gap-8">
-                        <div class="@if($hasTitleSuggestion || $isTitleApplied) lg:col-span-7 @endif">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        <div class="lg:col-span-7">
                             <flux:input wire:model="title" class="text-base" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
                         </div>
-                        @if($this->aiTitle !== null)
-                            <div class="lg:col-span-5">
+                        <div class="lg:col-span-5">
+                            @if($this->aiTitle !== null)
                                 <x-ai-suggestion-panel
                                     :suggestion="e($this->aiTitle)"
                                     :rawSuggestion="$this->aiTitle"
                                     field="title"
                                     :is-applied="$isTitleApplied"
                                 />
-                            </div>
-                        @endif
+                            @elseif(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'skipped')
+                                <div class="flex items-center gap-2 py-3 pl-2 text-sm text-[var(--color-text-secondary)]">
+                                    <svg class="w-4 h-4 shrink-0 animate-spin text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" /></svg>
+                                    <span>Suggestie wordt geladen…</span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                     <flux:error name="title" />
                 </div>
@@ -586,6 +591,11 @@
                                             :field="$field['field']"
                                             :is-applied="$isApplied"
                                         />
+                                    @elseif(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'skipped')
+                                        <div class="flex items-center gap-2 py-3 pl-2 text-sm text-[var(--color-text-secondary)]">
+                                            <svg class="w-4 h-4 shrink-0 animate-spin text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" /></svg>
+                                            <span>Suggestie wordt geladen…</span>
+                                        </div>
                                     @elseif($index === 0 && $processingComplete && $processingFailReason)
                                         <div class="flex gap-2.5 py-4 pl-2 pr-4 text-sm text-[var(--color-text-secondary)]">
                                             <flux:icon.information-circle class="w-5 h-5 shrink-0 mt-0.5" />
