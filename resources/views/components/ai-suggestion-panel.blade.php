@@ -6,7 +6,7 @@
 
 <div
     x-data="{ applied: false, rawContent: @js($raw), field: @js($field) }"
-    class="flex gap-2.5 py-4 pl-2 pr-4 text-sm text-[var(--color-text-primary)]/70"
+    class="flex gap-2.5 pb-4 pl-2 pr-4 text-sm text-[var(--color-text-primary)]/70"
 >
     <flux:icon.sparkles class="w-5 h-5 shrink-0 text-[var(--color-primary)] mt-0.5" />
     <div class="min-w-0">
@@ -54,6 +54,7 @@
                                     const { doc } = editorEl.editor.state;
                                     editorEl.editor.commands.insertContentAt(doc.content.size, rawContent);
                                 }
+                                $wire[field] = editorEl.editor.getHTML();
                             }
                         }
                         $wire.trackApplied(field);

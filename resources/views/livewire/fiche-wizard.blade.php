@@ -535,11 +535,10 @@
                     $isTitleApplied = in_array('title', $appliedSuggestions);
                 @endphp
                 <div class="mb-9">
-                    <flux:label class="text-base font-body font-bold">Titel</flux:label>
-                    <flux:description>Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
-
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                         <div class="lg:col-span-7">
+                            <flux:label class="text-base font-body font-bold">Titel</flux:label>
+                            <flux:description>Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
                             <flux:input wire:model="title" class="text-base" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
                         </div>
                         <div class="lg:col-span-5">
@@ -569,12 +568,11 @@
                         @endphp
 
                         <div wire:key="content-{{ $field['field'] }}">
-                            <flux:label class="text-base font-body font-bold">{{ $field['label'] }} @if($field['required'] ?? false)<span class="field-tag ml-1">Verplicht</span>@endif</flux:label>
-                            <flux:description>{{ $field['description'] }}</flux:description>
-
                             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                                 {{-- User's editable field --}}
                                 <div class="lg:col-span-7">
+                                    <flux:label class="text-base font-body font-bold">{{ $field['label'] }} @if($field['required'] ?? false)<span class="field-tag ml-1">Verplicht</span>@endif</flux:label>
+                                    <flux:description>{{ $field['description'] }}</flux:description>
                                     <flux:editor
                                         wire:model="{{ $field['userProp'] }}"
                                         toolbar="bold | bullet ordered | link"
@@ -769,7 +767,8 @@
                             type="button"
                             class="w-full mb-3 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2.5 text-sm text-red-800 hover:bg-red-100 transition-colors text-left"
                             x-on:click="
-                                const firstError = document.querySelector('[data-flux-error]');
+                                const firstError = Array.from(document.querySelectorAll('[data-flux-error]'))
+                                    .find(el => el.offsetParent !== null && !el.classList.contains('hidden'));
                                 if (firstError) {
                                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 }
