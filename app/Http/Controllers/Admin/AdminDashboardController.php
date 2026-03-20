@@ -18,6 +18,8 @@ class AdminDashboardController extends Controller
             ? (int) round($lastFiches->avg('presentation_score'))
             : null;
         $globalAvg = $this->globalAvg();
+        $adoption = $this->adoptionStats();
+        $fieldAdoption = $this->fieldAdoption();
 
         return view('admin.dashboard', [
             'weeklyTrend' => $weeklyTrend,
@@ -25,6 +27,8 @@ class AdminDashboardController extends Controller
             'lastFiches' => $lastFiches,
             'lastFiveAvg' => $lastFiveAvg,
             'globalAvg' => $globalAvg,
+            ...$adoption,
+            'fieldAdoption' => $fieldAdoption,
         ]);
     }
 
@@ -103,5 +107,83 @@ class AdminDashboardController extends Controller
         }
 
         return $scored[array_key_last($scored)]['avg_score'] - $scored[0]['avg_score'];
+    }
+
+    /** @return array{withSuggestions: int, withAnyApplied: int, adoptionRate: int} */
+    private function adoptionStats(): array
+    {
+        $fiches = Fiche::query()
+            ->published()
+            ->whereNotNull('ai_suggestions')
+            ->get(['ai_suggestions']);
+
+        $fields = ['title', 'description', 'preparation', 'inventory', 'process'];
+
+        $withSuggestions = 0;
+        $withAnyApplied = 0;
+
+        foreach ($fiches as $fiche) {
+            $suggestions = $fiche->ai_suggestions;
+            $hasNonEmpty = collect($fields)->contains(
+                fn ($field) => isset($suggestions[$field]) && $suggestions[$field] !== ''
+            );
+
+            if (! $hasNonEmpty) {
+                continue;
+            }
+
+            $withSuggestions++;
+
+            if (! empty($suggestions['applied'])) {
+                $withAnyApplied++;
+            }
+        }
+
+        $adoptionRate = $withSuggestions > 0
+            ? (int) round($withAnyApplied / $withSuggestions * 100)
+            : 0;
+
+        return compact('withSuggestions', 'withAnyApplied', 'adoptionRate');
+    }
+
+    /** @return array<string, array{suggested: int, applied: int, rate: int, label: string}> */
+    private function fieldAdoption(): array
+    {
+        $fields = [
+            'title' => 'Titel',
+            'description' => 'Omschrijving',
+            'preparation' => 'Voorbereiding',
+            'inventory' => 'Benodigdheden',
+            'process' => 'Werkwijze',
+        ];
+
+        $fiches = Fiche::query()
+            ->published()
+            ->whereNotNull('ai_suggestions')
+            ->get(['ai_suggestions']);
+
+        $result = [];
+        foreach ($fields as $field => $label) {
+            $suggested = 0;
+            $applied = 0;
+
+            foreach ($fiches as $fiche) {
+                $suggestions = $fiche->ai_suggestions;
+
+                if (isset($suggestions[$field]) && $suggestions[$field] !== '') {
+                    $suggested++;
+                }
+
+                if (in_array($field, $suggestions['applied'] ?? [], true)) {
+                    $applied++;
+                }
+            }
+
+            $rate = $suggested > 0 ? (int) round($applied / $suggested * 100) : 0;
+
+            $result[$field] = compact('suggested', 'applied', 'rate') + ['label' => $label];
+        }
+
+        return $result;
     }
 }

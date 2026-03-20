@@ -156,4 +156,63 @@ class AdminDashboardTest extends TestCase
         // Global: (3*20 + 5*80) / 8 = 460/8 = 57.5 → rounds to 58
         $this->assertEquals(58, $response->viewData('globalAvg'));
     }
+
+    public function test_adoption_headline_excludes_fiches_with_only_empty_suggestions(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Has suggestions but all fields empty — should NOT count in denominator
+        Fiche::factory()->published()->create([
+            'ai_suggestions' => ['title' => '', 'description' => '', 'preparation' => '', 'inventory' => '', 'process' => '', 'applied' => []],
+        ]);
+        // Has real suggestions, none applied
+        Fiche::factory()->published()->withSuggestions()->create();
+        // Has real suggestions, one applied
+        Fiche::factory()->published()->withSuggestions(['applied' => ['title']])->create();
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        // Denominator = 2 (fiches with non-empty suggestions), numerator = 1
+        $this->assertEquals(2, $response->viewData('withSuggestions'));
+        $this->assertEquals(1, $response->viewData('withAnyApplied'));
+        $this->assertEquals(50, $response->viewData('adoptionRate'));
+    }
+
+    public function test_adoption_rate_is_zero_when_no_suggestions(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        $this->assertEquals(0, $response->viewData('adoptionRate'));
+    }
+
+    public function test_per_field_adoption_rates(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Fiche with title suggestion, title applied
+        Fiche::factory()->published()->withSuggestions(['applied' => ['title']])->create();
+        // Fiche with title suggestion, not applied
+        Fiche::factory()->published()->withSuggestions()->create();
+        // Fiche with title suggestion only (no description), not applied
+        Fiche::factory()->published()->create([
+            'ai_suggestions' => ['title' => 'Suggested title', 'description' => '', 'preparation' => '', 'inventory' => '', 'process' => '', 'applied' => []],
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        $fieldAdoption = $response->viewData('fieldAdoption');
+        // title: 3 had suggestion, 1 applied → 33%
+        $this->assertEquals(3, $fieldAdoption['title']['suggested']);
+        $this->assertEquals(1, $fieldAdoption['title']['applied']);
+        $this->assertEquals(33, $fieldAdoption['title']['rate']);
+        // description: 2 had non-empty suggestion, 0 applied
+        $this->assertEquals(2, $fieldAdoption['description']['suggested']);
+        $this->assertEquals(0, $fieldAdoption['description']['applied']);
+        $this->assertEquals(0, $fieldAdoption['description']['rate']);
+    }
 }
