@@ -794,46 +794,40 @@
                         x-show="showNudge"
                         x-cloak
                         role="alert"
-                        class="mb-3 flex gap-3 items-start rounded-xl px-4 py-3 bg-[var(--color-bg-accent-light)] border border-[var(--color-border-light)]"
+                        class="mb-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl px-4 py-3 bg-[var(--color-bg-accent-light)] border border-[var(--color-border-light)]"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[var(--color-primary)] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
                         </svg>
-                        <div class="flex-1 min-w-0">
-                            <p x-show="hasAi" class="text-sm text-[var(--color-text-secondary)]">
-                                <strong class="font-semibold text-[var(--color-text-primary)]">Je fiche kan nog rijker.</strong>
-                                We hebben suggesties klaarstaan voor voorbereiding, materiaallijst en werkwijze.
-                                <span class="text-[var(--color-primary)] font-medium">Kijk ze even na — het is zo gedaan.</span>
-                            </p>
-                            <p x-show="!hasAi" class="text-sm text-[var(--color-text-secondary)]">
-                                <strong class="font-semibold text-[var(--color-text-primary)]">Je fiche kan nog rijker.</strong>
-                                Voeg een voorbereiding, materiaallijst of werkwijze toe — dat maakt het voor collega's veel makkelijker.
-                                <span class="text-[var(--color-primary)] font-medium">Wil je even herbekijken?</span>
-                            </p>
-                            <div class="flex gap-2 mt-2 justify-end">
-                                <flux:button
-                                    variant="ghost"
-                                    size="sm"
-                                    x-on:click="
-                                        showNudge = false;
-                                        const target = document.querySelector('.wizard-suggestions');
-                                        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                    "
-                                >
-                                    Ja, herbekijk
-                                </flux:button>
-                                <flux:button
-                                    variant="primary"
-                                    size="sm"
-                                    x-on:click="
-                                        nudgeConfirmed = true;
-                                        showNudge = false;
-                                        if (pendingAction === 'publish') { $wire.publish(); } else { $wire.saveDraft(); }
-                                    "
-                                    x-text="pendingAction === 'publish' ? 'Toch publiceren' : 'Toch opslaan'"
-                                >
-                                </flux:button>
-                            </div>
+                        <p class="flex-1 text-sm text-[var(--color-text-secondary)] min-w-[12rem]">
+                            <strong class="font-semibold text-[var(--color-text-primary)]">Je fiche kan nog rijker.</strong>
+                            <span x-show="hasAi"> We hebben suggesties klaar voor voorbereiding en werkwijze.</span>
+                            <span x-show="!hasAi"> Voeg een voorbereiding of werkwijze toe voor collega's.</span>
+                        </p>
+                        <div class="flex gap-2 shrink-0">
+                            <flux:button
+                                variant="ghost"
+                                size="sm"
+                                x-on:click="
+                                    showNudge = false;
+                                    const target = document.querySelector('.wizard-suggestions');
+                                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                "
+                            >
+                                Herbekijk
+                            </flux:button>
+                            <flux:button
+                                variant="primary"
+                                size="sm"
+                                x-on:click="
+                                    nudgeConfirmed = true;
+                                    showNudge = false;
+                                    if (pendingAction === 'publish') { $wire.publish(); } else { $wire.saveDraft(); }
+                                "
+                            >
+                                <span x-show="pendingAction === 'publish'">Toch publiceren</span>
+                                <span x-show="pendingAction !== 'publish'">Toch opslaan</span>
+                            </flux:button>
                         </div>
                     </div>
 
