@@ -43,6 +43,8 @@ class AdminDashboardTest extends TestCase
         $response = $this->actingAs($user)->get(route('admin.dashboard'));
 
         $response->assertOk();
+        $response->assertSee('Presentatiekwaliteit');
+        $response->assertSee('Suggestie-adoptie');
     }
 
     public function test_weekly_trend_groups_by_quality_assessed_at(): void

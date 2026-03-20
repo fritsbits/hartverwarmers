@@ -29,6 +29,10 @@
                             @endif
                             @if(auth()->user()->isAdmin())
                                 <span class="w-px h-6 bg-[var(--color-border-light)] mx-1 shrink-0"></span>
+                                <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="chart-bar" variant="mini" class="size-4" />
+                                    Dashboard
+                                </a>
                                 <a href="{{ route('admin.design-system') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.design-system') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
                                     <flux:icon name="swatch" variant="mini" class="size-4" />
                                     Design
@@ -85,6 +89,7 @@
 
                             @if(auth()->user()->isAdmin())
                                 <flux:navlist.group heading="Admin" class="mt-4">
+                                    <flux:navlist.item href="{{ route('admin.dashboard') }}" icon="chart-bar" :current="request()->routeIs('admin.dashboard')">Dashboard</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.design-system') }}" icon="swatch" :current="request()->routeIs('admin.design-system')">Design Systeem</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.features') }}" icon="flag" :current="request()->routeIs('admin.features')">Features</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.users.index') }}" icon="users" :current="request()->routeIs('admin.users.*')">Gebruikers</flux:navlist.item>
