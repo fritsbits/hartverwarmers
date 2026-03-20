@@ -763,7 +763,7 @@
                             ($wire.inventory || '').trim(),
                             ($wire.process || '').trim(),
                         ].filter(v => v.length === 0).length;
-                        return emptyCount >= 2 && !nudgeConfirmed;
+                        return emptyCount >= 2 && !this.nudgeConfirmed;
                     }
                 }">
                     @if($errors->has('description') || $errors->has('title') || $errors->has('selectedInitiativeId'))
