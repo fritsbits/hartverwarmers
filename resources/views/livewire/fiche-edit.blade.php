@@ -340,9 +340,9 @@
                 </svg>
                 <p class="flex-1 text-sm text-[var(--color-text-secondary)] min-w-[12rem]">
                     <strong class="font-semibold text-[var(--color-text-primary)]">Je fiche kan nog rijker.</strong>
-                    <span x-show="descTooShort && contentMissing"> Je beschrijving is erg kort en je hebt geen voorbereiding of werkwijze ingevuld — een collega kan dit niet overnemen.</span>
-                    <span x-show="descTooShort && !contentMissing"> Je beschrijving is erg kort — voeg meer uitleg toe zodat collega's weten wat de activiteit precies inhoudt.</span>
-                    <span x-show="!descTooShort && contentMissing"> Voeg een voorbereiding of werkwijze toe — dat maakt het voor collega's veel makkelijker om dit over te nemen.</span>
+                    <span x-show="descTooShort && contentMissing"> De beschrijving mag nog wat langer, en voorbereiding of werkwijze ontbreekt nog. Met een beetje extra uitleg kunnen collega's dit zo overnemen.</span>
+                    <span x-show="descTooShort && !contentMissing"> De beschrijving mag nog wat langer — een paar zinnen extra helpen collega's meteen op weg.</span>
+                    <span x-show="!descTooShort && contentMissing"> Met een voorbereiding of werkwijze wordt je fiche veel completer — dan kunnen collega's er meteen mee aan de slag.</span>
                 </p>
                 <div class="flex gap-2 shrink-0">
                     <flux:button variant="ghost" size="sm" x-on:click="showNudge = false">
