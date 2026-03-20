@@ -1471,6 +1471,8 @@ class FicheWizardTest extends TestCase
         $this->assertEquals('idle', $component->get('processingStep'));
         $this->assertFalse($component->get('processingComplete'));
         $this->assertEmpty($component->get('uploadedFiles'));
+        $this->assertFalse($component->get('initiativeMatchComplete'));
+        $this->assertNull($component->get('initiativeMatchFailReason'));
     }
 
     public function test_process_fiche_uploads_dispatched_with_all_file_ids(): void
