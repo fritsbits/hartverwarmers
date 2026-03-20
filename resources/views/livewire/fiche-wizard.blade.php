@@ -547,6 +547,8 @@
                     </div>
                 </div>
 
+                <hr class="border-[var(--color-border-light)]">
+
                 <div class="space-y-9">
                     @foreach($contentFields as $index => $field)
                         @php

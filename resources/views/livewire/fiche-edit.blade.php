@@ -35,6 +35,8 @@
                 @endif
             </div>
 
+            <hr class="border-[var(--color-border-light)]">
+
             @php
                 $hasDescriptionSuggestion = !empty($aiSuggestions['description']);
                 $isDescriptionApplied = in_array('description', $appliedSuggestions);

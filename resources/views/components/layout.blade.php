@@ -1,4 +1,4 @@
-@props(['title' => null, 'description' => null, 'ogImage' => null, 'fullWidth' => false, 'bgClass' => null])
+@props(['title' => null, 'description' => null, 'ogImage' => null, 'fullWidth' => false, 'bgClass' => null, 'hideFooter' => false])
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -73,7 +73,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[var(--color-bg-cream)] border-t border-[var(--color-border-light)]">
+    <footer class="bg-[var(--color-bg-cream)] border-t border-[var(--color-border-light)]" @if($hideFooter) hidden @endif>
         <div class="max-w-6xl mx-auto px-6 pt-16 pb-8">
             {{-- Fat footer columns --}}
             <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
