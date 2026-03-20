@@ -89,7 +89,7 @@ class ProcessFicheUploads implements ShouldQueue
         $aiService = app(FicheAiService::class);
 
         if (! $aiService->isAvailable()) {
-            return ['analysis' => null, 'matched_initiatives' => null, 'reason' => 'ai_unavailable'];
+            return ['analysis' => null, 'reason' => 'ai_unavailable'];
         }
 
         $texts = File::whereIn('id', $this->fileIds)
@@ -98,44 +98,35 @@ class ProcessFicheUploads implements ShouldQueue
             ->toArray();
 
         if (empty($texts)) {
-            return ['analysis' => null, 'matched_initiatives' => null, 'reason' => 'no_text_extracted'];
+            return ['analysis' => null, 'reason' => 'no_text_extracted'];
         }
 
         $pipelineStart = microtime(true);
 
         $analysis = $aiService->analyzeFiles($texts, $this->title, $this->description);
 
-        $aiDescription = $analysis['description'] ?? null;
-        $matchedInitiatives = $aiService->matchInitiatives($this->title, $this->description, $aiDescription);
-
         $pipelineElapsed = round(microtime(true) - $pipelineStart, 2);
 
-        $this->logPipelineMetrics($analysis, $matchedInitiatives, $pipelineElapsed, $texts);
+        $this->logPipelineMetrics($analysis, $pipelineElapsed, $texts);
 
         return [
             'analysis' => $analysis,
-            'matched_initiatives' => $matchedInitiatives,
         ];
     }
 
     /**
      * @param  array<string, mixed>|null  $analysis
-     * @param  array<string, mixed>|null  $matchedInitiatives
      * @param  array<string>  $texts
      */
-    private function logPipelineMetrics(?array $analysis, ?array $matchedInitiatives, float $pipelineElapsed, array $texts): void
+    private function logPipelineMetrics(?array $analysis, float $pipelineElapsed, array $texts): void
     {
         $calls = [];
         $totalInputTokens = 0;
         $totalOutputTokens = 0;
         $totalCost = 0.0;
 
-        foreach (['analysis' => $analysis, 'matched_initiatives' => $matchedInitiatives] as $key => $result) {
-            if (! $result || empty($result['_meta'])) {
-                continue;
-            }
-
-            $meta = $result['_meta'];
+        if ($analysis && ! empty($analysis['_meta'])) {
+            $meta = $analysis['_meta'];
             $calls[] = [
                 'agent' => $meta['agent'],
                 'model' => $meta['model'],

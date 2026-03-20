@@ -2078,4 +2078,29 @@ class FicheWizardTest extends TestCase
         $this->assertNotNull($status);
         $this->assertContains($status['step'], ['done', 'failed']);
     }
+
+    public function test_process_fiche_uploads_result_does_not_include_matched_initiatives(): void
+    {
+        Storage::fake('public');
+
+        $file = File::factory()->create([
+            'fiche_id' => null,
+            'extracted_text' => 'Muziekbingo met bewoners.',
+        ]);
+
+        $key = 'test-key-full';
+
+        $job = new ProcessFicheUploads(
+            fileIds: [$file->id],
+            previewFileId: null,
+            cacheKey: $key,
+            title: 'Muziekbingo',
+            description: '',
+        );
+        $job->handle();
+
+        $status = Cache::get("fiche-processing:{$key}");
+        $this->assertNotNull($status);
+        $this->assertArrayNotHasKey('matched_initiatives', $status);
+    }
 }
