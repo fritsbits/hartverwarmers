@@ -756,6 +756,14 @@
                     get hasAi() {
                         return ($wire.processingFailReason === null) &&
                             ($wire.aiTitle !== null || $wire.aiDescription !== null || $wire.aiPreparation !== null);
+                    },
+                    get shouldNudge() {
+                        const emptyCount = [
+                            ($wire.preparation || '').trim(),
+                            ($wire.inventory || '').trim(),
+                            ($wire.process || '').trim(),
+                        ].filter(v => v.length === 0).length;
+                        return emptyCount >= 2 && !nudgeConfirmed;
                     }
                 }">
                     @if($errors->has('description') || $errors->has('title') || $errors->has('selectedInitiativeId'))
@@ -781,7 +789,7 @@
                         </button>
                     @endif
 
-                    {{-- Nudge banner: shown when 0 suggestions applied and AI was available --}}
+                    {{-- Nudge banner: shown when majority of optional content fields are empty --}}
                     <div
                         x-show="showNudge"
                         x-cloak
@@ -792,9 +800,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
                         </svg>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm text-[var(--color-text-secondary)]">
-                                <strong class="font-semibold text-[var(--color-text-primary)]">Je hebt nog geen suggesties toegepast.</strong>
-                                Een beschrijving, voorbereiding of materiaallijst maakt jouw fiche veel bruikbaarder voor collega's.
+                            <p x-show="hasAi" class="text-sm text-[var(--color-text-secondary)]">
+                                <strong class="font-semibold text-[var(--color-text-primary)]">Je fiche kan nog rijker.</strong>
+                                We hebben suggesties klaarstaan voor voorbereiding, materiaallijst en werkwijze.
+                                <span class="text-[var(--color-primary)] font-medium">Kijk ze even na — het is zo gedaan.</span>
+                            </p>
+                            <p x-show="!hasAi" class="text-sm text-[var(--color-text-secondary)]">
+                                <strong class="font-semibold text-[var(--color-text-primary)]">Je fiche kan nog rijker.</strong>
+                                Voeg een voorbereiding, materiaallijst of werkwijze toe — dat maakt het voor collega's veel makkelijker.
                                 <span class="text-[var(--color-primary)] font-medium">Wil je even herbekijken?</span>
                             </p>
                             <div class="flex gap-2 mt-2 justify-end">
@@ -837,7 +850,7 @@
                             <flux:button
                                 variant="ghost"
                                 x-on:click="
-                                    if ($wire.appliedSuggestions.length === 0 && hasAi && !nudgeConfirmed) {
+                                    if (shouldNudge) {
                                         pendingAction = 'saveDraft';
                                         showNudge = true;
                                     } else {
@@ -851,7 +864,7 @@
                                 variant="primary"
                                 icon="rocket-launch"
                                 x-on:click="
-                                    if ($wire.appliedSuggestions.length === 0 && hasAi && !nudgeConfirmed) {
+                                    if (shouldNudge) {
                                         pendingAction = 'publish';
                                         showNudge = true;
                                     } else {
