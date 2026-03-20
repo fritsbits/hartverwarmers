@@ -749,7 +749,7 @@
                 </div>
 
                 {{-- Step 3 footer --}}
-                <div x-show="$wire.currentStep === 3">
+                <div x-show="$wire.currentStep === 3" x-data="{ showNudge: false, nudgeConfirmed: false, pendingAction: null }">
                     @if($errors->has('description') || $errors->has('title') || $errors->has('selectedInitiativeId'))
                         <button
                             type="button"
@@ -772,15 +772,89 @@
                             </span>
                         </button>
                     @endif
+
+                    {{-- Nudge banner: shown when 0 suggestions applied and AI was available --}}
+                    {{-- Icon: use lightbulb or info-circle only — NOT a warning triangle (that is reserved for validation errors above) --}}
+                    <div
+                        x-show="showNudge"
+                        x-cloak
+                        class="mb-3 p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col gap-3"
+                    >
+                        <div class="flex gap-3 items-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                            </svg>
+                            <div>
+                                <p class="font-semibold text-amber-900 text-sm">Je hebt nog geen suggesties toegepast.</p>
+                                <p class="text-amber-800 text-sm mt-0.5">Je fiche is sterker als je een beschrijving, voorbereiding of materiaallijst toevoegt — dat maakt het veel makkelijker voor collega's om jouw activiteit over te nemen.</p>
+                                <p class="text-amber-800 text-sm mt-1 font-medium">Wil je even herbekijken?</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 justify-end">
+                            <flux:button
+                                variant="ghost"
+                                size="sm"
+                                x-on:click="
+                                    showNudge = false;
+                                    const target = document.querySelector('.wizard-suggestions') ?? document.querySelector('[x-show]');
+                                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                "
+                            >
+                                Ja, ik herbekijk het
+                            </flux:button>
+                            <flux:button
+                                variant="filled"
+                                size="sm"
+                                class="bg-amber-600 hover:bg-amber-700 text-white"
+                                x-on:click="
+                                    nudgeConfirmed = true;
+                                    showNudge = false;
+                                    if (pendingAction === 'publish') { $wire.publish(); } else { $wire.saveDraft(); }
+                                "
+                                x-text="pendingAction === 'publish' ? 'Nee, toch publiceren' : 'Nee, toch opslaan'"
+                            >
+                            </flux:button>
+                        </div>
+                    </div>
+
                     <div class="flex justify-between">
-                        <flux:button variant="ghost" wire:click="goToStep(2)" icon="arrow-left">
+                        <flux:button
+                            variant="ghost"
+                            icon="arrow-left"
+                            x-on:click="nudgeConfirmed = false; showNudge = false; $wire.goToStep(2)"
+                        >
                             Vorige
                         </flux:button>
                         <div class="flex gap-3">
-                            <flux:button variant="ghost" wire:click="saveDraft">
+                            <flux:button
+                                variant="ghost"
+                                x-on:click.prevent="
+                                    const hasAi = ($wire.processingFailReason === null) &&
+                                        ($wire.aiTitle !== null || $wire.aiDescription !== null || $wire.aiPreparation !== null);
+                                    if ($wire.appliedSuggestions.length === 0 && hasAi && !nudgeConfirmed) {
+                                        pendingAction = 'saveDraft';
+                                        showNudge = true;
+                                    } else {
+                                        $wire.saveDraft();
+                                    }
+                                "
+                            >
                                 Opslaan als concept
                             </flux:button>
-                            <flux:button variant="primary" wire:click="publish" icon="rocket-launch">
+                            <flux:button
+                                variant="primary"
+                                icon="rocket-launch"
+                                x-on:click.prevent="
+                                    const hasAi = ($wire.processingFailReason === null) &&
+                                        ($wire.aiTitle !== null || $wire.aiDescription !== null || $wire.aiPreparation !== null);
+                                    if ($wire.appliedSuggestions.length === 0 && hasAi && !nudgeConfirmed) {
+                                        pendingAction = 'publish';
+                                        showNudge = true;
+                                    } else {
+                                        $wire.publish();
+                                    }
+                                "
+                            >
                                 Publiceer
                             </flux:button>
                         </div>
