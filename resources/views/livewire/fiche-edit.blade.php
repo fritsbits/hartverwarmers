@@ -311,11 +311,12 @@
                     return $wire.aiSuggestions !== null;
                 },
                 get shouldNudge() {
-                    const emptyCount = [
-                        ($wire.preparation || '').trim(),
-                        ($wire.inventory || '').trim(),
-                        ($wire.process || '').trim(),
-                    ].filter(v => v.length === 0).length;
+                    const applied = $wire.appliedSuggestions || [];
+                    const fields = ['preparation', 'inventory', 'process'];
+                    const values = [$wire.preparation, $wire.inventory, $wire.process];
+                    const emptyCount = fields.filter((f, i) =>
+                        !applied.includes(f) && (values[i] || '').trim().length === 0
+                    ).length;
                     return emptyCount >= 2 && !this.nudgeConfirmed;
                 }
             }"
