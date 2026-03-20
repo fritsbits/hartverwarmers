@@ -40,9 +40,9 @@ class AdminDashboardController extends Controller
         // Build 8-slot array; missing weeks get null avg_score
         $result = [];
         for ($i = 7; $i >= 0; $i--) {
-            $date = now()->subWeeks($i);
+            $date = now()->subWeeks($i)->startOfWeek();
             $key = (int) $date->format('oW');
-            $label = $date->startOfWeek()->format('d M');
+            $label = $date->format('d M');
 
             if (isset($grouped[$key])) {
                 $scores = $grouped[$key];
