@@ -18,8 +18,9 @@ class AdminDashboardController extends Controller
             ? (int) round($lastFiches->avg('presentation_score'))
             : null;
         $globalAvg = $this->globalAvg();
-        $adoption = $this->adoptionStats();
-        $fieldAdoption = $this->fieldAdoption();
+        $fichesWithSuggestions = Fiche::query()->published()->whereNotNull('ai_suggestions')->get(['ai_suggestions']);
+        $adoption = $this->adoptionStats($fichesWithSuggestions);
+        $fieldAdoption = $this->fieldAdoption($fichesWithSuggestions);
 
         return view('admin.dashboard', [
             'weeklyTrend' => $weeklyTrend,
@@ -110,13 +111,8 @@ class AdminDashboardController extends Controller
     }
 
     /** @return array{withSuggestions: int, withAnyApplied: int, adoptionRate: int} */
-    private function adoptionStats(): array
+    private function adoptionStats(Collection $fiches): array
     {
-        $fiches = Fiche::query()
-            ->published()
-            ->whereNotNull('ai_suggestions')
-            ->get(['ai_suggestions']);
-
         $fields = ['title', 'description', 'preparation', 'inventory', 'process'];
 
         $withSuggestions = 0;
@@ -147,7 +143,7 @@ class AdminDashboardController extends Controller
     }
 
     /** @return array<string, array{suggested: int, applied: int, rate: int, label: string}> */
-    private function fieldAdoption(): array
+    private function fieldAdoption(Collection $fiches): array
     {
         $fields = [
             'title' => 'Titel',
@@ -156,11 +152,6 @@ class AdminDashboardController extends Controller
             'inventory' => 'Benodigdheden',
             'process' => 'Werkwijze',
         ];
-
-        $fiches = Fiche::query()
-            ->published()
-            ->whereNotNull('ai_suggestions')
-            ->get(['ai_suggestions']);
 
         $result = [];
         foreach ($fields as $field => $label) {
