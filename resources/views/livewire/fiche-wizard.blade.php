@@ -748,14 +748,20 @@
                         return ($wire.processingFailReason === null) &&
                             ($wire.aiTitle !== null || $wire.aiDescription !== null || $wire.aiPreparation !== null);
                     },
-                    get shouldNudge() {
+                    get descTooShort() {
+                        const text = ($wire.description || '').replace(/<[^>]*>/g, '').trim();
+                        return text.split(/\s+/).filter(w => w.length > 0).length < 15;
+                    },
+                    get contentMissing() {
                         const applied = $wire.appliedSuggestions || [];
                         const fields = ['preparation', 'inventory', 'process'];
                         const values = [$wire.preparation, $wire.inventory, $wire.process];
-                        const emptyCount = fields.filter((f, i) =>
-                            !applied.includes(f) && (values[i] || '').trim().length === 0
-                        ).length;
-                        return emptyCount >= 2 && !this.nudgeConfirmed;
+                        return fields.filter((f, i) =>
+                            !applied.includes(f) && (values[i] || '').replace(/<[^>]*>/g, '').trim().length === 0
+                        ).length >= 2;
+                    },
+                    get shouldNudge() {
+                        return (this.descTooShort || this.contentMissing) && !this.nudgeConfirmed;
                     }
                 }">
                     @if($errors->has('description') || $errors->has('title') || $errors->has('selectedInitiativeId'))
@@ -793,8 +799,9 @@
                         </svg>
                         <p class="flex-1 text-sm text-[var(--color-text-secondary)] min-w-[12rem]">
                             <strong class="font-semibold text-[var(--color-text-primary)]">Je fiche kan nog rijker.</strong>
-                            <span x-show="hasAi"> We hebben suggesties klaar voor voorbereiding en werkwijze.</span>
-                            <span x-show="!hasAi"> Voeg een voorbereiding of werkwijze toe voor collega's.</span>
+                            <span x-show="descTooShort && contentMissing"> Je beschrijving is erg kort en je hebt geen voorbereiding of werkwijze ingevuld — een collega kan dit niet overnemen.</span>
+                            <span x-show="descTooShort && !contentMissing"> Je beschrijving is erg kort — voeg meer uitleg toe zodat collega's weten wat de activiteit precies inhoudt.</span>
+                            <span x-show="!descTooShort && contentMissing"> Voeg een voorbereiding of werkwijze toe — dat maakt het voor collega's veel makkelijker om dit over te nemen.</span>
                         </p>
                         <div class="flex gap-2 shrink-0">
                             <flux:button
