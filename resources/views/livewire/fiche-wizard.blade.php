@@ -66,7 +66,7 @@
 
     {{-- FORM CONTENT (white bg) --}}
     <section class="overflow-x-hidden">
-        <div class="wizard-form max-w-6xl mx-auto px-6 pt-16 pb-12" @if(!$processingComplete && $processingStep !== 'idle') wire:poll.2s="checkProcessing" @endif>
+        <div class="wizard-form max-w-6xl mx-auto px-6 pt-16 pb-12" @if((!$processingComplete || !$initiativeMatchComplete) && $processingStep !== 'idle') wire:poll.2s="checkProcessing" @endif>
 
             {{-- ============================================== --}}
             {{-- Step 1: Bestanden                              --}}
@@ -436,43 +436,24 @@
                             <flux:label class="text-base font-body font-bold">Gekoppeld initiatief <span class="field-tag ml-1">Verplicht</span></flux:label>
                             <flux:description>Koppel deze fiche aan een initiatief</flux:description>
 
-                            {{-- Inline processing indicator --}}
-                            @if(!$processingComplete && $processingStep !== 'idle' && $processingStep !== 'skipped')
-                                @php
-                                    $step2InlineSteps = [
-                                        ['label' => 'Opladen', 'done' => true, 'active' => false],
-                                        ['label' => 'Tekst uitlezen', 'done' => in_array($processingStep, ['analyzing', 'done', 'failed']), 'active' => $processingStep === 'extracting'],
-                                        ['label' => 'Suggesties formuleren', 'done' => in_array($processingStep, ['done', 'failed']), 'active' => $processingStep === 'analyzing'],
-                                    ];
-                                @endphp
-                                <div class="mt-3 mb-4 flex items-center gap-3 text-sm text-[var(--color-text-secondary)]">
-                                    @foreach($step2InlineSteps as $stepInfo)
-                                        <span class="flex items-center gap-1.5 {{ $stepInfo['done'] ? 'text-[var(--color-primary)]' : ($stepInfo['active'] ? 'text-[var(--color-text-secondary)]' : 'text-[var(--color-text-secondary)]/50') }}">
-                                            @if($stepInfo['done'])
-                                                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="currentColor"/><path d="M7.5 12.5L10.5 15.5L16.5 9.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                            @elseif($stepInfo['active'])
-                                                <svg class="w-4 h-4 shrink-0 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" /></svg>
-                                            @else
-                                                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/></svg>
-                                            @endif
-                                            {{ $stepInfo['label'] }}
-                                        </span>
-                                    @endforeach
+                            {{-- Fast initiative match in progress --}}
+                            @if(!$initiativeMatchComplete && $processingStep !== 'idle' && $processingStep !== 'skipped')
+                                <div class="mt-3 mb-4 flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                                    <svg class="w-4 h-4 shrink-0 animate-spin text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.183" />
+                                    </svg>
+                                    <span>Initiatief zoeken…</span>
                                     @if($processingStale)
-                                        <button wire:click="skipProcessing" class="text-xs underline text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">Overslaan</button>
+                                        <button wire:click="skipProcessing" class="text-xs underline hover:text-[var(--color-text-primary)] ml-1">Overslaan</button>
                                     @endif
                                 </div>
                             @endif
 
                             {{-- No suggestions feedback --}}
-                            @if(($processingComplete && $processingFailReason && empty($matchedInitiatives)) || ($initiativeMatchComplete && $initiativeMatchFailReason && empty($matchedInitiatives)))
+                            @if($initiativeMatchComplete && ($initiativeMatchFailReason || empty($matchedInitiatives)))
                                 <div class="mt-3 mb-4 flex items-start gap-2.5 rounded-xl bg-[var(--color-bg-subtle)] border border-[var(--color-border-light)] px-4 py-3 text-sm text-[var(--color-text-secondary)]">
                                     <flux:icon.information-circle class="w-5 h-5 shrink-0 mt-0.5" />
-                                    @if($processingFailReason === 'no_text_extracted')
-                                        <p>We konden geen tekst uitlezen uit je bestanden (bv. bij foto's of gescande PDF's). Kies hieronder zelf een initiatief.</p>
-                                    @else
-                                        <p>We konden geen initiatief voorstellen. Kies hieronder zelf een initiatief.</p>
-                                    @endif
+                                    <p>We konden geen initiatief voorstellen. Kies hieronder zelf een initiatief.</p>
                                 </div>
                             @endif
 
