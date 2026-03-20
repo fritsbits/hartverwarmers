@@ -3,6 +3,7 @@
 namespace Tests\Feature\Fiches;
 
 use App\Jobs\GenerateFilePreview;
+use App\Jobs\MatchInitiativeByTitle;
 use App\Jobs\ProcessFicheUploads;
 use App\Livewire\FicheWizard;
 use App\Models\Fiche;
@@ -2053,5 +2054,28 @@ class FicheWizardTest extends TestCase
         $this->assertEquals('Muziekbingo met schlagers uit de jaren 60', $fiche->ai_suggestions['title']);
         $this->assertEquals('<p>AI description</p>', $fiche->ai_suggestions['description']);
         $this->assertEquals(['description'], $fiche->ai_suggestions['applied']);
+    }
+
+    public function test_match_initiative_by_title_job_writes_to_cache(): void
+    {
+        Initiative::factory()->published()->create([
+            'title' => 'Muziekactiviteit',
+            'description' => 'Een muzikale activiteit',
+        ]);
+
+        $key = 'test-key-123';
+
+        $job = new MatchInitiativeByTitle(
+            cacheKey: $key,
+            title: 'Muziekbingo',
+            description: '',
+        );
+
+        // AI is unavailable in test env — job must write done or failed, never crash
+        $job->handle();
+
+        $status = Cache::get("fiche-initiative-match:{$key}");
+        $this->assertNotNull($status);
+        $this->assertContains($status['step'], ['done', 'failed']);
     }
 }
