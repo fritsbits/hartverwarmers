@@ -465,7 +465,7 @@
                             @endif
 
                             {{-- No suggestions feedback --}}
-                            @if($processingComplete && $processingFailReason && empty($matchedInitiatives))
+                            @if(($processingComplete && $processingFailReason && empty($matchedInitiatives)) || ($initiativeMatchComplete && $initiativeMatchFailReason && empty($matchedInitiatives)))
                                 <div class="mt-3 mb-4 flex items-start gap-2.5 rounded-xl bg-[var(--color-bg-subtle)] border border-[var(--color-border-light)] px-4 py-3 text-sm text-[var(--color-text-secondary)]">
                                     <flux:icon.information-circle class="w-5 h-5 shrink-0 mt-0.5" />
                                     @if($processingFailReason === 'no_text_extracted')

@@ -834,6 +834,8 @@ class FicheWizard extends Component
 
         if (! empty($this->matchedInitiatives)) {
             $this->selectedInitiativeId = $this->matchedInitiatives[0]['id'];
+        } else {
+            $this->initiativeMatchFailReason = 'no_matches';
         }
     }
 
