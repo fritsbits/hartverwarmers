@@ -749,7 +749,15 @@
                 </div>
 
                 {{-- Step 3 footer --}}
-                <div x-show="$wire.currentStep === 3" x-data="{ showNudge: false, nudgeConfirmed: false, pendingAction: null }">
+                <div x-show="$wire.currentStep === 3" x-data="{
+                    showNudge: false,
+                    nudgeConfirmed: false,
+                    pendingAction: null,
+                    get hasAi() {
+                        return ($wire.processingFailReason === null) &&
+                            ($wire.aiTitle !== null || $wire.aiDescription !== null || $wire.aiPreparation !== null);
+                    }
+                }">
                     @if($errors->has('description') || $errors->has('title') || $errors->has('selectedInitiativeId'))
                         <button
                             type="button"
@@ -778,6 +786,7 @@
                     <div
                         x-show="showNudge"
                         x-cloak
+                        role="alert"
                         class="mb-3 p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col gap-3"
                     >
                         <div class="flex gap-3 items-start">
@@ -796,14 +805,14 @@
                                 size="sm"
                                 x-on:click="
                                     showNudge = false;
-                                    const target = document.querySelector('.wizard-suggestions') ?? document.querySelector('[x-show]');
+                                    const target = document.querySelector('.wizard-suggestions');
                                     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                 "
                             >
                                 Ja, ik herbekijk het
                             </flux:button>
                             <flux:button
-                                variant="filled"
+                                variant="ghost"
                                 size="sm"
                                 class="bg-amber-600 hover:bg-amber-700 text-white"
                                 x-on:click="
@@ -828,9 +837,7 @@
                         <div class="flex gap-3">
                             <flux:button
                                 variant="ghost"
-                                x-on:click.prevent="
-                                    const hasAi = ($wire.processingFailReason === null) &&
-                                        ($wire.aiTitle !== null || $wire.aiDescription !== null || $wire.aiPreparation !== null);
+                                x-on:click="
                                     if ($wire.appliedSuggestions.length === 0 && hasAi && !nudgeConfirmed) {
                                         pendingAction = 'saveDraft';
                                         showNudge = true;
@@ -844,9 +851,7 @@
                             <flux:button
                                 variant="primary"
                                 icon="rocket-launch"
-                                x-on:click.prevent="
-                                    const hasAi = ($wire.processingFailReason === null) &&
-                                        ($wire.aiTitle !== null || $wire.aiDescription !== null || $wire.aiPreparation !== null);
+                                x-on:click="
                                     if ($wire.appliedSuggestions.length === 0 && hasAi && !nudgeConfirmed) {
                                         pendingAction = 'publish';
                                         showNudge = true;
