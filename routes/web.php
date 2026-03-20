@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminFicheController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\HealthController;
@@ -83,6 +84,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('admin')->group(function () {
+        Route::get('/admin', AdminDashboardController::class)->name('admin.dashboard');
         Route::get('/admin/design-systeem', [DesignSystemController::class, 'index'])->name('admin.design-system');
         Route::get('/admin/features', [FeatureController::class, 'index'])->name('admin.features');
         Route::post('/admin/features/{feature}/toggle', [FeatureController::class, 'toggle'])->name('admin.features.toggle');
