@@ -66,7 +66,7 @@
 
     {{-- FORM CONTENT (white bg) --}}
     <section class="overflow-x-hidden">
-        <div class="wizard-form max-w-6xl mx-auto px-6 pt-16 pb-12" @if((!$processingComplete || !$initiativeMatchComplete) && $processingStep !== 'idle') wire:poll.2s="checkProcessing" @endif>
+        <div class="wizard-form max-w-6xl mx-auto px-6 pt-16 pb-24" @if((!$processingComplete || !$initiativeMatchComplete) && $processingStep !== 'idle') wire:poll.2s="checkProcessing" @endif>
 
             {{-- ============================================== --}}
             {{-- Step 1: Bestanden                              --}}
