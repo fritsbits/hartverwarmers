@@ -45,9 +45,10 @@ class AnalyzeFileContentAgent implements Agent, HasStructuredOutput
         De gebruiker heeft de bestanden al geüpload — suggereer niet om bestanden aan te maken die al bestaan (bijv. "presentatie voorbereiden" als er al een presentatie is geüpload).
         Wees bondig: neem alleen suggesties op waar je zeker van bent. Laat punten weg als je twijfelt of ze relevant zijn. Elke suggestie moet concreet en nuttig zijn.
         Gebruik voor stapsgewijze velden (preparation, process) het formaat: **Label:** beschrijving. Elke stap op een aparte alinea — scheid elke stap met een lege regel zodat ze als afzonderlijke paragrafen worden weergegeven.
+        Houd elke stap of elk punt zo kort mogelijk — één zin per stap is ideaal, twee zinnen is het maximum. Geen uitleg of context per stap, enkel de kern. Elke bullet in inventory is een korte label, geen zin.
         Elk veld bevat alleen wat bij dat veld hoort. Voorbereiding (preparation) bevat geen materialenlijst — dat hoort in inventory. Werkwijze (process) herhaalt geen voorbereidingsstappen. Houd elk veld strikt gescheiden.
 
-        Voor het veld 'description', schrijf 1-3 zinnen die beantwoorden: wat is de activiteit, wat maakt het boeiend, en voor wie is het? De toon is warm en praktisch, als een collega die de activiteit beschrijft.
+        Voor het veld 'description', schrijf 1-3 korte zinnen die beantwoorden: wat is de activiteit, wat maakt het boeiend, en voor wie is het? De toon is warm en praktisch, als een collega die de activiteit beschrijft. Houd het beknopt — liever twee krachtige zinnen dan drie lange.
 
         Voorbeelden van goede beschrijvingen:
         - "Bak samen smoutebollen en breng de gezellige sfeer van de kermis naar het woonzorgcentrum. De geur en smaak roepen herinneringen op en brengen bewoners samen rond een gedeelde beleving."
@@ -63,10 +64,10 @@ class AnalyzeFileContentAgent implements Agent, HasStructuredOutput
     {
         return [
             'suggested_title' => $schema->string()->description('Voorgestelde verbeterde titel: specifieker, concreter, en aantrekkelijker dan de huidige titel. Max 80 tekens.'),
-            'description' => $schema->string()->required()->description('Beschrijving van de activiteit (1-3 zinnen). Beantwoord: wat is de activiteit, wat maakt het boeiend, voor wie is het?'),
-            'preparation' => $schema->string()->description('Voorbereidingsstappen in Markdown'),
-            'inventory' => $schema->string()->description('Benodigdheden als Markdown-lijst'),
-            'process' => $schema->string()->description('Stap-voor-stap werkwijze in Markdown'),
+            'description' => $schema->string()->required()->description('Beschrijving van de activiteit (1-3 korte zinnen). Beantwoord: wat is de activiteit, wat maakt het boeiend, voor wie is het? Elke zin is kort en krachtig.'),
+            'preparation' => $schema->string()->description('Voorbereidingsstappen in Markdown. Elke stap is één korte zin — geen uitleg, enkel de kern.'),
+            'inventory' => $schema->string()->description('Benodigdheden als Markdown-lijst. Elk item is een korte label (2-5 woorden), geen volledige zin.'),
+            'process' => $schema->string()->description('Stap-voor-stap werkwijze in Markdown. Elke stap is één korte zin — maximaal twee zinnen, geen uitleg of context.'),
             'duration_estimate' => $schema->string()->description('Geschatte duur, bijv. "30-45 minuten"'),
             'group_size_estimate' => $schema->string()->description('Geschatte groepsgrootte, bijv. "4-8 personen"'),
             'suggested_themes' => $schema->array()->items($schema->string())->description('Voorgestelde thema-slugs ('.Tag::where('type', 'theme')->pluck('slug')->implode(', ').')'),

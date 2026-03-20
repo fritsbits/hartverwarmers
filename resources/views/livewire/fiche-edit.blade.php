@@ -44,7 +44,14 @@
                     <flux:field>
                         <flux:label class="text-base font-body font-bold">Beschrijving</flux:label>
                         <flux:description class="text-sm">Wat is je bedoeling met deze activiteit? Voor wie is ze bedoeld?</flux:description>
-                        <flux:editor wire:model="description" toolbar="bold | bullet ordered | link" placeholder="bijv. Een interactieve quiz waarbij bewoners liedjes herkennen. Geschikt voor groepen van 8-15 personen." />
+                        <div
+                            x-data="{ expanded: @js(!empty($description)) }"
+                            @click="expanded = true"
+                            class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
+                            :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
+                        >
+                            <flux:editor wire:model="description" toolbar="bold | bullet ordered | link" placeholder="bijv. Een interactieve quiz waarbij bewoners liedjes herkennen. Geschikt voor groepen van 8-15 personen." />
+                        </div>
                         <flux:error name="description" />
                     </flux:field>
                 </div>
@@ -81,7 +88,14 @@
                             <flux:field>
                                 <flux:label class="text-base font-body font-bold">Voorbereiding</flux:label>
                                 <flux:description class="text-sm">Wat moet er klaargezet of voorbereid worden?</flux:description>
-                                <flux:editor wire:model="preparation" toolbar="bold | bullet ordered | link" placeholder="bijv. Print de bingokaarten uit en test het geluid van de muziekinstallatie." />
+                                <div
+                                    x-data="{ expanded: @js(!empty($preparation)) }"
+                                    @click="expanded = true"
+                                    class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
+                                    :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
+                                >
+                                    <flux:editor wire:model="preparation" toolbar="bold | bullet ordered | link" placeholder="bijv. Print de bingokaarten uit en test het geluid van de muziekinstallatie." />
+                                </div>
                             </flux:field>
                         </div>
                         @if($hasPreparationSuggestion)
@@ -96,6 +110,8 @@
                         @endif
                     </div>
 
+                    <hr class="border-[var(--color-border-light)]">
+
                     @php
                         $hasInventorySuggestion = !empty($aiSuggestions['inventory']);
                         $isInventoryApplied = in_array('inventory', $appliedSuggestions);
@@ -105,7 +121,14 @@
                             <flux:field>
                                 <flux:label class="text-base font-body font-bold">Benodigdheden</flux:label>
                                 <flux:description class="text-sm">Welke materialen heb je nodig?</flux:description>
-                                <flux:editor wire:model="inventory" toolbar="bold | bullet ordered | link" placeholder="bijv. Bingokaarten, stiften, muziekinstallatie, prijsjes." />
+                                <div
+                                    x-data="{ expanded: @js(!empty($inventory)) }"
+                                    @click="expanded = true"
+                                    class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
+                                    :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
+                                >
+                                    <flux:editor wire:model="inventory" toolbar="bold | bullet ordered | link" placeholder="bijv. Bingokaarten, stiften, muziekinstallatie, prijsjes." />
+                                </div>
                             </flux:field>
                         </div>
                         @if($hasInventorySuggestion)
@@ -120,6 +143,8 @@
                         @endif
                     </div>
 
+                    <hr class="border-[var(--color-border-light)]">
+
                     @php
                         $hasProcessSuggestion = !empty($aiSuggestions['process']);
                         $isProcessApplied = in_array('process', $appliedSuggestions);
@@ -129,7 +154,14 @@
                             <flux:field>
                                 <flux:label class="text-base font-body font-bold">Werkwijze</flux:label>
                                 <flux:description class="text-sm">Beschrijf stap voor stap hoe de activiteit verloopt.</flux:description>
-                                <flux:editor wire:model="process" toolbar="bold | bullet ordered | link" placeholder="bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment. 3. Laat bewoners het liedje raden..." />
+                                <div
+                                    x-data="{ expanded: @js(!empty($process)) }"
+                                    @click="expanded = true"
+                                    class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
+                                    :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
+                                >
+                                    <flux:editor wire:model="process" toolbar="bold | bullet ordered | link" placeholder="bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment. 3. Laat bewoners het liedje raden..." />
+                                </div>
                             </flux:field>
                         </div>
                         @if($hasProcessSuggestion)
@@ -306,7 +338,6 @@
             x-data="{
                 showNudge: false,
                 nudgeConfirmed: false,
-                pendingAction: null,
                 get hasAi() {
                     return $wire.aiSuggestions !== null;
                 },
@@ -344,25 +375,11 @@
                     <span x-show="descTooShort && !contentMissing"> De beschrijving mag nog wat langer — een paar zinnen extra helpen collega's meteen op weg.</span>
                     <span x-show="!descTooShort && contentMissing"> Met een voorbereiding of werkwijze wordt je fiche veel completer — dan kunnen collega's er meteen mee aan de slag.</span>
                 </p>
-                <div class="flex gap-2 shrink-0">
-                    <flux:button variant="ghost" size="sm" x-on:click="showNudge = false">
-                        Herbekijk
-                    </flux:button>
-                    <flux:button
-                        variant="primary"
-                        size="sm"
-                        x-on:click="
-                            nudgeConfirmed = true;
-                            showNudge = false;
-                            if (pendingAction === 'publish') { $wire.publish(); }
-                            else if (pendingAction === 'save') { $wire.save(); }
-                            else { $wire.saveDraft(); }
-                        "
-                    >
-                        <span x-show="pendingAction === 'publish'">Toch publiceren</span>
-                        <span x-show="pendingAction !== 'publish'">Toch opslaan</span>
-                    </flux:button>
-                </div>
+                <button
+                    type="button"
+                    x-on:click="nudgeConfirmed = true; showNudge = false;"
+                    class="shrink-0 h-8 px-3 rounded-full bg-[var(--color-primary)] text-white text-sm font-medium flex items-center hover:opacity-90 transition-opacity"
+                >Negeer</button>
             </div>
 
             <div class="flex items-center justify-between" x-bind:class="showNudge && shouldNudge ? 'opacity-40 pointer-events-none select-none' : ''"
@@ -387,7 +404,6 @@
                             icon="check"
                             x-on:click="
                                 if (shouldNudge) {
-                                    pendingAction = 'save';
                                     showNudge = true;
                                 } else {
                                     $wire.save();
@@ -403,7 +419,6 @@
                             variant="ghost"
                             x-on:click="
                                 if (shouldNudge) {
-                                    pendingAction = 'saveDraft';
                                     showNudge = true;
                                 } else {
                                     $wire.saveDraft();
@@ -417,7 +432,6 @@
                             icon="rocket-launch"
                             x-on:click="
                                 if (shouldNudge) {
-                                    pendingAction = 'publish';
                                     showNudge = true;
                                 } else {
                                     $wire.publish();

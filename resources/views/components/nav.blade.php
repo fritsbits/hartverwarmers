@@ -170,15 +170,10 @@
                             <flux:menu.item href="{{ route('profile.security') }}" icon="lock-closed">Beveiliging</flux:menu.item>
                             @if(auth()->user()->isAdmin() || auth()->user()->isCurator())
                                 <flux:menu.separator />
-                                <div class="px-2 py-1.5">
-                                    <flux:text size="sm" class="pl-5 font-medium">{{ auth()->user()->isAdmin() ? 'Admin' : 'Curator' }}</flux:text>
-                                </div>
-                                <flux:menu.item href="{{ route('admin.fiches.index') }}" icon="document-text">Fiches</flux:menu.item>
                                 @if(auth()->user()->isAdmin())
-                                    <flux:menu.item href="{{ route('admin.design-system') }}" icon="swatch">Design Systeem</flux:menu.item>
-                                    <flux:menu.item href="{{ route('admin.features') }}" icon="flag">Features</flux:menu.item>
-                                    <flux:menu.item href="{{ route('admin.users.index') }}" icon="users">Gebruikers</flux:menu.item>
-                                    <flux:menu.item href="{{ route('admin.health') }}" icon="signal">Gezondheid</flux:menu.item>
+                                    <flux:menu.item href="{{ route('admin.dashboard') }}" icon="chart-bar">Beheer</flux:menu.item>
+                                @else
+                                    <flux:menu.item href="{{ route('admin.fiches.index') }}" icon="document-text">Fiches</flux:menu.item>
                                 @endif
                             @endif
                             <flux:menu.separator />

@@ -522,9 +522,12 @@
                 <div class="mb-9">
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                         <div class="lg:col-span-7">
-                            <flux:label class="text-base font-body font-bold">Titel</flux:label>
-                            <flux:description>Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
-                            <flux:input wire:model="title" class="text-base" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
+                            <flux:field>
+                                <flux:label class="text-base font-body font-bold">Titel</flux:label>
+                                <flux:description>Wees specifiek — wat maakt jouw activiteit uniek of bijzonder?</flux:description>
+                                <flux:input wire:model="title" class="text-base" placeholder="bijv. Muziekbingo met schlagers uit de jaren '60" />
+                                <flux:error name="title" />
+                            </flux:field>
                         </div>
                         <div class="lg:col-span-5">
                             @if($this->aiTitle !== null)
@@ -542,7 +545,6 @@
                             @endif
                         </div>
                     </div>
-                    <flux:error name="title" />
                 </div>
 
                 <div class="space-y-9">
@@ -550,19 +552,32 @@
                         @php
                             $hasAiSuggestion = $this->{$field['aiProp']} !== null && !in_array($field['field'], $dismissedSuggestions);
                             $isApplied = in_array($field['field'], $appliedSuggestions);
+                            $fieldHasContent = !empty($this->{$field['userProp']});
                         @endphp
 
+                        @if(!$loop->first)
+                            <hr class="border-[var(--color-border-light)]">
+                        @endif
                         <div wire:key="content-{{ $field['field'] }}">
                             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                                 {{-- User's editable field --}}
                                 <div class="lg:col-span-7">
-                                    <flux:label class="text-base font-body font-bold">{{ $field['label'] }} @if($field['required'] ?? false)<span class="field-tag ml-1">Verplicht</span>@endif</flux:label>
-                                    <flux:description>{{ $field['description'] }}</flux:description>
-                                    <flux:editor
-                                        wire:model="{{ $field['userProp'] }}"
-                                        toolbar="bold | bullet ordered | link"
-                                        placeholder="{{ $field['placeholder'] }}"
-                                    />
+                                    <flux:field>
+                                        <flux:label class="text-base font-body font-bold">{{ $field['label'] }} @if($field['required'] ?? false)<span class="field-tag ml-1">Verplicht</span>@endif</flux:label>
+                                        <flux:description>{{ $field['description'] }}</flux:description>
+                                        <div
+                                            x-data="{ expanded: @js($fieldHasContent) }"
+                                            @click="expanded = true"
+                                            class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
+                                            :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
+                                        >
+                                            <flux:editor
+                                                wire:model="{{ $field['userProp'] }}"
+                                                toolbar="bold | bullet ordered | link"
+                                                placeholder="{{ $field['placeholder'] }}"
+                                            />
+                                        </div>
+                                    </flux:field>
                                 </div>
 
                                 {{-- Suggestion panel (always reserved) --}}
@@ -721,7 +736,6 @@
                 <div x-show="$wire.currentStep === 3" x-data="{
                     showNudge: false,
                     nudgeConfirmed: false,
-                    pendingAction: null,
                     get hasAi() {
                         return ($wire.processingFailReason === null) &&
                             ($wire.aiTitle !== null || $wire.aiDescription !== null || $wire.aiPreparation !== null);
@@ -782,31 +796,11 @@
                             <span x-show="descTooShort && !contentMissing"> De beschrijving mag nog wat langer — een paar zinnen extra helpen collega's meteen op weg.</span>
                             <span x-show="!descTooShort && contentMissing"> Met een voorbereiding of werkwijze wordt je fiche veel completer — dan kunnen collega's er meteen mee aan de slag.</span>
                         </p>
-                        <div class="flex gap-2 shrink-0">
-                            <flux:button
-                                variant="ghost"
-                                size="sm"
-                                x-on:click="
-                                    showNudge = false;
-                                    const target = document.querySelector('.wizard-suggestions');
-                                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                "
-                            >
-                                Herbekijk
-                            </flux:button>
-                            <flux:button
-                                variant="primary"
-                                size="sm"
-                                x-on:click="
-                                    nudgeConfirmed = true;
-                                    showNudge = false;
-                                    if (pendingAction === 'publish') { $wire.publish(); } else { $wire.saveDraft(); }
-                                "
-                            >
-                                <span x-show="pendingAction === 'publish'">Toch publiceren</span>
-                                <span x-show="pendingAction !== 'publish'">Toch opslaan</span>
-                            </flux:button>
-                        </div>
+                        <button
+                            type="button"
+                            x-on:click="nudgeConfirmed = true; showNudge = false;"
+                            class="shrink-0 h-8 px-3 rounded-full bg-[var(--color-primary)] text-white text-sm font-medium flex items-center hover:opacity-90 transition-opacity"
+                        >Negeer</button>
                     </div>
 
                     <div class="flex justify-between" x-bind:class="showNudge && shouldNudge ? 'opacity-40 pointer-events-none select-none' : ''"
@@ -823,7 +817,6 @@
                                 variant="ghost"
                                 x-on:click="
                                     if (shouldNudge) {
-                                        pendingAction = 'saveDraft';
                                         showNudge = true;
                                     } else {
                                         $wire.saveDraft();
@@ -837,7 +830,6 @@
                                 icon="rocket-launch"
                                 x-on:click="
                                     if (shouldNudge) {
-                                        pendingAction = 'publish';
                                         showNudge = true;
                                     } else {
                                         $wire.publish();
