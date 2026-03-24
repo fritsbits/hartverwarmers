@@ -7,6 +7,7 @@ use App\Models\Initiative;
 use App\Models\Like;
 use App\Models\Tag;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Pennant\Feature;
@@ -157,7 +158,7 @@ class InitiativeTest extends TestCase
         $this->assertNotNull($loadedInitiative->latest_fiche_at);
         $this->assertEquals(
             $latestFiche->created_at->startOfSecond()->toDateTimeString(),
-            \Carbon\Carbon::parse($loadedInitiative->latest_fiche_at)->startOfSecond()->toDateTimeString()
+            Carbon::parse($loadedInitiative->latest_fiche_at)->startOfSecond()->toDateTimeString()
         );
     }
 
@@ -598,5 +599,36 @@ class InitiativeTest extends TestCase
         $response = $this->get(route('initiatives.show', $initiative).'?sort=invalid&q=test');
 
         $response->assertStatus(200);
+    }
+
+    public function test_initiatives_index_embeds_goal_labels_for_alpine(): void
+    {
+        Feature::define('diamant-goals', true);
+
+        $response = $this->get(route('initiatives.index'));
+
+        $response->assertStatus(200);
+        // goalLabels map must be present in Alpine x-data for dynamic headline to work
+        $response->assertSee('goalLabels', false);
+        $response->assertSee('doel-doen', false);
+    }
+
+    public function test_initiatives_index_shows_default_headline_when_no_goals_selected(): void
+    {
+        $response = $this->get(route('initiatives.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee("Praktijkfiches van collega's, gebundeld per initiatief", false);
+    }
+
+    public function test_initiatives_index_sort_subtitle_block_removed_from_source(): void
+    {
+        $response = $this->get(route('initiatives.index'));
+
+        $response->assertStatus(200);
+        // The subtitle <p> block used x-show="sortMode === ..." on its spans.
+        // The sort pill buttons use :class="sortMode === ..." (different attribute).
+        // So x-show="sortMode is unique to the now-removed subtitle block.
+        $response->assertDontSee('x-show="sortMode', false);
     }
 }

@@ -4,6 +4,7 @@
         selectedGoals: (new URLSearchParams(window.location.search).get('goals') || '').split(',').filter(Boolean),
         sortMode: new URLSearchParams(window.location.search).get('sort') || 'az',
         randomOrder: @js($randomOrder),
+        goalLabels: @js(collect($goals)->pluck('keyword', 'tagSlug')->all()),
         initiatives: @js($initiatives->map(fn ($i) => [
             'id' => $i->id,
             'title' => $i->title,
@@ -33,6 +34,13 @@
             this.selectedGoals = [];
             this.search = '';
             this.sortMode = 'az';
+        },
+        get headlineText() {
+            const labels = this.selectedGoals.map(s => this.goalLabels[s]).filter(Boolean);
+            if (labels.length === 0) return '';
+            if (labels.length === 1) return `Initiatieven over ${labels[0]}`;
+            const last = labels[labels.length - 1];
+            return `Initiatieven die zowel ${labels.slice(0, -1).join(', ')} als ${last} zijn`;
         },
         isVisible(id) {
             const item = this.initiatives.find(i => i.id === id);
@@ -74,7 +82,10 @@
 
                 <div class="max-w-3xl mb-8">
                     <span class="section-label section-label-hero">Initiatieven</span>
-                    <h1 class="text-3xl sm:text-4xl md:text-5xl mt-1">Praktijkfiches van collega's, gebundeld per initiatief</h1>
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl mt-1">
+                        <span x-show="selectedGoals.length === 0">Praktijkfiches van collega's, gebundeld per initiatief</span>
+                        <span x-show="selectedGoals.length > 0" x-text="headlineText" x-cloak></span>
+                    </h1>
                 </div>
 
                 {{-- Toolbar: Filter + Search + Sort --}}
@@ -202,16 +213,6 @@
 
         {{-- Grid section --}}
         <section>
-            {{-- Active sort clarification --}}
-            <div class="max-w-6xl mx-auto px-6">
-                <p class="text-sm text-[var(--color-text-secondary)] py-8" x-cloak>
-                    <span x-show="sortMode === 'az'">Alle initiatieven op alfabetische volgorde</span>
-                    <span x-show="sortMode === 'rich'">Initiatieven met de meeste uitwerkingen</span>
-                    <span x-show="sortMode === 'needs-love'">Initiatieven die nog uitwerkingen zoeken</span>
-                    <span x-show="sortMode === 'random'">Willekeurige volgorde</span>
-                </p>
-            </div>
-
             <div class="max-w-6xl mx-auto px-6 pt-0 pb-16">
 
                 {{-- Initiatives grid --}}
