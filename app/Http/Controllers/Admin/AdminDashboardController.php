@@ -11,14 +11,21 @@ class AdminDashboardController extends Controller
 {
     public function __invoke(): View
     {
-        $weeklyTrend = $this->weeklyTrend();
+        $range = request()->get('range', 'week');
+        $cutoff = $range === 'week' ? now()->subDays(7) : now()->subWeeks(4);
+
+        $weeklyTrend = $this->trend($range);
         $trendDelta = $this->trendDelta($weeklyTrend);
         $lastFiches = $this->lastFiches();
-        $lastFiveAvg = $lastFiches->isNotEmpty()
-            ? (int) round($lastFiches->avg('presentation_score'))
-            : null;
+        $scored = $lastFiches->filter(fn ($f) => $f->presentation_score !== null);
+        $lastFiveAvg = $scored->isNotEmpty() ? (int) round($scored->avg('presentation_score')) : null;
         $globalAvg = $this->globalAvg();
-        $fichesWithSuggestions = Fiche::query()->published()->whereNotNull('ai_suggestions')->get(['ai_suggestions']);
+        $fichesWithSuggestions = Fiche::query()
+            ->published()
+            ->whereNotNull('ai_suggestions')
+            ->where('created_at', '>=', $cutoff)
+            ->with('initiative:id,slug')
+            ->get(['id', 'title', 'slug', 'initiative_id', 'ai_suggestions']);
         $adoption = $this->adoptionStats($fichesWithSuggestions);
         $fieldAdoption = $this->fieldAdoption($fichesWithSuggestions);
 
@@ -28,22 +35,63 @@ class AdminDashboardController extends Controller
             'lastFiches' => $lastFiches,
             'lastFiveAvg' => $lastFiveAvg,
             'globalAvg' => $globalAvg,
+            'range' => $range,
             ...$adoption,
             'fieldAdoption' => $fieldAdoption,
+            'ficheAdoptionDetails' => $this->ficheAdoptionDetails($fichesWithSuggestions),
         ]);
     }
 
-    /** @return array<int, array{week_key: int, week_label: string, avg_score: int|null}> */
-    private function weeklyTrend(): array
+    /** @return array<int, array{week_key: string|int, week_label: string, avg_score: int|null}> */
+    private function trend(string $range): array
+    {
+        return $range === 'week' ? $this->dailyTrend() : $this->monthlyTrend();
+    }
+
+    /** @return array<int, array{week_key: string, week_label: string, avg_score: int|null}> */
+    private function dailyTrend(): array
     {
         $fiches = Fiche::query()
             ->where('published', true)
             ->whereNotNull('presentation_score')
             ->whereNotNull('quality_assessed_at')
-            ->where('quality_assessed_at', '>=', now()->subWeeks(8))
+            ->where('quality_assessed_at', '>=', now()->subDays(7))
             ->get(['presentation_score', 'quality_assessed_at']);
 
-        // Group in PHP using ISO year+week key (matches YEARWEEK mode 1)
+        $grouped = [];
+        foreach ($fiches as $fiche) {
+            $key = $fiche->quality_assessed_at->format('Y-m-d');
+            $grouped[$key][] = $fiche->presentation_score;
+        }
+
+        $result = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $key = $date->format('Y-m-d');
+            $label = $date->format('d M');
+
+            if (isset($grouped[$key])) {
+                $scores = $grouped[$key];
+                $avg = (int) round(array_sum($scores) / count($scores));
+                $result[] = ['week_key' => $key, 'week_label' => $label, 'avg_score' => $avg];
+            } else {
+                $result[] = ['week_key' => $key, 'week_label' => $label, 'avg_score' => null];
+            }
+        }
+
+        return $result;
+    }
+
+    /** @return array<int, array{week_key: int, week_label: string, avg_score: int|null}> */
+    private function monthlyTrend(): array
+    {
+        $fiches = Fiche::query()
+            ->where('published', true)
+            ->whereNotNull('presentation_score')
+            ->whereNotNull('quality_assessed_at')
+            ->where('quality_assessed_at', '>=', now()->subWeeks(4))
+            ->get(['presentation_score', 'quality_assessed_at']);
+
         $grouped = [];
         foreach ($fiches as $fiche) {
             $date = $fiche->quality_assessed_at;
@@ -51,9 +99,8 @@ class AdminDashboardController extends Controller
             $grouped[$key][] = $fiche->presentation_score;
         }
 
-        // Build 8-slot array; missing weeks get null avg_score
         $result = [];
-        for ($i = 7; $i >= 0; $i--) {
+        for ($i = 3; $i >= 0; $i--) {
             $date = now()->subWeeks($i)->startOfWeek();
             $key = (int) $date->format('oW');
             $label = $date->format('d M');
@@ -61,17 +108,9 @@ class AdminDashboardController extends Controller
             if (isset($grouped[$key])) {
                 $scores = $grouped[$key];
                 $avg = (int) round(array_sum($scores) / count($scores));
-                $result[] = [
-                    'week_key' => $key,
-                    'week_label' => $label,
-                    'avg_score' => $avg,
-                ];
+                $result[] = ['week_key' => $key, 'week_label' => $label, 'avg_score' => $avg];
             } else {
-                $result[] = [
-                    'week_key' => $key,
-                    'week_label' => $label,
-                    'avg_score' => null,
-                ];
+                $result[] = ['week_key' => $key, 'week_label' => $label, 'avg_score' => null];
             }
         }
 
@@ -82,11 +121,10 @@ class AdminDashboardController extends Controller
     {
         return Fiche::query()
             ->published()
-            ->whereNotNull('presentation_score')
-            ->whereNotNull('quality_assessed_at')
-            ->orderBy('quality_assessed_at', 'desc')
+            ->with('initiative:id,slug')
+            ->orderBy('created_at', 'desc')
             ->limit(5)
-            ->get(['id', 'title', 'presentation_score', 'quality_assessed_at']);
+            ->get(['id', 'title', 'slug', 'presentation_score', 'created_at', 'initiative_id']);
     }
 
     private function globalAvg(): ?int
@@ -140,6 +178,66 @@ class AdminDashboardController extends Controller
             : 0;
 
         return compact('withSuggestions', 'withAnyApplied', 'adoptionRate');
+    }
+
+    /**
+     * @param  Collection<int, Fiche>  $fiches
+     * @return array<int, array{title: string, url: string, fields: array<string, array{suggested: bool, applied: bool, label: string, shortLabel: string}>, adoptedCount: int, suggestedCount: int}>
+     */
+    private function ficheAdoptionDetails(Collection $fiches): array
+    {
+        $fieldMeta = [
+            'title' => ['label' => 'Titel', 'shortLabel' => 'Titel'],
+            'description' => ['label' => 'Omschrijving', 'shortLabel' => 'Omschr.'],
+            'preparation' => ['label' => 'Voorbereiding', 'shortLabel' => 'Voorb.'],
+            'inventory' => ['label' => 'Benodigdheden', 'shortLabel' => 'Ben.'],
+            'process' => ['label' => 'Werkwijze', 'shortLabel' => 'Werkw.'],
+        ];
+
+        $result = [];
+
+        foreach ($fiches as $fiche) {
+            $suggestions = $fiche->ai_suggestions;
+            $applied = $suggestions['applied'] ?? [];
+
+            $fields = [];
+            $suggestedCount = 0;
+            $adoptedCount = 0;
+
+            foreach ($fieldMeta as $key => $meta) {
+                $suggested = isset($suggestions[$key]) && $suggestions[$key] !== '';
+                $isApplied = in_array($key, $applied, true);
+
+                if ($suggested) {
+                    $suggestedCount++;
+                }
+
+                if ($suggested && $isApplied) {
+                    $adoptedCount++;
+                }
+
+                $fields[$key] = [
+                    'suggested' => $suggested,
+                    'applied' => $isApplied,
+                    'label' => $meta['label'],
+                    'shortLabel' => $meta['shortLabel'],
+                ];
+            }
+
+            if ($suggestedCount === 0) {
+                continue;
+            }
+
+            $result[] = [
+                'title' => $fiche->title,
+                'url' => route('fiches.show', [$fiche->initiative, $fiche]),
+                'fields' => $fields,
+                'adoptedCount' => $adoptedCount,
+                'suggestedCount' => $suggestedCount,
+            ];
+        }
+
+        return $result;
     }
 
     /** @return array<string, array{suggested: int, applied: int, rate: int, label: string}> */

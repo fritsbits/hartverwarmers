@@ -47,16 +47,43 @@ class AdminDashboardTest extends TestCase
         $response->assertSee('Suggestie-adoptie');
     }
 
-    public function test_weekly_trend_groups_by_quality_assessed_at(): void
+    public function test_default_range_is_week(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        // Two fiches assessed in different weeks
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        $this->assertEquals('week', $response->viewData('range'));
+        // Week range builds 7 daily slots
+        $this->assertCount(7, $response->viewData('weeklyTrend'));
+    }
+
+    public function test_month_range_builds_four_weekly_slots(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=month');
+
+        $response->assertOk();
+        $this->assertEquals('month', $response->viewData('range'));
+        $this->assertCount(4, $response->viewData('weeklyTrend'));
+    }
+
+    public function test_weekly_trend_groups_by_day_in_week_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Two fiches assessed on different days within the last 7 days
         Fiche::factory()->published()->withPresentationScore(40)->create([
-            'quality_assessed_at' => now()->subWeeks(2)->startOfWeek(),
+            'quality_assessed_at' => now()->subDays(3),
         ]);
         Fiche::factory()->published()->withPresentationScore(80)->create([
-            'quality_assessed_at' => now()->startOfWeek(),
+            'quality_assessed_at' => now(),
+        ]);
+        // Fiche outside the 7-day window — should be excluded
+        Fiche::factory()->published()->withPresentationScore(60)->create([
+            'quality_assessed_at' => now()->subDays(10),
         ]);
         // Unpublished should be excluded
         Fiche::factory()->withPresentationScore(99)->create([
@@ -71,7 +98,35 @@ class AdminDashboardTest extends TestCase
         $this->assertCount(2, $scored);
     }
 
-    public function test_trend_delta_hidden_when_fewer_than_two_weeks(): void
+    public function test_weekly_trend_groups_by_week_in_month_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Two fiches assessed in different weeks within the last 4 weeks
+        Fiche::factory()->published()->withPresentationScore(40)->create([
+            'quality_assessed_at' => now()->subWeeks(2)->startOfWeek(),
+        ]);
+        Fiche::factory()->published()->withPresentationScore(80)->create([
+            'quality_assessed_at' => now()->startOfWeek(),
+        ]);
+        // Fiche outside 4-week window — should be excluded
+        Fiche::factory()->published()->withPresentationScore(60)->create([
+            'quality_assessed_at' => now()->subWeeks(5),
+        ]);
+        // Unpublished should be excluded
+        Fiche::factory()->withPresentationScore(99)->create([
+            'quality_assessed_at' => now(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=month');
+
+        $response->assertOk();
+        $trend = $response->viewData('weeklyTrend');
+        $scored = array_filter($trend, fn ($w) => $w['avg_score'] !== null);
+        $this->assertCount(2, $scored);
+    }
+
+    public function test_trend_delta_hidden_when_fewer_than_two_slots(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
         Fiche::factory()->published()->withPresentationScore(60)->create([
@@ -84,10 +139,11 @@ class AdminDashboardTest extends TestCase
         $this->assertNull($response->viewData('trendDelta'));
     }
 
-    public function test_trend_delta_is_last_minus_first_week(): void
+    public function test_trend_delta_is_last_minus_first_slot(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
+        // Use month range so two different weeks are within window
         Fiche::factory()->published()->withPresentationScore(30)->create([
             'quality_assessed_at' => now()->subWeeks(3)->startOfWeek(),
         ]);
@@ -95,7 +151,7 @@ class AdminDashboardTest extends TestCase
             'quality_assessed_at' => now()->startOfWeek(),
         ]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=month');
 
         $response->assertOk();
         $this->assertEquals(40, $response->viewData('trendDelta'));
@@ -113,41 +169,68 @@ class AdminDashboardTest extends TestCase
         $this->assertNull($response->viewData('trendDelta'));
     }
 
-    public function test_last_five_fiches_ordered_by_quality_assessed_at(): void
+    public function test_last_five_fiches_ordered_by_created_at(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        // Create 6 fiches so we can confirm only 5 returned
+        // Create 6 fiches with explicit created_at so ordering is deterministic
         for ($i = 1; $i <= 6; $i++) {
             Fiche::factory()->published()->withPresentationScore($i * 10)->create([
-                'quality_assessed_at' => now()->subDays(7 - $i),
+                'created_at' => now()->subDays(7 - $i),
             ]);
         }
         // Unpublished — excluded
-        Fiche::factory()->withPresentationScore(99)->create(['quality_assessed_at' => now()]);
+        Fiche::factory()->withPresentationScore(99)->create(['created_at' => now()]);
 
         $response = $this->actingAs($admin)->get(route('admin.dashboard'));
 
         $response->assertOk();
         $fiches = $response->viewData('lastFiches');
         $this->assertCount(5, $fiches);
-        // Most recent first: score 60 (day 1), 50, 40, 30, 20
+        // Most recent first: score 60 (day 1 ago), then 50, 40, 30, 20
         $this->assertEquals(60, $fiches->first()->presentation_score);
+    }
+
+    public function test_last_five_fiches_includes_fiches_without_score(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // 3 recent fiches without a score, 3 older with a score
+        for ($i = 1; $i <= 3; $i++) {
+            Fiche::factory()->published()->create([
+                'presentation_score' => null,
+                'created_at' => now()->subDays($i),
+            ]);
+        }
+        for ($i = 4; $i <= 6; $i++) {
+            Fiche::factory()->published()->withPresentationScore(80)->create([
+                'created_at' => now()->subDays($i),
+            ]);
+        }
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        $fiches = $response->viewData('lastFiches');
+        $this->assertCount(5, $fiches);
+        // The 3 most recent (no score) come first
+        $this->assertNull($fiches->first()->presentation_score);
     }
 
     public function test_last_five_average_vs_global_average(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        // 3 old fiches score 20 each, 5 recent score 80 each
+        // 3 older fiches score 20 each
         for ($i = 0; $i < 3; $i++) {
             Fiche::factory()->published()->withPresentationScore(20)->create([
-                'quality_assessed_at' => now()->subMonths(2),
+                'created_at' => now()->subDays(10 + $i),
             ]);
         }
+        // 5 recent fiches score 80 each
         for ($i = 0; $i < 5; $i++) {
             Fiche::factory()->published()->withPresentationScore(80)->create([
-                'quality_assessed_at' => now()->subDays($i),
+                'created_at' => now()->subDays($i),
             ]);
         }
 
@@ -191,6 +274,27 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(0, $response->viewData('adoptionRate'));
     }
 
+    public function test_adoption_excludes_fiches_outside_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Fiche created 2 months ago — outside the default week range
+        Fiche::factory()->published()->withSuggestions(['applied' => ['title']])->create([
+            'created_at' => now()->subMonths(2),
+        ]);
+        // Fiche created today — inside the week range
+        Fiche::factory()->published()->withSuggestions()->create([
+            'created_at' => now(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        // Only the recent fiche is counted
+        $this->assertEquals(1, $response->viewData('withSuggestions'));
+        $this->assertEquals(0, $response->viewData('withAnyApplied'));
+    }
+
     public function test_per_field_adoption_rates(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
@@ -216,5 +320,32 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(2, $fieldAdoption['description']['suggested']);
         $this->assertEquals(0, $fieldAdoption['description']['applied']);
         $this->assertEquals(0, $fieldAdoption['description']['rate']);
+    }
+
+    public function test_fiche_adoption_details_contains_per_fiche_breakdown(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Fiche with title suggestion NOT applied, description suggestion applied
+        Fiche::factory()->published()->withSuggestions(['applied' => ['description']])->create();
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        $details = $response->viewData('ficheAdoptionDetails');
+        $this->assertCount(1, $details);
+
+        $detail = $details[0];
+        $this->assertNotEmpty($detail['title']);
+        $this->assertNotEmpty($detail['url']);
+        // title is suggested but not applied
+        $this->assertTrue($detail['fields']['title']['suggested']);
+        $this->assertFalse($detail['fields']['title']['applied']);
+        // description is suggested and applied
+        $this->assertTrue($detail['fields']['description']['suggested']);
+        $this->assertTrue($detail['fields']['description']['applied']);
+        // adoptedCount = 1 (description), suggestedCount >= 1
+        $this->assertEquals(1, $detail['adoptedCount']);
+        $this->assertGreaterThanOrEqual(1, $detail['suggestedCount']);
     }
 }

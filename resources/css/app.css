@@ -157,21 +157,25 @@
     line-height: var(--leading-normal);
     color: var(--color-text-primary);
     background-color: var(--color-bg-base);
+    font-kerning: normal;
+    font-variant-ligatures: common-ligatures;
   }
 
-  /* Headings h1-h3: Alan Sans Bold (700) */
+  /* Headings h1-h3: Aleo Bold (700) */
   h1, h2, h3 {
     font-family: var(--font-heading);
     font-weight: var(--font-weight-bold);
     line-height: var(--leading-tight);
     color: var(--color-text-primary);
+    text-rendering: optimizeLegibility;
   }
 
-  /* Headings h4-h6: Alan Sans Bold (700) */
+  /* Headings h4-h6: Aleo Bold (700) */
   h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: var(--font-weight-bold);
     line-height: var(--leading-tight);
+    text-rendering: optimizeLegibility;
   }
 
   h1 {
@@ -221,6 +225,10 @@
   }
 }
 
+@utility tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
 @layer components {
   /* Text CTA style (per brand guidelines - text + arrow, not filled buttons) */
   .cta-link {
@@ -257,8 +265,9 @@
   /* Section label (uppercase accent label) */
   .section-label {
     @apply inline-flex items-center gap-2 font-semibold uppercase tracking-widest mb-0;
-    font-size: 18px;
+    font-size: 1.125rem;
     color: var(--color-primary);
+    letter-spacing: 0.12em;
   }
 
   .section-label-hero {

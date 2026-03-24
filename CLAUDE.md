@@ -88,7 +88,9 @@ Component classes (`.cta-link`, `.btn-pill`, `.section-label`, `.content-card`, 
 
 ### Users
 
-Activity coordinators ("animatoren" / "begeleidsters") in Flemish residential care homes. Mostly women aged 35–55, practically oriented, not tech-native. They visit the platform during work breaks or preparation time, looking for concrete ideas they can implement tomorrow. The job to be done: **find, adapt, and share practical activity ideas** that genuinely improve residents' quality of life.
+**Public site**: Activity coordinators ("animatoren" / "begeleidsters") in Flemish residential care homes. Mostly women aged 35–55, practically oriented, not tech-native. They visit the platform during work breaks or preparation time, looking for concrete ideas they can implement tomorrow. The job to be done: **find, adapt, and share practical activity ideas** that genuinely improve residents' quality of life.
+
+**Admin section**: Used exclusively by the platform administrator (single person, technically proficient). Admin pages track platform health, content quality scores, and AI suggestion adoption. They are internal tools, not user-facing.
 
 ### Brand Personality
 
@@ -104,6 +106,43 @@ The primary emotion to evoke is **belonging and pride** — "I'm part of somethi
 - **Reference**: Airbnb-adjacent — clean layout, beautiful photography, content-first, but warmer and less polished. The interface should feel personal, not corporate.
 - **Anti-references**: Clinical healthcare portals, cold SaaS dashboards, overly minimal tech aesthetics. Nothing that feels institutional or sterile — the platform should be the opposite of the environment these users are trying to humanize.
 - **Theme**: Light mode only. The warm cream/orange palette doesn't translate well to dark mode and the audience has no expectation of it.
+- **Admin pages**: Same warm palette and typography, but slightly more data-dense and compact. More utilitarian — tighter spacing, smaller text, more information per screen. Still uses the same color tokens and components; just less generous whitespace than public pages.
+
+### Design Tokens (Quick Reference)
+
+```
+Primary orange:    #E8764B   (--color-primary)
+Primary hover:     #D4683F   (--color-primary-hover)
+Secondary teal:    #4CB7C5   (--color-secondary)
+Accent yellow:     #F4C44E   (--color-yellow)
+Accent purple:     #B57BB3   (--color-accent-purple)
+
+Text primary:      #231E1A   (--color-text-primary)
+Text secondary:    #756C65   (--color-text-secondary)
+Text tertiary:     #C0B5AE   (--color-text-tertiary) — meta icons, timestamps
+
+BG white:          #FFFFFF   (--color-bg-white)
+BG cream:          #FEF8F4   (--color-bg-cream) — page backgrounds
+BG subtle:         #F5F0EC   (--color-bg-subtle) — alternating sections
+BG accent light:   #FDF3EE   (--color-bg-accent-light) — active states
+
+Border light:      #EBE4DE   (--color-border-light)
+Border hover:      #DDD5CD   (--color-border-hover)
+
+Heading font:      Aleo (slab-serif, weight 700) — font-heading
+Body font:         Fira Sans (sans-serif, 300–700) — font-body
+Both from Bunny Fonts (not Google Fonts)
+```
+
+### Component Patterns
+
+- **Section labels**: `.section-label` — uppercase, tracking-widest, orange, 18px. Use above h2 headings.
+- **CTA links**: `.cta-link` — orange text + arrow that animates on hover. Prefer over filled buttons for secondary actions.
+- **Primary buttons**: `.btn-pill` — filled orange, rounded-full. Use sparingly — one primary CTA per section.
+- **Cards**: `<flux:card>` — white background, soft shadow. Never nest cards inside cards.
+- **Meta icons**: `w-4 h-4`, color `--color-text-tertiary`, `gap-1.5` icon-to-number, `gap-4` between pairs.
+- **flux:heading in cards**: Always add `class="font-heading font-bold"` — flux cards don't inherit heading styles automatically.
+- **Score colors**: green-700 (≥70), amber-600 (40–69), red-600 (<40). Plain colored text, no pill backgrounds.
 
 ### Design Principles
 
@@ -112,6 +151,7 @@ The primary emotion to evoke is **belonging and pride** — "I'm part of somethi
 3. **Accessible by default** — WCAG AA compliance. Good contrast on warm backgrounds, generous click targets, readable font sizes (base 17px for forms). Many users are 40–60 and not digitally fluent.
 4. **Encourage, don't overwhelm** — Progressive disclosure. Show the essential path clearly. Use section labels + outcome-driven headings to guide rather than dump. Celebrate contributions (confetti, kudos hearts) to reinforce participation.
 5. **Flemish Dutch, direct, imperative** — All copy is written in Belgian Dutch (Flemish), not Holland Dutch. Use the Dutch imperative form ("Registreer", "Ontdek", "Deel"). Headings are outcome-driven, not descriptive. The voice is a peer, not an authority. Avoid Hollandisms: no "hartstikke", "gewoon" as an adverb, "lekker" for non-food contexts, "dat klopt", or "super" as an intensifier. Use Flemish care vocabulary: "woonzorgcentrum", "bewoners", "begeleidster", "animatoren".
+6. **Data honesty in admin** — Admin visualizations show what's real, not what looks impressive. De-emphasize percentages when N is small. Count as primary stat, rate as secondary. "Te weinig data" over misleading 100%s.
 
 ===
 
