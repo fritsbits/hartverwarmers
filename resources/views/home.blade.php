@@ -263,13 +263,19 @@
                             <img src="/img/wonen-en-leven/maitemallentjer.jpg" alt="Maite Mallentjer" class="w-36 aspect-square object-cover">
                             <figcaption>Maite Mallentjer</figcaption>
                         </figure>
+                        @if(config('hartverwarmers.show_nadine_praet'))
                         <figure class="photo-polaroid -mt-2" style="transform: rotate(2deg)">
                             <img src="/img/wonen-en-leven/nadinepraet.jpg" alt="Nadine Praet" class="w-36 aspect-square object-cover">
                             <figcaption>Nadine Praet</figcaption>
                         </figure>
+                        @endif
                     </div>
                     <p class="text-sm text-[var(--color-text-secondary)] mt-4 text-center max-w-80">
-                        Ontwikkeld door Maite Mallentjer (AP Hogeschool) en Nadine Praet (Arteveldehogeschool Gent).
+                        @if(config('hartverwarmers.show_nadine_praet'))
+                            Ontwikkeld door Maite Mallentjer (AP Hogeschool) en Nadine Praet (Arteveldehogeschool Gent).
+                        @else
+                            Ontwikkeld door Maite Mallentjer (AP Hogeschool).
+                        @endif
                     </p>
                 </div>
             </div>
