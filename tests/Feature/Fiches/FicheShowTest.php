@@ -410,7 +410,7 @@ class FicheShowTest extends TestCase
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('Afdrukken');
+        $response->assertSee('Druk af');
         $response->assertSee('window.print()', false);
     }
 

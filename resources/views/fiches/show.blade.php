@@ -55,9 +55,10 @@
                 </flux:breadcrumbs>
 
                 <div class="flex items-center gap-2">
-                    <flux:button variant="ghost" size="sm" icon="printer" onclick="window.print()">
-                        Afdrukken
-                    </flux:button>
+                    <button onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border-light)] bg-white hover:border-[var(--color-border-hover)] transition-colors text-sm font-medium text-[var(--color-text-secondary)]">
+                        <flux:icon name="printer" class="w-4 h-4" />
+                        Druk af
+                    </button>
 
                     @auth
                         @if(auth()->user()->isAdmin())
@@ -331,7 +332,7 @@
                         @endphp
                         <div class="lg:sticky lg:top-24">
                             <div class="bg-white rounded-2xl border border-[var(--color-border-light)] overflow-hidden">
-                                <div class="flex items-center justify-center py-10" style="background-color: {{ $ficheColor['bg'] }}">
+                                <div class="flex items-center justify-center py-16" style="background-color: {{ $ficheColor['bg'] }}">
                                     @if($fiche->icon)
                                         <x-dynamic-component
                                             :component="'lucide-' . $fiche->icon"
