@@ -55,8 +55,12 @@
                 </flux:breadcrumbs>
 
                 <div class="flex items-center gap-2">
-                    <button onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border-light)] bg-white hover:border-[var(--color-border-hover)] transition-colors text-sm font-medium text-[var(--color-text-secondary)]">
-                        <flux:icon name="printer" class="w-4 h-4" />
+                    <button onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border-light)] bg-white hover:border-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)] transition-all text-sm font-medium" style="color: var(--color-primary)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                            <path d="M6 9V3h12v6"/>
+                            <rect x="6" y="14" width="12" height="8"/>
+                        </svg>
                         Druk af
                     </button>
 
