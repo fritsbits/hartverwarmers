@@ -462,4 +462,32 @@ class FicheShowTest extends TestCase
         $response->assertSee('Heb je deze activiteit uitgevoerd', false);
         $response->assertSee(route('fiches.show', [$initiative, $fiche]), false);
     }
+
+    public function test_fiche_show_displays_kudos_when_no_files(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Geef een hartje');
+        $response->assertSee('Bewaar als favoriet');
+    }
+
+    public function test_fiche_show_displays_icon_card_when_no_files(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'icon' => 'music',
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('lucide-music', false);
+    }
 }
