@@ -248,85 +248,112 @@
                 </div>
 
                 {{-- B: preview + download — order-3 on mobile (after description), right column on desktop --}}
-                @if($hasPreviewCarousel || $fiche->files->isNotEmpty())
-                    <div class="lg:col-span-2 order-3 lg:order-none">
-                        @if($hasPreviewCarousel)
-                            <div class="lg:sticky lg:top-24">
-                                <div class="bg-white rounded-2xl border border-[var(--color-border-light)] overflow-hidden shadow-[0_4px_24px_-4px_rgba(120,90,60,0.08)]">
-                                    {{-- Carousel inside the card --}}
-                                    <x-file-preview-carousel :files="$fiche->files" />
+                <div class="lg:col-span-2 order-3 lg:order-none">
+                    @if($hasPreviewCarousel)
+                        <div class="lg:sticky lg:top-24">
+                            <div class="bg-white rounded-2xl border border-[var(--color-border-light)] overflow-hidden shadow-[0_4px_24px_-4px_rgba(120,90,60,0.08)]">
+                                {{-- Carousel inside the card --}}
+                                <x-file-preview-carousel :files="$fiche->files" />
 
-                                    {{-- Download footer with post-download nudge --}}
-                                    @if($fileCount > 0)
-                                        <div class="px-5 pb-5 pt-1" x-data="{ downloaded: false }">
-                                            {{-- Download button --}}
-                                            <a x-show="!downloaded"
-                                               href="{{ route('fiches.download', [$initiative, $fiche]) }}"
-                                               x-on:click="setTimeout(() => { downloaded = true }, 600)"
-                                               class="flex items-center justify-between gap-3 w-full px-5 py-3.5 rounded-xl bg-[var(--color-primary)] text-white font-semibold transition-all hover:bg-[var(--color-primary-hover)] hover:shadow-md active:scale-[0.98] group">
-                                                <div class="flex items-center gap-3">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform group-hover:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                                    </svg>
-                                                    <span>Download {{ $uploadedFileCount === 1 ? 'bestand' : $uploadedFileCount . ' bestanden' }}@if($hasGeneratedPdfs) (incl. PDF)@endif</span>
-                                                </div>
-                                                <span class="text-sm font-normal text-white/70">{{ $sizeLabel }}</span>
-                                            </a>
+                                {{-- Download footer with post-download nudge --}}
+                                @if($fileCount > 0)
+                                    <div class="px-5 pb-5 pt-1" x-data="{ downloaded: false }">
+                                        {{-- Download button --}}
+                                        <a x-show="!downloaded"
+                                           href="{{ route('fiches.download', [$initiative, $fiche]) }}"
+                                           x-on:click="setTimeout(() => { downloaded = true }, 600)"
+                                           class="flex items-center justify-between gap-3 w-full px-5 py-3.5 rounded-xl bg-[var(--color-primary)] text-white font-semibold transition-all hover:bg-[var(--color-primary-hover)] hover:shadow-md active:scale-[0.98] group">
+                                            <div class="flex items-center gap-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform group-hover:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                                </svg>
+                                                <span>Download {{ $uploadedFileCount === 1 ? 'bestand' : $uploadedFileCount . ' bestanden' }}@if($hasGeneratedPdfs) (incl. PDF)@endif</span>
+                                            </div>
+                                            <span class="text-sm font-normal text-white/70">{{ $sizeLabel }}</span>
+                                        </a>
 
-                                            @include('fiches.partials.post-download-nudge')
-                                        </div>
+                                        @include('fiches.partials.post-download-nudge')
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Kudos & bookmark --}}
+                            <div class="mt-4">
+                                <livewire:fiche-kudos :fiche="$fiche" />
+                            </div>
+                        </div>
+                    @elseif($fiche->files->isNotEmpty())
+                        {{-- Files without preview — show file cards + download --}}
+                        <div class="space-y-3">
+                            @foreach($fiche->files as $file)
+                                @php
+                                    $ext = strtoupper(pathinfo($file->original_filename, PATHINFO_EXTENSION));
+                                @endphp
+                                <div class="bg-white rounded-xl p-4 border border-[var(--color-border-light)] flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-lg bg-[var(--color-bg-accent-light)] flex items-center justify-center shrink-0">
+                                        <span class="text-xs font-bold" style="color: var(--color-primary)">{{ $ext }}</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium truncate">{{ $file->original_filename }}</p>
+                                        <p class="text-xs text-[var(--color-text-secondary)]">
+                                            {{ $file->formattedSize() }}
+                                            @if($file->isGenerated())
+                                                <span class="section-label text-[10px] ml-1">PDF versie</span>
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+                            @endforeach
+
+                            <div class="mt-4" x-data="{ downloaded: false }">
+                                <a x-show="!downloaded"
+                                   href="{{ route('fiches.download', [$initiative, $fiche]) }}"
+                                   x-on:click="setTimeout(() => { downloaded = true }, 600)"
+                                   class="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-[var(--color-primary)] text-white font-semibold transition-all hover:bg-[var(--color-primary-hover)] hover:shadow-md active:scale-[0.98]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
+                                    Download
+                                </a>
+                                @include('fiches.partials.post-download-nudge')
+                            </div>
+
+                            {{-- Kudos & bookmark --}}
+                            <div class="mt-4">
+                                <livewire:fiche-kudos :fiche="$fiche" />
+                            </div>
+                        </div>
+                    @else
+                        {{-- No files — icon card + kudos --}}
+                        @php
+                            $ficheColors = config('fiche-icons.colors');
+                            $ficheColor = $ficheColors[$fiche->id % count($ficheColors)];
+                        @endphp
+                        <div class="lg:sticky lg:top-24">
+                            <div class="bg-white rounded-2xl border border-[var(--color-border-light)] overflow-hidden">
+                                <div class="flex items-center justify-center py-10" style="background-color: {{ $ficheColor['bg'] }}">
+                                    @if($fiche->icon)
+                                        <x-dynamic-component
+                                            :component="'lucide-' . $fiche->icon"
+                                            style="width: 104px; height: 104px; stroke-width: 1.1; color: {{ $ficheColor['text'] }}"
+                                        />
+                                    @else
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                             style="width: 104px; height: 104px; stroke-width: 1.1; color: {{ $ficheColor['text'] }}"
+                                             stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                        </svg>
                                     @endif
                                 </div>
-
-                                {{-- Kudos & bookmark --}}
-                                <div class="mt-4">
-                                    <livewire:fiche-kudos :fiche="$fiche" />
-                                </div>
                             </div>
-                        @else
-                            {{-- Files without preview — show file cards + download --}}
-                            <div class="space-y-3">
-                                @foreach($fiche->files as $file)
-                                    @php
-                                        $ext = strtoupper(pathinfo($file->original_filename, PATHINFO_EXTENSION));
-                                    @endphp
-                                    <div class="bg-white rounded-xl p-4 border border-[var(--color-border-light)] flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg bg-[var(--color-bg-accent-light)] flex items-center justify-center shrink-0">
-                                            <span class="text-xs font-bold" style="color: var(--color-primary)">{{ $ext }}</span>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium truncate">{{ $file->original_filename }}</p>
-                                            <p class="text-xs text-[var(--color-text-secondary)]">
-                                                {{ $file->formattedSize() }}
-                                                @if($file->isGenerated())
-                                                    <span class="section-label text-[10px] ml-1">PDF versie</span>
-                                                @endif
-                                            </p>
-                                        </div>
-                                    </div>
-                                @endforeach
 
-                                <div class="mt-4" x-data="{ downloaded: false }">
-                                    <a x-show="!downloaded"
-                                       href="{{ route('fiches.download', [$initiative, $fiche]) }}"
-                                       x-on:click="setTimeout(() => { downloaded = true }, 600)"
-                                       class="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-[var(--color-primary)] text-white font-semibold transition-all hover:bg-[var(--color-primary-hover)] hover:shadow-md active:scale-[0.98]">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                        </svg>
-                                        Download
-                                    </a>
-                                    @include('fiches.partials.post-download-nudge')
-                                </div>
-
-                                {{-- Kudos & bookmark --}}
-                                <div class="mt-4">
-                                    <livewire:fiche-kudos :fiche="$fiche" />
-                                </div>
+                            {{-- Kudos & bookmark --}}
+                            <div class="mt-4">
+                                <livewire:fiche-kudos :fiche="$fiche" />
                             </div>
-                        @endif
-                    </div>
-                @endif
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </section>

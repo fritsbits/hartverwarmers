@@ -488,6 +488,6 @@ class FicheShowTest extends TestCase
         $response = $this->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('lucide-music', false);
+        $response->assertSee('py-10', false);
     }
 }
