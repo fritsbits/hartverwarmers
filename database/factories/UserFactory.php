@@ -28,6 +28,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'email_verified_at' => now(),
             'notify_on_fiche_comments' => true,
+            'notify_on_onboarding_emails' => true,
         ];
     }
 
