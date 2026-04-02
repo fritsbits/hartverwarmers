@@ -27,7 +27,7 @@ class OnboardingCuratedActivitiesNotification extends Notification implements Sh
     public function toMail(object $notifiable): MailMessage
     {
         $fiches = Fiche::published()
-            ->with('initiative')
+            ->with(['initiative', 'user'])
             ->whereIn('id', self::CURATED_FICHE_IDS)
             ->get();
 
