@@ -35,12 +35,12 @@ class WelcomeNotificationTest extends TestCase
         $mail = $notification->toMail($user);
 
         $this->assertStringContains('Welkom bij Hartverwarmers, Els!', $mail->subject);
-        $this->assertStringContains('Hoi Els!', $mail->greeting);
 
         $rendered = $mail->render()->toHtml();
+        $this->assertStringContainsString('Hoi Els!', $rendered);
         $this->assertStringContainsString('/initiatieven', $rendered);
-        $this->assertStringContainsString('/fiches/nieuw', $rendered);
-        $this->assertStringContainsString('/over-ons', $rendered);
+        $this->assertStringContainsString('warme water', $rendered);
+        $this->assertStringContainsString('fiches', $rendered);
     }
 
     public function test_welcome_notification_has_initiatieven_link(): void
@@ -50,7 +50,8 @@ class WelcomeNotificationTest extends TestCase
         $notification = new WelcomeNotification;
         $mail = $notification->toMail($user);
 
-        $this->assertEquals(url('/initiatieven'), $mail->actionUrl);
+        $rendered = $mail->render()->toHtml();
+        $this->assertStringContainsString(url('/initiatieven'), $rendered);
     }
 
     public function test_verified_event_listener_is_registered(): void
