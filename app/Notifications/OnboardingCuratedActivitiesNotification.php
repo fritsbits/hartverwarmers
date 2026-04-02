@@ -17,7 +17,7 @@ class OnboardingCuratedActivitiesNotification extends Notification implements Sh
      *
      * @var array<int>
      */
-    private const CURATED_FICHE_IDS = [1, 2, 3];
+    private const CURATED_FICHE_IDS = [56, 61, 320];
 
     public function via(object $notifiable): array
     {
