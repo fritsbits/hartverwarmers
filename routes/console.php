@@ -13,3 +13,4 @@ Schedule::command('fiches:assign-icons')->everyFiveMinutes();
 Schedule::command('file:cleanup-orphans')->daily()->at('03:00');
 Schedule::command('queue:heartbeat')->everyFiveMinutes();
 Schedule::command('server:health-check')->everyFiveMinutes();
+Schedule::command('onboarding:send-emails')->dailyAt('08:00');
