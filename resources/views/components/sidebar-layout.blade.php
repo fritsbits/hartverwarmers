@@ -69,6 +69,30 @@
                                     <flux:icon name="envelope" variant="mini" class="size-4" />
                                     Reactie
                                 </a>
+                                <a href="{{ route('admin.mails.show', 'onboarding-curated-activities') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->is('*/mails/onboarding-curated-activities') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="envelope" variant="mini" class="size-4" />
+                                    Curated
+                                </a>
+                                <a href="{{ route('admin.mails.show', 'onboarding-top-five') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->is('*/mails/onboarding-top-five') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="envelope" variant="mini" class="size-4" />
+                                    Top 5
+                                </a>
+                                <a href="{{ route('admin.mails.show', 'onboarding-contribute-invitation') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->is('*/mails/onboarding-contribute-invitation') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="envelope" variant="mini" class="size-4" />
+                                    Bijdragen
+                                </a>
+                                <a href="{{ route('admin.mails.show', 'onboarding-first-bookmark') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->is('*/mails/onboarding-first-bookmark') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="envelope" variant="mini" class="size-4" />
+                                    1e bookmark
+                                </a>
+                                <a href="{{ route('admin.mails.show', 'onboarding-milestone-10-bookmarks') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->is('*/mails/onboarding-milestone-10-bookmarks') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="envelope" variant="mini" class="size-4" />
+                                    10 bookmarks
+                                </a>
+                                <a href="{{ route('admin.mails.show', 'onboarding-milestone-50-bookmarks') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->is('*/mails/onboarding-milestone-50-bookmarks') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="envelope" variant="mini" class="size-4" />
+                                    50 bookmarks
+                                </a>
                             @endif
                             </div>
                         </div>
@@ -100,6 +124,12 @@
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'reset-password') }}" :current="request()->is('*/mails/reset-password')">Wachtwoord reset</flux:navlist.item>
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'welcome') }}" :current="request()->is('*/mails/welcome')">Welkomstmail</flux:navlist.item>
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'fiche-comment') }}" :current="request()->is('*/mails/fiche-comment')">Reactie op fiche</flux:navlist.item>
+                                        <flux:navlist.item href="{{ route('admin.mails.show', 'onboarding-curated-activities') }}" :current="request()->is('*/mails/onboarding-curated-activities')">Curated activiteiten</flux:navlist.item>
+                                        <flux:navlist.item href="{{ route('admin.mails.show', 'onboarding-top-five') }}" :current="request()->is('*/mails/onboarding-top-five')">Top 5 activiteiten</flux:navlist.item>
+                                        <flux:navlist.item href="{{ route('admin.mails.show', 'onboarding-contribute-invitation') }}" :current="request()->is('*/mails/onboarding-contribute-invitation')">Uitnodiging bijdragen</flux:navlist.item>
+                                        <flux:navlist.item href="{{ route('admin.mails.show', 'onboarding-first-bookmark') }}" :current="request()->is('*/mails/onboarding-first-bookmark')">Eerste bookmark</flux:navlist.item>
+                                        <flux:navlist.item href="{{ route('admin.mails.show', 'onboarding-milestone-10-bookmarks') }}" :current="request()->is('*/mails/onboarding-milestone-10-bookmarks')">10 bookmarks</flux:navlist.item>
+                                        <flux:navlist.item href="{{ route('admin.mails.show', 'onboarding-milestone-50-bookmarks') }}" :current="request()->is('*/mails/onboarding-milestone-50-bookmarks')">50 bookmarks</flux:navlist.item>
                                     </flux:navlist.group>
                                 </flux:navlist.group>
                             @endif
