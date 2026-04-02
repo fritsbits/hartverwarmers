@@ -12,13 +12,6 @@ class OnboardingCuratedActivitiesNotification extends Notification implements Sh
 {
     use Queueable;
 
-    /**
-     * Handmatig gecureerde fiche-IDs. Pas aan naar actuele topfiches.
-     *
-     * @var array<int>
-     */
-    private const CURATED_FICHE_IDS = [56, 61, 320];
-
     public function via(object $notifiable): array
     {
         return ['mail'];
@@ -27,12 +20,14 @@ class OnboardingCuratedActivitiesNotification extends Notification implements Sh
     public function toMail(object $notifiable): MailMessage
     {
         $fiches = Fiche::published()
+            ->where('has_diamond', true)
             ->with(['initiative', 'user'])
-            ->whereIn('id', self::CURATED_FICHE_IDS)
+            ->inRandomOrder()
+            ->limit(3)
             ->get();
 
         return (new MailMessage)
-            ->subject("Activiteiten die andere animatoren al gebruiken, {$notifiable->first_name}")
+            ->subject("De diamantjes van Hartverwarmers — voor jou uitgekozen, {$notifiable->first_name}")
             ->markdown('emails.onboarding-curated-activities', [
                 'notifiable' => $notifiable,
                 'fiches' => $fiches,

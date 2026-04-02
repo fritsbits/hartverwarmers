@@ -25,7 +25,8 @@ class OnboardingMilestone50BookmarksNotification extends Notification implements
             ->greeting("Hoi {$notifiable->first_name}!")
             ->line("Wauw — je activiteiten werden intussen al **{$this->bookmarkCount} keer** bewaard. Dat is geen toeval: je deelt dingen die écht werken.")
             ->action('Bekijk je bijdragen', route('contributors.index'))
-            ->line('Deel gerust nog meer — de community is blij met elke nieuwe fiche.')
+            ->line('Benieuwd welke andere activiteiten zo populair zijn? Bekijk onze diamantjes — de beste fiches van de community, met de hand uitgekozen.')
+            ->action('Bekijk de diamantjes', url('/diamantjes'))
             ->salutation("Warme groet,\nHet Hartverwarmers-team");
     }
 }

@@ -1,7 +1,7 @@
 @component('mail::message')
 Hoi {{ $notifiable->first_name }}!
 
-We dachten dat deze activiteiten iets voor jou konden zijn. Andere animatoren gebruiken ze al in hun woonzorgcentrum.
+We hebben voor Hartverwarmers een kleine selectie fiches samengesteld die ons écht bijgebleven zijn — activiteiten die goed uitgewerkt zijn, die animatoren inspireren, en die het beste tonen wat de community te bieden heeft. Wij noemen ze onze **diamantjes**.
 
 @foreach($fiches as $fiche)
 @component('mail::panel')
@@ -13,6 +13,10 @@ We dachten dat deze activiteiten iets voor jou konden zijn. Andere animatoren ge
 @endcomponent
 
 @endforeach
+
+@component('mail::button', ['url' => url('/diamantjes')])
+Bekijk alle diamantjes
+@endcomponent
 
 Warme groet,
 Het Hartverwarmers-team
