@@ -22,13 +22,13 @@ Andere animatoren weten wat werkt. Hier zijn twee lijstjes: wat er nu populair i
 @endif
 
 @component('mail::button', ['url' => url('/initiatieven')])
-Bekijk alle activiteiten
+Bekijk alle initiatieven
 @endcomponent
 
 Wil je zelf iets delen? Het duurt maar een paar minuten en andere teams hebben er meteen iets aan.
 
 @component('mail::button', ['url' => url('/fiches/nieuw'), 'color' => 'white'])
-Deel je eerste activiteit
+Deel je eerste fiche
 @endcomponent
 
 Warme groet,

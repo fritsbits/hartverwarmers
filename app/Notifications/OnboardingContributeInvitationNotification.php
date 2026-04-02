@@ -21,9 +21,9 @@ class OnboardingContributeInvitationNotification extends Notification implements
         return (new MailMessage)
             ->subject("Jouw ervaring is waardevol voor andere WZC's")
             ->greeting("Hoi {$notifiable->first_name}!")
-            ->line('Je bent al een tijdje lid van Hartverwarmers. Andere animatoren delen elke week nieuwe activiteiten — en jij hebt vast ook dingen die werken.')
+            ->line('Je bent al een tijdje lid van Hartverwarmers. Andere animatoren delen elke week nieuwe fiches — en jij hebt vast ook dingen die werken.')
             ->line('Een fiche delen hoeft niet perfect te zijn. Een paar zinnen over wat je doet, voor wie het werkt, en hoe je het aanpakt. Dat is genoeg.')
-            ->action('Deel je eerste activiteit', url('/fiches/nieuw'))
+            ->action('Deel je eerste fiche', url('/fiches/nieuw'))
             ->line('Andere teams in Vlaanderen zullen je er dankbaar voor zijn.')
             ->salutation("Warme groet,\nHet Hartverwarmers-team");
     }

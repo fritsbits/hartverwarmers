@@ -30,7 +30,7 @@ class OnboardingMilestone10BookmarksNotification extends Notification implements
             ->get();
 
         return (new MailMessage)
-            ->subject("{$this->bookmarkCount} mensen bewaarden jouw activiteiten — bedankt!")
+            ->subject("{$this->bookmarkCount} mensen bewaarden jouw fiches — bedankt!")
             ->markdown('emails.onboarding-milestone-10-bookmarks', [
                 'notifiable' => $notifiable,
                 'bookmarkCount' => $this->bookmarkCount,
