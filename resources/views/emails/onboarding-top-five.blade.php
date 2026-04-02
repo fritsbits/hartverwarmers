@@ -1,12 +1,25 @@
 @component('mail::message')
 Hoi {{ $notifiable->first_name }}!
 
-Andere animatoren weten wat werkt. Dit zijn de 5 activiteiten die het meest bewaard worden op Hartverwarmers:
+Andere animatoren weten wat werkt. Hier zijn twee lijstjes: wat er nu populair is, en wat al jarenlang gedeeld wordt.
 
-@foreach($topFiches as $index => $fiche)
+@if($recentFiches->isNotEmpty())
+**Trending deze maand**
+
+@foreach($recentFiches as $index => $fiche)
 **{{ $index + 1 }}. [{{ $fiche->title }}]({{ route('fiches.show', [$fiche->initiative, $fiche]) }})**
 
 @endforeach
+@endif
+
+@if($allTimeFiches->isNotEmpty())
+**Tijdloze favorieten**
+
+@foreach($allTimeFiches as $index => $fiche)
+**{{ $index + 1 }}. [{{ $fiche->title }}]({{ route('fiches.show', [$fiche->initiative, $fiche]) }})**
+
+@endforeach
+@endif
 
 @component('mail::button', ['url' => url('/initiatieven')])
 Bekijk alle activiteiten

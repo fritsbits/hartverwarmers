@@ -19,18 +19,28 @@ class OnboardingTopFiveNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $topFiches = Fiche::published()
+        $recentFiches = Fiche::published()
+            ->with('initiative')
+            ->withCount(['likes as bookmarks_count' => fn ($q) => $q->where('type', 'bookmark')->where('created_at', '>=', now()->subDays(30))])
+            ->having('bookmarks_count', '>', 0)
+            ->orderByDesc('bookmarks_count')
+            ->limit(3)
+            ->get();
+
+        $allTimeFiches = Fiche::published()
             ->with('initiative')
             ->withCount(['likes as bookmarks_count' => fn ($q) => $q->where('type', 'bookmark')])
+            ->whereNotIn('id', $recentFiches->pluck('id'))
             ->orderByDesc('bookmarks_count')
-            ->limit(5)
+            ->limit(3)
             ->get();
 
         return (new MailMessage)
-            ->subject('De 5 meest bewaarde activiteiten op Hartverwarmers')
+            ->subject('Wat andere animatoren bewaren op Hartverwarmers')
             ->markdown('emails.onboarding-top-five', [
                 'notifiable' => $notifiable,
-                'topFiches' => $topFiches,
+                'recentFiches' => $recentFiches,
+                'allTimeFiches' => $allTimeFiches,
             ]);
     }
 }
