@@ -18,6 +18,7 @@
         </include>
     </source>
     <php>
+        <!-- TODO: Remove this line before merging to main — worktree-only path fix -->
         <env name="APP_BASE_PATH" value="/Users/frederikvincx/Herd/hartverwarmers/.worktrees/feature/onboarding-email-flow"/>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
