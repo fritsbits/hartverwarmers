@@ -24,7 +24,7 @@ class OnboardingMilestone10BookmarksNotification extends Notification implements
             ->subject("{$this->bookmarkCount} mensen bewaarden jouw activiteiten — bedankt!")
             ->greeting("Hoi {$notifiable->first_name}!")
             ->line("Je activiteiten werden al **{$this->bookmarkCount} keer** bewaard door andere animatoren. Ze gebruiken jouw werk om het leven van bewoners te verrijken.")
-            ->action('Bekijk je bijdragen', url('/bijdragers'))
+            ->action('Bekijk je bijdragen', route('contributors.index'))
             ->line('Wil je nog een activiteit delen? Elke fiche helpt iemand verder.')
             ->salutation("Warme groet,\nHet Hartverwarmers-team");
     }
