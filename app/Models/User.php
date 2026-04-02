@@ -113,6 +113,11 @@ class User extends Authenticatable
         return $this->hasMany(OnboardingEmailLog::class);
     }
 
+    public function interactions(): HasMany
+    {
+        return $this->hasMany(UserInteraction::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
