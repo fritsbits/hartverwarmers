@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('notify_on_onboarding_emails')->default(true)->after('notify_on_fiche_comments');
+            $table->boolean('notify_on_onboarding_emails')->default(true);
         });
     }
 

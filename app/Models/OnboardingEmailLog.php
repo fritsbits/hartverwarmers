@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OnboardingEmailLog extends Model
 {
+    protected $table = 'onboarding_email_log';
+
     const UPDATED_AT = null;
 
     const CREATED_AT = null;
