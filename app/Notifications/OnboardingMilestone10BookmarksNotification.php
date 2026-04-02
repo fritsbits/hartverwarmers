@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Initiative;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -20,12 +21,20 @@ class OnboardingMilestone10BookmarksNotification extends Notification implements
 
     public function toMail(object $notifiable): MailMessage
     {
+        $sparseInitiatives = Initiative::published()
+            ->withCount(['fiches as published_fiches_count' => fn ($q) => $q->where('published', true)])
+            ->having('published_fiches_count', '>=', 1)
+            ->having('published_fiches_count', '<=', 5)
+            ->inRandomOrder()
+            ->limit(3)
+            ->get();
+
         return (new MailMessage)
             ->subject("{$this->bookmarkCount} mensen bewaarden jouw activiteiten — bedankt!")
-            ->greeting("Hoi {$notifiable->first_name}!")
-            ->line("Je activiteiten werden al **{$this->bookmarkCount} keer** bewaard door andere animatoren. Ze gebruiken jouw werk om het leven van bewoners te verrijken.")
-            ->action('Bekijk je bijdragen', route('contributors.index'))
-            ->line('Wil je nog een activiteit delen? Elke fiche helpt iemand verder.')
-            ->salutation("Warme groet,\nHet Hartverwarmers-team");
+            ->markdown('emails.onboarding-milestone-10-bookmarks', [
+                'notifiable' => $notifiable,
+                'bookmarkCount' => $this->bookmarkCount,
+                'sparseInitiatives' => $sparseInitiatives,
+            ]);
     }
 }
