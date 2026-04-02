@@ -8,6 +8,7 @@ use App\Models\OnboardingEmailLog;
 use App\Notifications\OnboardingFirstBookmarkNotification;
 use App\Notifications\OnboardingMilestone10BookmarksNotification;
 use App\Notifications\OnboardingMilestone50BookmarksNotification;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 class LikeObserver
 {
@@ -50,8 +51,11 @@ class LikeObserver
             'mail_6' => new OnboardingMilestone50BookmarksNotification($totalBookmarks),
         };
 
-        $owner->notify($notification);
-
-        OnboardingEmailLog::create(['user_id' => $owner->id, 'mail_key' => $mailKey, 'sent_at' => now()]);
+        try {
+            OnboardingEmailLog::create(['user_id' => $owner->id, 'mail_key' => $mailKey, 'sent_at' => now()]);
+            $owner->notify($notification);
+        } catch (UniqueConstraintViolationException) {
+            // Concurrent bookmark — another request already logged this milestone
+        }
     }
 }
