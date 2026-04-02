@@ -6,6 +6,12 @@ use App\Models\Comment;
 use App\Models\Fiche;
 use App\Models\User;
 use App\Notifications\FicheCommentNotification;
+use App\Notifications\OnboardingContributeInvitationNotification;
+use App\Notifications\OnboardingCuratedActivitiesNotification;
+use App\Notifications\OnboardingFirstBookmarkNotification;
+use App\Notifications\OnboardingMilestone10BookmarksNotification;
+use App\Notifications\OnboardingMilestone50BookmarksNotification;
+use App\Notifications\OnboardingTopFiveNotification;
 use App\Notifications\WelcomeNotification;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
@@ -37,6 +43,30 @@ class MailPreviewController extends Controller
         'fiche-comment' => [
             'label' => 'Reactie op fiche',
             'description' => 'Notificatie naar de bijdrager wanneer iemand reageert op hun fiche.',
+        ],
+        'onboarding-curated-activities' => [
+            'label' => 'Onboarding — Curated activiteiten',
+            'description' => 'Dag 3–5 na activatie. 2–3 handgepickte fiches.',
+        ],
+        'onboarding-top-five' => [
+            'label' => 'Onboarding — Top 5 activiteiten',
+            'description' => 'Dag 7–14 na activatie. Dynamische top-5 meest gebookmarkte fiches.',
+        ],
+        'onboarding-contribute-invitation' => [
+            'label' => 'Onboarding — Uitnodiging bijdragen',
+            'description' => 'Dag 14–21, alleen als geen gepubliceerde fiche.',
+        ],
+        'onboarding-first-bookmark' => [
+            'label' => 'Onboarding — Eerste bookmark',
+            'description' => 'Realtime: eerste bookmark op een fiche van de gebruiker.',
+        ],
+        'onboarding-milestone-10-bookmarks' => [
+            'label' => 'Onboarding — 10 bookmarks',
+            'description' => 'Realtime: 10e bookmark op fiches van de gebruiker.',
+        ],
+        'onboarding-milestone-50-bookmarks' => [
+            'label' => 'Onboarding — 50 bookmarks',
+            'description' => 'Realtime: 50e bookmark op fiches van de gebruiker.',
         ],
     ];
 
@@ -103,6 +133,12 @@ class MailPreviewController extends Controller
             'reset-password' => (new ResetPassword('fake-token-for-preview'))->toMail($user),
             'welcome' => (new WelcomeNotification)->toMail($user),
             'fiche-comment' => $this->buildFicheCommentMailMessage(),
+            'onboarding-curated-activities' => (new OnboardingCuratedActivitiesNotification)->toMail($user),
+            'onboarding-top-five' => (new OnboardingTopFiveNotification)->toMail($user),
+            'onboarding-contribute-invitation' => (new OnboardingContributeInvitationNotification)->toMail($user),
+            'onboarding-first-bookmark' => $this->buildOnboardingFirstBookmarkMailMessage($user),
+            'onboarding-milestone-10-bookmarks' => (new OnboardingMilestone10BookmarksNotification(10))->toMail($user),
+            'onboarding-milestone-50-bookmarks' => (new OnboardingMilestone50BookmarksNotification(50))->toMail($user),
             default => throw new \InvalidArgumentException("Unknown email key: {$email}"),
         };
     }
@@ -116,6 +152,13 @@ class MailPreviewController extends Controller
         $comment->setRelation('user', $commenter);
 
         return (new FicheCommentNotification($comment))->toMail($fiche->user);
+    }
+
+    private function buildOnboardingFirstBookmarkMailMessage(mixed $user): MailMessage
+    {
+        $fiche = Fiche::published()->with(['user', 'initiative'])->firstOrFail();
+
+        return (new OnboardingFirstBookmarkNotification($fiche))->toMail($user);
     }
 
     private function renderMailMessage(MailMessage $message): string
