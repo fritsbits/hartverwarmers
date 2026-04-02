@@ -6,8 +6,8 @@ use App\Models\Comment;
 use App\Models\Fiche;
 use App\Models\User;
 use App\Notifications\FicheCommentNotification;
-use App\Notifications\OnboardingContributeInvitationNotification;
 use App\Notifications\OnboardingCuratedActivitiesNotification;
+use App\Notifications\OnboardingDownloadMilestoneNotification;
 use App\Notifications\OnboardingFirstBookmarkNotification;
 use App\Notifications\OnboardingMilestone10BookmarksNotification;
 use App\Notifications\OnboardingMilestone50BookmarksNotification;
@@ -53,8 +53,8 @@ class MailPreviewController extends Controller
             'description' => 'Dag 7–14 na activatie. Dynamische top-5 meest gebookmarkte fiches.',
         ],
         'onboarding-contribute-invitation' => [
-            'label' => 'Onboarding — Uitnodiging bijdragen',
-            'description' => 'Dag 14–21, alleen als geen gepubliceerde fiche.',
+            'label' => 'Onboarding — Download milestone',
+            'description' => 'Triggered after user has downloaded X activiteiten (based on fiche-download count).',
         ],
         'onboarding-first-bookmark' => [
             'label' => 'Onboarding — Eerste bookmark',
@@ -135,7 +135,7 @@ class MailPreviewController extends Controller
             'fiche-comment' => $this->buildFicheCommentMailMessage(),
             'onboarding-curated-activities' => (new OnboardingCuratedActivitiesNotification)->toMail($user),
             'onboarding-top-five' => (new OnboardingTopFiveNotification)->toMail($user),
-            'onboarding-contribute-invitation' => (new OnboardingContributeInvitationNotification)->toMail($user),
+            'onboarding-contribute-invitation' => (new OnboardingDownloadMilestoneNotification(5))->toMail($user),
             'onboarding-first-bookmark' => $this->buildOnboardingFirstBookmarkMailMessage($user),
             'onboarding-milestone-10-bookmarks' => (new OnboardingMilestone10BookmarksNotification(10))->toMail($user),
             'onboarding-milestone-50-bookmarks' => (new OnboardingMilestone50BookmarksNotification(50))->toMail($user),
