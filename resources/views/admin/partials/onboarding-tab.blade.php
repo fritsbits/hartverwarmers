@@ -65,7 +65,12 @@
                     <span class="text-sm text-[var(--color-text-tertiary)]">nog meten</span>
                 @endif
             </div>
-            <div class="h-1 bg-[var(--color-border-light)] rounded-full mb-1"></div>
+            <div class="h-1 bg-[var(--color-border-light)] rounded-full mb-1">
+                @if($onboardingStats['kr3Percentage'] !== null)
+                    <div class="h-1 bg-[var(--color-primary)] rounded-full"
+                         style="width: {{ min(100, $onboardingStats['kr3Percentage']) }}%"></div>
+                @endif
+            </div>
             <p class="text-xs text-[var(--color-text-tertiary)]">
                 @if($onboardingStats['kr3SentCount'] === 0)
                     target bepalen na eerste maand
