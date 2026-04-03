@@ -59,12 +59,17 @@ class SendOnboardingEmails extends Command
 
     private function sendMail2(): void
     {
-        $this->eligibleUsers('mail_2', 7)->chunk(100, function ($users): void {
-            foreach ($users as $user) {
-                $user->notify(new OnboardingTopFiveNotification);
-                $this->log($user, 'mail_2');
-            }
-        });
+        $this->eligibleUsers('mail_2', 7)
+            ->whereHas('onboardingEmailLogs', fn ($q) => $q
+                ->where('mail_key', 'mail_1')
+                ->where('sent_at', '<=', now()->subDay())
+            )
+            ->chunk(100, function ($users): void {
+                foreach ($users as $user) {
+                    $user->notify(new OnboardingTopFiveNotification);
+                    $this->log($user, 'mail_2');
+                }
+            });
     }
 
     private function sendDownloadFollowupEmails(): void

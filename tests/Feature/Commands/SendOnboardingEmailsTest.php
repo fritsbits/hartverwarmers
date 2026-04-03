@@ -77,15 +77,37 @@ class SendOnboardingEmailsTest extends TestCase
 
     // ── Mail 2 ────────────────────────────────────────────────────────────────
 
-    public function test_mail_2_sent_when_verified_7_or_more_days_ago(): void
+    public function test_mail_2_sent_when_verified_7_or_more_days_ago_and_mail_1_sent_yesterday(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create(['email_verified_at' => now()->subDays(7)]);
+        OnboardingEmailLog::create(['user_id' => $user->id, 'mail_key' => 'mail_1', 'sent_at' => now()->subDay()]);
+
+        $this->artisan('onboarding:send-emails')->assertExitCode(0);
+
+        Notification::assertSentTo($user, OnboardingTopFiveNotification::class);
+        $this->assertDatabaseHas('onboarding_email_log', ['user_id' => $user->id, 'mail_key' => 'mail_2']);
+    }
+
+    public function test_mail_2_not_sent_when_mail_1_sent_today(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create(['email_verified_at' => now()->subDays(7)]);
+        OnboardingEmailLog::create(['user_id' => $user->id, 'mail_key' => 'mail_1', 'sent_at' => now()]);
+
+        $this->artisan('onboarding:send-emails')->assertExitCode(0);
+
+        Notification::assertNotSentTo($user, OnboardingTopFiveNotification::class);
+    }
+
+    public function test_mail_2_not_sent_when_mail_1_not_yet_sent(): void
     {
         Notification::fake();
         $user = User::factory()->create(['email_verified_at' => now()->subDays(7)]);
 
         $this->artisan('onboarding:send-emails')->assertExitCode(0);
 
-        Notification::assertSentTo($user, OnboardingTopFiveNotification::class);
-        $this->assertDatabaseHas('onboarding_email_log', ['user_id' => $user->id, 'mail_key' => 'mail_2']);
+        Notification::assertNotSentTo($user, OnboardingTopFiveNotification::class);
     }
 
     public function test_mail_2_not_sent_when_verified_less_than_7_days_ago(): void
@@ -112,6 +134,7 @@ class SendOnboardingEmailsTest extends TestCase
     {
         Notification::fake();
         $user = User::factory()->create(['email_verified_at' => now()->subDays(10)]);
+        OnboardingEmailLog::create(['user_id' => $user->id, 'mail_key' => 'mail_1', 'sent_at' => now()->subDays(7)]);
         OnboardingEmailLog::create(['user_id' => $user->id, 'mail_key' => 'mail_2', 'sent_at' => now()]);
 
         $this->artisan('onboarding:send-emails')->assertExitCode(0);
