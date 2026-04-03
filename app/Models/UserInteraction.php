@@ -10,7 +10,7 @@ class UserInteraction extends Model
 {
     const UPDATED_AT = null;
 
-    protected $fillable = ['user_id', 'interactable_type', 'interactable_id', 'type'];
+    protected $fillable = ['user_id', 'interactable_type', 'interactable_id', 'type', 'created_at'];
 
     public function interactable(): MorphTo
     {
