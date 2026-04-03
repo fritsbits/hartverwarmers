@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -15,9 +14,6 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('notify_on_onboarding_emails')->default(true);
         });
-
-        // Opt out existing users — only newly registered users should receive onboarding emails
-        DB::table('users')->whereNotNull('email_verified_at')->update(['notify_on_onboarding_emails' => false]);
     }
 
     /**
