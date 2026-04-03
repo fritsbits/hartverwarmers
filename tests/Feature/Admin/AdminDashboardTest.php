@@ -377,8 +377,9 @@ class AdminDashboardTest extends TestCase
             'email_verified_at' => now()->subDays(5),
             'first_return_at' => null,
         ]);
-        // Old user — outside 30-day cohort
+        // Old user — outside 30-day cohort (created_at defines the cohort window)
         User::factory()->create([
+            'created_at' => now()->subDays(35),
             'email_verified_at' => now()->subDays(35),
             'first_return_at' => now()->subDays(34),
         ]);

@@ -300,9 +300,11 @@ class AdminDashboardController extends Controller
     {
         $cohortStart = now()->subDays(30);
 
+        // Cohort = users whose account was created within the window (not email_verified_at,
+        // which was bulk-reset for legacy users and is unreliable as a "joined" signal).
         $newUsers = User::query()
             ->whereNotNull('email_verified_at')
-            ->where('email_verified_at', '>=', $cohortStart)
+            ->where('created_at', '>=', $cohortStart)
             ->where('role', '!=', 'admin')
             ->get(['id', 'email_verified_at', 'first_return_at']);
 
