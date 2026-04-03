@@ -310,17 +310,20 @@ class AdminDashboardController extends Controller
         $newUserIds = $newUsers->pluck('id');
 
         // KR1: returned within 7 days of email verification
-        $kr1Count = $newUsers->whereNotNull('first_return_at')->count();
+        $kr1Count = $newUsers->filter(fn ($u) => $u->getRawOriginal('first_return_at') !== null)->count();
         $kr1Percentage = $newUsersCount > 0 ? (int) round($kr1Count / $newUsersCount * 100) : 0;
 
-        // KR2: gave ≥1 kudos OR placed ≥1 comment within 30d of registration
+        // KR2: gave ≥1 kudos OR placed ≥1 comment within 30d of registration.
+        // Use keyBy for O(1) lookup instead of firstWhere's O(n) linear scan.
+        $usersById = $newUsers->keyBy('id');
+
         $usersWithKudos = Like::query()
             ->whereIn('user_id', $newUserIds)
             ->where('type', 'kudos')
             ->whereRaw('created_at >= (SELECT email_verified_at FROM users WHERE users.id = likes.user_id)')
             ->get(['user_id', 'created_at'])
-            ->filter(function ($like) use ($newUsers) {
-                $user = $newUsers->firstWhere('id', $like->user_id);
+            ->filter(function ($like) use ($usersById) {
+                $user = $usersById->get($like->user_id);
                 if (! $user) {
                     return false;
                 }
@@ -333,8 +336,8 @@ class AdminDashboardController extends Controller
         $usersWithComment = Comment::query()
             ->whereIn('user_id', $newUserIds)
             ->get(['user_id', 'created_at'])
-            ->filter(function ($comment) use ($newUsers) {
-                $user = $newUsers->firstWhere('id', $comment->user_id);
+            ->filter(function ($comment) use ($usersById) {
+                $user = $usersById->get($comment->user_id);
                 if (! $user) {
                     return false;
                 }
@@ -355,26 +358,66 @@ class AdminDashboardController extends Controller
         $kr3SentCount = $followUpLogs->count();
         $kr3RespondedCount = 0;
 
-        foreach ($followUpLogs as $log) {
-            $ficheId = (int) str_replace('download_followup_', '', $log->mail_key);
+        if ($kr3SentCount > 0) {
+            $pairs = $followUpLogs->map(fn ($log) => [
+                'user_id' => $log->user_id,
+                'fiche_id' => (int) str_replace('download_followup_', '', $log->mail_key),
+                'sent_at' => $log->sent_at,
+            ]);
 
-            $hasKudos = Like::query()
-                ->where('user_id', $log->user_id)
+            $pairUserIds = $pairs->pluck('user_id')->unique()->values()->all();
+            $pairFicheIds = $pairs->pluck('fiche_id')->unique()->values()->all();
+
+            // Bulk-fetch all relevant kudos and comments in two queries instead of 2×N.
+            $kudos = Like::query()
+                ->whereIn('user_id', $pairUserIds)
                 ->where('likeable_type', Fiche::class)
-                ->where('likeable_id', $ficheId)
+                ->whereIn('likeable_id', $pairFicheIds)
                 ->where('type', 'kudos')
-                ->where('created_at', '>=', $log->sent_at)
-                ->exists();
+                ->get(['user_id', 'likeable_id', 'created_at']);
 
-            $hasComment = Comment::query()
-                ->where('user_id', $log->user_id)
+            $commentsLog = Comment::query()
+                ->whereIn('user_id', $pairUserIds)
                 ->where('commentable_type', Fiche::class)
-                ->where('commentable_id', $ficheId)
-                ->where('created_at', '>=', $log->sent_at)
-                ->exists();
+                ->whereIn('commentable_id', $pairFicheIds)
+                ->get(['user_id', 'commentable_id', 'created_at']);
 
-            if ($hasKudos || $hasComment) {
-                $kr3RespondedCount++;
+            $kudosByUserFiche = [];
+            foreach ($kudos as $k) {
+                $kudosByUserFiche[$k->user_id][$k->likeable_id][] = $k->created_at;
+            }
+
+            $commentsByUserFiche = [];
+            foreach ($commentsLog as $c) {
+                $commentsByUserFiche[$c->user_id][$c->commentable_id][] = $c->created_at;
+            }
+
+            foreach ($pairs as $pair) {
+                $userId = $pair['user_id'];
+                $ficheId = $pair['fiche_id'];
+                $sentAt = $pair['sent_at'];
+
+                $hasResponse = false;
+
+                foreach ($kudosByUserFiche[$userId][$ficheId] ?? [] as $ts) {
+                    if ($ts >= $sentAt) {
+                        $hasResponse = true;
+                        break;
+                    }
+                }
+
+                if (! $hasResponse) {
+                    foreach ($commentsByUserFiche[$userId][$ficheId] ?? [] as $ts) {
+                        if ($ts >= $sentAt) {
+                            $hasResponse = true;
+                            break;
+                        }
+                    }
+                }
+
+                if ($hasResponse) {
+                    $kr3RespondedCount++;
+                }
             }
         }
 
