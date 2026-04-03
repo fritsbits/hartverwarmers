@@ -33,6 +33,7 @@ class User extends Authenticatable
         'onboarded_at',
         'contributor_onboarded_at',
         'last_visited_at',
+        'first_return_at',
         'notify_on_fiche_comments',
         'notify_on_onboarding_emails',
     ];
@@ -54,6 +55,7 @@ class User extends Authenticatable
             'onboarded_at' => 'datetime',
             'contributor_onboarded_at' => 'datetime',
             'last_visited_at' => 'datetime',
+            'first_return_at' => 'datetime',
             'notify_on_fiche_comments' => 'boolean',
             'notify_on_onboarding_emails' => 'boolean',
             'password' => 'hashed',
