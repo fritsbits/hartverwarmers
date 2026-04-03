@@ -37,6 +37,7 @@ class SendOnboardingEmails extends Command
         return User::query()
             ->whereNotNull('email_verified_at')
             ->where('email_verified_at', '<=', now()->subDays($daysAfterActivation))
+            ->where('email_verified_at', '>=', now()->subDays($daysAfterActivation + 60))
             ->where('notify_on_onboarding_emails', true)
             ->whereDoesntHave('onboardingEmailLogs', fn ($q) => $q->where('mail_key', $mailKey));
     }
@@ -73,7 +74,10 @@ class SendOnboardingEmails extends Command
             ->where('interactable_type', Fiche::class)
             ->where('created_at', '<=', now()->subDays(2))
             ->whereNotNull('user_id')
-            ->whereHas('user', fn ($q) => $q->where('notify_on_onboarding_emails', true))
+            ->whereHas('user', fn ($q) => $q
+                ->where('notify_on_onboarding_emails', true)
+                ->whereNotNull('email_verified_at')
+            )
             ->whereNotExists(function ($query): void {
                 $query->select(DB::raw(1))
                     ->from('onboarding_email_log')
