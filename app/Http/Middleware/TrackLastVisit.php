@@ -10,7 +10,7 @@ class TrackLastVisit
 {
     /**
      * Update the authenticated user's last_visited_at timestamp (throttled to once per hour).
-     * On the first return visit within 7 days of registration, also sets first_return_at.
+     * On the first return visit within 7 days of email verification (`email_verified_at`), also sets first_return_at.
      */
     public function handle(Request $request, Closure $next): Response
     {
