@@ -52,6 +52,16 @@ class SendOnboardingEmailsTest extends TestCase
         Notification::assertNotSentTo($user, OnboardingCuratedActivitiesNotification::class);
     }
 
+    public function test_mail_1_not_sent_to_users_who_verified_more_than_63_days_ago(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create(['email_verified_at' => now()->subDays(64)]);
+
+        $this->artisan('onboarding:send-emails')->assertExitCode(0);
+
+        Notification::assertNotSentTo($user, OnboardingCuratedActivitiesNotification::class);
+    }
+
     public function test_mail_1_not_sent_to_users_who_opted_out(): void
     {
         Notification::fake();
@@ -82,6 +92,16 @@ class SendOnboardingEmailsTest extends TestCase
     {
         Notification::fake();
         $user = User::factory()->create(['email_verified_at' => now()->subDays(6)]);
+
+        $this->artisan('onboarding:send-emails')->assertExitCode(0);
+
+        Notification::assertNotSentTo($user, OnboardingTopFiveNotification::class);
+    }
+
+    public function test_mail_2_not_sent_to_users_who_verified_more_than_67_days_ago(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create(['email_verified_at' => now()->subDays(68)]);
 
         $this->artisan('onboarding:send-emails')->assertExitCode(0);
 

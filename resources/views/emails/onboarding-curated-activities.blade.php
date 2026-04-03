@@ -7,7 +7,7 @@ We hebben voor Hartverwarmers een kleine selectie fiches samengesteld die ons é
 @component('mail::panel')
 **[{{ $fiche->title }}]({{ route('fiches.show', [$fiche->initiative, $fiche]) }})**
 
-*Door {{ $fiche->user->name ?? 'een animator' }}*
+*Door {{ $fiche->user?->full_name ?? 'een animator' }}*
 
 {{ str(strip_tags($fiche->description ?? ''))->limit(120) }}
 
