@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Comment;
 use App\Models\Fiche;
+use App\Models\Like;
+use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -347,5 +350,107 @@ class AdminDashboardTest extends TestCase
         // adoptedCount = 1 (description), suggestedCount >= 1
         $this->assertEquals(1, $detail['adoptedCount']);
         $this->assertGreaterThanOrEqual(1, $detail['suggestedCount']);
+    }
+
+    public function test_onboarding_tab_is_accessible(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=onboarding');
+
+        $response->assertOk();
+        $response->assertViewHas('onboardingStats');
+        $response->assertViewHas('onboardingEmailCounts');
+    }
+
+    public function test_kr1_counts_users_with_first_return_at_set(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // New user who returned
+        User::factory()->create([
+            'email_verified_at' => now()->subDays(5),
+            'first_return_at' => now()->subDays(4),
+        ]);
+        // New user who did not return
+        User::factory()->create([
+            'email_verified_at' => now()->subDays(5),
+            'first_return_at' => null,
+        ]);
+        // Old user — outside 30-day cohort
+        User::factory()->create([
+            'email_verified_at' => now()->subDays(35),
+            'first_return_at' => now()->subDays(34),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=onboarding');
+
+        $stats = $response->viewData('onboardingStats');
+        $this->assertEquals(2, $stats['newUsersCount']);
+        $this->assertEquals(1, $stats['kr1Count']);
+        $this->assertEquals(50, $stats['kr1Percentage']);
+    }
+
+    public function test_kr2_counts_users_who_gave_kudos_or_comment(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $userWithKudos = User::factory()->create(['email_verified_at' => now()->subDays(10)]);
+        $userWithComment = User::factory()->create(['email_verified_at' => now()->subDays(10)]);
+        $userWithNothing = User::factory()->create(['email_verified_at' => now()->subDays(10)]);
+        $fiche = Fiche::factory()->published()->create();
+
+        // kudos
+        Like::create([
+            'user_id' => $userWithKudos->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 1,
+            'created_at' => now()->subDays(8),
+        ]);
+        // comment
+        Comment::create([
+            'user_id' => $userWithComment->id,
+            'commentable_type' => Fiche::class,
+            'commentable_id' => $fiche->id,
+            'body' => 'Goed gedaan!',
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=onboarding');
+
+        $stats = $response->viewData('onboardingStats');
+        $this->assertEquals(3, $stats['newUsersCount']);
+        $this->assertEquals(2, $stats['kr2Count']);
+        $this->assertEquals(67, $stats['kr2Percentage']);
+    }
+
+    public function test_kr3_returns_null_when_no_follow_up_emails_sent(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=onboarding');
+
+        $stats = $response->viewData('onboardingStats');
+        $this->assertNull($stats['kr3Percentage']);
+        $this->assertEquals(0, $stats['kr3SentCount']);
+    }
+
+    public function test_email_counts_include_all_mail_keys(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create();
+
+        OnboardingEmailLog::create(['user_id' => $user->id, 'mail_key' => 'mail_1', 'sent_at' => now()->subDays(5)]);
+        OnboardingEmailLog::create(['user_id' => $user->id, 'mail_key' => 'mail_4', 'sent_at' => now()->subDays(3)]); // first bookmark (from LikeObserver)
+        OnboardingEmailLog::create(['user_id' => $user->id, 'mail_key' => "download_followup_{$fiche->id}", 'sent_at' => now()->subDay()]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=onboarding');
+
+        $counts = $response->viewData('onboardingEmailCounts');
+        $this->assertEquals(1, $counts['mail_1']);
+        $this->assertEquals(1, $counts['mail_4']);
+        $this->assertEquals(1, $counts['download_followup']);
     }
 }

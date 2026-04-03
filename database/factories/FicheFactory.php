@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Fiche;
 use App\Models\Initiative;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Fiche>
+ * @extends Factory<Fiche>
  */
 class FicheFactory extends Factory
 {
@@ -18,7 +19,7 @@ class FicheFactory extends Factory
 
         return [
             'initiative_id' => Initiative::factory(),
-            'user_id' => User::factory(),
+            'user_id' => User::factory()->unverified(),
             'title' => $title,
             'slug' => Str::slug($title),
             'description' => fake()->paragraph(),

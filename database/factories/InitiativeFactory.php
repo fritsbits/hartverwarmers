@@ -2,12 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Initiative;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Initiative>
+ * @extends Factory<Initiative>
  */
 class InitiativeFactory extends Factory
 {
@@ -21,7 +22,7 @@ class InitiativeFactory extends Factory
             'description' => fake()->paragraph(),
             'content' => fake()->optional()->paragraphs(3, true),
             'published' => false,
-            'created_by' => User::factory(),
+            'created_by' => User::factory()->unverified(),
         ];
     }
 

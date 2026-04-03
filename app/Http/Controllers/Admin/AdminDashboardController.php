@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Comment;
 use App\Models\Fiche;
+use App\Models\Like;
+use App\Models\OnboardingEmailLog;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
@@ -12,6 +16,7 @@ class AdminDashboardController extends Controller
     public function __invoke(): View
     {
         $range = request()->get('range', 'week');
+        $tab = request()->get('tab', 'presentatiekwaliteit');
         $cutoff = $range === 'week' ? now()->subDays(7) : now()->subWeeks(4);
 
         $weeklyTrend = $this->trend($range);
@@ -30,15 +35,18 @@ class AdminDashboardController extends Controller
         $fieldAdoption = $this->fieldAdoption($fichesWithSuggestions);
 
         return view('admin.dashboard', [
+            'tab' => $tab,
+            'range' => $range,
             'weeklyTrend' => $weeklyTrend,
             'trendDelta' => $trendDelta,
             'lastFiches' => $lastFiches,
             'lastFiveAvg' => $lastFiveAvg,
             'globalAvg' => $globalAvg,
-            'range' => $range,
             ...$adoption,
             'fieldAdoption' => $fieldAdoption,
             'ficheAdoptionDetails' => $this->ficheAdoptionDetails($fichesWithSuggestions),
+            'onboardingStats' => $this->onboardingStats(),
+            'onboardingEmailCounts' => $this->onboardingEmailCounts(),
         ]);
     }
 
@@ -274,5 +282,132 @@ class AdminDashboardController extends Controller
         }
 
         return $result;
+    }
+
+    /**
+     * @return array{
+     *   newUsersCount: int,
+     *   kr1Count: int,
+     *   kr1Percentage: int,
+     *   kr2Count: int,
+     *   kr2Percentage: int,
+     *   kr3SentCount: int,
+     *   kr3RespondedCount: int,
+     *   kr3Percentage: int|null,
+     * }
+     */
+    private function onboardingStats(): array
+    {
+        $cohortStart = now()->subDays(30);
+
+        $newUsers = User::query()
+            ->whereNotNull('email_verified_at')
+            ->where('email_verified_at', '>=', $cohortStart)
+            ->where('role', '!=', 'admin')
+            ->get(['id', 'email_verified_at', 'first_return_at']);
+
+        $newUsersCount = $newUsers->count();
+        $newUserIds = $newUsers->pluck('id');
+
+        // KR1: returned within 7 days of email verification
+        $kr1Count = $newUsers->whereNotNull('first_return_at')->count();
+        $kr1Percentage = $newUsersCount > 0 ? (int) round($kr1Count / $newUsersCount * 100) : 0;
+
+        // KR2: gave ≥1 kudos OR placed ≥1 comment within 30d of registration
+        $usersWithKudos = Like::query()
+            ->whereIn('user_id', $newUserIds)
+            ->where('type', 'kudos')
+            ->whereRaw('created_at >= (SELECT email_verified_at FROM users WHERE users.id = likes.user_id)')
+            ->distinct()
+            ->pluck('user_id');
+
+        $usersWithComment = Comment::query()
+            ->whereIn('user_id', $newUserIds)
+            ->whereRaw('created_at >= (SELECT email_verified_at FROM users WHERE users.id = comments.user_id)')
+            ->distinct()
+            ->pluck('user_id');
+
+        $kr2Count = $usersWithKudos->merge($usersWithComment)->unique()->count();
+        $kr2Percentage = $newUsersCount > 0 ? (int) round($kr2Count / $newUsersCount * 100) : 0;
+
+        // KR3: of all download follow-up emails sent, how many users then kudosed/commented on that fiche?
+        $followUpLogs = OnboardingEmailLog::query()
+            ->where('mail_key', 'like', 'download_followup_%')
+            ->get(['user_id', 'mail_key', 'sent_at']);
+
+        $kr3SentCount = $followUpLogs->count();
+        $kr3RespondedCount = 0;
+
+        foreach ($followUpLogs as $log) {
+            $ficheId = (int) str_replace('download_followup_', '', $log->mail_key);
+
+            $hasKudos = Like::query()
+                ->where('user_id', $log->user_id)
+                ->where('likeable_type', Fiche::class)
+                ->where('likeable_id', $ficheId)
+                ->where('type', 'kudos')
+                ->where('created_at', '>=', $log->sent_at)
+                ->exists();
+
+            $hasComment = Comment::query()
+                ->where('user_id', $log->user_id)
+                ->where('commentable_type', Fiche::class)
+                ->where('commentable_id', $ficheId)
+                ->where('created_at', '>=', $log->sent_at)
+                ->exists();
+
+            if ($hasKudos || $hasComment) {
+                $kr3RespondedCount++;
+            }
+        }
+
+        $kr3Percentage = $kr3SentCount > 0
+            ? (int) round($kr3RespondedCount / $kr3SentCount * 100)
+            : null;
+
+        return compact(
+            'newUsersCount',
+            'kr1Count',
+            'kr1Percentage',
+            'kr2Count',
+            'kr2Percentage',
+            'kr3SentCount',
+            'kr3RespondedCount',
+            'kr3Percentage',
+        );
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function onboardingEmailCounts(): array
+    {
+        $since = now()->subDays(30);
+
+        $rows = OnboardingEmailLog::query()
+            ->where('sent_at', '>=', $since)
+            ->get(['mail_key']);
+
+        // mail_4 = first bookmark, mail_5 = milestone 10, mail_6 = milestone 50 (set by LikeObserver)
+        // download_followup_* = per-fiche follow-up (aggregated as one key)
+        $counts = [
+            'mail_1' => 0,
+            'mail_2' => 0,
+            'mail_3' => 0,
+            'download_followup' => 0,
+            'mail_4' => 0,
+            'mail_5' => 0,
+            'mail_6' => 0,
+        ];
+
+        foreach ($rows as $row) {
+            if (str_starts_with($row->mail_key, 'download_followup_')) {
+                $counts['download_followup']++;
+            } elseif (isset($counts[$row->mail_key])) {
+                $counts[$row->mail_key]++;
+            }
+        }
+
+        return $counts;
     }
 }
