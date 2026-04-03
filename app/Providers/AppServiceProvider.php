@@ -11,11 +11,13 @@ use App\View\Composers\FooterComposer;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Pennant\Feature;
@@ -53,6 +55,8 @@ class AppServiceProvider extends ServiceProvider
         $this->listenForFailedJobs();
 
         $this->customizeMailNotifications();
+
+        $this->registerRateLimiters();
     }
 
     private function listenForFailedJobs(): void
@@ -98,5 +102,10 @@ class AppServiceProvider extends ServiceProvider
                 ->line('Heb je dit niet aangevraagd? Dan hoef je niets te doen.')
                 ->salutation("Warme groet,\nHet Hartverwarmers-team");
         });
+    }
+
+    private function registerRateLimiters(): void
+    {
+        RateLimiter::for('resend', fn () => Limit::perSecond(4)->by('resend-global'));
     }
 }

@@ -3,15 +3,10 @@
 namespace App\Notifications;
 
 use App\Models\Fiche;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class WelcomeNotification extends Notification implements ShouldQueue
+class WelcomeNotification extends BaseMailNotification
 {
-    use Queueable;
-
     public function via(object $notifiable): array
     {
         return ['mail'];

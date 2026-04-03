@@ -4,15 +4,10 @@ namespace App\Notifications;
 
 use App\Models\Comment;
 use App\Models\Fiche;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class FicheCommentNotification extends Notification implements ShouldQueue
+class FicheCommentNotification extends BaseMailNotification
 {
-    use Queueable;
-
     public function __construct(public Comment $comment) {}
 
     /**

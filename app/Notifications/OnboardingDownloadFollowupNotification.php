@@ -3,15 +3,12 @@
 namespace App\Notifications;
 
 use App\Models\Fiche;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 use Illuminate\Queue\SerializesModels;
 
-class OnboardingDownloadFollowupNotification extends Notification implements ShouldQueue
+class OnboardingDownloadFollowupNotification extends BaseMailNotification
 {
-    use Queueable, SerializesModels;
+    use SerializesModels;
 
     public function __construct(public Fiche $fiche) {}
 

@@ -2,15 +2,10 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class OnboardingDownloadMilestoneNotification extends Notification implements ShouldQueue
+class OnboardingDownloadMilestoneNotification extends BaseMailNotification
 {
-    use Queueable;
-
     public function __construct(public int $downloadCount) {}
 
     public function via(object $notifiable): array

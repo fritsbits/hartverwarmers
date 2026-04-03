@@ -3,15 +3,10 @@
 namespace App\Notifications;
 
 use App\Models\Fiche;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class OnboardingCuratedActivitiesNotification extends Notification implements ShouldQueue
+class OnboardingCuratedActivitiesNotification extends BaseMailNotification
 {
-    use Queueable;
-
     public function via(object $notifiable): array
     {
         return ['mail'];
@@ -23,7 +18,7 @@ class OnboardingCuratedActivitiesNotification extends Notification implements Sh
             ->where('has_diamond', true)
             ->with(['initiative', 'user'])
             ->inRandomOrder()
-            ->limit(3)
+            ->limit(5)
             ->get();
 
         return (new MailMessage)

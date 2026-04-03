@@ -2,15 +2,10 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class OnboardingMilestone50BookmarksNotification extends Notification implements ShouldQueue
+class OnboardingMilestone50BookmarksNotification extends BaseMailNotification
 {
-    use Queueable;
-
     public function __construct(public int $bookmarkCount) {}
 
     public function via(object $notifiable): array
