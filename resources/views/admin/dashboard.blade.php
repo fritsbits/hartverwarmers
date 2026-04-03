@@ -1,18 +1,36 @@
 <x-sidebar-layout title="Beheer" section-label="Beheer">
 
     <x-slot:headerAction>
-        <div class="flex gap-1">
-            <a href="?range=week"
-               class="text-sm px-3 py-1 rounded-full border transition-colors {{ $range === 'week' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]' }}">
-                Laatste week
-            </a>
-            <a href="?range=month"
-               class="text-sm px-3 py-1 rounded-full border transition-colors {{ $range === 'month' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]' }}">
-                Laatste maand
-            </a>
+        <div class="flex gap-3">
+            {{-- Experiment tabs --}}
+            <div class="flex gap-1">
+                <a href="?tab=presentatiekwaliteit&range={{ $range }}"
+                   class="text-sm px-3 py-1 rounded-full border transition-colors {{ $tab === 'presentatiekwaliteit' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]' }}">
+                    Presentatiekwaliteit
+                </a>
+                <a href="?tab=onboarding"
+                   class="text-sm px-3 py-1 rounded-full border transition-colors {{ $tab === 'onboarding' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]' }}">
+                    Onboarding
+                </a>
+            </div>
+
+            {{-- Range toggle — only relevant for presentatiekwaliteit tab --}}
+            @if($tab === 'presentatiekwaliteit')
+                <div class="flex gap-1">
+                    <a href="?tab=presentatiekwaliteit&range=week"
+                       class="text-sm px-3 py-1 rounded-full border transition-colors {{ $range === 'week' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]' }}">
+                        Laatste week
+                    </a>
+                    <a href="?tab=presentatiekwaliteit&range=month"
+                       class="text-sm px-3 py-1 rounded-full border transition-colors {{ $range === 'month' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]' }}">
+                        Laatste maand
+                    </a>
+                </div>
+            @endif
         </div>
     </x-slot:headerAction>
 
+    @if($tab === 'presentatiekwaliteit')
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
         {{-- Weekly trend --}}
@@ -194,5 +212,8 @@
             @endif
         @endif
     </flux:card>
+    @else
+        @include('admin.partials.onboarding-tab')
+    @endif
 
 </x-sidebar-layout>
