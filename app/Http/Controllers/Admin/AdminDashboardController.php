@@ -45,8 +45,8 @@ class AdminDashboardController extends Controller
             ...$adoption,
             'fieldAdoption' => $fieldAdoption,
             'ficheAdoptionDetails' => $this->ficheAdoptionDetails($fichesWithSuggestions),
-            'onboardingStats' => $this->onboardingStats(),
-            'onboardingEmailCounts' => $this->onboardingEmailCounts(),
+            'onboardingStats' => $tab === 'onboarding' ? $this->onboardingStats() : [],
+            'onboardingEmailCounts' => $tab === 'onboarding' ? $this->onboardingEmailCounts() : [],
         ]);
     }
 
@@ -318,14 +318,31 @@ class AdminDashboardController extends Controller
             ->whereIn('user_id', $newUserIds)
             ->where('type', 'kudos')
             ->whereRaw('created_at >= (SELECT email_verified_at FROM users WHERE users.id = likes.user_id)')
-            ->distinct()
-            ->pluck('user_id');
+            ->get(['user_id', 'created_at'])
+            ->filter(function ($like) use ($newUsers) {
+                $user = $newUsers->firstWhere('id', $like->user_id);
+                if (! $user) {
+                    return false;
+                }
+
+                return $like->created_at->diffInDays($user->email_verified_at) <= 30;
+            })
+            ->pluck('user_id')
+            ->unique();
 
         $usersWithComment = Comment::query()
             ->whereIn('user_id', $newUserIds)
-            ->whereRaw('created_at >= (SELECT email_verified_at FROM users WHERE users.id = comments.user_id)')
-            ->distinct()
-            ->pluck('user_id');
+            ->get(['user_id', 'created_at'])
+            ->filter(function ($comment) use ($newUsers) {
+                $user = $newUsers->firstWhere('id', $comment->user_id);
+                if (! $user) {
+                    return false;
+                }
+
+                return $comment->created_at->diffInDays($user->email_verified_at) <= 30;
+            })
+            ->pluck('user_id')
+            ->unique();
 
         $kr2Count = $usersWithKudos->merge($usersWithComment)->unique()->count();
         $kr2Percentage = $newUsersCount > 0 ? (int) round($kr2Count / $newUsersCount * 100) : 0;
