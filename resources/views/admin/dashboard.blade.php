@@ -1,38 +1,29 @@
 <x-sidebar-layout title="Beheer" section-label="Beheer">
 
     <x-slot:headerAction>
-        <div class="flex items-center gap-3">
-            {{-- Experiment tabs --}}
-            <div x-data="{
-                tab: '{{ $tab }}',
-                range: '{{ $range }}',
-                navigate(val) {
-                    window.location.href = val === 'presentatiekwaliteit'
-                        ? '?tab=presentatiekwaliteit&range=' + this.range
-                        : '?tab=' + val;
-                }
-            }" x-init="$watch('tab', val => navigate(val))">
-                <flux:tabs x-model="tab" variant="segmented">
-                    <flux:tab name="presentatiekwaliteit">Presentatiekwaliteit</flux:tab>
-                    <flux:tab name="onboarding">Onboarding</flux:tab>
-                </flux:tabs>
-            </div>
-
-            {{-- Range toggle — only relevant for presentatiekwaliteit tab --}}
-            @if($tab === 'presentatiekwaliteit')
-                <div class="flex gap-1">
-                    <a href="?tab=presentatiekwaliteit&range=week"
-                       class="text-sm px-3 py-1 rounded-full border transition-colors {{ $range === 'week' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]' }}">
-                        Laatste week
-                    </a>
-                    <a href="?tab=presentatiekwaliteit&range=month"
-                       class="text-sm px-3 py-1 rounded-full border transition-colors {{ $range === 'month' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]' }}">
-                        Laatste maand
-                    </a>
-                </div>
-            @endif
-        </div>
+        @if($tab === 'presentatiekwaliteit')
+            <flux:select size="sm" x-data x-on:change="window.location.href = '?tab=presentatiekwaliteit&range=' + $event.target.value">
+                <option value="week" {{ $range === 'week' ? 'selected' : '' }}>Laatste week</option>
+                <option value="month" {{ $range === 'month' ? 'selected' : '' }}>Laatste maand</option>
+            </flux:select>
+        @endif
     </x-slot:headerAction>
+
+    {{-- Experiment tabs --}}
+    <div x-data="{
+        tab: '{{ $tab }}',
+        range: '{{ $range }}',
+        navigate(val) {
+            window.location.href = val === 'presentatiekwaliteit'
+                ? '?tab=presentatiekwaliteit&range=' + this.range
+                : '?tab=' + val;
+        }
+    }" x-init="$watch('tab', val => navigate(val))" class="mb-6">
+        <flux:tabs x-model="tab" variant="segmented">
+            <flux:tab name="presentatiekwaliteit">Presentatiekwaliteit</flux:tab>
+            <flux:tab name="onboarding">Onboarding</flux:tab>
+        </flux:tabs>
+    </div>
 
     @if($tab === 'presentatiekwaliteit')
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
