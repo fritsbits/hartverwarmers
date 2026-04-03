@@ -1,17 +1,21 @@
 <x-sidebar-layout title="Beheer" section-label="Beheer">
 
     <x-slot:headerAction>
-        <div class="flex gap-3">
+        <div class="flex items-center gap-3">
             {{-- Experiment tabs --}}
-            <div class="flex gap-1">
-                <a href="?tab=presentatiekwaliteit&range={{ $range }}"
-                   class="text-sm px-3 py-1 rounded-full border transition-colors {{ $tab === 'presentatiekwaliteit' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]' }}">
-                    Presentatiekwaliteit
-                </a>
-                <a href="?tab=onboarding"
-                   class="text-sm px-3 py-1 rounded-full border transition-colors {{ $tab === 'onboarding' ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] border-[var(--color-border-light)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]' }}">
-                    Onboarding
-                </a>
+            <div x-data="{
+                tab: '{{ $tab }}',
+                range: '{{ $range }}',
+                navigate(val) {
+                    window.location.href = val === 'presentatiekwaliteit'
+                        ? '?tab=presentatiekwaliteit&range=' + this.range
+                        : '?tab=' + val;
+                }
+            }" x-init="$watch('tab', val => navigate(val))">
+                <flux:tabs x-model="tab" variant="segmented">
+                    <flux:tab name="presentatiekwaliteit">Presentatiekwaliteit</flux:tab>
+                    <flux:tab name="onboarding">Onboarding</flux:tab>
+                </flux:tabs>
             </div>
 
             {{-- Range toggle — only relevant for presentatiekwaliteit tab --}}
