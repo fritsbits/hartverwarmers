@@ -25,6 +25,7 @@ class Fiche extends Model
         'title',
         'slug',
         'description',
+        'aanleiding',
         'practical_tips',
         'materials',
         'target_audience',
