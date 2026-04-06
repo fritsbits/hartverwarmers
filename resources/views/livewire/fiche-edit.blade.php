@@ -70,7 +70,7 @@
 
             <flux:field>
                 <flux:label class="text-base font-body font-bold">Aanleiding &amp; verhaal <span class="field-tag ml-1">Optioneel</span></flux:label>
-                <flux:description class="text-sm">Hoe ontstond deze activiteit? Wat maakte het bijzonder voor deze bewoner? Vertel het verhaal achter de fiche.</flux:description>
+                <flux:description class="text-sm">Hoe groeide dit idee? Vertel over het moment, de context of de bewoner(s) die aan de basis lagen.</flux:description>
                 <div
                     x-data="{ expanded: @js(!empty($aanleiding)) }"
                     @click="expanded = true"
