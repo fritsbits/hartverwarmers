@@ -552,9 +552,10 @@
                 <div class="space-y-9">
                     @foreach($contentFields as $index => $field)
                         @php
-                            $hasAiSuggestion = $this->{$field['aiProp']} !== null && !in_array($field['field'], $dismissedSuggestions);
-                            $isApplied = in_array($field['field'], $appliedSuggestions);
                             $fieldHasContent = !empty($this->{$field['userProp']});
+                            $hasAiSuggestion = !empty($field['aiProp']) && !empty($this->{$field['aiProp']}) && !in_array($field['field'], $dismissedSuggestions);
+                            $isApplied = in_array($field['field'], $appliedSuggestions);
+                            $isTextarea = ($field['type'] ?? 'editor') === 'textarea';
                         @endphp
 
                         @if(!$loop->first)
@@ -567,18 +568,26 @@
                                     <flux:field>
                                         <flux:label class="text-base font-body font-bold">{{ $field['label'] }} @if($field['required'] ?? false)<span class="field-tag ml-1">Verplicht</span>@endif</flux:label>
                                         <flux:description>{{ $field['description'] }}</flux:description>
-                                        <div
-                                            x-data="{ expanded: @js($fieldHasContent) }"
-                                            @click="expanded = true"
-                                            class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
-                                            :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
-                                        >
-                                            <flux:editor
+                                        @if($isTextarea)
+                                            <flux:textarea
                                                 wire:model="{{ $field['userProp'] }}"
-                                                toolbar="bold | bullet ordered | link"
+                                                :rows="$field['rows']"
                                                 placeholder="{{ $field['placeholder'] }}"
                                             />
-                                        </div>
+                                        @else
+                                            <div
+                                                x-data="{ expanded: @js($fieldHasContent) }"
+                                                @click="expanded = true"
+                                                class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
+                                                :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
+                                            >
+                                                <flux:editor
+                                                    wire:model="{{ $field['userProp'] }}"
+                                                    toolbar="bold | bullet ordered | link"
+                                                    placeholder="{{ $field['placeholder'] }}"
+                                                />
+                                            </div>
+                                        @endif
                                     </flux:field>
                                 </div>
 

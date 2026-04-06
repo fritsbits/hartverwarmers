@@ -112,6 +112,10 @@ class FicheWizard extends Component
     ])]
     public string $description = '';
 
+    #[Session(key: 'fiche-wizard.aanleiding')]
+    #[Validate('nullable|string|max:10000')]
+    public string $aanleiding = '';
+
     #[Session(key: 'fiche-wizard.duration')]
     public string $duration = '';
 
@@ -208,6 +212,7 @@ class FicheWizard extends Component
         $this->title = '';
         $this->titleManuallyEdited = false;
         $this->description = '';
+        $this->aanleiding = '';
         $this->duration = '';
         $this->groupSize = '';
         $this->preparation = '';
@@ -758,6 +763,7 @@ class FicheWizard extends Component
 
         // Also clear user content that was derived from previous suggestions
         $this->description = '';
+        $this->aanleiding = '';
         $this->preparation = '';
         $this->inventory = '';
         $this->process = '';
@@ -776,7 +782,8 @@ class FicheWizard extends Component
     private function getContentFields(): array
     {
         return [
-            ['field' => 'description', 'label' => 'Beschrijving', 'description' => 'Wat is je bedoeling met deze activiteit? Voor wie is ze bedoeld?', 'placeholder' => 'bijv. Een interactieve quiz waarbij bewoners liedjes herkennen.', 'userProp' => 'description', 'aiProp' => 'aiDescription', 'rows' => 4, 'required' => true],
+            ['field' => 'description', 'label' => 'Beschrijving', 'description' => 'Wat is de activiteit, en wat maakt ze bijzonder? Schrijf 1 à 3 zinnen — concreet én met een menselijke touch.', 'placeholder' => 'bijv. Samen naar de beenhouwerij en een eigen soeprecept maken — een activiteit die een bewoner terugbrengt naar wie ze was.', 'userProp' => 'description', 'aiProp' => 'aiDescription', 'rows' => 3, 'required' => true, 'type' => 'textarea'],
+            ['field' => 'aanleiding', 'label' => 'Aanleiding & verhaal', 'description' => 'Hoe ontstond deze activiteit? Wat maakte het bijzonder voor deze bewoner? Vertel het verhaal achter de fiche.', 'placeholder' => 'bijv. Dit idee groeide tijdens een vorming waarbij we met een bewoner over haar vroegere beroep als slager in gesprek gingen…', 'userProp' => 'aanleiding', 'aiProp' => null, 'rows' => 6, 'required' => false, 'type' => 'editor'],
             ['field' => 'preparation', 'label' => 'Voorbereiding', 'description' => 'Wat moet er klaargezet of voorbereid worden?', 'placeholder' => 'bijv. Print de bingokaarten uit en test het geluid.', 'userProp' => 'preparation', 'aiProp' => 'aiPreparation', 'rows' => 4, 'required' => false],
             ['field' => 'inventory', 'label' => 'Benodigdheden', 'description' => 'Welke materialen heb je nodig?', 'placeholder' => 'bijv. Bingokaarten, stiften, muziekinstallatie.', 'userProp' => 'inventory', 'aiProp' => 'aiInventory', 'rows' => 4, 'required' => false],
             ['field' => 'process', 'label' => 'Werkwijze', 'description' => 'Beschrijf stap voor stap hoe de activiteit verloopt.', 'placeholder' => 'bijv. 1. Verdeel de bingokaarten. 2. Speel het eerste fragment...', 'userProp' => 'process', 'aiProp' => 'aiProcess', 'rows' => 6, 'required' => false],
@@ -882,11 +889,12 @@ class FicheWizard extends Component
         ]);
     }
 
-    private function saveFiche(bool $published): void
+    public function saveFiche(bool $published): void
     {
         $this->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:5000',
+            'aanleiding' => 'nullable|string|max:10000',
             'selectedInitiativeId' => 'required|exists:initiatives,id',
         ], [
             'title.required' => 'Geef je activiteit een titel.',
@@ -914,7 +922,8 @@ class FicheWizard extends Component
                     'user_id' => auth()->id(),
                     'title' => $this->title,
                     'slug' => $slug,
-                    'description' => $this->description,
+                    'description' => strip_tags($this->description),
+                    'aanleiding' => $this->aanleiding ?: null,
                     'materials' => ! empty($materials) ? $materials : null,
                     'published' => $published,
                     'ai_suggestions' => $this->hasAiSuggestions() ? [
@@ -979,6 +988,7 @@ class FicheWizard extends Component
     {
         $this->title = '';
         $this->description = '';
+        $this->aanleiding = '';
         $this->preparation = '';
         $this->inventory = '';
         $this->process = '';

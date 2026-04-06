@@ -505,7 +505,7 @@ class FicheWizardTest extends TestCase
 
         $this->assertDatabaseHas('fiches', [
             'title' => 'Mijn titel',
-            'description' => "Mijn beschrijving\n<p>AI beschrijving</p>",
+            'description' => "Mijn beschrijving\nAI beschrijving",
             'user_id' => $user->id,
             'published' => true,
         ]);
@@ -2147,5 +2147,61 @@ class FicheWizardTest extends TestCase
         $this->assertEquals($initiative->id, $component->get('matchedInitiatives')[0]['id']);
         // Full processing not yet done
         $component->assertSet('processingComplete', false);
+    }
+
+    public function test_wizard_saves_aanleiding_when_provided(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('title', 'Activiteit met verhaal')
+            ->set('description', 'Korte omschrijving.')
+            ->set('aanleiding', '<p>Zo ontstond dit idee tijdens een vorming.</p>')
+            ->set('selectedInitiativeId', $initiative->id)
+            ->call('saveFiche', true);
+
+        $fiche = Fiche::where('title', 'Activiteit met verhaal')->first();
+        $this->assertNotNull($fiche);
+        $this->assertEquals('<p>Zo ontstond dit idee tijdens een vorming.</p>', $fiche->aanleiding);
+    }
+
+    public function test_wizard_saves_aanleiding_as_null_when_empty(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('title', 'Activiteit zonder verhaal')
+            ->set('description', 'Korte omschrijving.')
+            ->set('aanleiding', '')
+            ->set('selectedInitiativeId', $initiative->id)
+            ->call('saveFiche', true);
+
+        $fiche = Fiche::where('title', 'Activiteit zonder verhaal')->first();
+        $this->assertNotNull($fiche);
+        $this->assertNull($fiche->aanleiding);
+    }
+
+    public function test_wizard_strips_html_from_description_on_save(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+
+        Livewire::actingAs($user)
+            ->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('title', 'Strip test fiche')
+            ->set('description', '<p>Een activiteit met <strong>warme</strong> touch.</p>')
+            ->set('selectedInitiativeId', $initiative->id)
+            ->call('saveFiche', true);
+
+        $fiche = Fiche::where('title', 'Strip test fiche')->first();
+        $this->assertNotNull($fiche);
+        $this->assertEquals('Een activiteit met warme touch.', $fiche->description);
     }
 }
