@@ -197,8 +197,21 @@
 
                     {{-- Description (lead text) --}}
                     @if($fiche->description)
-                        <div class="text-[var(--color-text-secondary)] text-2xl font-light max-w-3xl">
+                        <div class="description-content text-[var(--color-text-secondary)] text-2xl font-light max-w-3xl">
                             {!! $fiche->description !!}
+                        </div>
+                    @endif
+
+                    {{-- Aanleiding & verhaal --}}
+                    @if($fiche->aanleiding)
+                        <hr class="border-[var(--color-border-light)] my-6">
+                        <div>
+                            <h2 class="font-heading font-bold text-lg mb-3" style="color: var(--color-primary)">
+                                Aanleiding &amp; verhaal
+                            </h2>
+                            <div class="description-content text-[var(--color-text-secondary)] text-base leading-relaxed">
+                                {!! $fiche->aanleiding !!}
+                            </div>
                         </div>
                     @endif
 
@@ -214,7 +227,7 @@
 
                     {{-- Practical information — collapsible preview card --}}
                     @if($fiche->practical_sections)
-                        <div class="mt-8" x-data="{ expanded: false }">
+                        <div class="mt-8" x-data="{ expanded: {{ $fiche->files->isEmpty() ? 'true' : 'false' }} }">
                             <div class="rounded-2xl border border-[var(--color-border-light)] overflow-hidden transition-colors duration-200"
                                  :class="expanded ? 'bg-white' : 'bg-[var(--color-bg-cream)] hover:bg-white'">
                                 <button @click="expanded = !expanded" class="w-full text-left px-6 py-5 flex items-center gap-4 cursor-pointer group">
@@ -437,10 +450,10 @@
             '@type' => 'HowTo',
             'name' => $fiche->title,
             'description' => strip_tags($fiche->description ?? ''),
-            'author' => [
+            'author' => $fiche->user ? [
                 '@type' => 'Person',
-                'name' => $fiche->user->name,
-            ],
+                'name' => $fiche->user->full_name,
+            ] : null,
             'datePublished' => $fiche->created_at->toIso8601String(),
             'dateModified' => $fiche->updated_at->toIso8601String(),
             'step' => $steps,

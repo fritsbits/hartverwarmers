@@ -490,4 +490,33 @@ class FicheShowTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('stroke-width: 1.1', false);
     }
+
+    public function test_aanleiding_is_displayed_when_present(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'aanleiding' => '<p>Zo groeide het idee om met een bewoner die vroeger slager was opnieuw aan te sluiten bij haar oude vak.</p>',
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Aanleiding &amp; verhaal', false);
+        $response->assertSee('Zo groeide het idee');
+    }
+
+    public function test_aanleiding_section_is_hidden_when_empty(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'aanleiding' => null,
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Aanleiding &amp; verhaal', false);
+    }
 }
