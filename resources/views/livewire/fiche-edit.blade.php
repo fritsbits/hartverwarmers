@@ -45,15 +45,12 @@
                 <div class="@if($hasDescriptionSuggestion) lg:col-span-7 @endif">
                     <flux:field>
                         <flux:label class="text-base font-body font-bold">Beschrijving</flux:label>
-                        <flux:description class="text-sm">Wat is je bedoeling met deze activiteit? Voor wie is ze bedoeld?</flux:description>
-                        <div
-                            x-data="{ expanded: @js(!empty($description)) }"
-                            @click="expanded = true"
-                            class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
-                            :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
-                        >
-                            <flux:editor wire:model="description" toolbar="bold | bullet ordered | link" placeholder="bijv. Een interactieve quiz waarbij bewoners liedjes herkennen. Geschikt voor groepen van 8-15 personen." />
-                        </div>
+                        <flux:description class="text-sm">Wat is de activiteit, en wat maakt ze bijzonder? Schrijf 1 à 3 zinnen — concreet én met een menselijke touch.</flux:description>
+                        <flux:textarea
+                            wire:model="description"
+                            rows="3"
+                            placeholder="bijv. Samen naar de beenhouwerij en een eigen soeprecept maken — een activiteit die een bewoner terugbrengt naar wie ze was."
+                        />
                         <flux:error name="description" />
                     </flux:field>
                 </div>
@@ -68,6 +65,26 @@
                     </div>
                 @endif
             </div>
+
+            <hr class="border-[var(--color-border-light)]">
+
+            <flux:field>
+                <flux:label class="text-base font-body font-bold">Aanleiding &amp; verhaal <span class="field-tag ml-1">Optioneel</span></flux:label>
+                <flux:description class="text-sm">Hoe ontstond deze activiteit? Wat maakte het bijzonder voor deze bewoner? Vertel het verhaal achter de fiche.</flux:description>
+                <div
+                    x-data="{ expanded: @js(!empty($aanleiding)) }"
+                    @click="expanded = true"
+                    class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
+                    :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
+                >
+                    <flux:editor
+                        wire:model="aanleiding"
+                        toolbar="bold | bullet ordered | link"
+                        placeholder="bijv. Dit idee groeide tijdens een vorming waarbij we met een bewoner over haar vroegere beroep als slager in gesprek gingen…"
+                    />
+                </div>
+                <flux:error name="aanleiding" />
+            </flux:field>
         </div>
 
         {{-- Tabbed sections --}}

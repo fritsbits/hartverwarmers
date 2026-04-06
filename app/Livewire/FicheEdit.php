@@ -29,6 +29,9 @@ class FicheEdit extends Component
     #[Validate('nullable|string|max:5000')]
     public string $description = '';
 
+    #[Validate('nullable|string|max:10000')]
+    public string $aanleiding = '';
+
     public string $preparation = '';
 
     public string $inventory = '';
@@ -75,6 +78,7 @@ class FicheEdit extends Component
         $this->fiche = $fiche;
         $this->title = $fiche->title;
         $this->description = $fiche->description ?? '';
+        $this->aanleiding = $fiche->aanleiding ?? '';
         $this->selectedInitiativeId = $fiche->initiative_id;
 
         $materials = $fiche->materials ?? [];
@@ -219,6 +223,7 @@ class FicheEdit extends Component
         $this->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:5000',
+            'aanleiding' => 'nullable|string|max:10000',
         ]);
 
         $materials = array_filter([
@@ -236,7 +241,8 @@ class FicheEdit extends Component
         $updateData = [
             'initiative_id' => $this->selectedInitiativeId,
             'title' => $this->title,
-            'description' => $this->description,
+            'description' => strip_tags($this->description) ?: null,
+            'aanleiding' => $this->aanleiding ?: null,
             'materials' => ! empty($materials) ? $materials : null,
             'target_audience' => ! empty($this->targetAudience) ? $this->targetAudience : null,
             'ai_suggestions' => $this->aiSuggestions,

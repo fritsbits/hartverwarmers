@@ -157,4 +157,59 @@ class FicheEditTest extends TestCase
             implode(' ', $component->errors()->all())
         );
     }
+
+    public function test_edit_saves_aanleiding(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'user_id' => $user->id,
+            'initiative_id' => $initiative->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(FicheEdit::class, ['fiche' => $fiche])
+            ->set('aanleiding', '<p>Zo groeide het idee tijdens een vorming.</p>')
+            ->call('save');
+
+        $fiche->refresh();
+        $this->assertEquals('<p>Zo groeide het idee tijdens een vorming.</p>', $fiche->aanleiding);
+    }
+
+    public function test_edit_saves_aanleiding_as_null_when_empty(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'user_id' => $user->id,
+            'initiative_id' => $initiative->id,
+            'aanleiding' => '<p>Bestaand verhaal.</p>',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(FicheEdit::class, ['fiche' => $fiche])
+            ->set('aanleiding', '')
+            ->call('save');
+
+        $fiche->refresh();
+        $this->assertNull($fiche->aanleiding);
+    }
+
+    public function test_edit_strips_html_from_description_on_save(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'user_id' => $user->id,
+            'initiative_id' => $initiative->id,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(FicheEdit::class, ['fiche' => $fiche])
+            ->set('description', '<p>Een activiteit met <strong>warme</strong> touch.</p>')
+            ->call('save');
+
+        $fiche->refresh();
+        $this->assertEquals('Een activiteit met warme touch.', $fiche->description);
+    }
 }
