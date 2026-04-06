@@ -688,6 +688,67 @@
     text-decoration-color: var(--color-primary);
   }
 
+  /* Description (lead text) — rich HTML from editor, paragraphs must not collapse */
+  .description-content p {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .description-content p:first-child {
+    margin-top: 0;
+  }
+
+  .description-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .description-content ul,
+  .description-content ol {
+    padding-left: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .description-content ul {
+    list-style-type: disc;
+  }
+
+  .description-content ol {
+    list-style-type: decimal;
+  }
+
+  .description-content li {
+    margin-top: 0.375rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .practical-content ul,
+  .practical-content ol {
+    padding-left: 1.5rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .practical-content ul {
+    list-style-type: disc;
+  }
+
+  .practical-content ol {
+    list-style-type: decimal;
+  }
+
+  .practical-content li {
+    margin-top: 0.375rem;
+    margin-bottom: 0.375rem;
+    line-height: 1.65;
+  }
+
+  .practical-content li > ul,
+  .practical-content li > ol {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
   /* Fiche list item — card-style compact row for initiative detail pages */
   .fiche-list-item {
     @apply flex items-center gap-4 no-underline;

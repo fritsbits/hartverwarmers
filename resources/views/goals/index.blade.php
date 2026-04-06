@@ -54,12 +54,10 @@
                                 <img src="/img/wonen-en-leven/maitemallentjer.jpg" alt="Maite Mallentjer" class="w-36 aspect-square object-cover">
                                 <figcaption><strong class="text-[var(--color-text-primary)]">Maite Mallentjer</strong><br><small>Pedagoog dagbesteding</small></figcaption>
                             </figure>
-                            @if(config('hartverwarmers.show_nadine_praet'))
                             <figure class="photo-polaroid -mt-2" style="transform: rotate(2.5deg)">
                                 <img src="/img/wonen-en-leven/nadinepraet.jpg" alt="Nadine Praet" class="w-36 aspect-square object-cover">
                                 <figcaption><strong class="text-[var(--color-text-primary)]">Nadine Praet</strong><br><small>Onderzoeker ouderenzorg</small></figcaption>
                             </figure>
-                            @endif
                         </div>
                     </div>
 
@@ -72,7 +70,6 @@
 
                         <div class="space-y-8 mt-6">
                             {{-- BAM --}}
-                            @if(config('hartverwarmers.show_nadine_praet'))
                             <div class="flex gap-5 items-start">
                                 <a href="https://www.politeia.be/shop/16246-betekenisvolle-activiteiten-methode-11272#attr=" target="_blank" rel="noopener noreferrer" class="shrink-0">
                                     <img src="/img/covers/bam.jpg" alt="BAM boekcover" class="w-24 shadow-md" style="transform: rotate(-2deg);">
@@ -84,7 +81,6 @@
                                     <a href="https://www.politeia.be/shop/16246-betekenisvolle-activiteiten-methode-11272#attr=" target="_blank" rel="noopener noreferrer" class="cta-link mt-1 inline-block">Bekijk</a>
                                 </div>
                             </div>
-                            @endif
 
                             {{-- A Sense of Home --}}
                             <div class="flex gap-5 items-start">

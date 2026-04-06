@@ -18,6 +18,7 @@ class OnboardingMilestone10BookmarksNotification extends BaseMailNotification
     {
         $sparseInitiatives = Initiative::published()
             ->withCount(['fiches as published_fiches_count' => fn ($q) => $q->where('published', true)])
+            ->groupBy('initiatives.id')
             ->having('published_fiches_count', '>=', 1)
             ->having('published_fiches_count', '<=', 5)
             ->inRandomOrder()
