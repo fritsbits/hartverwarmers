@@ -33,6 +33,14 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    @production
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="https://plausible.io/js/pa-rxZcKL8ccJOwbk2_jQWSQ.js"></script>
+    <script>
+        window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+        plausible.init()
+    </script>
+    @endproduction
 
 </head>
 <body class="font-body antialiased min-h-screen flex flex-col bg-[var(--color-bg-base)]">
