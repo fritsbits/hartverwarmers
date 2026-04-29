@@ -1,33 +1,16 @@
 # Hartverwarmers — Brand Guide
 
-A complete reference for recreating the Hartverwarmers look and feel across presentations, websites, print, and digital assets.
+A complete reference for recreating the Hartverwarmers look and feel across presentations, websites, print, and digital assets. Source of truth: `resources/css/app.css`, `tailwind.config.js`, and the components in `resources/views/components/`.
 
 ---
 
 ## Brand Identity
 
 **Name:** Hartverwarmers (Dutch: "heart warmers")
-**Tagline:** *Laat je bewoners schitteren* ("Let your residents shine")
-**Domain:** A platform for activity coordinators in elderly care homes to share practical initiative elaborations, organized around the DIAMANT pedagogical model.
-**Language:** Dutch throughout.
-**Tone:** Warm, caring, approachable, professional, cozy (*gezellig*). Celebrates capability and joy — never limitation.
-**Parent brand:** Soulcenter (red `#ED3D3F` wordmark).
-
----
-
-## Logo
-
-An interlocking heart shape made of three overlapping paths:
-
-| Layer | Color | Hex |
-|---|---|---|
-| Teal wing | Cyan/teal | `#50C5DC` |
-| Red wing | Bright red | `#FF4143` |
-| Overlap center | Deep burgundy/plum | `#741448` |
-
-Proportions: 33 × 52 (portrait, roughly 2:3). The heart is abstract — two mirrored curves that interlock, not a traditional symmetrical heart.
-
-In navigation, a simplified heart icon in primary orange (`#E8764B`) is paired with the lowercase word **hartverwarmers** in the heading font (Aleo bold). On small screens it abbreviates to **HVW**.
+**Tagline:** *Laat je bewoners schitteren* ("Let your residents shine") — used as homepage hero and meta title.
+**Domain:** A platform for activity coordinators in Vlaams woonzorgcentra to share practical initiative elaborations, organized around the DIAMANT pedagogical model.
+**Language:** Vlaams Nederlands throughout (not Holland Dutch).
+**Tone:** Warm, practical, encouraging. Celebrates capability and joy — never limitation. *Gezellig*, never clinical.
 
 ---
 
@@ -35,48 +18,61 @@ In navigation, a simplified heart icon in primary orange (`#E8764B`) is paired w
 
 ### Primary
 
-| Name | Hex | RGB | Use |
+| Name | Hex | CSS variable | Use |
 |---|---|---|---|
-| **Coral orange** | `#E8764B` | 232, 118, 75 | Main brand color. CTAs, links, active states, section labels, accent backgrounds |
-| **Coral hover** | `#D4683F` | 212, 104, 63 | Hover/pressed states |
+| **Coral orange** | `#E8764B` | `--color-primary` | Main brand color. CTAs, links, active states, section labels |
+| **Coral hover** | `#D4683F` | `--color-primary-hover` | Hover/pressed states |
 
-### Accent colors
+### Decorative accents
 
-| Name | Hex | RGB | Use |
+| Name | Hex | CSS variable | Use |
 |---|---|---|---|
-| **Teal** | `#4CB7C5` | 76, 183, 197 | Cool contrast accent. Decorative, illustrative |
-| **Golden yellow** | `#F4C44E` | 244, 196, 78 | Bright, cheerful decorative accent |
-| **Muted purple** | `#B57BB3` | 181, 123, 179 | Soft, unexpected accent. Used sparingly |
+| **Teal** | `#4CB7C5` | `--color-secondary` / `--color-accent-blue` | Cool contrast accent. Decorative, illustrative |
+| **Golden yellow** | `#F4C44E` | `--color-yellow` / `--color-accent-yellow` | Bright, cheerful decorative accent |
+| **Muted purple** | `#B57BB3` | `--color-accent-purple` | Soft, unexpected accent. Used sparingly |
 
-These four colors (coral, teal, yellow, purple) are the only saturated colors in the system. Everything else is warm neutral.
+### Initiative colors (deterministic per contributor)
+
+Six rotation colors used by `.initiative-color-0` through `.initiative-color-5` for contributor-specific accent in initiative section headers (color + matching tinted background).
+
+| # | Hex | Background |
+|---|---|---|
+| 0 | `#E8764B` (coral) | `#FDF3EE` |
+| 1 | `#4CB7C5` (teal) | `#EEF8FA` |
+| 2 | `#F4C44E` (yellow) | `#FEF9EC` |
+| 3 | `#B57BB3` (purple) | `#F6EEF6` |
+| 4 | `#D4837B` (warm pink) | `#FAF0EE` |
+| 5 | `#7BAF8E` (sage green) | `#EFF6F1` |
+
+The four primary accents (coral, teal, yellow, purple) are the dominant saturated colors. Pink and sage extend the rotation when more contributors need a unique color.
 
 ### Text
 
-| Name | Hex | Use |
-|---|---|---|
-| **Primary text** | `#231E1A` | Headings, body text |
-| **Secondary text** | `#756C65` | Metadata, descriptions, muted labels |
-| **Muted text** | `#B0A89F` | Inactive elements, disabled states |
+| Name | Hex | CSS variable | Use |
+|---|---|---|---|
+| **Primary text** | `#231E1A` | `--color-text-primary` | Headings, body text |
+| **Secondary text** | `#756C65` | `--color-text-secondary` | Metadata, descriptions, muted labels |
+| **Tertiary text** | `#C0B5AE` | `--color-text-tertiary` | Meta icons, timestamps, inactive |
 
 ### Backgrounds
 
-| Name | Hex | Use |
-|---|---|---|
-| **White** | `#FFFFFF` | Default page background, cards |
-| **Cream** | `#FEF8F4` | Hero sections, warmest tone |
-| **Subtle** | `#F5F0EC` | Alternating sections, inactive states |
-| **Accent light** | `#FDF3EE` | Light orange tint, hover states, diamond indicators |
+| Name | Hex | CSS variable | Use |
+|---|---|---|---|
+| **White** | `#FFFFFF` | `--color-bg-white` / `--color-bg-base` | Default page background, cards |
+| **Cream** | `#FEF8F4` | `--color-bg-cream` | Hero sections, warmest tone |
+| **Subtle** | `#F5F0EC` | `--color-bg-subtle` | Alternating sections, inactive states |
+| **Accent light** | `#FDF3EE` | `--color-bg-accent-light` | Light orange tint, hover states, gem indicators |
 
 ### Borders
 
-| Name | Hex | Use |
-|---|---|---|
-| **Border light** | `#EBE4DE` | Default borders, separators |
-| **Border hover** | `#DDD5CD` | Hover state for bordered elements |
+| Name | Hex | CSS variable | Use |
+|---|---|---|---|
+| **Border light** | `#EBE4DE` | `--color-border-light` | Default borders, separators |
+| **Border hover** | `#DDD5CD` | `--color-border-hover` | Hover state for bordered elements |
 
 ### Warm neutral scale
 
-All grays are warm-tinted (hue ~24, toward orange/cream). Never use pure/cool grays.
+All grays are warm-tinted (hue ~24°, toward orange/cream). Both `gray-*` and `zinc-*` Tailwind scales are overridden so all Flux/Tailwind components inherit the warm palette.
 
 | Level | Hex |
 |---|---|
@@ -91,6 +87,24 @@ All grays are warm-tinted (hue ~24, toward orange/cream). Never use pure/cool gr
 | 800 | `#2E2823` |
 | 900 | `#1F1B17` |
 | 950 | `#100D0B` |
+
+### Warm red (destructive states)
+
+Standard `red-*` Tailwind scale is replaced with a warmer variant (hue ~8°) that harmonizes with the orange palette.
+
+| Level | Hex |
+|---|---|
+| 50 | `#fef3f1` |
+| 100 | `#fee5e1` |
+| 200 | `#fecfc8` |
+| 300 | `#fcada1` |
+| 400 | `#f87e6c` |
+| 500 | `#ee5540` |
+| 600 | `#dc3a26` |
+| 700 | `#b92d1c` |
+| 800 | `#99291b` |
+| 900 | `#7f291d` |
+| 950 | `#45110a` |
 
 ---
 
@@ -108,44 +122,57 @@ Loaded from **Bunny Fonts** (privacy-friendly, GDPR-compliant — not Google Fon
 
 ### Type scale
 
-| Level | Size | Line-height | Font | Weight |
-|---|---|---|---|---|
-| H1 | 40px (32px mobile) | 1.25 | Aleo | 700 |
-| H2 | 32px (24px mobile) | 1.25 | Aleo | 700 |
-| H3 | 24px | 1.25 | Aleo | 700 |
-| H4 | 20px | 1.25 | Aleo | 700 |
-| Body | 16px | 1.6 | Fira Sans | 400 |
-| Small | 14px | 1.6 | Fira Sans | 400 |
-| Tiny | 12px | 1.6 | Fira Sans | 400 |
+| Level | Size (desktop) | Size (mobile) | Line-height | Font | Weight |
+|---|---|---|---|---|---|
+| H1 | 40px (`2.5rem`) | 32px (`2rem`) | 1.25 | Aleo | 700 |
+| H2 | 32px (`2rem`) | 24px (`1.5rem`) | 1.25 | Aleo | 700 |
+| H3 | 24px (`1.5rem`) | — | 1.25 | Aleo | 700 |
+| H4 | 20px (`1.25rem`) | — | 1.25 | Aleo | 700 |
+| Body | 16px (`1rem`) | — | 1.6 | Fira Sans | 400 |
+| Small | 14px (`0.875rem`) | — | 1.6 | Fira Sans | 400 |
+| Tiny | 12px (`0.75rem`) | — | 1.6 | Fira Sans | 400 |
+
+Mobile breakpoint at `max-width: 768px` reduces H1/H2 only.
+
+### Form text
+
+Flux UI form fields are bumped from 14px to **17px (`1.0625rem`)** for accessibility — labels, inputs, textareas, selects, and editor content. Helper text is 15px (`0.9375rem`). Wizard forms use 19px (`1.1875rem`) heading-style labels in Aleo bold.
 
 ### Weight usage
 
-| Weight | Value | Use |
-|---|---|---|
-| Light | 300 | Intro text, metadata, decorative text |
-| Regular | 400 | Default body text |
-| Medium | 500 | Badge text, indicators |
-| Semibold | 600 | Section labels, CTA links, buttons, nav items |
-| Bold | 700 | All headings, card titles, brand name |
+| Weight | Value | CSS variable | Use |
+|---|---|---|---|
+| Light | 300 | `--font-weight-light` | Intro text, metadata, decorative text |
+| Regular | 400 | `--font-weight-regular` | Default body text |
+| Medium | 500 | `--font-weight-medium` | Badge text, indicators |
+| Semibold | 600 | `--font-weight-semibold` | Section labels, CTA links, buttons, nav items |
+| Bold | 700 | `--font-weight-bold` | All headings, card titles, brand name |
+| Black | 900 | `--font-weight-black` | Reserved for special emphasis (rare) |
 
 ### Section labels (eyebrow text)
 
-Uppercase, tracking-widest, semibold (600), Fira Sans, primary coral color. Always appears above an H2 heading.
+Uppercase, tracking-widest (`letter-spacing: 0.12em`), semibold (600), Fira Sans, primary coral color, 18px (`1.125rem`). Always appears above an H2 heading. Hero variant: 24px (`text-2xl`).
+
+### Card titles
+
+`<flux:heading>` does NOT render as `<h1>`–`<h3>`, so it doesn't inherit heading styles. Always add `class="font-heading font-bold"` to flux card titles.
 
 ---
 
 ## Spacing
 
-| Token | Value |
-|---|---|
-| xs | 4px |
-| sm | 8px |
-| md | 16px |
-| lg | 24px |
-| xl | 32px |
-| 2xl | 48px |
-| 3xl | 64px |
-| 4xl | 96px |
+| Token | Value | CSS variable |
+|---|---|---|
+| xs | 4px (`0.25rem`) | `--space-xs` |
+| sm | 8px (`0.5rem`) | `--space-sm` |
+| md | 16px (`1rem`) | `--space-md` |
+| lg | 24px (`1.5rem`) | `--space-lg` |
+| xl | 32px (`2rem`) | `--space-xl` |
+| 2xl | 48px (`3rem`) | `--space-2xl` |
+| 3xl | 64px (`4rem`) | `--space-3xl` |
+| 4xl | 96px (`6rem`) | `--space-4xl` |
+
+Note: do not register `xl`, `2xl`, `3xl`, `4xl` as Tailwind spacing tokens — they conflict with Tailwind v4's `max-w-*` resolution.
 
 ---
 
@@ -153,28 +180,42 @@ Uppercase, tracking-widest, semibold (600), Fira Sans, primary coral color. Alwa
 
 ### Border radii
 
-| Use | Value |
-|---|---|
-| Subtle rounding | 6px |
-| Cards, containers | 12px |
-| Pills, badges, avatars | 9999px (full) |
+| Use | Value | CSS variable |
+|---|---|---|
+| Subtle rounding | 6px | `--radius-sm` |
+| Cards, containers | 12px | `--radius-md` |
+| Pills, badges, avatars | 9999px | `--radius-full` |
+
+Tailwind utilities `rounded-xl` (12px) and `rounded-2xl` (16px) are also used in some components (e.g., search command palette).
 
 ### Shadows
 
-Shadows are warm-tinted — `rgba(60, 40, 20, ...)`, not neutral gray.
+Shadows are **warm-tinted** — `rgba(60, 40, 20, ...)`, never neutral gray.
 
-| State | Shadow |
-|---|---|
-| Default card | `0 2px 8px rgba(60, 40, 20, 0.05)` |
-| Hover card | `0 4px 16px rgba(60, 40, 20, 0.10)` |
+| State | CSS variable | Value |
+|---|---|---|
+| Default card | `--shadow-card` | `0 2px 8px rgba(60, 40, 20, 0.05)` |
+| Hover card | `--shadow-card-hover` | `0 4px 16px rgba(60, 40, 20, 0.10)` |
+
+For paper effects (polaroid, fiche stack, ruled-paper quotes), shadows shift to a warmer brown: `rgba(120, 90, 60, ...)`.
 
 ### Hover behavior
 
-Cards lift 2px (`translateY(-2px)`) with shadow deepening on hover. CTA text links have an animated right-arrow (`→`) that shifts right on hover.
+Cards lift 2px (`translateY(-2px)`) with shadow deepening and border darkening on hover. CTA text links have an animated right-arrow (`→`) that shifts right on hover and the gap between text and arrow widens from `gap-1` to `gap-2`.
 
 ### Transition speed
 
-All interactions: `0.2s ease`.
+All interactions: `0.2s ease` (CSS variable `--transition-fast`).
+
+### Animations
+
+- **Confetti** — wizard completion celebration, 20 particles in primary/secondary/yellow falling 2.4s–3.5s
+- **Kudos floating heart** — gentle upward drift with fan-out on like
+- **Welcome toast** — slide-in/out from top
+- **Nudge** — gentle horizontal sway on CTA buttons becoming available
+- **Checkmark draw-in** — for completion states
+
+All respect `prefers-reduced-motion`.
 
 ---
 
@@ -192,41 +233,44 @@ The DIAMANT model is the pedagogical core. Each letter represents a care goal:
 | **N** | Normalisatie | Gewoon waar het kan |
 | **T** | Talent | Krachten laten schitteren |
 
-### The Diamant Gem icon
+See [research/diamant-model.md](research/diamant-model.md) for the full pedagogical framework.
 
-A faceted gem-shaped polygon (five-sided: pointed top-left and top-right, wider middle, pointed bottom). Internal facet lines create a cut-gem appearance. The letter sits centered in Aleo bold with a subtle drop shadow.
+### The DIAMANT gem icon
 
-**Shape** (SVG polygon): `30,0 70,0 100,35 50,100 0,35`
+A faceted gem-shaped polygon (five-sided: pointed top-left and top-right, wider middle, pointed bottom). The letter sits centered in Aleo bold.
+
+**Shape** (SVG polygon points): `30,0 70,0 100,35 50,100 0,35`
 
 **States:**
 
-| State | Fill | Letter color | Facet lines |
-|---|---|---|---|
-| Active | `#E8764B` (coral) | White | White at 30% opacity |
-| Inactive | `#F5F0EC` (subtle gray) | `#B0A89F` (muted) | Black at 8% opacity |
-| Inverted | White | `#48423C` (dark warm) | `#AEA59C` (gray) |
+| State | Fill | Letter color |
+|---|---|---|
+| Active | `#E8764B` (coral) | White |
+| Inactive | `#F5F0EC` (subtle) | `#B0A89F` (muted) |
+| Pronounced (outline only) | none, stroke `--color-primary` width 8 | (used for nav logo) |
 
-**Sizes:** From 20px (xxs) to 48px (lg).
+**Sizes:** xxs / xs / sm / md / lg.
 
 ### DIAMANT Profile
 
-A horizontal row of 7 small gems spelling D-I-A-M-A-N-T. Active goals are coral-colored; inactive goals are muted gray. Used to show which goals an initiative covers.
+A horizontal row of 7 small gems spelling D-I-A-M-A-N-T. Active goals are coral; inactive are muted. Used to show which goals an initiative covers.
 
-### Diamant Pill
+### DIAMANT Pill (`.diamant-pill`)
 
-A compact link badge: small gem icon + goal label text, with subtle background. Used inline to tag content with its DIAMANT goals.
+A compact link badge: small gem icon + goal label, semibold 13px Fira Sans on subtle background. Inactive variant uses 0.55 opacity, transparent bg, muted text. Small variant `.diamant-pill-sm` is 12px with tighter padding.
 
 ---
 
 ## Iconography
 
-All icons are **Heroicons** (outline style, stroke-based, inline SVG). No icon fonts, no sprite sheets.
+Icons via **Flux UI's `<flux:icon>`** component (Heroicons under the hood — outline default, optional `variant="mini"`). No icon fonts.
 
-- Standard size: 16–20px
-- Stroke width: 1.5–2
-- Color follows the surrounding text color
+- Standard size: 16–20px (`size-4` to `size-5`)
+- Stroke width: 1.5
+- Color follows surrounding text color, often `--color-text-tertiary` for meta icons
+- Meta icon-to-number gap: `gap-1.5`; gap between meta pairs: `gap-4`
 
-Commonly used: heart, book-open, lightbulb, users, calendar, document, search (magnifying-glass), chevron-down, arrow-right, bookmark, swatch, flag.
+Commonly used: `heart`, `book-open`, `lightbulb`, `users`, `calendar`, `document`, `magnifying-glass`, `chevron-down`, `arrow-right`, `bookmark`, `swatch`, `flag`, `arrow-down-tray`.
 
 ---
 
@@ -234,10 +278,10 @@ Commonly used: heart, book-open, lightbulb, users, calendar, document, search (m
 
 ### Page structure
 
-- **Max content width:** 1152px, centered
-- **Horizontal padding:** 24px
-- **Section vertical padding:** 64px
-- **Navigation:** Sticky top, 72px height
+- **Max content width:** `max-w-6xl` (1152px), centered
+- **Horizontal padding:** 24px (`px-6`)
+- **Section vertical padding:** 64px (`py-16`)
+- **Navigation:** Sticky top, 72px height (`h-18`)
 
 ### Section rhythm
 
@@ -251,14 +295,9 @@ Commonly used: heart, book-open, lightbulb, users, calendar, document, search (m
 
 [White content section]
    Content...
-
-── border separator ──
-
-[White content section]
-   Content...
 ```
 
-Hero sections use the cream background (`#FEF8F4`). Content sections alternate on white (`#FFFFFF`). Sections are separated by light border rules (`#EBE4DE`).
+Hero sections use cream (`#FEF8F4`). Content sections alternate on white. Sections separated by light border rules (`#EBE4DE`).
 
 ### Card grids
 
@@ -266,90 +305,116 @@ Hero sections use the cream background (`#FEF8F4`). Content sections alternate o
 
 ---
 
-## Card Design
+## Component Patterns
 
-White background, 12px border-radius, light border (`#EBE4DE`). On hover: lifts 2px, shadow deepens, border darkens.
+### Content card (`.content-card`)
 
-- **Card image:** Aspect ratio 16:10, object-fit cover
-- **Card content:** 24px padding
-- **Card title:** Aleo bold
-- **Card description:** Secondary text color, regular weight
+White background, 12px border-radius, light border. On hover: lifts 2px, shadow deepens, border darkens.
+
+- **Image:** aspect ratio 16:10, object-fit cover
+- **Padding:** 24px
+- **Title:** Aleo bold, H4 size
+- **Description:** Secondary text color, regular weight
+
+### CTA link (`.cta-link`)
+
+Inline-flex, semibold, primary coral color. Animated right-arrow appears via `::after`. On hover: gap widens, color darkens, arrow translates right.
+
+### Pill button (`.btn-pill`)
+
+Filled coral, white text, fully rounded, semibold. Hover: shadow + darker bg. Use sparingly — one primary CTA per section.
+
+### Fiche card with paper-stack header (`.fiche-card-header`)
+
+The signature visual treatment for fiche previews: 3 stacked landscape papers (3:2 aspect) rotated slightly off-axis, displayed on a `--color-bg-subtle` background. On group hover, the papers settle into a neater stack. Each paper has a warm shadow `rgba(120, 90, 60, 0.18)` and subtle warm border.
+
+### Polaroid photo frame (`.photo-polaroid`)
+
+White frame with extra bottom padding for caption space, rotated -2° on default. Caption uses **Nanum Pen Script** at 1.2rem in secondary text color. Warm shadow.
+
+### Ruled-paper quote (`.quote-paper`)
+
+White paper rotated -2.5° with repeating horizontal lines drawn in 18% primary color. Text inside is **Nanum Pen Script** 1.5rem, line-height 32px (matches the ruling). Decorative `"` mark in Garamond at 7rem, top-left, rotated 180°.
+
+Variants:
+- `.quote-paper-lg` — looser ruling for checklist content; supports `.checklist-label` and `.checklist-item` with question-badge.
+- `.quote-paper-xl` — large display quote, 3.5rem text.
+
+### Question badge (`.question-badge`)
+
+30×30px circle, accent-light bg, primary coral text in Aleo bold. Used for numbered reflection questions.
+
+### Section label (`.section-label`)
+
+Uppercase, semibold, primary coral, 18px, tracking 0.12em. `.section-label-hero` bumps to 24px.
+
+### Field tag (`.field-tag`)
+
+Tiny inline label (11px uppercase) on subtle bg, secondary text. Used next to form field labels.
+
+### Diamond indicator (`.diamond-indicator`)
+
+Pill with gem icon + label, 15px, accent-light bg, secondary text. Used to surface DIAMANT goals adjacent to content.
+
+### Initiative section (`.initiative-section` + `.initiative-section-header`)
+
+White card, light border, 12px radius. Header has a tinted background and a 4px left border in the contributor's `--initiative-color`.
+
+### Featured badge (`.featured-badge`)
+
+Coral filled pill, white text, 12px. For "uitgelicht" content.
+
+### Similar fiches tip (`.similar-fiches-tip`)
+
+Cream panel, 4px primary left border, lightbulb-style hint. 15px secondary text.
+
+### Materials callout (`.materials-callout`)
+
+Accent-light background, 20%-primary border. For download bundles attached to a fiche.
+
+### Syllabus stepper (`.syllabus-step` + `.syllabus-number`)
+
+Vertical timeline for lesson series. 48px circle with lesson number in Aleo. Connector is dashed `--color-border-light`. States: default / current (coral filled) / done (faded coral with checkmark).
+
+### Fiche list item (`.fiche-list-item`)
+
+Compact row card for initiative detail pages. 16×20px padding, subtle bg circle icon (48px), kudos counter on right. Hover: lift + shadow + border. Viewed state: 0.55 opacity.
+
+### Search command palette (`[data-flux-command]`)
+
+Hartverwarmers-branded variant of Flux command palette: borderless, rounded-2xl, dark drop shadow. Top input bar is filled coral with white placeholder. Modal backdrop is 50% black.
+
+### Admin toolbar button (`.admin-bar-btn`)
+
+Inline-flex, 12px text, secondary color, white bg. Hover: primary text color + cream bg. Active state: primary coral.
 
 ---
 
 ## Photography Style
 
-Top-down studio photography of iconic objects on single-color matte paper.
+The platform combines **real photography of activities and people** (hero photos in `/public/img/wonen-en-leven/`, `/public/img/initiatives/`, etc.) with two visual framings:
 
-### Concept
+### 1. Polaroid framing
 
-Each image shows **one hero object + 1–3 small supporting elements** representing an activity — not the person doing it. Objects celebrate the *doing*: the fun, creativity, togetherness. No people, no scenes, no environment.
+Photos in editorial contexts (homepage, story sections, contributor highlights) are wrapped in `.photo-polaroid` — white frame, slight rotation, warm shadow, optional handwritten caption in Nanum Pen Script. Evokes a care-home bulletin board.
 
-**Empowerment-first rule:** Choose objects you'd pick for anyone enjoying the activity. Never use medical, assistive, or age-related objects (no canes, walkers, pill boxes, etc.).
+### 2. Paper-stack framing (fiche covers)
 
-### Camera & lighting
+Fiche preview photos appear as a stack of 3 rotated landscape papers (`.fiche-paper-0/1/2`). The top one carries the actual image; the others suggest depth and a "stack of practice notes". On hover the stack settles.
 
-- **Angle:** Strict top-down (bird's-eye), no exceptions
-- **Lens:** 80mm macro equivalent, f/8 for full sharpness
-- **Key light:** Single large softbox at 10 o'clock, 45° above surface
-- **Fill:** White card at lower-right — opens shadows gently
-- **Character:** Broad, heavily diffused. Calm, even, studio-controlled
+### Subject matter
 
-### The paper backdrop
+Real photos celebrate the *doing*: residents engaged in activities, hands at work, materials in use. Empowerment-first: choose moments that show capability, joy, dignity. Avoid medical, assistive, or institutional context.
 
-A single sheet of thick, matte colored paper covers the entire frame, edge to edge. Fine real paper texture, never glossy.
+### Editorial vs. content photography
 
-**Strict four-color palette** (matching brand accent colors):
-
-| Paper color | Hex | Best with |
-|---|---|---|
-| Coral orange | `#E8764B` | Cool-toned or neutral objects (default) |
-| Teal | `#4CB7C5` | Warm-toned objects |
-| Golden yellow | `#F4C44E` | Darker objects |
-| Muted purple | `#B57BB3` | Yellow or green objects |
-
-**Objects keep their natural, real-world colors** — they are NOT color-matched to the paper. The paper is always saturated and present, never pale.
-
-### Shadows
-
-Barely-there warm shadow toward 4 o'clock (matching 10 o'clock light). Extremely soft, diffused, 8–12% darker than lit paper. No hard edges — shadow gradually appears and dissolves. At a glance you almost wonder if it's there.
-
-### Composition
-
-- Hero object **off-center**, shifted toward a corner or edge
-- Rotated **15–35 degrees** off-axis (never 0, never 45)
-- All objects fill **50–70% of frame area**
-- **Unequal margins** — asymmetric, editorially confident
-- Objects may extend beyond frame edges — bold, deliberate cropping
-- Sparse and curated, never cluttered
-
-### Object examples
-
-| Activity | Hero object | Supporting elements |
-|---|---|---|
-| Team support | Teapot | Two cups + cookies |
-| Cooking together | Steaming pot | Wooden spoon + fresh herbs |
-| Knitting & crafts | Ball of yarn | Needles + half-finished piece |
-| Outing | Binoculars | — |
-| Movement & fitness | Badminton racket + shuttlecock | — |
-
-### What to avoid
-
-- People, characters, body parts
-- Medical/assistive objects
-- Centered or symmetrical placement
-- Hard or dark shadows
-- Environmental context or backgrounds
-- Text, labels, or typography on the image
-- Illustrated or digitally rendered objects
-- Gradients, patterns, or prints on the paper
-- Cluttered scenes
+The brand also uses an editorial photography concept for marketing assets: single hero object on a saturated paper backdrop in one of the four brand colors (coral, teal, yellow, purple), top-down at f/8, single softbox at 10 o'clock, off-center composition rotated 15–35°. Used for hero illustrations, cover images, and seasonal banners — not for activity content itself.
 
 ---
 
 ## Illustration Assets
 
-52 SVG illustrations covering care home themes: workshops, activities, tools, and decorative elements. Located in `/public/img/illustration/`. These are used for content sections about workshops, tools, and video lessons.
+**118 SVG illustrations** in `/public/img/illustration/` covering care home themes: workshops, activities, tools, decorative elements. Used for content sections about workshops, tools, and video lessons. Style: warm, line-based, hand-drawn feel that matches the *gezellig* tone.
 
 ---
 
@@ -357,14 +422,19 @@ Barely-there warm shadow toward 4 o'clock (matching 10 o'clock light). Extremely
 
 When creating a new asset (presentation slide, social media post, website section, folder cover):
 
-1. **Background:** Use cream (`#FEF8F4`) or white, or one of the four accent colors for bold sections
-2. **Headings:** Aleo bold 700, primary text color (`#231E1A`)
-3. **Body text:** Fira Sans 400, same text color or secondary (`#756C65`)
-4. **Accent color:** Coral orange (`#E8764B`) for links, labels, highlights
-5. **Decorative accents:** Teal, yellow, or purple — sparingly
-6. **Grays:** Always warm-tinted, never cool or pure gray
-7. **Shadows:** Warm brown tone (`rgba(60, 40, 20, ...)`), very subtle
-8. **Corners:** 12px on cards, full-round on badges/pills
-9. **Photography:** Top-down objects on colored paper (see Photography section)
-10. **Gems:** Use DIAMANT gem shapes for goal-related content
-11. **Overall feel:** Warm, clean, spacious, confident. Not clinical, not playful — *gezellig*.
+1. **Background:** Cream (`#FEF8F4`) or white. Bold sections may use one of the four accent colors.
+2. **Headings:** Aleo Bold 700, primary text color (`#231E1A`).
+3. **Body text:** Fira Sans 400, primary or secondary text color.
+4. **Accent color:** Coral (`#E8764B`) for links, labels, highlights.
+5. **Decorative accents:** Teal, yellow, purple — sparingly.
+6. **Grays:** Always warm-tinted (warm neutral scale), never cool or pure gray.
+7. **Shadows:** Warm brown tone (`rgba(60, 40, 20, ...)` or `rgba(120, 90, 60, ...)` for paper effects).
+8. **Corners:** 12px on cards, full-round on badges/pills.
+9. **Photography:** Real photos in polaroid or paper-stack frame, or editorial top-down objects on colored paper.
+10. **Gems:** DIAMANT polygon (`30,0 70,0 100,35 50,100 0,35`) for goal-related content.
+11. **Handwritten touches:** Nanum Pen Script for captions, quotes, and notebook-style content.
+12. **Overall feel:** Warm, tactile, handcrafted. Not clinical, not playful — *gezellig*.
+
+---
+
+*Source of truth: `resources/css/app.css`. Component reference: [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) and the living pattern library at `resources/views/admin/design-system.blade.php` (admin-only).*
