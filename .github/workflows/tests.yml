@@ -30,6 +30,7 @@ jobs:
         run: sudo apt-get install -y poppler-utils
 
       - name: Configure Flux Pro
+        if: ${{ secrets.FLUX_LICENSE_KEY != '' }}
         run: composer config http-basic.composer.fluxui.dev "${{ secrets.FLUX_LICENSE_EMAIL }}" "${{ secrets.FLUX_LICENSE_KEY }}"
 
       - name: Install Composer dependencies
@@ -62,6 +63,7 @@ jobs:
           coverage: none
 
       - name: Configure Flux Pro
+        if: ${{ secrets.FLUX_LICENSE_KEY != '' }}
         run: composer config http-basic.composer.fluxui.dev "${{ secrets.FLUX_LICENSE_EMAIL }}" "${{ secrets.FLUX_LICENSE_KEY }}"
 
       - name: Install Composer dependencies

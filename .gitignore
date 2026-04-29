@@ -33,3 +33,5 @@ login-desktop.png
 register-desktop.png
 wizard-step2*.png
 .superpowers/
+docs/superpowers/
+/storage/*.sql

@@ -5,4 +5,8 @@ return [
 
     // Temporarily hidden until Nadine Praet has discussed with Arteveldehogeschool
     'show_nadine_praet' => env('SHOW_NADINE_PRAET', false),
+
+    'admin_first_name' => env('ADMIN_FIRST_NAME', 'Admin'),
+    'admin_last_name' => env('ADMIN_LAST_NAME', 'User'),
+    'admin_organisation' => env('ADMIN_ORGANISATION', 'Hartverwarmers'),
 ];

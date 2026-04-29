@@ -17,11 +17,11 @@ class DatabaseSeeder extends Seeder
     {
         // Create admin
         User::factory()->admin()->create([
-            'first_name' => 'Frederik',
-            'last_name' => 'Vincx',
-            'email' => 'admin@example.com',
+            'first_name' => config('hartverwarmers.admin_first_name', 'Admin'),
+            'last_name' => config('hartverwarmers.admin_last_name', 'User'),
+            'email' => config('mail.admin_address', 'admin@example.com'),
             'password' => Str::random(32),
-            'organisation' => 'Hartverwarmers',
+            'organisation' => config('hartverwarmers.admin_organisation', 'Hartverwarmers'),
         ]);
 
         // Create named contributors
