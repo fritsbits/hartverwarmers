@@ -30,7 +30,15 @@
                             <x-user-avatar :user="$user" size="sm" class="shrink-0" />
                             <div class="min-w-0">
                                 <span class="font-medium block truncate">{{ $user->full_name }}</span>
-                                <span class="text-xs text-[var(--color-text-secondary)] block truncate">{{ $user->email }}@if($user->organisation) · {{ $user->organisation }}@endif</span>
+                                <span class="text-xs text-[var(--color-text-secondary)] block truncate">
+                                    @if(!str_ends_with($user->email, '@import.hartverwarmers.be'))
+                                        {{ $user->email }}@if($user->organisation) · {{ $user->organisation }}@endif
+                                    @elseif($user->organisation)
+                                        {{ $user->organisation }}
+                                    @else
+                                        <span class="italic text-[var(--color-text-tertiary)]">geen e-mailadres</span>
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </flux:table.cell>
