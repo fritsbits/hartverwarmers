@@ -15,8 +15,15 @@ class AdminDashboardController extends Controller
 {
     public function __invoke(): View
     {
-        $range = request()->get('range', 'week');
         $tab = request()->get('tab', 'presentatiekwaliteit');
+
+        $defaultRange = $tab === 'aanmeldingen' ? 'month' : 'week';
+        $range = request()->get('range', $defaultRange);
+
+        if ($tab === 'aanmeldingen' && ! in_array($range, ['month', 'quarter', 'alltime'], true)) {
+            $range = 'month';
+        }
+
         $cutoff = $range === 'week' ? now()->subDays(7) : now()->subWeeks(4);
 
         $weeklyTrend = $this->trend($range);

@@ -5,20 +5,32 @@
         tab: '{{ $tab }}',
         range: '{{ $range }}',
         navigate(val) {
-            window.location.href = val === 'presentatiekwaliteit'
-                ? '?tab=presentatiekwaliteit&range=' + this.range
-                : '?tab=' + val;
+            if (val === 'presentatiekwaliteit' || val === 'aanmeldingen') {
+                const defaultRange = val === 'aanmeldingen' ? 'month' : 'week';
+                const validRanges = val === 'aanmeldingen' ? ['month', 'quarter', 'alltime'] : ['week', 'month'];
+                const r = validRanges.includes(this.range) ? this.range : defaultRange;
+                window.location.href = '?tab=' + val + '&range=' + r;
+            } else {
+                window.location.href = '?tab=' + val;
+            }
         }
     }" x-init="$watch('tab', val => navigate(val))" class="flex items-center justify-between mb-6">
         <flux:tabs x-model="tab" variant="segmented">
             <flux:tab name="presentatiekwaliteit">Presentatiekwaliteit</flux:tab>
             <flux:tab name="onboarding">Onboarding</flux:tab>
+            <flux:tab name="aanmeldingen">Aanmeldingen</flux:tab>
         </flux:tabs>
 
         @if($tab === 'presentatiekwaliteit')
             <flux:select size="sm" class="w-36" x-data x-on:change="window.location.href = '?tab=presentatiekwaliteit&range=' + $event.target.value">
                 <option value="week" {{ $range === 'week' ? 'selected' : '' }}>Laatste week</option>
                 <option value="month" {{ $range === 'month' ? 'selected' : '' }}>Laatste maand</option>
+            </flux:select>
+        @elseif($tab === 'aanmeldingen')
+            <flux:select size="sm" class="w-40" x-data x-on:change="window.location.href = '?tab=aanmeldingen&range=' + $event.target.value">
+                <option value="month" {{ $range === 'month' ? 'selected' : '' }}>Laatste maand</option>
+                <option value="quarter" {{ $range === 'quarter' ? 'selected' : '' }}>Laatste 3 maand</option>
+                <option value="alltime" {{ $range === 'alltime' ? 'selected' : '' }}>Sinds start</option>
             </flux:select>
         @endif
     </div>
@@ -205,8 +217,10 @@
             @endif
         @endif
     </flux:card>
-    @else
+    @elseif($tab === 'onboarding')
         @include('admin.partials.onboarding-tab')
+    @elseif($tab === 'aanmeldingen')
+        @include('admin.partials.aanmeldingen-tab')
     @endif
 
 </x-sidebar-layout>

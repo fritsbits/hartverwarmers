@@ -454,4 +454,56 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(1, $counts['mail_4']);
         $this->assertEquals(1, $counts['download_followup']);
     }
+
+    public function test_aanmeldingen_tab_is_accessible(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen');
+
+        $response->assertOk();
+        $response->assertSee('Aanmeldingen');
+        $this->assertEquals('aanmeldingen', $response->viewData('tab'));
+    }
+
+    public function test_aanmeldingen_tab_defaults_to_month_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen');
+
+        $response->assertOk();
+        $this->assertEquals('month', $response->viewData('range'));
+    }
+
+    public function test_aanmeldingen_tab_invalid_range_falls_back_to_month(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=garbage');
+
+        $response->assertOk();
+        $this->assertEquals('month', $response->viewData('range'));
+    }
+
+    public function test_aanmeldingen_tab_accepts_quarter_and_alltime(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $quarter = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=quarter');
+        $this->assertEquals('quarter', $quarter->viewData('range'));
+
+        $alltime = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
+        $this->assertEquals('alltime', $alltime->viewData('range'));
+    }
+
+    public function test_presentatiekwaliteit_default_range_unchanged(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+
+        $response->assertOk();
+        $this->assertEquals('week', $response->viewData('range'));
+    }
 }
