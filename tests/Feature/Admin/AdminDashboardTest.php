@@ -603,4 +603,25 @@ class AdminDashboardTest extends TestCase
         $trend = $response->viewData('signupTrend');
         $this->assertEmpty($trend);
     }
+
+    public function test_signup_trend_month_includes_signup_at_oldest_bucket_boundary(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Signup at the start of the oldest bucket — must be counted
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(29)->startOfDay()->addMinutes(5),
+        ]);
+        // Signup just outside the window — must NOT be counted
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(29)->startOfDay()->subMinutes(5),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $trend = $response->viewData('signupTrend');
+        $this->assertEquals(1, collect($trend)->sum('count'));
+    }
 }

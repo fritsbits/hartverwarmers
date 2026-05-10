@@ -499,6 +499,7 @@ class AdminDashboardController extends Controller
         };
     }
 
+    /** @return Builder<User> */
     private function signupCohortQuery(): Builder
     {
         return User::query()
@@ -510,7 +511,7 @@ class AdminDashboardController extends Controller
     private function signupTrendDaily(Builder $base): array
     {
         $signups = (clone $base)
-            ->where('created_at', '>=', now()->subDays(30)->startOfDay())
+            ->where('created_at', '>=', now()->subDays(29)->startOfDay())
             ->get(['created_at']);
 
         $grouped = [];
@@ -537,21 +538,21 @@ class AdminDashboardController extends Controller
     private function signupTrendWeekly(Builder $base): array
     {
         $signups = (clone $base)
-            ->where('created_at', '>=', now()->subDays(90)->startOfDay())
+            ->where('created_at', '>=', now()->subWeeks(12)->startOfWeek())
             ->get(['created_at']);
 
         $grouped = [];
         foreach ($signups as $signup) {
-            $key = (int) $signup->created_at->format('oW');
+            $key = $signup->created_at->format('oW');
             $grouped[$key] = ($grouped[$key] ?? 0) + 1;
         }
 
         $result = [];
         for ($i = 12; $i >= 0; $i--) {
             $date = now()->subWeeks($i)->startOfWeek();
-            $key = (int) $date->format('oW');
+            $key = $date->format('oW');
             $result[] = [
-                'key' => (string) $key,
+                'key' => $key,
                 'label' => $date->format('d M'),
                 'count' => $grouped[$key] ?? 0,
             ];
