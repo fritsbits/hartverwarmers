@@ -516,4 +516,91 @@ class AdminDashboardTest extends TestCase
         $response->assertOk();
         $this->assertEquals('presentatiekwaliteit', $response->viewData('tab'));
     }
+
+    public function test_signup_trend_month_produces_30_daily_buckets(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(2)]);
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(2)]);
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
+        // Outside 30-day window — excluded
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(40)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $trend = $response->viewData('signupTrend');
+        $this->assertCount(30, $trend);
+        $this->assertEquals(2, collect($trend)->firstWhere('key', now()->subDays(2)->format('Y-m-d'))['count']);
+        $this->assertEquals(1, collect($trend)->firstWhere('key', now()->format('Y-m-d'))['count']);
+        $this->assertEquals(3, collect($trend)->sum('count'));
+    }
+
+    public function test_signup_trend_quarter_produces_13_weekly_buckets(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subWeeks(2)]);
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
+        // Outside 90-day window
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(100)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=quarter');
+
+        $trend = $response->viewData('signupTrend');
+        $this->assertCount(13, $trend);
+        $this->assertEquals(2, collect($trend)->sum('count'));
+    }
+
+    public function test_signup_trend_alltime_starts_at_earliest_signup(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subMonths(2)->startOfMonth()->addDays(5)]);
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subMonth()->startOfMonth()->addDays(5)]);
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->startOfMonth()->addDays(2)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
+
+        $trend = $response->viewData('signupTrend');
+        // 3 monthly buckets: subMonths(2), subMonth(1), current
+        $this->assertCount(3, $trend);
+        $this->assertEquals(1, $trend[0]['count']);
+        $this->assertEquals(1, $trend[1]['count']);
+        $this->assertEquals(1, $trend[2]['count']);
+    }
+
+    public function test_signup_trend_excludes_admins_and_stub_emails(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Admin — excluded
+        User::factory()->create(['role' => 'admin', 'created_at' => now()]);
+        // Stub import email — excluded
+        User::factory()->create([
+            'role' => 'contributor',
+            'email' => 'someone@import.hartverwarmers.be',
+            'created_at' => now(),
+        ]);
+        // Soft-deleted — excluded
+        $deleted = User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
+        $deleted->delete();
+        // Real contributor — counts
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $trend = $response->viewData('signupTrend');
+        $this->assertEquals(1, collect($trend)->sum('count'));
+    }
+
+    public function test_signup_trend_alltime_returns_empty_when_no_signups(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        // Admin only — no real signups exist
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
+
+        $trend = $response->viewData('signupTrend');
+        $this->assertEmpty($trend);
+    }
 }

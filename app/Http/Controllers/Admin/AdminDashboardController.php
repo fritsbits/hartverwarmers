@@ -8,6 +8,7 @@ use App\Models\Fiche;
 use App\Models\Like;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
@@ -44,6 +45,8 @@ class AdminDashboardController extends Controller
         $adoption = $this->adoptionStats($fichesWithSuggestions);
         $fieldAdoption = $this->fieldAdoption($fichesWithSuggestions);
 
+        $signupTrend = $tab === 'aanmeldingen' ? $this->signupTrend($range) : [];
+
         return view('admin.dashboard', [
             'tab' => $tab,
             'range' => $range,
@@ -57,6 +60,7 @@ class AdminDashboardController extends Controller
             'ficheAdoptionDetails' => $this->ficheAdoptionDetails($fichesWithSuggestions),
             'onboardingStats' => $tab === 'onboarding' ? $this->onboardingStats() : [],
             'onboardingEmailCounts' => $tab === 'onboarding' ? $this->onboardingEmailCounts() : [],
+            'signupTrend' => $signupTrend,
         ]);
     }
 
@@ -481,5 +485,111 @@ class AdminDashboardController extends Controller
         }
 
         return $counts;
+    }
+
+    /** @return array<int, array{key: string, label: string, count: int}> */
+    private function signupTrend(string $range): array
+    {
+        $base = $this->signupCohortQuery();
+
+        return match ($range) {
+            'quarter' => $this->signupTrendWeekly($base),
+            'alltime' => $this->signupTrendMonthly($base),
+            default => $this->signupTrendDaily($base),
+        };
+    }
+
+    private function signupCohortQuery(): Builder
+    {
+        return User::query()
+            ->where('role', '!=', 'admin')
+            ->where('email', 'NOT LIKE', '%@import.hartverwarmers.be');
+    }
+
+    /** @return array<int, array{key: string, label: string, count: int}> */
+    private function signupTrendDaily(Builder $base): array
+    {
+        $signups = (clone $base)
+            ->where('created_at', '>=', now()->subDays(30)->startOfDay())
+            ->get(['created_at']);
+
+        $grouped = [];
+        foreach ($signups as $signup) {
+            $key = $signup->created_at->format('Y-m-d');
+            $grouped[$key] = ($grouped[$key] ?? 0) + 1;
+        }
+
+        $result = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $key = $date->format('Y-m-d');
+            $result[] = [
+                'key' => $key,
+                'label' => $date->format('d M'),
+                'count' => $grouped[$key] ?? 0,
+            ];
+        }
+
+        return $result;
+    }
+
+    /** @return array<int, array{key: string, label: string, count: int}> */
+    private function signupTrendWeekly(Builder $base): array
+    {
+        $signups = (clone $base)
+            ->where('created_at', '>=', now()->subDays(90)->startOfDay())
+            ->get(['created_at']);
+
+        $grouped = [];
+        foreach ($signups as $signup) {
+            $key = (int) $signup->created_at->format('oW');
+            $grouped[$key] = ($grouped[$key] ?? 0) + 1;
+        }
+
+        $result = [];
+        for ($i = 12; $i >= 0; $i--) {
+            $date = now()->subWeeks($i)->startOfWeek();
+            $key = (int) $date->format('oW');
+            $result[] = [
+                'key' => (string) $key,
+                'label' => $date->format('d M'),
+                'count' => $grouped[$key] ?? 0,
+            ];
+        }
+
+        return $result;
+    }
+
+    /** @return array<int, array{key: string, label: string, count: int}> */
+    private function signupTrendMonthly(Builder $base): array
+    {
+        $signups = (clone $base)->get(['created_at']);
+
+        if ($signups->isEmpty()) {
+            return [];
+        }
+
+        $earliest = $signups->min('created_at')->copy()->startOfMonth();
+        $end = now()->startOfMonth();
+
+        $grouped = [];
+        foreach ($signups as $signup) {
+            $key = $signup->created_at->format('Y-m');
+            $grouped[$key] = ($grouped[$key] ?? 0) + 1;
+        }
+
+        $result = [];
+        $cursor = $earliest->copy();
+        while ($cursor <= $end) {
+            $key = $cursor->format('Y-m');
+            $result[] = [
+                'key' => $key,
+                'label' => $cursor->isoFormat('MMM YYYY'),
+                'count' => $grouped[$key] ?? 0,
+            ];
+            $cursor->addMonth();
+        }
+
+        return $result;
     }
 }
