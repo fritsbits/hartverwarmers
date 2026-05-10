@@ -1,7 +1,7 @@
 @php
     $maxCount = collect($signupTrend)->max('count') ?: 1;
     $firstLabel = $signupTrend[0]['label'] ?? null;
-    $lastLabel = end($signupTrend)['label'] ?? null;
+    $lastLabel = collect($signupTrend)->last()['label'] ?? null;
 @endphp
 
 {{-- Signup trend --}}
@@ -70,7 +70,12 @@
         <p class="text-sm text-[var(--color-text-secondary)]">Nog geen aanmeldingen om te verifiëren.</p>
     @else
         <div class="flex items-center gap-4 mb-2">
-            <div class="flex-1 h-2 bg-[var(--color-border-light)] rounded-full overflow-hidden">
+            <div class="flex-1 h-2 bg-[var(--color-border-light)] rounded-full overflow-hidden"
+                 role="progressbar"
+                 aria-valuenow="{{ $signupStats['verificationRate'] }}"
+                 aria-valuemin="0"
+                 aria-valuemax="100"
+                 aria-label="E-mailverificatiegraad">
                 <div class="h-full bg-[var(--color-primary)] rounded-full"
                      style="width: {{ $signupStats['verificationRate'] }}%"></div>
             </div>
