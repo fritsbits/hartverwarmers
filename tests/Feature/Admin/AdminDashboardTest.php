@@ -658,7 +658,7 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(2, $stats['currentCount']);
         $this->assertEquals(5, $stats['previousCount']);
         $this->assertEquals(-3, $stats['delta']);
-        $this->assertEquals('deze 3 maand', $stats['rangeLabel']);
+        $this->assertEquals('deze 3 maanden', $stats['rangeLabel']);
     }
 
     public function test_signup_stats_alltime_suppresses_delta(): void
@@ -671,6 +671,7 @@ class AdminDashboardTest extends TestCase
 
         $stats = $response->viewData('signupStats');
         $this->assertEquals(4, $stats['currentCount']);
+        $this->assertNull($stats['previousCount']);
         $this->assertNull($stats['delta']);
         $this->assertEquals('sinds start', $stats['rangeLabel']);
     }
@@ -691,5 +692,38 @@ class AdminDashboardTest extends TestCase
 
         $stats = $response->viewData('signupStats');
         $this->assertEquals(1, $stats['currentCount']);
+    }
+
+    public function test_signup_stats_month_boundary_between_current_and_previous(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // At the exact start of the current 30-day window — counts as current
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(29)->startOfDay()->addMinutes(5),
+        ]);
+        // 5 minutes before the current window starts — counts as previous
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(29)->startOfDay()->subMinutes(5),
+        ]);
+        // At the exact start of the previous 30-day window — counts as previous
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(59)->startOfDay()->addMinutes(5),
+        ]);
+        // Outside the previous window — counts as neither
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(59)->startOfDay()->subMinutes(5),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(1, $stats['currentCount']);
+        $this->assertEquals(2, $stats['previousCount']);
+        $this->assertEquals(-1, $stats['delta']);
     }
 }

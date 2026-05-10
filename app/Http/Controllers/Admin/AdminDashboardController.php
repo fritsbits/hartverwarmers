@@ -599,7 +599,7 @@ class AdminDashboardController extends Controller
     /**
      * @return array{
      *   currentCount: int,
-     *   previousCount: int,
+     *   previousCount: int|null,
      *   delta: int|null,
      *   rangeLabel: string,
      * }
@@ -609,22 +609,29 @@ class AdminDashboardController extends Controller
         $base = $this->signupCohortQuery();
 
         [$windowDays, $rangeLabel] = match ($range) {
-            'quarter' => [90, 'deze 3 maand'],
+            'quarter' => [90, 'deze 3 maanden'],
             'alltime' => [null, 'sinds start'],
             default => [30, 'deze maand'],
         };
 
         if ($windowDays === null) {
             $currentCount = (clone $base)->count();
-            $previousCount = 0;
+            $previousCount = null;
             $delta = null;
         } else {
+            $currentStart = $range === 'quarter'
+                ? now()->subWeeks(12)->startOfWeek()
+                : now()->subDays(29)->startOfDay();
+            $previousStart = $range === 'quarter'
+                ? now()->subWeeks(24)->startOfWeek()
+                : now()->subDays(59)->startOfDay();
+
             $currentCount = (clone $base)
-                ->where('created_at', '>=', now()->subDays($windowDays))
+                ->where('created_at', '>=', $currentStart)
                 ->count();
             $previousCount = (clone $base)
-                ->where('created_at', '>=', now()->subDays($windowDays * 2))
-                ->where('created_at', '<', now()->subDays($windowDays))
+                ->where('created_at', '>=', $previousStart)
+                ->where('created_at', '<', $currentStart)
                 ->count();
             $delta = $currentCount - $previousCount;
         }
