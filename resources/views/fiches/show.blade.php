@@ -153,6 +153,8 @@
                 @endif
             @endauth
 
+            @include('fiches.partials.return-visit-banner')
+
             <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
                 {{-- A: title + meta + description — order-1 on mobile --}}
                 <div class="lg:col-span-3 order-1 lg:order-none">
@@ -295,7 +297,7 @@
                             </div>
 
                             {{-- Kudos & bookmark --}}
-                            <div class="mt-4">
+                            <div id="kudos-and-bookmark" class="mt-4">
                                 <livewire:fiche-kudos :fiche="$fiche" />
                             </div>
                         </div>
@@ -335,7 +337,7 @@
                             </div>
 
                             {{-- Kudos & bookmark --}}
-                            <div class="mt-4">
+                            <div id="kudos-and-bookmark" class="mt-4">
                                 <livewire:fiche-kudos :fiche="$fiche" />
                             </div>
                         </div>
@@ -364,7 +366,7 @@
                             </div>
 
                             {{-- Kudos & bookmark --}}
-                            <div class="mt-4">
+                            <div id="kudos-and-bookmark" class="mt-4">
                                 <livewire:fiche-kudos :fiche="$fiche" />
                             </div>
                         </div>
