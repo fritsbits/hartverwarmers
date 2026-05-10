@@ -29,7 +29,7 @@
         @elseif($tab === 'aanmeldingen')
             <flux:select size="sm" class="w-40" x-data x-on:change="window.location.href = '?tab=aanmeldingen&range=' + $event.target.value">
                 <option value="month" {{ $range === 'month' ? 'selected' : '' }}>Laatste maand</option>
-                <option value="quarter" {{ $range === 'quarter' ? 'selected' : '' }}>Laatste 3 maand</option>
+                <option value="quarter" {{ $range === 'quarter' ? 'selected' : '' }}>Laatste 3 maanden</option>
                 <option value="alltime" {{ $range === 'alltime' ? 'selected' : '' }}>Sinds start</option>
             </flux:select>
         @endif

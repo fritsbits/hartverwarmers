@@ -16,6 +16,9 @@ class AdminDashboardController extends Controller
     public function __invoke(): View
     {
         $tab = request()->get('tab', 'presentatiekwaliteit');
+        if (! in_array($tab, ['presentatiekwaliteit', 'onboarding', 'aanmeldingen'], true)) {
+            $tab = 'presentatiekwaliteit';
+        }
 
         $defaultRange = $tab === 'aanmeldingen' ? 'month' : 'week';
         $range = request()->get('range', $defaultRange);

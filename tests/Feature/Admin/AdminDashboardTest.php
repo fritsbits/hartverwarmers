@@ -506,4 +506,14 @@ class AdminDashboardTest extends TestCase
         $response->assertOk();
         $this->assertEquals('week', $response->viewData('range'));
     }
+
+    public function test_invalid_tab_falls_back_to_presentatiekwaliteit(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=garbage');
+
+        $response->assertOk();
+        $this->assertEquals('presentatiekwaliteit', $response->viewData('tab'));
+    }
 }
