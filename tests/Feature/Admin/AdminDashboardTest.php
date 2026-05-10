@@ -624,4 +624,72 @@ class AdminDashboardTest extends TestCase
         $trend = $response->viewData('signupTrend');
         $this->assertEquals(1, collect($trend)->sum('count'));
     }
+
+    public function test_signup_stats_month_current_count_and_delta(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Current 30-day window: 3 signups
+        User::factory()->count(3)->create(['role' => 'contributor', 'created_at' => now()->subDays(5)]);
+        // Previous 30-day window: 1 signup
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(45)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(3, $stats['currentCount']);
+        $this->assertEquals(1, $stats['previousCount']);
+        $this->assertEquals(2, $stats['delta']);
+        $this->assertEquals('deze maand', $stats['rangeLabel']);
+    }
+
+    public function test_signup_stats_quarter_current_and_delta(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Current 90-day window
+        User::factory()->count(2)->create(['role' => 'contributor', 'created_at' => now()->subDays(10)]);
+        // Previous 90-day window (90–180 days ago)
+        User::factory()->count(5)->create(['role' => 'contributor', 'created_at' => now()->subDays(120)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=quarter');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(2, $stats['currentCount']);
+        $this->assertEquals(5, $stats['previousCount']);
+        $this->assertEquals(-3, $stats['delta']);
+        $this->assertEquals('deze 3 maand', $stats['rangeLabel']);
+    }
+
+    public function test_signup_stats_alltime_suppresses_delta(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->count(4)->create(['role' => 'contributor', 'created_at' => now()->subMonths(3)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(4, $stats['currentCount']);
+        $this->assertNull($stats['delta']);
+        $this->assertEquals('sinds start', $stats['rangeLabel']);
+    }
+
+    public function test_signup_stats_excludes_admins_and_stubs_in_count(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
+        User::factory()->create(['role' => 'admin', 'created_at' => now()]);
+        User::factory()->create([
+            'role' => 'contributor',
+            'email' => 'stub@import.hartverwarmers.be',
+            'created_at' => now(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(1, $stats['currentCount']);
+    }
 }

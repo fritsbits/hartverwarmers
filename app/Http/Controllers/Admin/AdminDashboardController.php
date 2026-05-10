@@ -46,6 +46,7 @@ class AdminDashboardController extends Controller
         $fieldAdoption = $this->fieldAdoption($fichesWithSuggestions);
 
         $signupTrend = $tab === 'aanmeldingen' ? $this->signupTrend($range) : [];
+        $signupStats = $tab === 'aanmeldingen' ? $this->signupStats($range) : [];
 
         return view('admin.dashboard', [
             'tab' => $tab,
@@ -61,6 +62,7 @@ class AdminDashboardController extends Controller
             'onboardingStats' => $tab === 'onboarding' ? $this->onboardingStats() : [],
             'onboardingEmailCounts' => $tab === 'onboarding' ? $this->onboardingEmailCounts() : [],
             'signupTrend' => $signupTrend,
+            'signupStats' => $signupStats,
         ]);
     }
 
@@ -592,5 +594,41 @@ class AdminDashboardController extends Controller
         }
 
         return $result;
+    }
+
+    /**
+     * @return array{
+     *   currentCount: int,
+     *   previousCount: int,
+     *   delta: int|null,
+     *   rangeLabel: string,
+     * }
+     */
+    private function signupStats(string $range): array
+    {
+        $base = $this->signupCohortQuery();
+
+        [$windowDays, $rangeLabel] = match ($range) {
+            'quarter' => [90, 'deze 3 maand'],
+            'alltime' => [null, 'sinds start'],
+            default => [30, 'deze maand'],
+        };
+
+        if ($windowDays === null) {
+            $currentCount = (clone $base)->count();
+            $previousCount = 0;
+            $delta = null;
+        } else {
+            $currentCount = (clone $base)
+                ->where('created_at', '>=', now()->subDays($windowDays))
+                ->count();
+            $previousCount = (clone $base)
+                ->where('created_at', '>=', now()->subDays($windowDays * 2))
+                ->where('created_at', '<', now()->subDays($windowDays))
+                ->count();
+            $delta = $currentCount - $previousCount;
+        }
+
+        return compact('currentCount', 'previousCount', 'delta', 'rangeLabel');
     }
 }
