@@ -606,6 +606,7 @@ class AdminDashboardController extends Controller
      *   verifiedCount: int,
      *   verificationRate: int,
      *   verificationLowData: bool,
+     *   totalMembers: int,
      * }
      */
     private function signupStats(string $range): array
@@ -650,6 +651,8 @@ class AdminDashboardController extends Controller
         $verificationRate = $cohortCount > 0 ? (int) round($verifiedCount / $cohortCount * 100) : 0;
         $verificationLowData = $cohortCount > 0 && $cohortCount < 5;
 
+        $totalMembers = (clone $base)->count();
+
         return compact(
             'currentCount',
             'previousCount',
@@ -659,6 +662,7 @@ class AdminDashboardController extends Controller
             'verifiedCount',
             'verificationRate',
             'verificationLowData',
+            'totalMembers',
         );
     }
 }

@@ -801,4 +801,36 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(2, $stats['verifiedCount']);
         $this->assertEquals(67, $stats['verificationRate']);
     }
+
+    public function test_total_members_count_includes_all_non_admin_non_stub(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->count(3)->create(['role' => 'contributor']);
+        User::factory()->count(1)->create(['role' => 'curator']);
+        // Excluded
+        User::factory()->create(['role' => 'admin']);
+        User::factory()->create(['role' => 'contributor', 'email' => 'a@import.hartverwarmers.be']);
+        $deleted = User::factory()->create(['role' => 'contributor']);
+        $deleted->delete();
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(4, $stats['totalMembers']);
+    }
+
+    public function test_total_members_count_unaffected_by_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subYears(2)]);
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
+
+        $month = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+        $alltime = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
+
+        $this->assertEquals(2, $month->viewData('signupStats')['totalMembers']);
+        $this->assertEquals(2, $alltime->viewData('signupStats')['totalMembers']);
+    }
 }
