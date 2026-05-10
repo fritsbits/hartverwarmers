@@ -7,7 +7,6 @@ use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Models\UserInteraction;
 use App\Notifications\OnboardingCuratedActivitiesNotification;
-use App\Notifications\OnboardingDownloadFollowupNotification;
 use App\Notifications\OnboardingDownloadMilestoneNotification;
 use App\Notifications\OnboardingTopFiveNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -247,111 +246,5 @@ class SendOnboardingEmailsTest extends TestCase
         $this->artisan('onboarding:send-emails')->assertExitCode(0);
 
         Notification::assertNotSentTo($user, OnboardingDownloadMilestoneNotification::class);
-    }
-
-    // ── Download follow-up ────────────────────────────────────────────────────
-
-    public function test_mail_4_sent_two_days_after_download(): void
-    {
-        Notification::fake();
-        $user = User::factory()->create(['email_verified_at' => now()->subDays(5)]);
-        $fiche = Fiche::factory()->published()->create();
-        UserInteraction::create([
-            'user_id' => $user->id,
-            'interactable_type' => Fiche::class,
-            'interactable_id' => $fiche->id,
-            'type' => 'download',
-            'created_at' => now()->subDays(2),
-        ]);
-
-        $this->artisan('onboarding:send-emails')->assertExitCode(0);
-
-        Notification::assertSentTo($user, OnboardingDownloadFollowupNotification::class);
-        $this->assertDatabaseHas('onboarding_email_log', [
-            'user_id' => $user->id,
-            'mail_key' => "download_followup_{$fiche->id}",
-        ]);
-    }
-
-    public function test_mail_4_not_sent_when_download_less_than_2_days_ago(): void
-    {
-        Notification::fake();
-        $user = User::factory()->create(['email_verified_at' => now()->subDays(5)]);
-        $fiche = Fiche::factory()->published()->create();
-        UserInteraction::create([
-            'user_id' => $user->id,
-            'interactable_type' => Fiche::class,
-            'interactable_id' => $fiche->id,
-            'type' => 'download',
-            'created_at' => now()->subDay(),
-        ]);
-
-        $this->artisan('onboarding:send-emails')->assertExitCode(0);
-
-        Notification::assertNotSentTo($user, OnboardingDownloadFollowupNotification::class);
-    }
-
-    public function test_mail_4_not_sent_twice_for_same_fiche(): void
-    {
-        Notification::fake();
-        $user = User::factory()->create(['email_verified_at' => now()->subDays(5)]);
-        $fiche = Fiche::factory()->published()->create();
-        UserInteraction::create([
-            'user_id' => $user->id,
-            'interactable_type' => Fiche::class,
-            'interactable_id' => $fiche->id,
-            'type' => 'download',
-            'created_at' => now()->subDays(3),
-        ]);
-        OnboardingEmailLog::create([
-            'user_id' => $user->id,
-            'mail_key' => "download_followup_{$fiche->id}",
-            'sent_at' => now()->subDay(),
-        ]);
-
-        $this->artisan('onboarding:send-emails')->assertExitCode(0);
-
-        Notification::assertNotSentTo($user, OnboardingDownloadFollowupNotification::class);
-    }
-
-    public function test_mail_4_not_sent_to_users_who_opted_out(): void
-    {
-        Notification::fake();
-        $user = User::factory()->create([
-            'email_verified_at' => now()->subDays(5),
-            'notify_on_onboarding_emails' => false,
-        ]);
-        $fiche = Fiche::factory()->published()->create();
-        UserInteraction::create([
-            'user_id' => $user->id,
-            'interactable_type' => Fiche::class,
-            'interactable_id' => $fiche->id,
-            'type' => 'download',
-            'created_at' => now()->subDays(2),
-        ]);
-
-        $this->artisan('onboarding:send-emails')->assertExitCode(0);
-
-        Notification::assertNotSentTo($user, OnboardingDownloadFollowupNotification::class);
-    }
-
-    public function test_mail_4_sends_separate_email_per_downloaded_fiche(): void
-    {
-        Notification::fake();
-        $user = User::factory()->create(['email_verified_at' => now()->subDays(5)]);
-        $fiches = Fiche::factory()->published()->count(2)->create();
-        foreach ($fiches as $fiche) {
-            UserInteraction::create([
-                'user_id' => $user->id,
-                'interactable_type' => Fiche::class,
-                'interactable_id' => $fiche->id,
-                'type' => 'download',
-                'created_at' => now()->subDays(2),
-            ]);
-        }
-
-        $this->artisan('onboarding:send-emails')->assertExitCode(0);
-
-        Notification::assertSentToTimes($user, OnboardingDownloadFollowupNotification::class, 2);
     }
 }

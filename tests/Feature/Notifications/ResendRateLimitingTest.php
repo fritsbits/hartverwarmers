@@ -7,7 +7,6 @@ use App\Models\Fiche;
 use App\Notifications\BaseMailNotification;
 use App\Notifications\FicheCommentNotification;
 use App\Notifications\OnboardingCuratedActivitiesNotification;
-use App\Notifications\OnboardingDownloadFollowupNotification;
 use App\Notifications\OnboardingDownloadMilestoneNotification;
 use App\Notifications\OnboardingFirstBookmarkNotification;
 use App\Notifications\OnboardingMilestone10BookmarksNotification;
@@ -77,18 +76,6 @@ class ResendRateLimitingTest extends TestCase
     {
         $fiche = Fiche::factory()->create();
         $notification = new OnboardingFirstBookmarkNotification($fiche);
-
-        $middleware = $notification->middleware();
-        $rateLimited = collect($middleware)->first(fn ($m) => $m instanceof RateLimited);
-
-        $this->assertNotNull($rateLimited);
-        $this->assertInstanceOf(BaseMailNotification::class, $notification);
-    }
-
-    public function test_onboarding_download_followup_notification_has_rate_limited_middleware(): void
-    {
-        $fiche = Fiche::factory()->create();
-        $notification = new OnboardingDownloadFollowupNotification($fiche);
 
         $middleware = $notification->middleware();
         $rateLimited = collect($middleware)->first(fn ($m) => $m instanceof RateLimited);
