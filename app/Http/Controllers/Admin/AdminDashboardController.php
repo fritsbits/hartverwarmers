@@ -602,6 +602,10 @@ class AdminDashboardController extends Controller
      *   previousCount: int|null,
      *   delta: int|null,
      *   rangeLabel: string,
+     *   cohortCount: int,
+     *   verifiedCount: int,
+     *   verificationRate: int,
+     *   verificationLowData: bool,
      * }
      */
     private function signupStats(string $range): array
@@ -613,6 +617,8 @@ class AdminDashboardController extends Controller
             'alltime' => [null, 'sinds start'],
             default => [30, 'deze maand'],
         };
+
+        $currentStart = null;
 
         if ($windowDays === null) {
             $currentCount = (clone $base)->count();
@@ -636,6 +642,23 @@ class AdminDashboardController extends Controller
             $delta = $currentCount - $previousCount;
         }
 
-        return compact('currentCount', 'previousCount', 'delta', 'rangeLabel');
+        $cohortQuery = $currentStart === null
+            ? clone $base
+            : (clone $base)->where('created_at', '>=', $currentStart);
+        $cohortCount = $currentCount;
+        $verifiedCount = (clone $cohortQuery)->whereNotNull('email_verified_at')->count();
+        $verificationRate = $cohortCount > 0 ? (int) round($verifiedCount / $cohortCount * 100) : 0;
+        $verificationLowData = $cohortCount > 0 && $cohortCount < 5;
+
+        return compact(
+            'currentCount',
+            'previousCount',
+            'delta',
+            'rangeLabel',
+            'cohortCount',
+            'verifiedCount',
+            'verificationRate',
+            'verificationLowData',
+        );
     }
 }

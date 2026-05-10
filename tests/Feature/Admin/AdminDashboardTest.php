@@ -726,4 +726,79 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(2, $stats['previousCount']);
         $this->assertEquals(-1, $stats['delta']);
     }
+
+    public function test_verification_rate_in_month_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // 6 in cohort: 4 verified, 2 unverified
+        User::factory()->count(4)->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(5),
+            'email_verified_at' => now()->subDays(4),
+        ]);
+        User::factory()->count(2)->unverified()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(5),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(6, $stats['cohortCount']);
+        $this->assertEquals(4, $stats['verifiedCount']);
+        $this->assertEquals(67, $stats['verificationRate']);
+        $this->assertFalse($stats['verificationLowData']);
+    }
+
+    public function test_verification_rate_zero_when_cohort_empty(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(0, $stats['cohortCount']);
+        $this->assertEquals(0, $stats['verifiedCount']);
+        $this->assertEquals(0, $stats['verificationRate']);
+    }
+
+    public function test_verification_rate_low_data_flag_when_cohort_under_5(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->count(3)->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(2),
+            'email_verified_at' => now()->subDay(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(3, $stats['cohortCount']);
+        $this->assertTrue($stats['verificationLowData']);
+    }
+
+    public function test_verification_rate_alltime_uses_all_users(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->count(2)->create([
+            'role' => 'contributor',
+            'created_at' => now()->subYear(),
+            'email_verified_at' => now()->subYear(),
+        ]);
+        User::factory()->count(1)->unverified()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subYear(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(3, $stats['cohortCount']);
+        $this->assertEquals(2, $stats['verifiedCount']);
+        $this->assertEquals(67, $stats['verificationRate']);
+    }
 }
