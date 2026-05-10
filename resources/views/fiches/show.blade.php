@@ -279,7 +279,7 @@
                                         {{-- Download button --}}
                                         <a x-show="!downloaded"
                                            href="{{ route('fiches.download', [$initiative, $fiche]) }}"
-                                           x-on:click="setTimeout(() => { downloaded = true }, 600)"
+                                           x-on:click="setTimeout(() => { downloaded = true; window.dispatchEvent(new CustomEvent('fiche-downloaded', { detail: { ficheId: {{ $fiche->id }} } })) }, 600)"
                                            class="flex items-center justify-between gap-3 w-full px-5 py-3.5 rounded-xl bg-[var(--color-primary)] text-white font-semibold transition-all hover:bg-[var(--color-primary-hover)] hover:shadow-md active:scale-[0.98] group">
                                             <div class="flex items-center gap-3">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform group-hover:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -290,7 +290,6 @@
                                             <span class="text-sm font-normal text-white/70">{{ $sizeLabel }}</span>
                                         </a>
 
-                                        @include('fiches.partials.post-download-nudge')
                                     </div>
                                 @endif
                             </div>
@@ -326,14 +325,13 @@
                             <div class="mt-4" x-data="{ downloaded: false }">
                                 <a x-show="!downloaded"
                                    href="{{ route('fiches.download', [$initiative, $fiche]) }}"
-                                   x-on:click="setTimeout(() => { downloaded = true }, 600)"
+                                   x-on:click="setTimeout(() => { downloaded = true; window.dispatchEvent(new CustomEvent('fiche-downloaded', { detail: { ficheId: {{ $fiche->id }} } })) }, 600)"
                                    class="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-[var(--color-primary)] text-white font-semibold transition-all hover:bg-[var(--color-primary-hover)] hover:shadow-md active:scale-[0.98]">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                     </svg>
                                     Download
                                 </a>
-                                @include('fiches.partials.post-download-nudge')
                             </div>
 
                             {{-- Kudos & bookmark --}}

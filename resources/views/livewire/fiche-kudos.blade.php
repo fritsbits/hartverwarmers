@@ -198,4 +198,6 @@
         </div>
     @endif
 
+    @include('fiches.partials.post-download-nudge')
+
 </div>
