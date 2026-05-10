@@ -833,4 +833,29 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(2, $month->viewData('signupStats')['totalMembers']);
         $this->assertEquals(2, $alltime->viewData('signupStats')['totalMembers']);
     }
+
+    public function test_aanmeldingen_partial_shows_signup_count_and_total_members(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->count(3)->create(['role' => 'contributor', 'created_at' => now()->subDays(2)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $response->assertOk();
+        $response->assertSee('Aanmeldingen');
+        $response->assertSee('E-mailverificatie');
+        $response->assertSee('totaal leden');
+        $response->assertSee('deze maand');
+    }
+
+    public function test_aanmeldingen_empty_state_when_no_signups_in_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+
+        $response->assertOk();
+        $response->assertSee('Nog geen aanmeldingen');
+    }
 }
