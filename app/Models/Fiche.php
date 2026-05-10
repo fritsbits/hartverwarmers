@@ -97,6 +97,31 @@ class Fiche extends Model
         return (int) $this->kudos()->sum('count');
     }
 
+    public function hasBeenThankedBy(?User $user = null, ?string $sessionId = null): bool
+    {
+        $userId = $user?->id;
+
+        $hasKudos = $this->likes()
+            ->where('type', 'kudos')
+            ->where('count', '>', 0)
+            ->when($userId !== null, fn ($q) => $q->where('user_id', $userId))
+            ->when($userId === null && $sessionId !== null, fn ($q) => $q->whereNull('user_id')->where('session_id', $sessionId))
+            ->exists();
+
+        if ($hasKudos) {
+            return true;
+        }
+
+        if ($userId === null) {
+            return false;
+        }
+
+        return $this->comments()
+            ->where('user_id', $userId)
+            ->whereNull('deleted_at')
+            ->exists();
+    }
+
     /**
      * Structured practical sections built from the materials JSON,
      * falling back to the practical_tips text field.
