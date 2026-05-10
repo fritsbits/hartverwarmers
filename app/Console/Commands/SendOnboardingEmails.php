@@ -5,14 +5,11 @@ namespace App\Console\Commands;
 use App\Models\Fiche;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
-use App\Models\UserInteraction;
 use App\Notifications\OnboardingCuratedActivitiesNotification;
-use App\Notifications\OnboardingDownloadFollowupNotification;
 use App\Notifications\OnboardingDownloadMilestoneNotification;
 use App\Notifications\OnboardingTopFiveNotification;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 class SendOnboardingEmails extends Command
 {
@@ -25,7 +22,6 @@ class SendOnboardingEmails extends Command
         $this->sendMail1();
         $this->sendMail2();
         $this->sendMail3();
-        $this->sendDownloadFollowupEmails();
 
         $this->info('Onboarding emails processed.');
 
@@ -70,40 +66,6 @@ class SendOnboardingEmails extends Command
                     $this->log($user, 'mail_2');
                 }
             });
-    }
-
-    private function sendDownloadFollowupEmails(): void
-    {
-        $downloads = UserInteraction::query()
-            ->where('type', 'download')
-            ->where('interactable_type', Fiche::class)
-            ->where('created_at', '<=', now()->subDays(2))
-            ->whereNotNull('user_id')
-            ->whereHas('user', fn ($q) => $q
-                ->where('notify_on_onboarding_emails', true)
-                ->whereNotNull('email_verified_at')
-            )
-            ->whereNotExists(function ($query): void {
-                $query->select(DB::raw(1))
-                    ->from('onboarding_email_log')
-                    ->whereColumn('onboarding_email_log.user_id', 'user_interactions.user_id')
-                    ->whereRaw("onboarding_email_log.mail_key = CONCAT('download_followup_', user_interactions.interactable_id)");
-            })
-            ->with(['user', 'interactable'])
-            ->get();
-
-        foreach ($downloads as $interaction) {
-            $user = $interaction->user;
-            $fiche = $interaction->interactable;
-
-            if (! $user || ! $fiche instanceof Fiche) {
-                continue;
-            }
-
-            $mailKey = "download_followup_{$fiche->id}";
-            $user->notify(new OnboardingDownloadFollowupNotification($fiche));
-            $this->log($user, $mailKey);
-        }
     }
 
     private function sendMail3(): void
