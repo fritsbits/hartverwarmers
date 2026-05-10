@@ -858,4 +858,23 @@ class AdminDashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee('Nog geen aanmeldingen');
     }
+
+    public function test_aanmeldingen_alltime_hides_redundant_current_count_figure(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->count(2)->create(['role' => 'contributor', 'created_at' => now()->subMonths(2)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
+
+        $stats = $response->viewData('signupStats');
+
+        $response->assertOk();
+        $response->assertSee('totaal leden');
+        // The period figure (currentCount with rangeLabel subtitle) must not render for alltime;
+        // only the totalMembers figure is shown. Confirm rangeLabel is 'sinds start' and
+        // that the stats card subtitle does NOT repeat the same number via the period figure div.
+        $this->assertEquals('sinds start', $stats['rangeLabel']);
+        $this->assertEquals($stats['currentCount'], $stats['totalMembers']);
+    }
 }

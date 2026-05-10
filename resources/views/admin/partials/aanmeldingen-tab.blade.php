@@ -41,17 +41,19 @@
 
     {{-- Stats row --}}
     <div class="flex gap-6">
-        <div>
-            <div class="text-2xl font-bold text-[var(--color-primary)] tabular-nums">{{ $signupStats['currentCount'] }}</div>
-            <div class="text-xs text-[var(--color-text-secondary)]">
-                {{ $signupStats['rangeLabel'] }}
-                @if($signupStats['delta'] !== null)
-                    <span class="font-semibold {{ $signupStats['delta'] >= 0 ? 'text-green-600' : 'text-red-500' }}">
-                        &nbsp;{{ $signupStats['delta'] >= 0 ? '+' : '' }}{{ $signupStats['delta'] }}
-                    </span>
-                @endif
+        @if($signupStats['rangeLabel'] !== 'sinds start')
+            <div>
+                <div class="text-2xl font-bold text-[var(--color-primary)] tabular-nums">{{ $signupStats['currentCount'] }}</div>
+                <div class="text-xs text-[var(--color-text-secondary)]">
+                    {{ $signupStats['rangeLabel'] }}
+                    @if($signupStats['delta'] !== null)
+                        <span class="font-semibold {{ $signupStats['delta'] >= 0 ? 'text-green-600' : 'text-red-500' }}">
+                            &nbsp;{{ $signupStats['delta'] >= 0 ? '+' : '' }}{{ $signupStats['delta'] }}
+                        </span>
+                    @endif
+                </div>
             </div>
-        </div>
+        @endif
         <div>
             <div class="text-2xl font-bold tabular-nums">{{ $signupStats['totalMembers'] }}</div>
             <div class="text-xs text-[var(--color-text-secondary)]">totaal leden</div>
@@ -63,7 +65,7 @@
 <flux:card>
     <flux:heading size="lg" class="font-heading font-bold mb-1">E-mailverificatie</flux:heading>
     <p class="text-sm text-[var(--color-text-secondary)] mb-5">
-        Welk percentage van nieuwe accounts bevestigt hun adres?
+        Hoeveel nieuwe accounts bevestigen hun e-mailadres?
     </p>
 
     @if($signupStats['cohortCount'] === 0)
