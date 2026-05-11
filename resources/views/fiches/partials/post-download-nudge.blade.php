@@ -64,37 +64,38 @@
             {{-- State A: Initial — kudos + inline comment --}}
             <div x-show="state === 'initial'" x-cloak class="relative px-6 sm:px-10 pt-12 pb-8">
                 {{-- Brand heart motif — focal point, no photo dependency --}}
-                <div class="flex flex-col items-center mb-6">
+                <div class="flex flex-col items-center mb-6" style="animation: takeoverContentEnter 0.4s ease-out 0ms both;">
                     <div class="relative" aria-hidden="true" style="animation: takeoverHeartBreathe 3s ease-in-out infinite;">
                         {{-- Soft warm aura --}}
                         <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(circle, rgba(232,118,75,0.28) 0%, transparent 65%); transform: scale(1.8); z-index: 0;"></div>
-                        {{-- Sparkles --}}
-                        <span class="absolute -top-2 -left-6 text-[var(--color-yellow)]" style="font-size: 14px;">✦</span>
-                        <span class="absolute -top-4 right-0 text-[var(--color-secondary)]" style="font-size: 10px;">✦</span>
-                        <span class="absolute -bottom-1 -left-4 text-[var(--color-accent-purple)]" style="font-size: 11px;">✦</span>
+                        {{-- Sparkles — each twinkles on its own rhythm --}}
+                        <span class="absolute -top-2 -left-6 text-[var(--color-yellow)]" style="font-size: 14px; animation: takeoverSparkleTwinkle 2.4s ease-in-out 0.2s infinite;">✦</span>
+                        <span class="absolute -top-4 right-0 text-[var(--color-secondary)]" style="font-size: 10px; animation: takeoverSparkleTwinkle 2.9s ease-in-out 0.9s infinite;">✦</span>
+                        <span class="absolute -bottom-1 -left-4 text-[var(--color-accent-purple)]" style="font-size: 11px; animation: takeoverSparkleTwinkle 2.6s ease-in-out 1.5s infinite;">✦</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="relative w-20 h-20" fill="var(--color-primary)" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 12px rgba(232,118,75,0.35));">
                             <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
                         </svg>
                     </div>
                 </div>
 
-                <h2 class="font-heading font-bold text-3xl sm:text-4xl text-center leading-tight text-balance mb-2" style="color: var(--color-text-primary)">
+                <h2 class="font-heading font-bold text-3xl sm:text-4xl text-center leading-tight text-balance mb-2" style="color: var(--color-text-primary); animation: takeoverContentEnter 0.4s ease-out 80ms both;">
                     {{ $contributorName }} deelde dit met jou
                 </h2>
 
-                {{-- Hand-drawn underline accent --}}
+                {{-- Hand-drawn underline accent — draws itself in --}}
                 <div class="flex justify-center mb-4" aria-hidden="true">
                     <svg width="140" height="9" viewBox="0 0 140 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 5.5C22 2.5 45 7 70 4.5C95 2 118 7 138 4" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+                        <path d="M2 5.5C22 2.5 45 7 70 4.5C95 2 118 7 138 4" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-dasharray="200" style="animation: takeoverUnderlineDraw 1s cubic-bezier(0.65, 0, 0.35, 1) 280ms both;"/>
                     </svg>
                 </div>
 
-                <p class="text-base text-center text-pretty text-[var(--color-text-secondary)] mb-7 max-w-sm mx-auto">
+                <p class="text-base text-center text-pretty text-[var(--color-text-secondary)] mb-7 max-w-sm mx-auto" style="animation: takeoverContentEnter 0.4s ease-out 200ms both;">
                     Maak {{ $contributorName }}'s dag — geef een hartje of laat een berichtje achter.
                 </p>
 
                 {{-- Kudos button (press-and-hold) --}}
                 <div class="relative mb-2"
+                     style="animation: takeoverContentEnter 0.4s ease-out 280ms both;"
                      x-data="{
                         hearts: [], heartId: 0, given: 0, holding: false, interval: null,
                         spawnHeart() {
@@ -145,12 +146,12 @@
                         Geef een hartje
                     </button>
                 </div>
-                <p class="text-xs text-center text-[var(--color-text-secondary)] mb-6">hou ingedrukt voor meer</p>
+                <p class="text-xs text-center text-[var(--color-text-secondary)] mb-6" style="animation: takeoverContentEnter 0.4s ease-out 360ms both;">hou ingedrukt voor meer</p>
 
                 {{-- Inline comment box (auth only) --}}
                 @auth
                     @if(! $isOwnFiche)
-                        <div class="border-t border-[var(--color-border-light)] pt-5">
+                        <div class="border-t border-[var(--color-border-light)] pt-5" style="animation: takeoverContentEnter 0.4s ease-out 440ms both;">
                             <label for="takeover-comment-{{ $fiche->id }}" class="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
                                 …of schrijf een berichtje:
                             </label>
@@ -177,7 +178,7 @@
                     @endif
                 @endauth
 
-                <div class="text-center mt-6">
+                <div class="text-center mt-6" style="animation: takeoverContentEnter 0.4s ease-out 520ms both;">
                     <button x-on:click="dismiss()" class="inline-flex items-center justify-center px-4 py-3 min-h-[40px] text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors duration-150 underline underline-offset-2 decoration-[var(--color-border-light)] hover:decoration-[var(--color-primary)]">
                         niet nu, bedankt
                     </button>
@@ -237,9 +238,9 @@
                  x-transition:enter-end="opacity-100 translate-y-0"
                  class="relative px-6 sm:px-10 py-12 text-center"
                  role="status">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[var(--color-primary)]/10 mb-5">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[var(--color-primary)]/10 mb-5" style="animation: takeoverContentEnter 0.4s ease-out 0ms both;">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10" fill="none" stroke="var(--color-primary)" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" style="stroke-dasharray: 24; animation: checkmarkDraw 0.55s cubic-bezier(0.65, 0, 0.35, 1) 200ms both;" />
                     </svg>
                 </div>
                 @auth
