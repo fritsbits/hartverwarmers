@@ -36,10 +36,10 @@
          aria-modal="true"
     >
         <div x-show="downloaded" x-cloak
-             x-transition:enter="transition-[opacity,transform] duration-[550ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]"
+             x-transition:enter="transition ease-out duration-700"
              x-transition:enter-start="opacity-0 translate-y-10"
              x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition-[opacity,transform] duration-[250ms] ease-in"
+             x-transition:leave="transition ease-in duration-300"
              x-transition:leave-start="opacity-100 translate-y-0"
              x-transition:leave-end="opacity-0 translate-y-4"
              class="relative w-full max-w-lg bg-[var(--color-bg-white)] rounded-3xl overflow-hidden"
@@ -66,39 +66,23 @@
 
             {{-- State A: Initial — kudos + inline comment --}}
             <div x-show="state === 'initial'" x-cloak class="relative px-6 sm:px-10 pt-12 pb-8">
-                {{-- Brand heart motif — focal point, no photo dependency --}}
-                <div class="flex flex-col items-center mb-6" style="animation: takeoverContentEnter 0.4s ease-out 0ms both;">
-                    <div class="relative" aria-hidden="true" style="animation: takeoverHeartBreathe 3s ease-in-out infinite;">
-                        {{-- Soft warm aura --}}
-                        <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(circle, rgba(232,118,75,0.28) 0%, transparent 65%); transform: scale(1.8); z-index: 0;"></div>
-                        {{-- Sparkles — each twinkles on its own rhythm --}}
-                        <span class="absolute -top-2 -left-6 text-[var(--color-yellow)]" style="font-size: 14px; animation: takeoverSparkleTwinkle 2.4s ease-in-out 0.2s infinite;">✦</span>
-                        <span class="absolute -top-4 right-0 text-[var(--color-secondary)]" style="font-size: 10px; animation: takeoverSparkleTwinkle 2.9s ease-in-out 0.9s infinite;">✦</span>
-                        <span class="absolute -bottom-1 -left-4 text-[var(--color-accent-purple)]" style="font-size: 11px; animation: takeoverSparkleTwinkle 2.6s ease-in-out 1.5s infinite;">✦</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="relative w-20 h-20" fill="var(--color-primary)" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 12px rgba(232,118,75,0.35));">
-                            <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
-                        </svg>
-                    </div>
-                </div>
-
-                <h2 class="font-heading font-bold text-3xl sm:text-4xl text-center leading-tight text-balance mb-2" style="color: var(--color-text-primary); animation: takeoverContentEnter 0.4s ease-out 80ms both;">
-                    {{ $contributorName }} deelde dit met jou
-                </h2>
-
-                {{-- Hand-drawn underline accent — draws itself in --}}
-                <div class="flex justify-center mb-4" aria-hidden="true">
-                    <svg width="140" height="9" viewBox="0 0 140 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 5.5C22 2.5 45 7 70 4.5C95 2 118 7 138 4" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-dasharray="200" style="animation: takeoverUnderlineDraw 1s cubic-bezier(0.65, 0, 0.35, 1) 280ms both;"/>
+                {{-- Heart motif — single accent, no aura, no sparkles, no shadow --}}
+                <div class="flex justify-center mb-5" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-14 h-14" fill="var(--color-primary)" viewBox="0 0 24 24" style="animation: takeoverHeartBreathe 3s ease-in-out infinite;">
+                        <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
                     </svg>
                 </div>
 
-                <p class="text-base text-center text-pretty text-[var(--color-text-secondary)] mb-7 max-w-sm mx-auto" style="animation: takeoverContentEnter 0.4s ease-out 200ms both;">
+                <h2 class="font-heading font-bold text-3xl text-center leading-tight text-balance mb-3" style="color: var(--color-text-primary);">
+                    {{ $contributorName }} deelde dit met jou
+                </h2>
+
+                <p class="text-base text-center text-pretty text-[var(--color-text-secondary)] mb-8 max-w-sm mx-auto">
                     Maak {{ $contributorName }}'s dag — geef een hartje of laat een berichtje achter.
                 </p>
 
                 {{-- Kudos button (press-and-hold) --}}
-                <div class="relative mb-2"
-                     style="animation: takeoverContentEnter 0.4s ease-out 280ms both;"
+                <div class="relative mb-5"
                      x-data="{
                         hearts: [], heartId: 0, given: 0, holding: false, interval: null,
                         spawnHeart() {
@@ -139,41 +123,36 @@
                     <button x-on:mousedown.prevent="startGive()"
                             x-on:touchstart.prevent="startGive()"
                             aria-label="Geef een hartje voor {{ $contributorName }}"
+                            title="Hou ingedrukt voor meer"
                             @if($isOwnFiche) disabled @endif
-                            class="w-full inline-flex items-center justify-center gap-3 px-6 py-5 rounded-2xl bg-[var(--color-primary)] text-white text-lg font-bold transition-[transform,box-shadow,background-color] duration-150 hover:bg-[var(--color-primary-hover)] hover:shadow-xl active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed select-none"
-                            style="box-shadow: 0 8px 24px -4px rgba(232, 118, 75, 0.4);"
+                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-[var(--color-primary)] text-white text-base font-semibold transition-[transform,background-color] duration-150 hover:bg-[var(--color-primary-hover)] active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed select-none"
                             :class="holding ? 'scale-[1.03]' : ''">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 transition-transform" :class="holding ? 'scale-125' : ''" fill="currentColor" viewBox="0 0 24 24">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform" :class="holding ? 'scale-125' : ''" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                         </svg>
                         Geef een hartje
                     </button>
                 </div>
-                <p class="text-xs text-center text-[var(--color-text-secondary)] mb-6" style="animation: takeoverContentEnter 0.4s ease-out 360ms both;">hou ingedrukt voor meer</p>
 
                 {{-- Inline comment box (auth only) --}}
                 @auth
                     @if(! $isOwnFiche)
-                        <div class="border-t border-[var(--color-border-light)] pt-5" style="animation: takeoverContentEnter 0.4s ease-out 440ms both;">
-                            <label for="takeover-comment-{{ $fiche->id }}" class="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
-                                …of schrijf een berichtje:
-                            </label>
+                        <div class="relative">
                             <textarea
                                 id="takeover-comment-{{ $fiche->id }}"
                                 x-ref="commentInput"
-                                wire:model="body"
-                                rows="3"
+                                wire:model.live="body"
+                                rows="2"
                                 maxlength="1000"
-                                placeholder="Schrijf hier..."
-                                class="w-full px-4 py-3 rounded-xl border border-[var(--color-border-light)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none text-base resize-y bg-white"
+                                placeholder="…of schrijf een berichtje voor {{ $contributorName }}"
+                                class="w-full px-4 py-3 rounded-2xl border border-[var(--color-border-light)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/15 outline-none text-base resize-none bg-[var(--color-bg-cream)] placeholder:text-[var(--color-text-secondary)]"
                             ></textarea>
                             @error('body')
                                 <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                             @enderror
-                            <div class="flex justify-end mt-3">
+                            <div x-show="$wire.body && $wire.body.trim().length >= 2" x-cloak x-transition class="flex justify-end mt-2">
                                 <button wire:click="addComment"
-                                        x-bind:disabled="$wire.body.trim().length < 2"
-                                        class="px-6 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-sm font-bold transition-[transform,background-color] duration-150 hover:bg-[var(--color-primary-hover)] active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed">
+                                        class="px-5 py-2 rounded-full bg-[var(--color-primary)] text-white text-sm font-semibold transition-[transform,background-color] duration-150 hover:bg-[var(--color-primary-hover)] active:scale-[0.96]">
                                     Plaats
                                 </button>
                             </div>
@@ -181,8 +160,8 @@
                     @endif
                 @endauth
 
-                <div class="text-center mt-6" style="animation: takeoverContentEnter 0.4s ease-out 520ms both;">
-                    <button x-on:click="dismiss()" class="inline-flex items-center justify-center px-4 py-3 min-h-[40px] text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors duration-150 underline underline-offset-2 decoration-[var(--color-border-light)] hover:decoration-[var(--color-primary)]">
+                <div class="text-center mt-6">
+                    <button x-on:click="dismiss()" class="inline-flex items-center justify-center px-4 py-3 min-h-[40px] text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors duration-150">
                         niet nu, bedankt
                     </button>
                 </div>
