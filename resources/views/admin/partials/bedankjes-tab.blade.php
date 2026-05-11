@@ -1,5 +1,4 @@
 @php
-    $maxRate = max(1, collect($thankTrend)->max('rate') ?: 0);
     $firstLabel = $thankTrend[0]['label'] ?? null;
     $lastLabel = collect($thankTrend)->last()['label'] ?? null;
     $isAlltime = $range === 'alltime';
@@ -34,6 +33,7 @@
     @else
         {{-- Sparkline: bar height = thank rate % per bucket --}}
         <x-chart-tooltip guide>
+            {{-- Bar height = absolute thank rate percentage (not normalised). Charts may render short on low rates — this is intentional for data honesty. --}}
             <div class="flex items-end {{ $isAlltime ? 'gap-px' : 'gap-1.5' }} h-16 mb-1">
                 @foreach($thankTrend as $bucket)
                     @if($bucket['downloads'] > 0)
