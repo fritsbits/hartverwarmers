@@ -9,7 +9,6 @@ use App\Models\Like;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Models\UserInteraction;
-use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -740,9 +739,9 @@ class AdminDashboardController extends Controller
         $kudosThankCount = $current->filter(fn ($row) => $row['thanked_via_kudos'])->count();
         $commentThankCount = $current->filter(fn ($row) => $row['thanked_via_comment'])->count();
 
-        $totalThankedAllTime = $this->computeThankedDownloads(null)
-            ->filter(fn ($row) => $row['is_thanked'])
-            ->count();
+        $totalThankedAllTime = $windowDays === null
+            ? $currentThanked
+            : $this->computeThankedDownloads(null)->filter(fn ($row) => $row['is_thanked'])->count();
 
         return [
             'currentRate' => $currentRate,
@@ -762,8 +761,7 @@ class AdminDashboardController extends Controller
      * Returns one row per (user, fiche) download pair, annotated with whether
      * the user later thanked that fiche (post-download kudos OR comment).
      *
-     * @param  CarbonImmutable|Carbon|null  $since
-     *                                              When null, considers all downloads. When set, only downloads with created_at >= $since.
+     * @param  ?Carbon  $since  Null means all downloads; otherwise only those with created_at >= $since.
      * @return Collection<int, array{
      *   user_id: int,
      *   fiche_id: int,
@@ -773,7 +771,7 @@ class AdminDashboardController extends Controller
      *   is_thanked: bool,
      * }>
      */
-    private function computeThankedDownloads($since): Collection
+    private function computeThankedDownloads(?Carbon $since): Collection
     {
         $downloads = UserInteraction::query()
             ->where('interactable_type', Fiche::class)
