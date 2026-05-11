@@ -281,7 +281,7 @@
                                         {{-- Download button --}}
                                         <a x-show="!downloaded"
                                            href="{{ route('fiches.download', [$initiative, $fiche]) }}"
-                                           x-on:click="setTimeout(() => { downloaded = true; window.dispatchEvent(new CustomEvent('fiche-downloaded', { detail: { ficheId: {{ $fiche->id }} } })) }, 600)"
+                                           x-on:click="downloaded = true; window.dispatchEvent(new CustomEvent('fiche-download-click', { detail: { ficheId: {{ $fiche->id }} } }))"
                                            class="flex items-center justify-between gap-3 w-full px-5 py-3.5 rounded-xl bg-[var(--color-primary)] text-white font-semibold transition-all hover:bg-[var(--color-primary-hover)] hover:shadow-md active:scale-[0.98] group">
                                             <div class="flex items-center gap-3">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform group-hover:translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

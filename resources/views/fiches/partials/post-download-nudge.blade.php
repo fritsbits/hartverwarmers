@@ -16,7 +16,7 @@
 @endauth
 
 <div x-data="postDownloadTakeover({{ $fiche->id }})"
-     x-on:fiche-downloaded.window="if ($event.detail?.ficheId === fiche_id) { open(); }"
+     x-on:fiche-download-click.window="if ($event.detail?.ficheId === fiche_id) { waitForDownloadConfirmation(); }"
      x-on:comment-added.window="goToConfirmation()"
      x-on:add-kudos.window="if ($event.detail.amount > 0) goToKudosGiven()"
      x-on:keydown.escape.window="if (downloaded) dismiss()"
@@ -251,6 +251,29 @@ window.postDownloadTakeover = function(ficheId) {
         downloaded: false,
         state: 'initial',
         confirmationTimer: null,
+        waitTimer: null,
+        // After the download click, the browser may show a "Save As" dialog
+        // that steals focus. Wait for focus to return so the takeover doesn't
+        // animate behind the dialog. Fall back to a 1s timer if no dialog
+        // appears (auto-save case).
+        waitForDownloadConfirmation() {
+            if (this.downloaded) return;
+            let hasBlurred = false;
+            const cleanup = () => {
+                window.removeEventListener('blur', onBlur);
+                window.removeEventListener('focus', onFocus);
+                if (this.waitTimer) { clearTimeout(this.waitTimer); this.waitTimer = null; }
+            };
+            const fire = () => { cleanup(); this.open(); };
+            const onBlur = () => {
+                hasBlurred = true;
+                if (this.waitTimer) { clearTimeout(this.waitTimer); this.waitTimer = null; }
+                window.addEventListener('focus', onFocus, { once: true });
+            };
+            const onFocus = () => { fire(); };
+            this.waitTimer = setTimeout(() => { if (!hasBlurred) fire(); }, 1000);
+            window.addEventListener('blur', onBlur, { once: true });
+        },
         open() {
             this.downloaded = true;
             this.state = 'initial';
