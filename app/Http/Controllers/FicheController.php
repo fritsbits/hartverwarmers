@@ -61,11 +61,31 @@ class FicheController extends Controller
         $ficheInteractions = app(FicheInteractionService::class)
             ->forUser(auth()->user(), $otherFiches->pluck('id'));
 
+        $showReturnVisitBanner = false;
+        $lastDownloadDate = null;
+
+        if (auth()->check() && auth()->id() !== $fiche->user_id) {
+            $download = UserInteraction::query()
+                ->where('user_id', auth()->id())
+                ->where('interactable_type', Fiche::class)
+                ->where('interactable_id', $fiche->id)
+                ->where('type', 'download')
+                ->latest('created_at')
+                ->first();
+
+            if ($download && ! $fiche->hasBeenThankedBy(auth()->user())) {
+                $showReturnVisitBanner = true;
+                $lastDownloadDate = $download->created_at;
+            }
+        }
+
         return view('fiches.show', [
             'initiative' => $initiative,
             'fiche' => $fiche,
             'otherFiches' => $otherFiches,
             'ficheInteractions' => $ficheInteractions,
+            'showReturnVisitBanner' => $showReturnVisitBanner,
+            'lastDownloadDate' => $lastDownloadDate,
         ]);
     }
 

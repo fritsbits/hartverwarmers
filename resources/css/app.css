@@ -1216,6 +1216,50 @@ dialog[data-modal="search"]::backdrop {
   }
 }
 
+/* Takeover hero heart — gentle breathing pulse */
+@keyframes takeoverHeartBreathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+/* Sparkles twinkle — opacity + scale, slight rhythm variation per sparkle via delay */
+@keyframes takeoverSparkleTwinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Hand-drawn underline draws itself in like a pen-stroke */
+@keyframes takeoverUnderlineDraw {
+  0% { stroke-dashoffset: 200; opacity: 0; }
+  15% { opacity: 0.55; }
+  100% { stroke-dashoffset: 0; opacity: 0.55; }
+}
+
+/* Staggered content reveal (cascading entry of card content) */
+@keyframes takeoverContentEnter {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes takeoverHeartBreathe {
+    0%, 100% { transform: scale(1); }
+  }
+  @keyframes takeoverSparkleTwinkle {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+  }
+  @keyframes takeoverUnderlineDraw {
+    0%, 100% { stroke-dashoffset: 0; opacity: 0.55; }
+  }
+  @keyframes takeoverContentEnter {
+    0%, 100% { opacity: 1; transform: translateY(0); }
+  }
+}
+
 /* Checkmark draw-in animation */
 @keyframes checkmarkDraw {
   0% {
