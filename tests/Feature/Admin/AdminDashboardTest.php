@@ -1356,4 +1356,100 @@ class AdminDashboardTest extends TestCase
         $this->assertFalse($stats['lowData']);
         $this->assertEquals(0, $stats['totalThankedAllTime']);
     }
+
+    public function test_thank_trend_month_produces_30_daily_buckets(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Download 2 days ago — thanked
+        $u1 = User::factory()->create();
+        $f1 = Fiche::factory()->published()->create();
+        UserInteraction::create([
+            'user_id' => $u1->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f1->id,
+            'type' => 'download', 'created_at' => now()->subDays(2),
+        ]);
+        Like::create([
+            'user_id' => $u1->id, 'likeable_type' => Fiche::class, 'likeable_id' => $f1->id,
+            'type' => 'kudos', 'count' => 1, 'created_at' => now()->subDays(1),
+        ]);
+        // Download 2 days ago — not thanked
+        $u2 = User::factory()->create();
+        $f2 = Fiche::factory()->published()->create();
+        UserInteraction::create([
+            'user_id' => $u2->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f2->id,
+            'type' => 'download', 'created_at' => now()->subDays(2),
+        ]);
+        // Older download outside window
+        $u3 = User::factory()->create();
+        $f3 = Fiche::factory()->published()->create();
+        UserInteraction::create([
+            'user_id' => $u3->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f3->id,
+            'type' => 'download', 'created_at' => now()->subDays(40),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $trend = $response->viewData('thankTrend');
+        $this->assertCount(30, $trend);
+        $bucket = collect($trend)->firstWhere('key', now()->subDays(2)->format('Y-m-d'));
+        $this->assertEquals(2, $bucket['downloads']);
+        $this->assertEquals(1, $bucket['thanked']);
+        $this->assertEquals(50, $bucket['rate']);
+    }
+
+    public function test_thank_trend_week_produces_seven_daily_buckets(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=week');
+
+        $trend = $response->viewData('thankTrend');
+        $this->assertCount(7, $trend);
+    }
+
+    public function test_thank_trend_quarter_produces_thirteen_weekly_buckets(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=quarter');
+
+        $trend = $response->viewData('thankTrend');
+        $this->assertCount(13, $trend);
+    }
+
+    public function test_thank_trend_alltime_starts_at_earliest_download_month(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $u1 = User::factory()->create();
+        $f1 = Fiche::factory()->published()->create();
+        UserInteraction::create([
+            'user_id' => $u1->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f1->id,
+            'type' => 'download', 'created_at' => now()->subMonths(2)->startOfMonth()->addDays(5),
+        ]);
+        $u2 = User::factory()->create();
+        $f2 = Fiche::factory()->published()->create();
+        UserInteraction::create([
+            'user_id' => $u2->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f2->id,
+            'type' => 'download', 'created_at' => now()->startOfMonth()->addDays(2),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=alltime');
+
+        $trend = $response->viewData('thankTrend');
+        $this->assertCount(3, $trend);  // subMonths(2), subMonth(1), current
+        $this->assertEquals(1, $trend[0]['downloads']);
+        $this->assertEquals(0, $trend[1]['downloads']);
+        $this->assertEquals(1, $trend[2]['downloads']);
+    }
+
+    public function test_thank_trend_alltime_returns_empty_when_no_downloads(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=alltime');
+
+        $trend = $response->viewData('thankTrend');
+        $this->assertEmpty($trend);
+    }
 }

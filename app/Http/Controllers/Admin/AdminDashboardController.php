@@ -685,7 +685,112 @@ class AdminDashboardController extends Controller
     /** @return array<int, array{key: string, label: string, downloads: int, thanked: int, rate: int}> */
     private function thankTrend(string $range): array
     {
-        return [];
+        return match ($range) {
+            'week' => $this->thankTrendDaily(days: 7),
+            'quarter' => $this->thankTrendWeekly(),
+            'alltime' => $this->thankTrendMonthly(),
+            default => $this->thankTrendDaily(days: 30),
+        };
+    }
+
+    /** @return array<int, array{key: string, label: string, downloads: int, thanked: int, rate: int}> */
+    private function thankTrendDaily(int $days): array
+    {
+        $since = now()->subDays($days - 1)->startOfDay();
+        $rows = $this->computeThankedDownloads($since);
+
+        $grouped = [];
+        foreach ($rows as $row) {
+            $key = $row['downloaded_at']->format('Y-m-d');
+            $grouped[$key]['downloads'] = ($grouped[$key]['downloads'] ?? 0) + 1;
+            $grouped[$key]['thanked'] = ($grouped[$key]['thanked'] ?? 0) + ($row['is_thanked'] ? 1 : 0);
+        }
+
+        $result = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $key = $date->format('Y-m-d');
+            $downloads = $grouped[$key]['downloads'] ?? 0;
+            $thanked = $grouped[$key]['thanked'] ?? 0;
+            $result[] = [
+                'key' => $key,
+                'label' => $date->isoFormat('D MMM'),
+                'downloads' => $downloads,
+                'thanked' => $thanked,
+                'rate' => $downloads > 0 ? (int) round($thanked / $downloads * 100) : 0,
+            ];
+        }
+
+        return $result;
+    }
+
+    /** @return array<int, array{key: string, label: string, downloads: int, thanked: int, rate: int}> */
+    private function thankTrendWeekly(): array
+    {
+        $since = now()->subWeeks(12)->startOfWeek();
+        $rows = $this->computeThankedDownloads($since);
+
+        $grouped = [];
+        foreach ($rows as $row) {
+            $key = $row['downloaded_at']->format('oW');
+            $grouped[$key]['downloads'] = ($grouped[$key]['downloads'] ?? 0) + 1;
+            $grouped[$key]['thanked'] = ($grouped[$key]['thanked'] ?? 0) + ($row['is_thanked'] ? 1 : 0);
+        }
+
+        $result = [];
+        for ($i = 12; $i >= 0; $i--) {
+            $date = now()->subWeeks($i)->startOfWeek();
+            $key = $date->format('oW');
+            $downloads = $grouped[$key]['downloads'] ?? 0;
+            $thanked = $grouped[$key]['thanked'] ?? 0;
+            $result[] = [
+                'key' => $key,
+                'label' => $date->isoFormat('D MMM'),
+                'downloads' => $downloads,
+                'thanked' => $thanked,
+                'rate' => $downloads > 0 ? (int) round($thanked / $downloads * 100) : 0,
+            ];
+        }
+
+        return $result;
+    }
+
+    /** @return array<int, array{key: string, label: string, downloads: int, thanked: int, rate: int}> */
+    private function thankTrendMonthly(): array
+    {
+        $rows = $this->computeThankedDownloads(null);
+
+        if ($rows->isEmpty()) {
+            return [];
+        }
+
+        $earliest = $rows->min('downloaded_at')->copy()->startOfMonth();
+        $end = now()->startOfMonth();
+
+        $grouped = [];
+        foreach ($rows as $row) {
+            $key = $row['downloaded_at']->format('Y-m');
+            $grouped[$key]['downloads'] = ($grouped[$key]['downloads'] ?? 0) + 1;
+            $grouped[$key]['thanked'] = ($grouped[$key]['thanked'] ?? 0) + ($row['is_thanked'] ? 1 : 0);
+        }
+
+        $result = [];
+        $cursor = $earliest->copy();
+        while ($cursor <= $end) {
+            $key = $cursor->format('Y-m');
+            $downloads = $grouped[$key]['downloads'] ?? 0;
+            $thanked = $grouped[$key]['thanked'] ?? 0;
+            $result[] = [
+                'key' => $key,
+                'label' => $cursor->isoFormat('MMM YYYY'),
+                'downloads' => $downloads,
+                'thanked' => $thanked,
+                'rate' => $downloads > 0 ? (int) round($thanked / $downloads * 100) : 0,
+            ];
+            $cursor->addMonth();
+        }
+
+        return $result;
     }
 
     /**
