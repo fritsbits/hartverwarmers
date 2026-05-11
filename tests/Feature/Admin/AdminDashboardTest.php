@@ -1464,4 +1464,51 @@ class AdminDashboardTest extends TestCase
         $response->assertSee('Hoe bedanken mensen');
         $response->assertSee('Aandeel downloads door leden dat bedankt werd', false);
     }
+
+    public function test_thank_stats_quarter_delta_compares_current_vs_previous(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $now = now();
+
+        // Previous quarter window: 4 downloads, 1 thanked → 25%.
+        // Place comfortably inside the previous window (around 16-18 weeks ago).
+        for ($i = 0; $i < 4; $i++) {
+            $u = User::factory()->create();
+            $f = Fiche::factory()->published()->create();
+            UserInteraction::create([
+                'user_id' => $u->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f->id,
+                'type' => 'download', 'created_at' => $now->copy()->subWeeks(16 + ($i % 3)),
+            ]);
+            if ($i === 0) {
+                Like::create([
+                    'user_id' => $u->id, 'likeable_type' => Fiche::class, 'likeable_id' => $f->id,
+                    'type' => 'kudos', 'count' => 1, 'created_at' => $now->copy()->subWeeks(15),
+                ]);
+            }
+        }
+
+        // Current quarter window: 2 downloads, 1 thanked → 50%.
+        // Place comfortably inside the current window (around 4-6 weeks ago).
+        for ($i = 0; $i < 2; $i++) {
+            $u = User::factory()->create();
+            $f = Fiche::factory()->published()->create();
+            UserInteraction::create([
+                'user_id' => $u->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f->id,
+                'type' => 'download', 'created_at' => $now->copy()->subWeeks(4 + $i),
+            ]);
+            if ($i === 0) {
+                Like::create([
+                    'user_id' => $u->id, 'likeable_type' => Fiche::class, 'likeable_id' => $f->id,
+                    'type' => 'kudos', 'count' => 1, 'created_at' => $now->copy()->subWeeks(3),
+                ]);
+            }
+        }
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=quarter');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(50, $stats['currentRate']);
+        $this->assertEquals(25, $stats['previousRate']);
+        $this->assertEquals(25, $stats['delta']);
+    }
 }

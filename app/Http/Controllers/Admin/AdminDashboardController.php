@@ -809,19 +809,27 @@ class AdminDashboardController extends Controller
      */
     private function thankStats(string $range): array
     {
-        [$windowDays, $rangeLabel] = match ($range) {
-            'week' => [7, 'deze week'],
-            'quarter' => [90, 'deze 3 maanden'],
-            'alltime' => [null, 'sinds start'],
-            default => [30, 'deze maand'],
+        $rangeLabel = match ($range) {
+            'week' => 'deze week',
+            'quarter' => 'deze 3 maanden',
+            'alltime' => 'sinds start',
+            default => 'deze maand',
         };
 
-        if ($windowDays === null) {
+        if ($range === 'alltime') {
             $current = $this->computeThankedDownloads(null);
             $previous = collect();
         } else {
-            $currentStart = now()->subDays($windowDays - 1)->startOfDay();
-            $previousStart = now()->subDays(($windowDays * 2) - 1)->startOfDay();
+            $currentStart = match ($range) {
+                'quarter' => now()->subWeeks(12)->startOfWeek(),
+                'week' => now()->subDays(6)->startOfDay(),
+                default => now()->subDays(29)->startOfDay(),
+            };
+            $previousStart = match ($range) {
+                'quarter' => now()->subWeeks(24)->startOfWeek(),
+                'week' => now()->subDays(13)->startOfDay(),
+                default => now()->subDays(59)->startOfDay(),
+            };
 
             $all = $this->computeThankedDownloads($previousStart);
             $current = $all->filter(fn ($row) => $row['downloaded_at'] >= $currentStart);
@@ -844,7 +852,7 @@ class AdminDashboardController extends Controller
         $kudosThankCount = $current->filter(fn ($row) => $row['thanked_via_kudos'])->count();
         $commentThankCount = $current->filter(fn ($row) => $row['thanked_via_comment'])->count();
 
-        $totalThankedAllTime = $windowDays === null
+        $totalThankedAllTime = $range === 'alltime'
             ? $currentThanked
             : $this->computeThankedDownloads(null)->filter(fn ($row) => $row['is_thanked'])->count();
 
