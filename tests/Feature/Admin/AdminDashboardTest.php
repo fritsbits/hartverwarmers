@@ -1235,4 +1235,125 @@ class AdminDashboardTest extends TestCase
         $stats = $response->viewData('thankStats');
         $this->assertEquals(0, $stats['currentThanked']);
     }
+
+    public function test_thank_stats_month_delta_compares_current_vs_previous(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $now = now();
+
+        // Previous 30-day window: 4 downloads, 1 thanked → 25%
+        for ($i = 0; $i < 4; $i++) {
+            $u = User::factory()->create();
+            $f = Fiche::factory()->published()->create();
+            UserInteraction::create([
+                'user_id' => $u->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f->id,
+                'type' => 'download', 'created_at' => $now->copy()->subDays(45 + $i),
+            ]);
+            if ($i === 0) {
+                Like::create([
+                    'user_id' => $u->id, 'likeable_type' => Fiche::class, 'likeable_id' => $f->id,
+                    'type' => 'kudos', 'count' => 1, 'created_at' => $now->copy()->subDays(44 + $i),
+                ]);
+            }
+        }
+
+        // Current 30-day window: 2 downloads, 1 thanked → 50%
+        for ($i = 0; $i < 2; $i++) {
+            $u = User::factory()->create();
+            $f = Fiche::factory()->published()->create();
+            UserInteraction::create([
+                'user_id' => $u->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f->id,
+                'type' => 'download', 'created_at' => $now->copy()->subDays(5 + $i),
+            ]);
+            if ($i === 0) {
+                Like::create([
+                    'user_id' => $u->id, 'likeable_type' => Fiche::class, 'likeable_id' => $f->id,
+                    'type' => 'kudos', 'count' => 1, 'created_at' => $now->copy()->subDays(4 + $i),
+                ]);
+            }
+        }
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(50, $stats['currentRate']);
+        $this->assertEquals(25, $stats['previousRate']);
+        $this->assertEquals(25, $stats['delta']);
+    }
+
+    public function test_thank_stats_alltime_has_no_delta(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create();
+
+        UserInteraction::create([
+            'user_id' => $user->id, 'interactable_type' => Fiche::class, 'interactable_id' => $fiche->id,
+            'type' => 'download', 'created_at' => now()->subDays(5),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=alltime');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertNull($stats['previousRate']);
+        $this->assertNull($stats['delta']);
+        $this->assertEquals('sinds start', $stats['rangeLabel']);
+    }
+
+    public function test_thank_stats_low_data_flag_under_five_downloads(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        for ($i = 0; $i < 3; $i++) {
+            $u = User::factory()->create();
+            $f = Fiche::factory()->published()->create();
+            UserInteraction::create([
+                'user_id' => $u->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f->id,
+                'type' => 'download', 'created_at' => now()->subDays(2),
+            ]);
+        }
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertTrue($stats['lowData']);
+        $this->assertEquals(3, $stats['currentDownloads']);
+    }
+
+    public function test_thank_stats_total_thanked_alltime_is_independent_of_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Old thanked download — outside any current window
+        $u = User::factory()->create();
+        $f = Fiche::factory()->published()->create();
+        UserInteraction::create([
+            'user_id' => $u->id, 'interactable_type' => Fiche::class, 'interactable_id' => $f->id,
+            'type' => 'download', 'created_at' => now()->subYear(),
+        ]);
+        Like::create([
+            'user_id' => $u->id, 'likeable_type' => Fiche::class, 'likeable_id' => $f->id,
+            'type' => 'kudos', 'count' => 1, 'created_at' => now()->subYear()->addDay(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=week');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(0, $stats['currentThanked']);          // week window: nothing
+        $this->assertEquals(1, $stats['totalThankedAllTime']);     // lifetime: 1
+    }
+
+    public function test_thank_stats_empty_state_when_no_downloads(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(0, $stats['currentDownloads']);
+        $this->assertEquals(0, $stats['currentThanked']);
+        $this->assertEquals(0, $stats['currentRate']);
+        $this->assertFalse($stats['lowData']);
+        $this->assertEquals(0, $stats['totalThankedAllTime']);
+    }
 }
