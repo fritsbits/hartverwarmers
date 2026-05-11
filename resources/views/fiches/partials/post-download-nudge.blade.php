@@ -21,6 +21,7 @@
      x-on:add-kudos.window="if ($event.detail.amount > 0) goToKudosGiven()"
      x-on:keydown.escape.window="if (downloaded) dismiss()"
 >
+<template x-teleport="body">
     <div x-show="downloaded" x-cloak
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0"
@@ -28,8 +29,8 @@
          x-transition:leave="transition ease-in duration-150"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
-         style="background: rgba(35, 30, 26, 0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);"
+         class="fixed inset-0 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+         style="background: rgba(35, 30, 26, 0.55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 9999;"
          x-on:click.self="dismiss()"
          role="dialog"
          aria-modal="true"
@@ -251,6 +252,7 @@
             </div>
         </div>
     </div>
+</template>
 </div>
 
 <script>
