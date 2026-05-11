@@ -23,10 +23,10 @@
 >
 <template x-teleport="body">
     <div x-show="downloaded" x-cloak
-         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter="transition-opacity ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave="transition-opacity ease-in duration-200"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
@@ -36,9 +36,12 @@
          aria-modal="true"
     >
         <div x-show="downloaded" x-cloak
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-95 translate-y-2"
-             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+             x-transition:enter="transition-[opacity,transform] duration-[550ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]"
+             x-transition:enter-start="opacity-0 translate-y-10"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition-[opacity,transform] duration-[250ms] ease-in"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 translate-y-4"
              class="relative w-full max-w-lg bg-[var(--color-bg-white)] rounded-3xl overflow-hidden"
              style="box-shadow:
                  0 0 0 1px rgba(232, 118, 75, 0.08),
