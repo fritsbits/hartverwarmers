@@ -21,14 +21,17 @@ class AdminDashboardController extends Controller
             $tab = 'presentatiekwaliteit';
         }
 
-        $defaultRange = $tab === 'aanmeldingen' ? 'month' : 'week';
-        $range = request()->get('range', $defaultRange);
-
-        if ($tab === 'aanmeldingen' && ! in_array($range, ['month', 'quarter', 'alltime'], true)) {
+        $range = request()->get('range', 'month');
+        if (! in_array($range, ['week', 'month', 'quarter', 'alltime'], true)) {
             $range = 'month';
         }
 
-        $cutoff = $range === 'week' ? now()->subDays(7) : now()->subWeeks(4);
+        $cutoff = match ($range) {
+            'week' => now()->subDays(7),
+            'quarter' => now()->subDays(90),
+            'alltime' => null,
+            default => now()->subWeeks(4),
+        };
 
         $weeklyTrend = $this->trend($range);
         $trendDelta = $this->trendDelta($weeklyTrend);
@@ -39,7 +42,7 @@ class AdminDashboardController extends Controller
         $fichesWithSuggestions = Fiche::query()
             ->published()
             ->whereNotNull('ai_suggestions')
-            ->where('created_at', '>=', $cutoff)
+            ->when($cutoff !== null, fn ($q) => $q->where('created_at', '>=', $cutoff))
             ->with('initiative:id,slug')
             ->get(['id', 'title', 'slug', 'initiative_id', 'ai_suggestions']);
         $adoption = $this->adoptionStats($fichesWithSuggestions);
@@ -59,8 +62,8 @@ class AdminDashboardController extends Controller
             ...$adoption,
             'fieldAdoption' => $fieldAdoption,
             'ficheAdoptionDetails' => $this->ficheAdoptionDetails($fichesWithSuggestions),
-            'onboardingStats' => $tab === 'onboarding' ? $this->onboardingStats() : [],
-            'onboardingEmailCounts' => $tab === 'onboarding' ? $this->onboardingEmailCounts() : [],
+            'onboardingStats' => $tab === 'onboarding' ? $this->onboardingStats($range) : [],
+            'onboardingEmailCounts' => $tab === 'onboarding' ? $this->onboardingEmailCounts($range) : [],
             'signupTrend' => $signupTrend,
             'signupStats' => $signupStats,
         ]);
@@ -69,7 +72,12 @@ class AdminDashboardController extends Controller
     /** @return array<int, array{week_key: string|int, week_label: string, avg_score: int|null}> */
     private function trend(string $range): array
     {
-        return $range === 'week' ? $this->dailyTrend() : $this->monthlyTrend();
+        return match ($range) {
+            'week' => $this->dailyTrend(),
+            'quarter' => $this->quarterlyTrend(),
+            'alltime' => $this->alltimeTrend(),
+            default => $this->monthlyTrend(),
+        };
     }
 
     /** @return array<int, array{week_key: string, week_label: string, avg_score: int|null}> */
@@ -109,11 +117,23 @@ class AdminDashboardController extends Controller
     /** @return array<int, array{week_key: int, week_label: string, avg_score: int|null}> */
     private function monthlyTrend(): array
     {
+        return $this->weeklyTrend(weeks: 4);
+    }
+
+    /** @return array<int, array{week_key: int, week_label: string, avg_score: int|null}> */
+    private function quarterlyTrend(): array
+    {
+        return $this->weeklyTrend(weeks: 13);
+    }
+
+    /** @return array<int, array{week_key: int, week_label: string, avg_score: int|null}> */
+    private function weeklyTrend(int $weeks): array
+    {
         $fiches = Fiche::query()
             ->where('published', true)
             ->whereNotNull('presentation_score')
             ->whereNotNull('quality_assessed_at')
-            ->where('quality_assessed_at', '>=', now()->subWeeks(4))
+            ->where('quality_assessed_at', '>=', now()->subWeeks($weeks - 1)->startOfWeek())
             ->get(['presentation_score', 'quality_assessed_at']);
 
         $grouped = [];
@@ -124,7 +144,7 @@ class AdminDashboardController extends Controller
         }
 
         $result = [];
-        for ($i = 3; $i >= 0; $i--) {
+        for ($i = $weeks - 1; $i >= 0; $i--) {
             $date = now()->subWeeks($i)->startOfWeek();
             $key = (int) $date->format('oW');
             $label = $date->format('d M');
@@ -136,6 +156,47 @@ class AdminDashboardController extends Controller
             } else {
                 $result[] = ['week_key' => $key, 'week_label' => $label, 'avg_score' => null];
             }
+        }
+
+        return $result;
+    }
+
+    /** @return array<int, array{week_key: string, week_label: string, avg_score: int|null}> */
+    private function alltimeTrend(): array
+    {
+        $fiches = Fiche::query()
+            ->where('published', true)
+            ->whereNotNull('presentation_score')
+            ->whereNotNull('quality_assessed_at')
+            ->get(['presentation_score', 'quality_assessed_at']);
+
+        if ($fiches->isEmpty()) {
+            return [];
+        }
+
+        $grouped = [];
+        foreach ($fiches as $fiche) {
+            $key = $fiche->quality_assessed_at->format('Y-m');
+            $grouped[$key][] = $fiche->presentation_score;
+        }
+
+        $earliest = $fiches->min('quality_assessed_at')->copy()->startOfMonth();
+        $end = now()->startOfMonth();
+
+        $result = [];
+        $cursor = $earliest->copy();
+        while ($cursor <= $end) {
+            $key = $cursor->format('Y-m');
+            $label = $cursor->isoFormat('MMM YYYY');
+
+            if (isset($grouped[$key])) {
+                $scores = $grouped[$key];
+                $avg = (int) round(array_sum($scores) / count($scores));
+                $result[] = ['week_key' => $key, 'week_label' => $label, 'avg_score' => $avg];
+            } else {
+                $result[] = ['week_key' => $key, 'week_label' => $label, 'avg_score' => null];
+            }
+            $cursor->addMonth();
         }
 
         return $result;
@@ -310,17 +371,23 @@ class AdminDashboardController extends Controller
      *   kr3SentCount: int,
      *   kr3RespondedCount: int,
      *   kr3Percentage: int|null,
+     *   rangeLabel: string,
      * }
      */
-    private function onboardingStats(): array
+    private function onboardingStats(string $range): array
     {
-        $cohortStart = now()->subDays(30);
+        [$cohortStart, $rangeLabel] = match ($range) {
+            'week' => [now()->subDays(7), 'laatste week'],
+            'quarter' => [now()->subDays(90), 'laatste 3 maanden'],
+            'alltime' => [null, 'sinds start'],
+            default => [now()->subDays(30), 'laatste maand'],
+        };
 
         // Cohort = users whose account was created within the window (not email_verified_at,
         // which was bulk-reset for legacy users and is unreliable as a "joined" signal).
         $newUsers = User::query()
             ->whereNotNull('email_verified_at')
-            ->where('created_at', '>=', $cohortStart)
+            ->when($cohortStart !== null, fn ($q) => $q->where('created_at', '>=', $cohortStart))
             ->where('role', '!=', 'admin')
             ->get(['id', 'email_verified_at', 'first_return_at']);
 
@@ -452,18 +519,24 @@ class AdminDashboardController extends Controller
             'kr3SentCount',
             'kr3RespondedCount',
             'kr3Percentage',
+            'rangeLabel',
         );
     }
 
     /**
      * @return array<string, int>
      */
-    private function onboardingEmailCounts(): array
+    private function onboardingEmailCounts(string $range): array
     {
-        $since = now()->subDays(30);
+        $since = match ($range) {
+            'week' => now()->subDays(7),
+            'quarter' => now()->subDays(90),
+            'alltime' => null,
+            default => now()->subDays(30),
+        };
 
         $rows = OnboardingEmailLog::query()
-            ->where('sent_at', '>=', $since)
+            ->when($since !== null, fn ($q) => $q->where('sent_at', '>=', $since))
             ->get(['mail_key']);
 
         // mail_4 = first bookmark, mail_5 = milestone 10, mail_6 = milestone 50 (set by LikeObserver)
@@ -495,9 +568,10 @@ class AdminDashboardController extends Controller
         $base = $this->signupCohortQuery();
 
         return match ($range) {
+            'week' => $this->signupTrendDaily($base, days: 7),
             'quarter' => $this->signupTrendWeekly($base),
             'alltime' => $this->signupTrendMonthly($base),
-            default => $this->signupTrendDaily($base),
+            default => $this->signupTrendDaily($base, days: 30),
         };
     }
 
@@ -510,10 +584,10 @@ class AdminDashboardController extends Controller
     }
 
     /** @return array<int, array{key: string, label: string, count: int}> */
-    private function signupTrendDaily(Builder $base): array
+    private function signupTrendDaily(Builder $base, int $days): array
     {
         $signups = (clone $base)
-            ->where('created_at', '>=', now()->subDays(29)->startOfDay())
+            ->where('created_at', '>=', now()->subDays($days - 1)->startOfDay())
             ->get(['created_at']);
 
         $grouped = [];
@@ -523,7 +597,7 @@ class AdminDashboardController extends Controller
         }
 
         $result = [];
-        for ($i = 29; $i >= 0; $i--) {
+        for ($i = $days - 1; $i >= 0; $i--) {
             $date = now()->subDays($i);
             $key = $date->format('Y-m-d');
             $result[] = [
@@ -614,6 +688,7 @@ class AdminDashboardController extends Controller
         $base = $this->signupCohortQuery();
 
         [$windowDays, $rangeLabel] = match ($range) {
+            'week' => [7, 'deze week'],
             'quarter' => [90, 'deze 3 maanden'],
             'alltime' => [null, 'sinds start'],
             default => [30, 'deze maand'],
@@ -626,12 +701,16 @@ class AdminDashboardController extends Controller
             $previousCount = null;
             $delta = null;
         } else {
-            $currentStart = $range === 'quarter'
-                ? now()->subWeeks(12)->startOfWeek()
-                : now()->subDays(29)->startOfDay();
-            $previousStart = $range === 'quarter'
-                ? now()->subWeeks(24)->startOfWeek()
-                : now()->subDays(59)->startOfDay();
+            $currentStart = match ($range) {
+                'quarter' => now()->subWeeks(12)->startOfWeek(),
+                'week' => now()->subDays(6)->startOfDay(),
+                default => now()->subDays(29)->startOfDay(),
+            };
+            $previousStart = match ($range) {
+                'quarter' => now()->subWeeks(24)->startOfWeek(),
+                'week' => now()->subDays(13)->startOfDay(),
+                default => now()->subDays(59)->startOfDay(),
+            };
 
             $currentCount = (clone $base)
                 ->where('created_at', '>=', $currentStart)

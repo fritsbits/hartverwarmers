@@ -2,7 +2,7 @@
 <flux:card class="mb-6">
     <flux:heading size="lg" class="font-heading font-bold mb-1">Onboarding via e-mail</flux:heading>
     <p class="text-sm text-[var(--color-text-secondary)] mb-5">
-        Nieuwe gebruikers activeren tot betrokken communityleden · laatste 30 dagen
+        Nieuwe gebruikers activeren tot betrokken communityleden · {{ $onboardingStats['rangeLabel'] }}
         @if($onboardingStats['newUsersCount'] > 0)
             <span class="text-[var(--color-text-tertiary)]">· {{ $onboardingStats['newUsersCount'] }} gebruikers</span>
         @endif
@@ -85,7 +85,7 @@
 {{-- Sent emails --}}
 <flux:card>
     <flux:heading size="lg" class="font-heading font-bold mb-1">Verstuurde e-mails</flux:heading>
-    <p class="text-sm text-[var(--color-text-secondary)] mb-4">Laatste 30 dagen</p>
+    <p class="text-sm text-[var(--color-text-secondary)] mb-4">{{ ucfirst($onboardingStats['rangeLabel']) }}</p>
 
     @php
         // mail_4/5/6 keys come from LikeObserver (first bookmark, 10 bookmarks, 50 bookmarks)

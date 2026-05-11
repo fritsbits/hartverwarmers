@@ -50,16 +50,68 @@ class AdminDashboardTest extends TestCase
         $response->assertSee('Suggestie-adoptie');
     }
 
-    public function test_default_range_is_week(): void
+    public function test_default_range_is_month(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)->get(route('admin.dashboard'));
 
         $response->assertOk();
+        $this->assertEquals('month', $response->viewData('range'));
+        // Month range builds 4 weekly slots
+        $this->assertCount(4, $response->viewData('weeklyTrend'));
+    }
+
+    public function test_week_range_builds_seven_daily_slots(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=week');
+
+        $response->assertOk();
         $this->assertEquals('week', $response->viewData('range'));
-        // Week range builds 7 daily slots
         $this->assertCount(7, $response->viewData('weeklyTrend'));
+    }
+
+    public function test_quarter_range_builds_thirteen_weekly_slots(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=quarter');
+
+        $response->assertOk();
+        $this->assertEquals('quarter', $response->viewData('range'));
+        $this->assertCount(13, $response->viewData('weeklyTrend'));
+    }
+
+    public function test_alltime_range_builds_monthly_slots_from_first_scored_fiche(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        Fiche::factory()->published()->withPresentationScore(60)->create([
+            'quality_assessed_at' => now()->subMonths(2)->startOfMonth()->addDays(5),
+        ]);
+        Fiche::factory()->published()->withPresentationScore(80)->create([
+            'quality_assessed_at' => now()->startOfMonth()->addDays(2),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=alltime');
+
+        $response->assertOk();
+        $this->assertEquals('alltime', $response->viewData('range'));
+        $trend = $response->viewData('weeklyTrend');
+        // 3 monthly buckets from subMonths(2) through current month
+        $this->assertCount(3, $trend);
+    }
+
+    public function test_invalid_range_falls_back_to_month(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=garbage');
+
+        $response->assertOk();
+        $this->assertEquals('month', $response->viewData('range'));
     }
 
     public function test_month_range_builds_four_weekly_slots(): void
@@ -93,7 +145,7 @@ class AdminDashboardTest extends TestCase
             'quality_assessed_at' => now(),
         ]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=week');
 
         $response->assertOk();
         $trend = $response->viewData('weeklyTrend');
@@ -497,14 +549,15 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals('alltime', $alltime->viewData('range'));
     }
 
-    public function test_presentatiekwaliteit_default_range_unchanged(): void
+    public function test_all_tabs_share_unified_default_range_of_month(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
-
-        $response->assertOk();
-        $this->assertEquals('week', $response->viewData('range'));
+        foreach (['presentatiekwaliteit', 'onboarding', 'aanmeldingen'] as $tab) {
+            $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab='.$tab);
+            $response->assertOk();
+            $this->assertEquals('month', $response->viewData('range'), "tab={$tab} should default to month");
+        }
     }
 
     public function test_invalid_tab_falls_back_to_presentatiekwaliteit(): void
@@ -876,5 +929,85 @@ class AdminDashboardTest extends TestCase
         // that the stats card subtitle does NOT repeat the same number via the period figure div.
         $this->assertEquals('sinds start', $stats['rangeLabel']);
         $this->assertEquals($stats['currentCount'], $stats['totalMembers']);
+    }
+
+    public function test_signup_trend_week_produces_seven_daily_buckets(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(2)]);
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
+        // Outside 7-day window — excluded
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(10)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=week');
+
+        $trend = $response->viewData('signupTrend');
+        $this->assertCount(7, $trend);
+        $this->assertEquals(2, collect($trend)->sum('count'));
+    }
+
+    public function test_signup_stats_week_uses_seven_day_window(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Current 7-day window
+        User::factory()->count(2)->create(['role' => 'contributor', 'created_at' => now()->subDays(3)]);
+        // Previous 7-day window
+        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(10)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=week');
+
+        $stats = $response->viewData('signupStats');
+        $this->assertEquals(2, $stats['currentCount']);
+        $this->assertEquals(1, $stats['previousCount']);
+        $this->assertEquals(1, $stats['delta']);
+        $this->assertEquals('deze week', $stats['rangeLabel']);
+    }
+
+    public function test_onboarding_cohort_respects_week_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Within last 7 days — counts
+        User::factory()->create(['created_at' => now()->subDays(3)]);
+        // Outside 7-day window but within 30 — does NOT count for week range
+        User::factory()->create(['created_at' => now()->subDays(15)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=onboarding&range=week');
+
+        $stats = $response->viewData('onboardingStats');
+        $this->assertEquals(1, $stats['newUsersCount']);
+        $this->assertEquals('laatste week', $stats['rangeLabel']);
+    }
+
+    public function test_onboarding_cohort_respects_quarter_range(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->create(['created_at' => now()->subDays(5)]);
+        User::factory()->create(['created_at' => now()->subDays(60)]);
+        // Outside 90-day window — excluded
+        User::factory()->create(['created_at' => now()->subDays(120)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=onboarding&range=quarter');
+
+        $stats = $response->viewData('onboardingStats');
+        $this->assertEquals(2, $stats['newUsersCount']);
+        $this->assertEquals('laatste 3 maanden', $stats['rangeLabel']);
+    }
+
+    public function test_onboarding_cohort_alltime_includes_all_non_admin_users(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        User::factory()->create(['created_at' => now()->subYear()]);
+        User::factory()->create(['created_at' => now()]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=onboarding&range=alltime');
+
+        $stats = $response->viewData('onboardingStats');
+        $this->assertEquals(2, $stats['newUsersCount']);
+        $this->assertEquals('sinds start', $stats['rangeLabel']);
     }
 }

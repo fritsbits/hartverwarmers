@@ -1,38 +1,29 @@
 <x-sidebar-layout title="Beheer" section-label="Beheer">
 
-    {{-- Experiment tabs + range selector --}}
+    <x-slot:header-action>
+        <flux:select size="sm" class="w-40" x-data x-on:change="window.location.href = '?tab={{ $tab }}&range=' + $event.target.value">
+            <option value="week" {{ $range === 'week' ? 'selected' : '' }}>Laatste week</option>
+            <option value="month" {{ $range === 'month' ? 'selected' : '' }}>Laatste maand</option>
+            <option value="quarter" {{ $range === 'quarter' ? 'selected' : '' }}>Laatste 3 maanden</option>
+            <option value="alltime" {{ $range === 'alltime' ? 'selected' : '' }}>Sinds start</option>
+        </flux:select>
+    </x-slot:header-action>
+
+    {{-- Tab switcher --}}
     <div x-data="{
         tab: '{{ $tab }}',
         range: '{{ $range }}',
         navigate(val) {
-            if (val === 'presentatiekwaliteit' || val === 'aanmeldingen') {
-                const defaultRange = val === 'aanmeldingen' ? 'month' : 'week';
-                const validRanges = val === 'aanmeldingen' ? ['month', 'quarter', 'alltime'] : ['week', 'month'];
-                const r = validRanges.includes(this.range) ? this.range : defaultRange;
-                window.location.href = '?tab=' + val + '&range=' + r;
-            } else {
-                window.location.href = '?tab=' + val;
-            }
+            const validRanges = ['week', 'month', 'quarter', 'alltime'];
+            const r = validRanges.includes(this.range) ? this.range : 'month';
+            window.location.href = '?tab=' + val + '&range=' + r;
         }
-    }" x-init="$watch('tab', val => navigate(val))" class="flex items-center justify-between mb-6">
+    }" x-init="$watch('tab', val => navigate(val))" class="mb-6">
         <flux:tabs x-model="tab" variant="segmented">
             <flux:tab name="presentatiekwaliteit">Presentatiekwaliteit</flux:tab>
             <flux:tab name="onboarding">Onboarding</flux:tab>
             <flux:tab name="aanmeldingen">Aanmeldingen</flux:tab>
         </flux:tabs>
-
-        @if($tab === 'presentatiekwaliteit')
-            <flux:select size="sm" class="w-36" x-data x-on:change="window.location.href = '?tab=presentatiekwaliteit&range=' + $event.target.value">
-                <option value="week" {{ $range === 'week' ? 'selected' : '' }}>Laatste week</option>
-                <option value="month" {{ $range === 'month' ? 'selected' : '' }}>Laatste maand</option>
-            </flux:select>
-        @elseif($tab === 'aanmeldingen')
-            <flux:select size="sm" class="w-40" x-data x-on:change="window.location.href = '?tab=aanmeldingen&range=' + $event.target.value">
-                <option value="month" {{ $range === 'month' ? 'selected' : '' }}>Laatste maand</option>
-                <option value="quarter" {{ $range === 'quarter' ? 'selected' : '' }}>Laatste 3 maanden</option>
-                <option value="alltime" {{ $range === 'alltime' ? 'selected' : '' }}>Sinds start</option>
-            </flux:select>
-        @endif
     </div>
 
     @if($tab === 'presentatiekwaliteit')
@@ -42,7 +33,7 @@
         <flux:card>
             <flux:heading size="lg" class="font-heading font-bold mb-1">Presentatiekwaliteit</flux:heading>
             <p class="text-sm text-[var(--color-text-secondary)] mb-4">
-                Gemiddelde score per {{ $range === 'week' ? 'dag' : 'week' }}
+                Gemiddelde score per {{ $range === 'week' ? 'dag' : ($range === 'alltime' ? 'maand' : 'week') }}
             </p>
 
             @php
@@ -86,7 +77,7 @@
                         <div>
                             <div class="text-2xl font-bold text-[var(--color-primary)] tabular-nums">{{ $currentScore }}</div>
                             <div class="text-xs text-[var(--color-text-secondary)]">
-                                {{ $range === 'week' ? 'meest recent' : 'huidige week' }}
+                                {{ $range === 'week' ? 'meest recent' : ($range === 'alltime' ? 'huidige maand' : 'huidige week') }}
                                 @if($trendDelta !== null)
                                     <span class="font-semibold {{ $trendDelta >= 0 ? 'text-green-600' : 'text-red-500' }}">
                                         &nbsp;{{ $trendDelta >= 0 ? '+' : '' }}{{ $trendDelta }}
