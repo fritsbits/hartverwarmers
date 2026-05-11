@@ -49,19 +49,25 @@
                 <p class="text-sm text-[var(--color-text-secondary)]">Nog geen beoordeelde fiches.</p>
             @else
                 {{-- Sparkline — only slots from first data point onwards --}}
-                <div class="flex items-end gap-1.5 h-16 mb-1">
-                    @foreach($trimmedTrend as $week)
-                        @if($week['avg_score'] !== null)
-                            <div
-                                class="flex-1 rounded-t bg-[var(--color-primary)] opacity-80 hover:opacity-100 transition-opacity"
-                                style="height: {{ $week['avg_score'] }}%"
-                                title="{{ $week['week_label'] }}: {{ $week['avg_score'] }}"
-                            ></div>
-                        @else
-                            <div class="flex-1 rounded-t bg-[var(--color-border-light)] opacity-40" style="height: 2px"></div>
-                        @endif
-                    @endforeach
-                </div>
+                <x-chart-tooltip>
+                    <div class="flex items-end gap-1.5 h-16 mb-1">
+                        @foreach($trimmedTrend as $week)
+                            @if($week['avg_score'] !== null)
+                                <div
+                                    class="flex-1 rounded-t bg-[var(--color-primary)] opacity-80 hover:opacity-100 transition-opacity"
+                                    style="height: {{ $week['avg_score'] }}%"
+                                    data-tip-label="{{ $week['week_label'] }}"
+                                    data-tip-value="score {{ $week['avg_score'] }}"
+                                ></div>
+                            @else
+                                <div class="flex-1 rounded-t bg-[var(--color-border-light)] opacity-40 hover:opacity-70 transition-opacity"
+                                     style="height: 2px"
+                                     data-tip-label="{{ $week['week_label'] }}"
+                                     data-tip-value="geen data"></div>
+                            @endif
+                        @endforeach
+                    </div>
+                </x-chart-tooltip>
                 @if($firstLabel && $lastLabel && $firstLabel !== $lastLabel)
                     <div class="flex justify-between text-xs text-[var(--color-text-secondary)] mb-4">
                         <span>{{ $firstLabel }}</span>

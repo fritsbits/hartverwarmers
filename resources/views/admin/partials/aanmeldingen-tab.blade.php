@@ -14,21 +14,26 @@
     @if(empty($signupTrend))
         <p class="text-sm text-[var(--color-text-secondary)]">Nog geen aanmeldingen in deze periode.</p>
     @else
-        {{-- Sparkline --}}
-        <div class="flex items-end gap-1.5 h-16 mb-1">
-            @foreach($signupTrend as $bucket)
-                @if($bucket['count'] > 0)
-                    <div
-                        class="flex-1 rounded-t bg-[var(--color-primary)] opacity-80 hover:opacity-100 transition-opacity"
-                        style="height: {{ max(4, (int) round($bucket['count'] / $maxCount * 100)) }}%"
-                        title="{{ $bucket['label'] }}: {{ $bucket['count'] }}"
-                    ></div>
-                @else
-                    <div class="flex-1 rounded-t bg-[var(--color-border-light)] opacity-40" style="height: 2px"
-                         title="{{ $bucket['label'] }}: 0"></div>
-                @endif
-            @endforeach
-        </div>
+        {{-- Sparkline with shared tooltip --}}
+        <x-chart-tooltip>
+            <div class="flex items-end gap-1.5 h-16 mb-1">
+                @foreach($signupTrend as $bucket)
+                    @if($bucket['count'] > 0)
+                        <div
+                            class="flex-1 rounded-t bg-[var(--color-primary)] opacity-80 hover:opacity-100 transition-opacity"
+                            style="height: {{ max(4, (int) round($bucket['count'] / $maxCount * 100)) }}%"
+                            data-tip-label="{{ $bucket['label'] }}"
+                            data-tip-value="{{ $bucket['count'] }} {{ $bucket['count'] === 1 ? 'aanmelding' : 'aanmeldingen' }}"
+                        ></div>
+                    @else
+                        <div class="flex-1 rounded-t bg-[var(--color-border-light)] opacity-40 hover:opacity-70 transition-opacity"
+                             style="height: 2px"
+                             data-tip-label="{{ $bucket['label'] }}"
+                             data-tip-value="0 aanmeldingen"></div>
+                    @endif
+                @endforeach
+            </div>
+        </x-chart-tooltip>
         @if($firstLabel && $lastLabel && $firstLabel !== $lastLabel)
             <div class="flex justify-between text-xs text-[var(--color-text-secondary)] mb-4">
                 <span>{{ $firstLabel }}</span>
