@@ -19,6 +19,8 @@ class Comment extends Model
         'commentable_id',
         'body',
         'parent_id',
+        // Fillable so tests can set explicit historical timestamps via Comment::create([..., 'created_at' => ...]).
+        // Production callsites pass hand-crafted arrays (no $request->all()), so this is not a mass-assignment surface.
         'created_at',
     ];
 

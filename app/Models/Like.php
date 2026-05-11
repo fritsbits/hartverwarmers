@@ -21,6 +21,8 @@ class Like extends Model
         'likeable_id',
         'type',
         'count',
+        // Fillable so tests can set explicit historical timestamps via Like::create([..., 'created_at' => ...]).
+        // Production callsites pass hand-crafted arrays (no $request->all()), so this is not a mass-assignment surface.
         'created_at',
     ];
 
