@@ -1452,4 +1452,16 @@ class AdminDashboardTest extends TestCase
         $trend = $response->viewData('thankTrend');
         $this->assertEmpty($trend);
     }
+
+    public function test_bedankjes_tab_renders_expected_copy(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes');
+
+        $response->assertOk();
+        $response->assertSee('Bedankratio');
+        $response->assertSee('Hoe bedanken mensen');
+        $response->assertSee('Aandeel downloads door leden dat bedankt werd', false);
+    }
 }

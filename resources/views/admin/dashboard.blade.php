@@ -23,6 +23,7 @@
             <flux:tab name="presentatiekwaliteit">Presentatiekwaliteit</flux:tab>
             <flux:tab name="onboarding">Onboarding</flux:tab>
             <flux:tab name="aanmeldingen">Aanmeldingen</flux:tab>
+            <flux:tab name="bedankjes">Bedankjes</flux:tab>
         </flux:tabs>
     </div>
 
@@ -251,6 +252,8 @@
         @include('admin.partials.onboarding-tab')
     @elseif($tab === 'aanmeldingen')
         @include('admin.partials.aanmeldingen-tab')
+    @elseif($tab === 'bedankjes')
+        @include('admin.partials.bedankjes-tab')
     @endif
 
 </x-sidebar-layout>
