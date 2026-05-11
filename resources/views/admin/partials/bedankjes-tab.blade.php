@@ -34,7 +34,8 @@
         {{-- Sparkline: bar height = thank rate % per bucket --}}
         <x-chart-tooltip guide>
             {{-- Bar height = absolute thank rate percentage (not normalised). Charts may render short on low rates — this is intentional for data honesty. --}}
-            <div class="flex items-end {{ $isAlltime ? 'gap-px' : 'gap-1.5' }} h-16 mb-1">
+            {{-- mb-4 (not mb-1) so the tooltip's shadow over short/empty bars doesn't bleed into the axis labels row. --}}
+            <div class="flex items-end {{ $isAlltime ? 'gap-px' : 'gap-1.5' }} h-16 mb-4">
                 @foreach($thankTrend as $bucket)
                     @if($bucket['downloads'] > 0)
                         <div
