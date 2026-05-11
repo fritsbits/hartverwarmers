@@ -33,6 +33,13 @@ class AdminDashboardController extends Controller
             default => now()->subWeeks(4),
         };
 
+        $rangeLabel = match ($range) {
+            'week' => 'laatste week',
+            'quarter' => 'laatste 3 maanden',
+            'alltime' => 'sinds start',
+            default => 'laatste maand',
+        };
+
         $weeklyTrend = $this->trend($range);
         $trendDelta = $this->trendDelta($weeklyTrend);
         $lastFiches = $this->lastFiches();
@@ -54,6 +61,7 @@ class AdminDashboardController extends Controller
         return view('admin.dashboard', [
             'tab' => $tab,
             'range' => $range,
+            'rangeLabel' => $rangeLabel,
             'weeklyTrend' => $weeklyTrend,
             'trendDelta' => $trendDelta,
             'lastFiches' => $lastFiches,
@@ -100,7 +108,7 @@ class AdminDashboardController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
             $key = $date->format('Y-m-d');
-            $label = $date->format('d M');
+            $label = $date->isoFormat('D MMM');
 
             if (isset($grouped[$key])) {
                 $scores = $grouped[$key];
@@ -147,7 +155,7 @@ class AdminDashboardController extends Controller
         for ($i = $weeks - 1; $i >= 0; $i--) {
             $date = now()->subWeeks($i)->startOfWeek();
             $key = (int) $date->format('oW');
-            $label = $date->format('d M');
+            $label = $date->isoFormat('D MMM');
 
             if (isset($grouped[$key])) {
                 $scores = $grouped[$key];
@@ -602,7 +610,7 @@ class AdminDashboardController extends Controller
             $key = $date->format('Y-m-d');
             $result[] = [
                 'key' => $key,
-                'label' => $date->format('d M'),
+                'label' => $date->isoFormat('D MMM'),
                 'count' => $grouped[$key] ?? 0,
             ];
         }
@@ -629,7 +637,7 @@ class AdminDashboardController extends Controller
             $key = $date->format('oW');
             $result[] = [
                 'key' => $key,
-                'label' => $date->format('d M'),
+                'label' => $date->isoFormat('D MMM'),
                 'count' => $grouped[$key] ?? 0,
             ];
         }

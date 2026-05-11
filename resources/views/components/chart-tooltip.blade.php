@@ -1,4 +1,4 @@
-@props([])
+@props(['guide' => false])
 
 <div x-data="{
     tip: null,
@@ -19,6 +19,12 @@
     class="relative"
 >
     {{ $slot }}
+
+    @if($guide)
+        <div x-show="tip" x-cloak
+             :style="`left: ${tip?.x}px;`"
+             class="absolute top-0 bottom-0 w-px bg-[var(--color-text-tertiary)] opacity-40 pointer-events-none -translate-x-1/2"></div>
+    @endif
 
     <div x-show="tip" x-cloak
          :style="`left: ${tip?.x}px; top: ${tip?.y}px;`"

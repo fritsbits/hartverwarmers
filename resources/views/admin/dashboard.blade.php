@@ -43,14 +43,33 @@
                 $lastLabel = $trimmedTrend->last()['week_label'] ?? null;
                 $scored = $trimmedTrend->filter(fn($w) => $w['avg_score'] !== null);
                 $currentScore = $scored->last()['avg_score'] ?? null;
+                $isAlltime = $range === 'alltime';
+                $yearMarkers = [];
+                if ($isAlltime) {
+                    $total = $trimmedTrend->count();
+                    foreach ($trimmedTrend as $i => $slot) {
+                        if (is_string($slot['week_key']) && str_ends_with($slot['week_key'], '-01')) {
+                            $yearMarkers[] = ['year' => substr($slot['week_key'], 0, 4), 'index' => $i];
+                        }
+                    }
+                    $maxMarkers = 8;
+                    if (count($yearMarkers) > $maxMarkers) {
+                        $step = (int) ceil(count($yearMarkers) / $maxMarkers);
+                        $yearMarkers = array_values(array_filter(
+                            $yearMarkers,
+                            fn($_, $i) => $i % $step === 0,
+                            ARRAY_FILTER_USE_BOTH
+                        ));
+                    }
+                }
             @endphp
 
             @if($scored->isEmpty())
                 <p class="text-sm text-[var(--color-text-secondary)]">Nog geen beoordeelde fiches.</p>
             @else
                 {{-- Sparkline — only slots from first data point onwards --}}
-                <x-chart-tooltip>
-                    <div class="flex items-end gap-1.5 h-16 mb-1">
+                <x-chart-tooltip guide>
+                    <div class="flex items-end {{ $isAlltime ? 'gap-px' : 'gap-1.5' }} h-16 mb-1">
                         @foreach($trimmedTrend as $week)
                             @if($week['avg_score'] !== null)
                                 <div
@@ -61,14 +80,23 @@
                                 ></div>
                             @else
                                 <div class="flex-1 rounded-t bg-[var(--color-border-light)] opacity-40 hover:opacity-70 transition-opacity"
-                                     style="height: 2px"
+                                     style="height: 4px"
                                      data-tip-label="{{ $week['week_label'] }}"
                                      data-tip-value="geen data"></div>
                             @endif
                         @endforeach
                     </div>
                 </x-chart-tooltip>
-                @if($firstLabel && $lastLabel && $firstLabel !== $lastLabel)
+                @if($isAlltime && count($yearMarkers) > 0)
+                    <div class="relative h-4 mb-4 text-xs text-[var(--color-text-secondary)]">
+                        @foreach($yearMarkers as $marker)
+                            <span class="absolute -translate-x-1/2 tabular-nums"
+                                  style="left: {{ ($marker['index'] / max(1, $trimmedTrend->count() - 1)) * 100 }}%;">
+                                {{ $marker['year'] }}
+                            </span>
+                        @endforeach
+                    </div>
+                @elseif($firstLabel && $lastLabel && $firstLabel !== $lastLabel)
                     <div class="flex justify-between text-xs text-[var(--color-text-secondary)] mb-4">
                         <span>{{ $firstLabel }}</span>
                         <span>{{ $lastLabel }}</span>
@@ -146,17 +174,18 @@
     {{-- Suggestion adoption --}}
     <flux:card class="mb-6">
         <flux:heading size="lg" class="font-heading font-bold mb-1">Suggestie-adoptie</flux:heading>
-        <p class="text-sm text-[var(--color-text-secondary)] mb-5">Nemen gebruikers de AI-suggesties over?</p>
+        <p class="text-sm text-[var(--color-text-secondary)] mb-5">Aandeel fiches met overgenomen suggesties · {{ $rangeLabel }}</p>
 
         @if($withSuggestions === 0)
             <p class="text-sm text-[var(--color-text-secondary)]">Nog geen suggesties gegenereerd.</p>
         @else
             {{-- Summary --}}
-            <p class="text-sm text-[var(--color-text-secondary)] mb-1">
-                <strong class="font-bold text-[var(--color-text-primary)]">{{ $withAnyApplied }} van {{ $withSuggestions }}</strong>
-                fiches heeft minstens 1 suggestie overgenomen
-                <span class="text-[var(--color-text-tertiary)]">&nbsp;({{ $adoptionRate }}%)</span>
-            </p>
+            <div class="flex items-baseline gap-3 mb-1">
+                <span class="text-3xl font-bold text-[var(--color-primary)] tabular-nums">{{ $adoptionRate }}%</span>
+                <span class="text-sm text-[var(--color-text-secondary)]">
+                    {{ $withAnyApplied }} van {{ $withSuggestions }} fiches met minstens 1 overgenomen suggestie
+                </span>
+            </div>
             @if($withSuggestions < 5)
                 <p class="text-xs text-[var(--color-text-tertiary)] mb-5">Te weinig data voor betrouwbare conclusies.</p>
             @else
@@ -166,17 +195,21 @@
             {{-- Per veld --}}
             <div class="mb-5">
                 <p class="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-tertiary)] mb-3">Per veld</p>
-                <div class="space-y-3">
-                    @foreach($fieldAdoption as $field => $data)
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm font-medium text-[var(--color-text-primary)] w-36 shrink-0">{{ $data['label'] }}</span>
-                            <div class="flex-1 h-2 bg-[var(--color-border-light)] rounded-full overflow-hidden">
-                                <div class="h-full bg-[var(--color-primary)] rounded-full" style="width: {{ $data['rate'] }}%"></div>
+                <x-chart-tooltip>
+                    <div class="space-y-3">
+                        @foreach($fieldAdoption as $field => $data)
+                            <div class="flex items-center gap-4"
+                                 data-tip-label="{{ $data['label'] }}"
+                                 data-tip-value="{{ $data['applied'] }} van {{ $data['suggested'] }} ({{ $data['rate'] }}%)">
+                                <span class="text-sm font-medium text-[var(--color-text-primary)] w-36 shrink-0">{{ $data['label'] }}</span>
+                                <div class="flex-1 h-2 bg-[var(--color-border-light)] rounded-full overflow-hidden">
+                                    <div class="h-full bg-[var(--color-primary)] rounded-full" style="width: {{ $data['rate'] }}%"></div>
+                                </div>
+                                <span class="text-xs font-semibold tabular-nums text-[var(--color-text-secondary)] w-10 text-right shrink-0">{{ $data['rate'] }}%</span>
                             </div>
-                            <span class="text-xs font-semibold tabular-nums text-[var(--color-text-secondary)] w-10 text-right shrink-0">{{ $data['rate'] }}%</span>
-                        </div>
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
+                </x-chart-tooltip>
             </div>
 
             {{-- Per fiche --}}
