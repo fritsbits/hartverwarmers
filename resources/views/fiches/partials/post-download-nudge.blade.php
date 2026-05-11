@@ -18,7 +18,6 @@
 <div x-data="postDownloadTakeover({{ $fiche->id }})"
      x-on:fiche-download-click.window="if ($event.detail?.ficheId === fiche_id) { waitForDownloadConfirmation(); }"
      x-on:comment-added.window="goToConfirmation()"
-     x-on:add-kudos.window="if ($event.detail.amount > 0) goToKudosGiven()"
      x-on:keydown.escape.window="if (downloaded) dismiss()"
 >
 <template x-teleport="body">
@@ -122,15 +121,17 @@
                     </div>
                     <button x-on:mousedown.prevent="startGive()"
                             x-on:touchstart.prevent="startGive()"
-                            aria-label="Geef een hartje voor {{ $contributorName }}"
-                            title="Hou ingedrukt voor meer"
+                            aria-label="Geef hartjes voor {{ $contributorName }} — hou ingedrukt voor meer"
                             @if($isOwnFiche) disabled @endif
-                            class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-[var(--color-primary)] text-white text-base font-semibold transition-[transform,background-color] duration-150 hover:bg-[var(--color-primary-hover)] active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                            class="w-full inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl bg-[var(--color-primary)] text-white transition-[transform,background-color] duration-150 hover:bg-[var(--color-primary-hover)] active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed select-none leading-tight"
                             :class="holding ? 'scale-[1.03]' : ''">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-transform" :class="holding ? 'scale-125' : ''" fill="currentColor" viewBox="0 0 24 24">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0 transition-transform" :class="holding ? 'scale-125' : ''" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                         </svg>
-                        Geef een hartje
+                        <span class="flex flex-col items-start">
+                            <span class="text-base font-semibold">Geef hartjes</span>
+                            <span class="text-xs font-light opacity-75 -mt-0.5">blijf drukken voor meer</span>
+                        </span>
                     </button>
                 </div>
 
@@ -162,52 +163,6 @@
 
                 <div class="text-center mt-6">
                     <button x-on:click="dismiss()" class="inline-flex items-center justify-center px-4 py-3 min-h-[40px] text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors duration-150">
-                        niet nu, bedankt
-                    </button>
-                </div>
-            </div>
-
-            {{-- State B: Kudos given, inviting comment --}}
-            <div x-show="state === 'kudosGiven'" x-cloak class="relative px-6 sm:px-10 pt-10 pb-8">
-                <div class="flex flex-col items-center mb-6">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--color-primary)]/10 mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="var(--color-primary)" viewBox="0 0 24 24">
-                            <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
-                        </svg>
-                    </div>
-                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-center text-balance" style="color: var(--color-text-primary)">
-                        Bedankt voor het hartje!
-                    </h2>
-                </div>
-
-                @auth
-                    @if(! $isOwnFiche)
-                        <p class="text-base text-center text-pretty text-[var(--color-text-secondary)] mb-5 max-w-sm mx-auto">
-                            Wil je {{ $contributorName }} ook nog een paar woorden meegeven? Het maakt écht verschil.
-                        </p>
-                        <textarea
-                            x-ref="commentInputB"
-                            wire:model="body"
-                            rows="3"
-                            maxlength="1000"
-                            placeholder="Schrijf hier..."
-                            class="w-full px-4 py-3 rounded-xl border border-[var(--color-border-light)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 outline-none text-base resize-y bg-white"
-                        ></textarea>
-                        @error('body')
-                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                        <div class="flex justify-end mt-3">
-                            <button wire:click="addComment"
-                                    x-bind:disabled="$wire.body.trim().length < 2"
-                                    class="px-6 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-sm font-bold transition-all hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed">
-                                Plaats
-                            </button>
-                        </div>
-                    @endif
-                @endauth
-
-                <div class="text-center mt-6">
-                    <button x-on:click="dismiss()" class="inline-flex items-center justify-center px-4 py-3 min-h-[40px] text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors duration-150 underline underline-offset-2 decoration-[var(--color-border-light)] hover:decoration-[var(--color-primary)]">
                         niet nu, bedankt
                     </button>
                 </div>
@@ -285,17 +240,6 @@ window.postDownloadTakeover = function(ficheId) {
                     }
                 }, 600);
             });
-        },
-        goToKudosGiven() {
-            if (!this.downloaded) return;
-            if (this.state === 'initial') {
-                this.state = 'kudosGiven';
-                this.$nextTick(() => {
-                    if (this.$refs.commentInputB) {
-                        this.$refs.commentInputB.focus({ preventScroll: true });
-                    }
-                });
-            }
         },
         goToConfirmation() {
             if (!this.downloaded) return;
