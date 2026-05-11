@@ -1010,4 +1010,16 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(2, $stats['newUsersCount']);
         $this->assertEquals('sinds start', $stats['rangeLabel']);
     }
+
+    public function test_bedankjes_tab_is_accessible(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes');
+
+        $response->assertOk();
+        $response->assertViewHas('thankTrend');
+        $response->assertViewHas('thankStats');
+        $this->assertEquals('bedankjes', $response->viewData('tab'));
+    }
 }

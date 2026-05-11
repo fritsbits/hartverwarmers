@@ -17,7 +17,7 @@ class AdminDashboardController extends Controller
     public function __invoke(): View
     {
         $tab = request()->get('tab', 'presentatiekwaliteit');
-        if (! in_array($tab, ['presentatiekwaliteit', 'onboarding', 'aanmeldingen'], true)) {
+        if (! in_array($tab, ['presentatiekwaliteit', 'onboarding', 'aanmeldingen', 'bedankjes'], true)) {
             $tab = 'presentatiekwaliteit';
         }
 
@@ -74,6 +74,8 @@ class AdminDashboardController extends Controller
             'onboardingEmailCounts' => $tab === 'onboarding' ? $this->onboardingEmailCounts($range) : [],
             'signupTrend' => $signupTrend,
             'signupStats' => $signupStats,
+            'thankTrend' => $tab === 'bedankjes' ? $this->thankTrend($range) : [],
+            'thankStats' => $tab === 'bedankjes' ? $this->thankStats($range) : [],
         ]);
     }
 
@@ -676,6 +678,47 @@ class AdminDashboardController extends Controller
         }
 
         return $result;
+    }
+
+    /** @return array<int, array{key: string, label: string, downloads: int, thanked: int, rate: int}> */
+    private function thankTrend(string $range): array
+    {
+        return [];
+    }
+
+    /**
+     * @return array{
+     *   currentRate: int,
+     *   previousRate: int|null,
+     *   delta: int|null,
+     *   currentDownloads: int,
+     *   currentThanked: int,
+     *   rangeLabel: string,
+     *   lowData: bool,
+     *   totalThankedAllTime: int,
+     *   kudosThankCount: int,
+     *   commentThankCount: int,
+     * }
+     */
+    private function thankStats(string $range): array
+    {
+        return [
+            'currentRate' => 0,
+            'previousRate' => null,
+            'delta' => null,
+            'currentDownloads' => 0,
+            'currentThanked' => 0,
+            'rangeLabel' => match ($range) {
+                'week' => 'deze week',
+                'quarter' => 'deze 3 maanden',
+                'alltime' => 'sinds start',
+                default => 'deze maand',
+            },
+            'lowData' => false,
+            'totalThankedAllTime' => 0,
+            'kudosThankCount' => 0,
+            'commentThankCount' => 0,
+        ];
     }
 
     /**
