@@ -1216,6 +1216,22 @@ dialog[data-modal="search"]::backdrop {
   }
 }
 
+/* Takeover hero heart — gentle breathing pulse */
+@keyframes takeoverHeartBreathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes takeoverHeartBreathe {
+    0%, 100% { transform: scale(1); }
+  }
+}
+
 /* Checkmark draw-in animation */
 @keyframes checkmarkDraw {
   0% {

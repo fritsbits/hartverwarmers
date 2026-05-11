@@ -56,25 +56,33 @@
             </button>
 
             {{-- State A: Initial — kudos + inline comment --}}
-            <div x-show="state === 'initial'" x-cloak class="relative px-6 sm:px-10 pt-10 pb-8">
-                {{-- Avatar --}}
-                @if($contributor)
-                    <div class="flex flex-col items-center mb-6">
-                        <div class="relative">
-                            <x-user-avatar :user="$contributor" size="2xl" class="ring-4 ring-white shadow-lg" />
-                            <div class="absolute -bottom-1 -right-1 w-9 h-9 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center shadow-md" aria-hidden="true">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <span class="mt-3 text-sm text-[var(--color-text-secondary)]">Door {{ $contributor->full_name }}</span>
+            <div x-show="state === 'initial'" x-cloak class="relative px-6 sm:px-10 pt-12 pb-8">
+                {{-- Brand heart motif — focal point, no photo dependency --}}
+                <div class="flex flex-col items-center mb-6">
+                    <div class="relative" aria-hidden="true" style="animation: takeoverHeartBreathe 3s ease-in-out infinite;">
+                        {{-- Soft warm aura --}}
+                        <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(circle, rgba(232,118,75,0.28) 0%, transparent 65%); transform: scale(1.8); z-index: 0;"></div>
+                        {{-- Sparkles --}}
+                        <span class="absolute -top-2 -left-6 text-[var(--color-yellow)]" style="font-size: 14px;">✦</span>
+                        <span class="absolute -top-4 right-0 text-[var(--color-secondary)]" style="font-size: 10px;">✦</span>
+                        <span class="absolute -bottom-1 -left-4 text-[var(--color-accent-purple)]" style="font-size: 11px;">✦</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="relative w-20 h-20" fill="var(--color-primary)" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 12px rgba(232,118,75,0.35));">
+                            <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
+                        </svg>
                     </div>
-                @endif
+                </div>
 
-                <h2 class="font-heading font-bold text-3xl sm:text-4xl text-center leading-tight mb-3" style="color: var(--color-text-primary)">
+                <h2 class="font-heading font-bold text-3xl sm:text-4xl text-center leading-tight mb-2" style="color: var(--color-text-primary)">
                     {{ $contributorName }} deelde dit met jou
                 </h2>
+
+                {{-- Hand-drawn underline accent --}}
+                <div class="flex justify-center mb-4" aria-hidden="true">
+                    <svg width="140" height="9" viewBox="0 0 140 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 5.5C22 2.5 45 7 70 4.5C95 2 118 7 138 4" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+                    </svg>
+                </div>
+
                 <p class="text-base text-center text-[var(--color-text-secondary)] mb-7 max-w-sm mx-auto">
                     Maak {{ $contributorName }}'s dag — geef een hartje of laat een berichtje achter.
                 </p>
