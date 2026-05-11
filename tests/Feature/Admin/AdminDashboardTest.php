@@ -1053,4 +1053,186 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(1, $stats['currentThanked']);
         $this->assertEquals(100, $stats['currentRate']);
     }
+
+    public function test_thank_rate_ignores_pre_download_kudos(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create();
+
+        Like::create([
+            'user_id' => $user->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 1,
+            'created_at' => now()->subDays(10),
+        ]);
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'download',
+            'created_at' => now()->subDays(5),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(1, $stats['currentDownloads']);
+        $this->assertEquals(0, $stats['currentThanked']);
+        $this->assertEquals(0, $stats['currentRate']);
+    }
+
+    public function test_thank_rate_ignores_anonymous_kudos(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create();
+
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'download',
+            'created_at' => now()->subDays(5),
+        ]);
+        Like::create([
+            'user_id' => null,
+            'session_id' => 'someanonsession',
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 2,
+            'created_at' => now()->subDays(3),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(1, $stats['currentDownloads']);
+        $this->assertEquals(0, $stats['currentThanked']);
+    }
+
+    public function test_thank_rate_counts_post_download_comments(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create();
+
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'download',
+            'created_at' => now()->subDays(5),
+        ]);
+        Comment::create([
+            'user_id' => $user->id,
+            'commentable_type' => Fiche::class,
+            'commentable_id' => $fiche->id,
+            'body' => 'Heel goed idee!',
+            'created_at' => now()->subDays(4),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(1, $stats['currentThanked']);
+        $this->assertEquals(1, $stats['commentThankCount']);
+        $this->assertEquals(0, $stats['kudosThankCount']);
+    }
+
+    public function test_thank_rate_ignores_soft_deleted_comments(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create();
+
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'download',
+            'created_at' => now()->subDays(5),
+        ]);
+        $comment = Comment::create([
+            'user_id' => $user->id,
+            'commentable_type' => Fiche::class,
+            'commentable_id' => $fiche->id,
+            'body' => 'Heel goed idee!',
+            'created_at' => now()->subDays(4),
+        ]);
+        $comment->delete();
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(0, $stats['currentThanked']);
+    }
+
+    public function test_kudos_and_comment_overlap_counted_in_both_split_buckets(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create();
+
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'download',
+            'created_at' => now()->subDays(5),
+        ]);
+        Like::create([
+            'user_id' => $user->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 1,
+            'created_at' => now()->subDays(4),
+        ]);
+        Comment::create([
+            'user_id' => $user->id,
+            'commentable_type' => Fiche::class,
+            'commentable_id' => $fiche->id,
+            'body' => 'Top!',
+            'created_at' => now()->subDays(3),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(1, $stats['currentThanked']);          // de-duped: one thanked download
+        $this->assertEquals(1, $stats['kudosThankCount']);         // counts kudos
+        $this->assertEquals(1, $stats['commentThankCount']);       // also counts comment
+    }
+
+    public function test_thank_rate_ignores_zero_count_kudos(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create();
+
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'download',
+            'created_at' => now()->subDays(5),
+        ]);
+        Like::create([
+            'user_id' => $user->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 0,
+            'created_at' => now()->subDays(4),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(0, $stats['currentThanked']);
+    }
 }

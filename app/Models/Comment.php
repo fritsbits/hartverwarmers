@@ -19,6 +19,7 @@ class Comment extends Model
         'commentable_id',
         'body',
         'parent_id',
+        'created_at',
     ];
 
     public function commentable(): MorphTo

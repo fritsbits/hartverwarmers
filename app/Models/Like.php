@@ -21,6 +21,7 @@ class Like extends Model
         'likeable_id',
         'type',
         'count',
+        'created_at',
     ];
 
     public function likeable(): MorphTo
