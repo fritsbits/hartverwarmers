@@ -220,9 +220,9 @@
 </div>
 </div>
 
-@push('scripts')
 <script>
-function postDownloadTakeover(ficheId) {
+if (typeof window.postDownloadTakeover === 'undefined') {
+window.postDownloadTakeover = function(ficheId) {
     return {
         fiche_id: ficheId,
         downloaded: false,
@@ -263,6 +263,6 @@ function postDownloadTakeover(ficheId) {
             try { sessionStorage.setItem('takeover-dismissed-{{ $fiche->id }}', '1'); } catch (e) {}
         },
     };
+};
 }
 </script>
-@endpush
