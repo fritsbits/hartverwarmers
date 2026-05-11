@@ -7,6 +7,7 @@ use App\Models\Fiche;
 use App\Models\Like;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
+use App\Models\UserInteraction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -1021,5 +1022,35 @@ class AdminDashboardTest extends TestCase
         $response->assertViewHas('thankTrend');
         $response->assertViewHas('thankStats');
         $this->assertEquals('bedankjes', $response->viewData('tab'));
+    }
+
+    public function test_thank_rate_counts_post_download_kudos(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create();
+
+        UserInteraction::create([
+            'user_id' => $user->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'download',
+            'created_at' => now()->subDays(5),
+        ]);
+        Like::create([
+            'user_id' => $user->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 3,
+            'created_at' => now()->subDays(4),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes&range=month');
+
+        $stats = $response->viewData('thankStats');
+        $this->assertEquals(1, $stats['currentDownloads']);
+        $this->assertEquals(1, $stats['currentThanked']);
+        $this->assertEquals(100, $stats['currentRate']);
     }
 }

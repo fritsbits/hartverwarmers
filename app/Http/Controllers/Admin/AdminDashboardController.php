@@ -8,7 +8,10 @@ use App\Models\Fiche;
 use App\Models\Like;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
+use App\Models\UserInteraction;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
@@ -702,23 +705,126 @@ class AdminDashboardController extends Controller
      */
     private function thankStats(string $range): array
     {
+        [$windowDays, $rangeLabel] = match ($range) {
+            'week' => [7, 'deze week'],
+            'quarter' => [90, 'deze 3 maanden'],
+            'alltime' => [null, 'sinds start'],
+            default => [30, 'deze maand'],
+        };
+
+        if ($windowDays === null) {
+            $current = $this->computeThankedDownloads(null);
+            $previous = collect();
+        } else {
+            $currentStart = now()->subDays($windowDays - 1)->startOfDay();
+            $previousStart = now()->subDays(($windowDays * 2) - 1)->startOfDay();
+
+            $all = $this->computeThankedDownloads($previousStart);
+            $current = $all->filter(fn ($row) => $row['downloaded_at'] >= $currentStart);
+            $previous = $all->filter(fn ($row) => $row['downloaded_at'] < $currentStart);
+        }
+
+        $currentDownloads = $current->count();
+        $currentThanked = $current->filter(fn ($row) => $row['is_thanked'])->count();
+        $currentRate = $currentDownloads > 0
+            ? (int) round($currentThanked / $currentDownloads * 100)
+            : 0;
+
+        $previousDownloads = $previous->count();
+        $previousThanked = $previous->filter(fn ($row) => $row['is_thanked'])->count();
+        $previousRate = $previousDownloads > 0
+            ? (int) round($previousThanked / $previousDownloads * 100)
+            : null;
+        $delta = $previousRate !== null ? $currentRate - $previousRate : null;
+
+        $kudosThankCount = $current->filter(fn ($row) => $row['thanked_via_kudos'])->count();
+        $commentThankCount = $current->filter(fn ($row) => $row['thanked_via_comment'])->count();
+
+        $totalThankedAllTime = $this->computeThankedDownloads(null)
+            ->filter(fn ($row) => $row['is_thanked'])
+            ->count();
+
         return [
-            'currentRate' => 0,
-            'previousRate' => null,
-            'delta' => null,
-            'currentDownloads' => 0,
-            'currentThanked' => 0,
-            'rangeLabel' => match ($range) {
-                'week' => 'deze week',
-                'quarter' => 'deze 3 maanden',
-                'alltime' => 'sinds start',
-                default => 'deze maand',
-            },
-            'lowData' => false,
-            'totalThankedAllTime' => 0,
-            'kudosThankCount' => 0,
-            'commentThankCount' => 0,
+            'currentRate' => $currentRate,
+            'previousRate' => $previousRate,
+            'delta' => $delta,
+            'currentDownloads' => $currentDownloads,
+            'currentThanked' => $currentThanked,
+            'rangeLabel' => $rangeLabel,
+            'lowData' => $currentDownloads > 0 && $currentDownloads < 5,
+            'totalThankedAllTime' => $totalThankedAllTime,
+            'kudosThankCount' => $kudosThankCount,
+            'commentThankCount' => $commentThankCount,
         ];
+    }
+
+    /**
+     * Returns one row per (user, fiche) download pair, annotated with whether
+     * the user later thanked that fiche (post-download kudos OR comment).
+     *
+     * @param  CarbonImmutable|Carbon|null  $since
+     *                                              When null, considers all downloads. When set, only downloads with created_at >= $since.
+     * @return Collection<int, array{
+     *   user_id: int,
+     *   fiche_id: int,
+     *   downloaded_at: Carbon,
+     *   thanked_via_kudos: bool,
+     *   thanked_via_comment: bool,
+     *   is_thanked: bool,
+     * }>
+     */
+    private function computeThankedDownloads($since): Collection
+    {
+        $downloads = UserInteraction::query()
+            ->where('interactable_type', Fiche::class)
+            ->where('type', 'download')
+            ->when($since !== null, fn ($q) => $q->where('created_at', '>=', $since))
+            ->get(['user_id', 'interactable_id', 'created_at']);
+
+        if ($downloads->isEmpty()) {
+            return collect();
+        }
+
+        $userIds = $downloads->pluck('user_id')->unique()->values()->all();
+        $ficheIds = $downloads->pluck('interactable_id')->unique()->values()->all();
+
+        // Earliest post-download kudos timestamp per (user, fiche)
+        $kudosByPair = Like::query()
+            ->whereIn('user_id', $userIds)
+            ->whereIn('likeable_id', $ficheIds)
+            ->where('likeable_type', Fiche::class)
+            ->where('type', 'kudos')
+            ->where('count', '>', 0)
+            ->get(['user_id', 'likeable_id', 'created_at'])
+            ->groupBy(fn ($row) => $row->user_id.':'.$row->likeable_id)
+            ->map(fn ($rows) => $rows->min('created_at'));
+
+        // Earliest post-download comment timestamp per (user, fiche). soft-deleted is excluded by default scope.
+        $commentByPair = Comment::query()
+            ->whereIn('user_id', $userIds)
+            ->whereIn('commentable_id', $ficheIds)
+            ->where('commentable_type', Fiche::class)
+            ->get(['user_id', 'commentable_id', 'created_at'])
+            ->groupBy(fn ($row) => $row->user_id.':'.$row->commentable_id)
+            ->map(fn ($rows) => $rows->min('created_at'));
+
+        return $downloads->map(function ($download) use ($kudosByPair, $commentByPair) {
+            $key = $download->user_id.':'.$download->interactable_id;
+            $kudosAt = $kudosByPair->get($key);
+            $commentAt = $commentByPair->get($key);
+
+            $thankedViaKudos = $kudosAt !== null && $kudosAt >= $download->created_at;
+            $thankedViaComment = $commentAt !== null && $commentAt >= $download->created_at;
+
+            return [
+                'user_id' => $download->user_id,
+                'fiche_id' => $download->interactable_id,
+                'downloaded_at' => $download->created_at,
+                'thanked_via_kudos' => $thankedViaKudos,
+                'thanked_via_comment' => $thankedViaComment,
+                'is_thanked' => $thankedViaKudos || $thankedViaComment,
+            ];
+        });
     }
 
     /**
