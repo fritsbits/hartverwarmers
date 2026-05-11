@@ -37,10 +37,15 @@
     >
         <div x-show="downloaded" x-cloak
              x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 scale-90 translate-y-3"
+             x-transition:enter-start="opacity-0 scale-95 translate-y-2"
              x-transition:enter-end="opacity-100 scale-100 translate-y-0"
              class="relative w-full max-w-lg bg-[var(--color-bg-white)] rounded-3xl overflow-hidden"
-             style="box-shadow: 0 24px 64px -12px rgba(232, 118, 75, 0.45), 0 8px 32px -8px rgba(35, 30, 26, 0.25);"
+             style="box-shadow:
+                 0 0 0 1px rgba(232, 118, 75, 0.08),
+                 0 1px 2px rgba(35, 30, 26, 0.04),
+                 0 8px 24px -4px rgba(35, 30, 26, 0.12),
+                 0 32px 64px -12px rgba(232, 118, 75, 0.32),
+                 inset 0 1px 0 rgba(255, 255, 255, 0.6);"
              x-on:click.stop
         >
             {{-- Decorative warm gradient band at the top --}}
@@ -50,7 +55,7 @@
             {{-- Close X --}}
             <button x-on:click="dismiss()"
                     aria-label="Sluiten"
-                    class="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)] transition-colors z-10">
+                    class="absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)] hover:text-[var(--color-text-primary)] transition-[background-color,color] duration-150 active:scale-[0.96] z-10">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -73,7 +78,7 @@
                     </div>
                 </div>
 
-                <h2 class="font-heading font-bold text-3xl sm:text-4xl text-center leading-tight mb-2" style="color: var(--color-text-primary)">
+                <h2 class="font-heading font-bold text-3xl sm:text-4xl text-center leading-tight text-balance mb-2" style="color: var(--color-text-primary)">
                     {{ $contributorName }} deelde dit met jou
                 </h2>
 
@@ -84,7 +89,7 @@
                     </svg>
                 </div>
 
-                <p class="text-base text-center text-[var(--color-text-secondary)] mb-7 max-w-sm mx-auto">
+                <p class="text-base text-center text-pretty text-[var(--color-text-secondary)] mb-7 max-w-sm mx-auto">
                     Maak {{ $contributorName }}'s dag — geef een hartje of laat een berichtje achter.
                 </p>
 
@@ -131,7 +136,7 @@
                             x-on:touchstart.prevent="startGive()"
                             aria-label="Geef een hartje voor {{ $contributorName }}"
                             @if($isOwnFiche) disabled @endif
-                            class="w-full inline-flex items-center justify-center gap-3 px-6 py-5 rounded-2xl bg-[var(--color-primary)] text-white text-lg font-bold transition-all hover:bg-[var(--color-primary-hover)] hover:shadow-xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                            class="w-full inline-flex items-center justify-center gap-3 px-6 py-5 rounded-2xl bg-[var(--color-primary)] text-white text-lg font-bold transition-[transform,box-shadow,background-color] duration-150 hover:bg-[var(--color-primary-hover)] hover:shadow-xl active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed select-none"
                             style="box-shadow: 0 8px 24px -4px rgba(232, 118, 75, 0.4);"
                             :class="holding ? 'scale-[1.03]' : ''">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 transition-transform" :class="holding ? 'scale-125' : ''" fill="currentColor" viewBox="0 0 24 24">
@@ -164,7 +169,7 @@
                             <div class="flex justify-end mt-3">
                                 <button wire:click="addComment"
                                         x-bind:disabled="$wire.body.trim().length < 2"
-                                        class="px-6 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-sm font-bold transition-all hover:bg-[var(--color-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed">
+                                        class="px-6 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-sm font-bold transition-[transform,background-color] duration-150 hover:bg-[var(--color-primary-hover)] active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed">
                                     Plaats
                                 </button>
                             </div>
@@ -173,7 +178,7 @@
                 @endauth
 
                 <div class="text-center mt-6">
-                    <button x-on:click="dismiss()" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors underline underline-offset-2 decoration-[var(--color-border-light)] hover:decoration-[var(--color-primary)]">
+                    <button x-on:click="dismiss()" class="inline-flex items-center justify-center px-4 py-3 min-h-[40px] text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors duration-150 underline underline-offset-2 decoration-[var(--color-border-light)] hover:decoration-[var(--color-primary)]">
                         niet nu, bedankt
                     </button>
                 </div>
@@ -187,14 +192,14 @@
                             <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
                         </svg>
                     </div>
-                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-center" style="color: var(--color-text-primary)">
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-center text-balance" style="color: var(--color-text-primary)">
                         Bedankt voor het hartje!
                     </h2>
                 </div>
 
                 @auth
                     @if(! $isOwnFiche)
-                        <p class="text-base text-center text-[var(--color-text-secondary)] mb-5 max-w-sm mx-auto">
+                        <p class="text-base text-center text-pretty text-[var(--color-text-secondary)] mb-5 max-w-sm mx-auto">
                             Wil je {{ $contributorName }} ook nog een paar woorden meegeven? Het maakt écht verschil.
                         </p>
                         <textarea
@@ -219,7 +224,7 @@
                 @endauth
 
                 <div class="text-center mt-6">
-                    <button x-on:click="dismiss()" class="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors underline underline-offset-2 decoration-[var(--color-border-light)] hover:decoration-[var(--color-primary)]">
+                    <button x-on:click="dismiss()" class="inline-flex items-center justify-center px-4 py-3 min-h-[40px] text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors duration-150 underline underline-offset-2 decoration-[var(--color-border-light)] hover:decoration-[var(--color-primary)]">
                         niet nu, bedankt
                     </button>
                 </div>
@@ -238,11 +243,11 @@
                     </svg>
                 </div>
                 @auth
-                    <h2 class="font-heading font-bold text-2xl sm:text-3xl mb-2" style="color: var(--color-text-primary)">
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-balance mb-2" style="color: var(--color-text-primary)">
                         Bedankt voor je berichtje, {{ auth()->user()->first_name }}.
                     </h2>
                 @else
-                    <h2 class="font-heading font-bold text-2xl sm:text-3xl mb-2" style="color: var(--color-text-primary)">
+                    <h2 class="font-heading font-bold text-2xl sm:text-3xl text-balance mb-2" style="color: var(--color-text-primary)">
                         Bedankt voor je berichtje.
                     </h2>
                 @endauth
