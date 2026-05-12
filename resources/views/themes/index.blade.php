@@ -34,7 +34,7 @@
                         </p>
                     @endif
                 </div>
-                <div class="hidden lg:block">
+                <div class="hidden lg:block lg:mr-12">
                     <x-theme-month-overview :month="$month" :themes-by-date="$themesByDate" />
                 </div>
             </div>
