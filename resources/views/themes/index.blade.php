@@ -62,7 +62,7 @@
                 <div class="md:grid md:grid-cols-[5rem_1fr] md:gap-x-10 lg:gap-x-14">
                     {{-- Date stamp column --}}
                     <div class="mb-6 md:mb-0">
-                        <x-theme-date-stamp :date="$firstOcc->start_date" />
+                        <x-theme-date-stamp :date="$firstOcc->start_date" :badge="$firstOcc->relativeBadge()" />
                     </div>
 
                     {{-- Themes column --}}

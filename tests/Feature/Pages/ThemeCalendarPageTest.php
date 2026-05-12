@@ -171,4 +171,34 @@ class ThemeCalendarPageTest extends TestCase
         $this->assertSame('Licht binnen', $monthIntro['title']);
         $response->assertSee('Licht binnen')->assertSee('Vaders worden gevierd');
     }
+
+    public function test_today_theme_renders_vandaag_badge(): void
+    {
+        Carbon::setTestNow('2026-06-21 09:00:00');
+
+        $theme = Theme::factory()->create(['title' => 'Wereldyogadag']);
+        ThemeOccurrence::factory()->for($theme)->create([
+            'year' => 2026, 'start_date' => '2026-06-21',
+        ]);
+
+        $response = $this->get(route('themes.index', ['maand' => '2026-06']));
+        $response->assertSee('Vandaag');
+
+        Carbon::setTestNow();
+    }
+
+    public function test_tomorrow_theme_renders_morgen_badge(): void
+    {
+        Carbon::setTestNow('2026-06-20 09:00:00');
+
+        $theme = Theme::factory()->create(['title' => 'Wereldyogadag']);
+        ThemeOccurrence::factory()->for($theme)->create([
+            'year' => 2026, 'start_date' => '2026-06-21',
+        ]);
+
+        $response = $this->get(route('themes.index', ['maand' => '2026-06']));
+        $response->assertSee('Morgen');
+
+        Carbon::setTestNow();
+    }
 }
