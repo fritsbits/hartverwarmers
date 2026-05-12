@@ -63,7 +63,7 @@
             @foreach($seasonThemes as $theme)
                 @php($occ = $theme->occurrences->first())
                 <div id="thema-{{ $theme->slug }}"
-                     class="bg-[var(--color-bg-accent-light)] border border-[var(--color-border-light)] rounded-lg px-6 py-5">
+                     class="scroll-mt-24 bg-[var(--color-bg-accent-light)] border border-[var(--color-border-light)] rounded-lg px-6 py-5">
                     <div class="flex items-baseline justify-between gap-4 flex-wrap">
                         <h2 class="text-2xl font-heading font-bold">{{ $theme->title }}</h2>
                         @if($occ)
@@ -91,7 +91,7 @@
                         @foreach($themesOnDate as $theme)
                             @php($occ = $theme->occurrences->first())
                             @php($isRange = $occ && $occ->end_date && ! $occ->end_date->equalTo($occ->start_date))
-                            <article id="thema-{{ $theme->slug }}">
+                            <article id="thema-{{ $theme->slug }}" class="scroll-mt-24">
                                 <div class="flex items-baseline gap-3 flex-wrap mb-3">
                                     <h2 class="text-3xl font-heading font-bold leading-tight text-balance">{{ $theme->title }}</h2>
                                     @if($isRange)
