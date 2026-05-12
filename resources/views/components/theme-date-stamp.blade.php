@@ -15,15 +15,15 @@
         @endif
         <div class="px-2 py-2 text-center">
             <div class="font-body text-[9px] font-semibold uppercase tracking-wide
-                {{ $isToday ? 'text-white/85' : 'text-[var(--color-text-tertiary)]' }}">
+                {{ $isToday ? 'text-white/85' : 'text-[var(--color-text-secondary)]' }}">
                 {{ $d->translatedFormat('l') }}
             </div>
             <div class="font-heading font-bold text-4xl tabular-nums leading-none mt-1
                 {{ $isToday ? 'text-white' : 'text-[var(--color-primary)]' }}">
                 {{ $d->translatedFormat('j') }}
             </div>
-            <div class="font-body text-[11px] lowercase mt-1
-                {{ $isToday ? 'text-white/85' : 'text-[var(--color-text-tertiary)]' }}">
+            <div class="font-body text-[11px] lowercase mt-0.5
+                {{ $isToday ? 'text-white/85' : 'text-[var(--color-text-secondary)]' }}">
                 {{ $d->translatedFormat('F') }}
             </div>
         </div>
