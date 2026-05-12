@@ -29,8 +29,8 @@
                     <h1 class="text-6xl mt-2 font-heading font-bold leading-none">{{ $monthLabel }}</h1>
 
                     @if(! empty($monthIntro))
-                        <div class="mt-10 max-w-2xl">
-                            <h2 class="font-heading font-bold text-2xl text-[var(--color-text-primary)]">{{ $monthIntro['title'] }}</h2>
+                        <div class="mt-10 max-w-xl border-l-2 border-[var(--color-primary)] pl-5">
+                            <h2 class="font-heading font-bold text-2xl text-[var(--color-text-primary)] leading-tight">{{ $monthIntro['title'] }}</h2>
                             <p class="text-base text-[var(--color-text-secondary)] mt-3 leading-relaxed">{{ $monthIntro['intro'] }}</p>
                         </div>
                     @endif
