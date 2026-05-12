@@ -13,10 +13,12 @@ class ThemeOccurrenceFactory extends Factory
 {
     public function definition(): array
     {
+        $start = fake()->dateTimeBetween('2020-01-01', '2030-12-31');
+
         return [
             'theme_id' => Theme::factory(),
-            'year' => 2026,
-            'start_date' => '2026-06-21',
+            'year' => (int) $start->format('Y'),
+            'start_date' => $start->format('Y-m-d'),
             'end_date' => null,
         ];
     }
