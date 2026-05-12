@@ -131,6 +131,8 @@
         </section>
     @endif
 
+    <x-home-upcoming-themes :themes="$upcomingThemes" />
+
     <!-- Recent Fiches -->
     @if($recentFiches->isNotEmpty())
         <section class="bg-[var(--color-bg-base)]">

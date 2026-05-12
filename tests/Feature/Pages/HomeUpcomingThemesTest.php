@@ -80,4 +80,25 @@ class HomeUpcomingThemesTest extends TestCase
         $upcoming = $this->get(route('home'))->viewData('upcomingThemes');
         $this->assertTrue($upcoming->pluck('theme.title')->contains('Active'));
     }
+
+    public function test_block_renders_with_links_and_calendar_cta(): void
+    {
+        $theme = Theme::factory()->create(['title' => 'Wereldyogadag', 'slug' => 'wereldyogadag']);
+        ThemeOccurrence::factory()->for($theme)->create([
+            'year' => 2026, 'start_date' => '2026-06-21',
+        ]);
+
+        $response = $this->get(route('home'));
+        $response->assertSee('Binnenkort')
+            ->assertSee('Wereldyogadag')
+            ->assertSee('21 juni')
+            ->assertSee(route('themes.index', ['maand' => '2026-06']).'#thema-wereldyogadag')
+            ->assertSee(route('themes.index'));
+    }
+
+    public function test_block_is_hidden_when_no_upcoming_themes(): void
+    {
+        $response = $this->get(route('home'));
+        $response->assertDontSee('Binnenkort');
+    }
 }
