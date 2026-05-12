@@ -131,7 +131,7 @@
         </section>
     @endif
 
-    <x-home-upcoming-themes :themes="$upcomingThemes" />
+    <x-home-upcoming-themes :themes="$upcomingThemes" :month="$upcomingMonth" :themes-by-date="$upcomingThemesByDate" />
 
     <!-- Recent Fiches -->
     @if($recentFiches->isNotEmpty())

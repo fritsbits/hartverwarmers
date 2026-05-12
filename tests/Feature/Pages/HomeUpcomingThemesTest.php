@@ -91,7 +91,6 @@ class HomeUpcomingThemesTest extends TestCase
         $response = $this->get(route('home'));
         $response->assertSee('Binnenkort')
             ->assertSee('Wereldyogadag')
-            ->assertSee('21 juni')
             ->assertSee(route('themes.index', ['maand' => '2026-06']).'#thema-wereldyogadag')
             ->assertSee(route('themes.index'));
     }

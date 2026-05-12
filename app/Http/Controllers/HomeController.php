@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Fiche;
 use App\Models\Initiative;
+use App\Models\Theme;
 use App\Models\ThemeOccurrence;
 use App\Models\User;
 use App\Services\DiamantService;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -108,6 +110,26 @@ class HomeController extends Controller
                 ->get()
         );
 
+        $upcomingMonth = $upcomingThemes->isNotEmpty()
+            ? CarbonImmutable::createFromInterface($upcomingThemes->first()->start_date)->startOfMonth()
+            : CarbonImmutable::now('Europe/Brussels')->startOfMonth();
+
+        $upcomingThemesByDate = Theme::query()
+            ->forMonth($upcomingMonth->year, $upcomingMonth->month)
+            ->with([
+                'occurrences' => fn ($q) => $q->where('year', $upcomingMonth->year),
+                'fiches' => fn ($q) => $q->published(),
+            ])
+            ->get()
+            ->filter(fn (Theme $t) => $t->occurrences->first() !== null)
+            ->groupBy(fn (Theme $t) => $t->occurrences->first()->start_date->format('Y-m-d'))
+            ->map(fn ($group) => $group->map(fn (Theme $t) => [
+                'slug' => $t->slug,
+                'title' => $t->title,
+                'fiche_count' => $t->fiches->count(),
+            ])->values()->all())
+            ->all();
+
         return view('home', [
             'initiatives' => $initiatives,
             'goals' => $eligibleGoals,
@@ -117,6 +139,8 @@ class HomeController extends Controller
             'diamonds' => $diamonds,
             'stats' => $stats,
             'upcomingThemes' => $upcomingThemes,
+            'upcomingMonth' => $upcomingMonth,
+            'upcomingThemesByDate' => $upcomingThemesByDate,
         ]);
     }
 }
