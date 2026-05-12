@@ -408,50 +408,6 @@
         "mediteer-met-bewoners-of-medewerkers",
         "lichaamsgerichte-activiteiten"
       ]
-    },
-    {
-      "title": "Zomer",
-      "slug": "zomer",
-      "description": "In de zomer vieren we de overgang van de lente naar de herfst en genieten we van het warmere weer en de bloeiende natuur.",
-      "is_month": true,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 06-21",
-      "fiche_slugs": [
-        "brein-fitness-de-zomer-editie",
-        "breinfitness-de-zomer-editie",
-        "we-gaan-op-reis",
-        "ik-ga-op-vakantie-en-ik-neem-mee",
-        "speel-spel-ik-ga-op-reis-en-ik-neem-mee",
-        "thuis-op-citytrip-gaan",
-        "organiseer-barbecues-voor-je-leefgroepen",
-        "huur-een-natuurrugzak",
-        "bekijk-live-natuurbeelden-op-youtube",
-        "sensorische-activiteit-diep-in-de-zee",
-        "belevingsmoment-onderwaterwereld",
-        "apero",
-        "high-tea-afternoon",
-        "wandelen-tussen-de-lichtjes-in-eigen-tuin"
-      ]
-    },
-    {
-      "title": "Zomerfestivals",
-      "slug": "zomerfestivals",
-      "description": "Tijdens de zomer vieren we verschillende festivals waarop we genieten van muziek, kunst en cultuur en het gezellige samenzijn.",
-      "is_month": true,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 07-01",
-      "fiche_slugs": [
-        "organiseer-een-buiten-optreden",
-        "organiseer-een-smoutebollenbak",
-        "stel-ruimte-ter-beschikking-voor-muziekverenigingen",
-        "muziekquiz",
-        "muziekkwis",
-        "swingo-bingo-met-muziek",
-        "apero",
-        "casinonamiddag",
-        "radio-gagavere",
-        "zingen-en-luisteren-in-cafe-chantant"
-      ]
     }
   ],
   "occurrences_2026": [
@@ -522,12 +478,6 @@
       "end_date": null
     },
     {
-      "theme_slug": "zomer",
-      "year": 2026,
-      "start_date": "2026-06-21",
-      "end_date": null
-    },
-    {
       "theme_slug": "wereldyogadag",
       "year": 2026,
       "start_date": "2026-06-21",
@@ -543,12 +493,6 @@
       "theme_slug": "nationale-kappersdag",
       "year": 2026,
       "start_date": "2026-06-30",
-      "end_date": null
-    },
-    {
-      "theme_slug": "zomerfestivals",
-      "year": 2026,
-      "start_date": "2026-07-01",
       "end_date": null
     },
     {
