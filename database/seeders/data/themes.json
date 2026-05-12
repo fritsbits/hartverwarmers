@@ -1,0 +1,468 @@
+{
+  "themes": [
+    {
+      "title": "Bloeddonordag",
+      "slug": "bloeddonordag",
+      "description": "Bloeddonordag is een dag in het teken van het belang van bloeddonoren. We zetten ons dan in voor hun erkenning en waardering en voor het werven van nieuwe bloeddonoren.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 06-14"
+    },
+    {
+      "title": "Dag tegen ouderenmisbehandeling",
+      "slug": "dag-tegen-ouderenmisbehandeling",
+      "description": "Op de Dag tegen ouderenmisbehandeling staan we stil bij het belang van goede zorg voor ouderen en zetten we ons in tegen ouderenmisbehandeling.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 06-15"
+    },
+    {
+      "title": "Dag van de animator",
+      "slug": "dag-van-de-animator",
+      "description": "Dag van de animator staat in het teken van animators. We zetten ons in voor hun creativiteit en professionele vaardigheden en voor de positieve impact van hun werk.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 07-27"
+    },
+    {
+      "title": "Dag van de buren",
+      "slug": "dag-van-de-buren",
+      "description": "Dag van de buren is een dag waarop we stilstaan bij het belang van buurtbewoners en ons inzetten voor hun betrokkenheid en samenwerking en voor een gezonde en veilige buurt.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 05-26"
+    },
+    {
+      "title": "Dag van de culturele diversiteit",
+      "slug": "dag-van-de-culturele-diversiteit",
+      "description": "Dag van de culturele diversiteit is een dag waarop we stilstaan bij het belang van culturele verschillen en ons inzetten voor hun respect en waardering en voor een inclusieve samenleving.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 05-21"
+    },
+    {
+      "title": "Dag van de fotografie",
+      "slug": "dag-van-de-fotografie",
+      "description": "Wereldfotografiedag: samen fotoalbums bekijken, herinneringen ophalen, levensverhalen vertellen aan de hand van oude fotos.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: 08-19"
+    },
+    {
+      "title": "Dag van de jeugd",
+      "slug": "dag-van-de-jeugd",
+      "description": "Op Dag van de jeugd vieren we de talenten en aspiraties van jongeren en zetten we ons in voor hun ontwikkeling en betrokkenheid bij onze samenleving.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 08-12"
+    },
+    {
+      "title": "Dag van de linkshandigen",
+      "slug": "dag-van-de-linkshandigen",
+      "description": "Op Dag van de linkshandigen eren we linkshandigen en zetten we ons in voor hun erkenning en waardering en voor gelijkheid van kansen en mogelijkheden voor linkshandigen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 08-13"
+    },
+    {
+      "title": "Dag van de mantelzorger",
+      "slug": "dag-van-de-mantelzorger",
+      "description": "Op de Dag van de mantelzorger eren we mensen die mantelzorg verlenen en zetten we ons in voor hun erkenning en waardering en voor ondersteuning in hun taak.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 06-23"
+    },
+    {
+      "title": "Dag van de senioren",
+      "slug": "dag-van-de-senioren",
+      "description": "Dag van de senioren: bewoners in de kijker, hun wijsheid en levenservaring vieren.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: 08-21"
+    },
+    {
+      "title": "Dag van de verpleegkundige",
+      "slug": "dag-van-de-verpleegkundige",
+      "description": "Dag van de verpleegkundige is een dag waarop we stilstaan bij het belang van verpleegkundigen en ons inzetten voor hun erkenning en waardering en voor hun professionele ontwikkeling en welzijn.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 05-12"
+    },
+    {
+      "title": "French Fries Day",
+      "slug": "french-fries-day",
+      "description": "Op French Fries Day vieren we het lekkere en populaire gerecht van frietjes en zetten we ons in voor de creativiteit en diversiteit in hun bereiding en serveren.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 07-13"
+    },
+    {
+      "title": "Internationale dag van de vriendschap",
+      "slug": "internationale-dag-van-de-vriendschap",
+      "description": "We vieren de waarde van vriendschap en zetten ons in voor het onderhouden en uitbreiden van onze vriendschappen en sociale netwerken.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 07-30"
+    },
+    {
+      "title": "Internationale dag van het bier",
+      "slug": "internationale-dag-van-het-bier",
+      "description": "Op Internationale dag van het bier vieren we de rijke traditie en smaak van bier en zetten we ons in voor de erkenning en waardering van brouwers en hun bieren.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 08-05"
+    },
+    {
+      "title": "Internationale kattendag",
+      "slug": "internationale-kattendag",
+      "description": "Op Internationale kattendag eren we katten en zetten we ons in voor hun welzijn en de positieve impact van hun aanwezigheid op ons leven.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 08-08"
+    },
+    {
+      "title": "Moederdag (Antwerpen)",
+      "slug": "moederdag-antwerpen",
+      "description": "We eren onze moeders en laten hen weten hoeveel we van ze houden en waarderen door ze cadeaus te geven en speciale gebaren te maken.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Aug 15 (Maria Hemelvaart)"
+    },
+    {
+      "title": "Nationale Frietjesdag",
+      "slug": "nationale-frietjesdag",
+      "description": "We vieren de heerlijke smaak van frietjes en zetten ons in voor hun gezonde opties en de creativiteit in hun bereiding.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 08-01"
+    },
+    {
+      "title": "Nationale feestdag",
+      "slug": "nationale-feestdag",
+      "description": "Op de Nationale feestdag vieren we onze nationale identiteit en waarden en zetten we ons in voor eenheid en vrede binnen ons land en met andere landen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 07-21"
+    },
+    {
+      "title": "Nationale kappersdag",
+      "slug": "nationale-kappersdag",
+      "description": "Op Nationale kappersdag eren we kappers en zetten we ons in voor hun erkenning en waardering en voor hun bijdragen aan ons uiterlijk en welzijn.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 06-30"
+    },
+    {
+      "title": "Onze Lieve Heer Hemelvaart",
+      "slug": "onze-lieve-heer-hemelvaart",
+      "description": "Onze Lieve Heer Hemelvaart is een katholieke en christelijke feestdag die wordt gevierd om de hemelvaart van Jezus naar de hemel te herdenken en te vieren.",
+      "is_month": false,
+      "recurrence_rule": "easter",
+      "recurrence_detail": "Easter + 39 days (Thu)"
+    },
+    {
+      "title": "Pinksteren",
+      "slug": "pinksteren",
+      "description": "Pinksteren is een katholieke en christelijke feestdag die wordt gevierd om de komst van de Heilige Geest op de apostelen te herdenken en te vieren.",
+      "is_month": false,
+      "recurrence_rule": "easter",
+      "recurrence_detail": "Easter + 49 days"
+    },
+    {
+      "title": "Ronde van Frankrijk",
+      "slug": "ronde-van-frankrijk",
+      "description": "De Ronde van Frankrijk is een prestigieuze wielerwedstrijd waaraan professionele renners uit verschillende landen deelnemen en die plaatsvindt in Frankrijk.",
+      "is_month": true,
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Tour de France ~first 3 weeks of July"
+    },
+    {
+      "title": "Vaderdag",
+      "slug": "vaderdag",
+      "description": "Vaderdag is een dag waarop we onze vaders eren en laten weten hoeveel we van ze houden en waarderen door ze cadeaus te geven en speciale gebaren te maken.",
+      "is_month": false,
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "2nd Sunday of June"
+    },
+    {
+      "title": "Vaderdag (NL)",
+      "slug": "vaderdag-nl",
+      "description": "Op Vaderdag in Nederland eren we onze vaders en laten we ze weten hoeveel we van ze houden en waarderen door ze cadeaus te geven en speciale gebaren te maken.",
+      "is_month": false,
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "2nd Sunday of June"
+    },
+    {
+      "title": "Vlaamse feestdag",
+      "slug": "vlaamse-feestdag",
+      "description": "Op de Vlaamse feestdag vieren we de Vlaamse cultuur en taal en zetten we ons in voor hun behoud en uitbreiding.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 07-11"
+    },
+    {
+      "title": "Wereld Bijendag",
+      "slug": "wereld-bijendag",
+      "description": "Wereld Bijendag is een dag waarop we stilstaan bij het belang van bijen en hun rol in de natuur en ons inzetten voor hun behoud en bescherming.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 05-20"
+    },
+    {
+      "title": "Wereld Chocoladedag",
+      "slug": "wereld-chocoladedag",
+      "description": "Op Wereld Chocoladedag vieren we de heerlijke smaak van chocolade en zetten we ons in voor haar gezonde eigenschappen en de duurzame productie ervan.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 07-07"
+    },
+    {
+      "title": "Wereld MS-dag",
+      "slug": "wereld-ms-dag",
+      "description": "Wereld MS-dag is een dag waarop we stilstaan bij het belang van mensen met multiple sclerose (MS) en ons inzetten voor hun erkenning en waardering en voor onderzoek naar de oorzaken en behandeling van MS.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 05-30"
+    },
+    {
+      "title": "Wereld humanitaire dag",
+      "slug": "wereld-humanitaire-dag",
+      "description": "Wereld humanitaire dag: verhalen delen over solidariteit, vrijwilligerswerk en menselijkheid.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: 08-19"
+    },
+    {
+      "title": "Wereldemojidag 😄",
+      "slug": "wereldemojidag",
+      "description": "Op Wereldemojidag 😄 vieren we de emoticons die ons leven gemakkelijker en leuker maken en zetten we ons in voor hun gebruik en toepassing in communicatie en expressie.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 07-17"
+    },
+    {
+      "title": "Wereldyogadag",
+      "slug": "wereldyogadag",
+      "description": "Op Wereldyogadag vieren we de kracht van yoga en zetten we ons in voor zijn gezondheid en welzijnseffecten en voor zijn toegankelijkheid voor iedereen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 06-21"
+    },
+    {
+      "title": "Zomer",
+      "slug": "zomer",
+      "description": "In de zomer vieren we de overgang van de lente naar de herfst en genieten we van het warmere weer en de bloeiende natuur.",
+      "is_month": true,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 06-21"
+    },
+    {
+      "title": "Zomerfestivals",
+      "slug": "zomerfestivals",
+      "description": "Tijdens de zomer vieren we verschillende festivals waarop we genieten van muziek, kunst en cultuur en het gezellige samenzijn.",
+      "is_month": true,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 07-01"
+    }
+  ],
+  "occurrences_2026": [
+    {
+      "theme_slug": "dag-van-de-verpleegkundige",
+      "year": 2026,
+      "start_date": "2026-05-12",
+      "end_date": null
+    },
+    {
+      "theme_slug": "onze-lieve-heer-hemelvaart",
+      "year": 2026,
+      "start_date": "2026-05-14",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-bijendag",
+      "year": 2026,
+      "start_date": "2026-05-20",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-culturele-diversiteit",
+      "year": 2026,
+      "start_date": "2026-05-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "pinksteren",
+      "year": 2026,
+      "start_date": "2026-05-24",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-buren",
+      "year": 2026,
+      "start_date": "2026-05-26",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-ms-dag",
+      "year": 2026,
+      "start_date": "2026-05-30",
+      "end_date": null
+    },
+    {
+      "theme_slug": "vaderdag",
+      "year": 2026,
+      "start_date": "2026-06-14",
+      "end_date": null
+    },
+    {
+      "theme_slug": "bloeddonordag",
+      "year": 2026,
+      "start_date": "2026-06-14",
+      "end_date": null
+    },
+    {
+      "theme_slug": "vaderdag-nl",
+      "year": 2026,
+      "start_date": "2026-06-14",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-tegen-ouderenmisbehandeling",
+      "year": 2026,
+      "start_date": "2026-06-15",
+      "end_date": null
+    },
+    {
+      "theme_slug": "zomer",
+      "year": 2026,
+      "start_date": "2026-06-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereldyogadag",
+      "year": 2026,
+      "start_date": "2026-06-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-mantelzorger",
+      "year": 2026,
+      "start_date": "2026-06-23",
+      "end_date": null
+    },
+    {
+      "theme_slug": "nationale-kappersdag",
+      "year": 2026,
+      "start_date": "2026-06-30",
+      "end_date": null
+    },
+    {
+      "theme_slug": "zomerfestivals",
+      "year": 2026,
+      "start_date": "2026-07-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "ronde-van-frankrijk",
+      "year": 2026,
+      "start_date": "2026-07-04",
+      "end_date": "2026-07-26"
+    },
+    {
+      "theme_slug": "wereld-chocoladedag",
+      "year": 2026,
+      "start_date": "2026-07-07",
+      "end_date": null
+    },
+    {
+      "theme_slug": "vlaamse-feestdag",
+      "year": 2026,
+      "start_date": "2026-07-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "french-fries-day",
+      "year": 2026,
+      "start_date": "2026-07-13",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereldemojidag",
+      "year": 2026,
+      "start_date": "2026-07-17",
+      "end_date": null
+    },
+    {
+      "theme_slug": "nationale-feestdag",
+      "year": 2026,
+      "start_date": "2026-07-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-animator",
+      "year": 2026,
+      "start_date": "2026-07-27",
+      "end_date": null
+    },
+    {
+      "theme_slug": "internationale-dag-van-de-vriendschap",
+      "year": 2026,
+      "start_date": "2026-07-30",
+      "end_date": null
+    },
+    {
+      "theme_slug": "nationale-frietjesdag",
+      "year": 2026,
+      "start_date": "2026-08-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "internationale-dag-van-het-bier",
+      "year": 2026,
+      "start_date": "2026-08-05",
+      "end_date": null
+    },
+    {
+      "theme_slug": "internationale-kattendag",
+      "year": 2026,
+      "start_date": "2026-08-08",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-jeugd",
+      "year": 2026,
+      "start_date": "2026-08-12",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-linkshandigen",
+      "year": 2026,
+      "start_date": "2026-08-13",
+      "end_date": null
+    },
+    {
+      "theme_slug": "moederdag-antwerpen",
+      "year": 2026,
+      "start_date": "2026-08-15",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-fotografie",
+      "year": 2026,
+      "start_date": "2026-08-19",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-humanitaire-dag",
+      "year": 2026,
+      "start_date": "2026-08-19",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-senioren",
+      "year": 2026,
+      "start_date": "2026-08-21",
+      "end_date": null
+    }
+  ]
+}
