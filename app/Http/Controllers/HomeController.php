@@ -108,21 +108,23 @@ class HomeController extends Controller
             ? CarbonImmutable::createFromInterface($upcomingThemes->first()->start_date)->startOfMonth()
             : CarbonImmutable::now('Europe/Brussels')->startOfMonth();
 
-        $upcomingThemesByDate = Theme::query()
-            ->forMonth($upcomingMonth->year, $upcomingMonth->month)
-            ->with([
-                'occurrences' => fn ($q) => $q->where('year', $upcomingMonth->year),
-                'fiches' => fn ($q) => $q->published(),
-            ])
-            ->get()
-            ->filter(fn (Theme $t) => $t->occurrences->first() !== null)
-            ->groupBy(fn (Theme $t) => $t->occurrences->first()->start_date->format('Y-m-d'))
-            ->map(fn ($group) => $group->map(fn (Theme $t) => [
-                'slug' => $t->slug,
-                'title' => $t->title,
-                'fiche_count' => $t->fiches->count(),
-            ])->values()->all())
-            ->all();
+        $upcomingThemesByDate = Cache::remember(
+            'home:themes-by-date:'.$upcomingMonth->format('Y-m'),
+            now()->addMinutes(15),
+            fn () => Theme::query()
+                ->forMonth($upcomingMonth->year, $upcomingMonth->month)
+                ->with(['occurrences' => fn ($q) => $q->where('year', $upcomingMonth->year)])
+                ->withCount(['fiches' => fn ($q) => $q->published()])
+                ->get()
+                ->filter(fn (Theme $t) => $t->occurrences->first() !== null)
+                ->groupBy(fn (Theme $t) => $t->occurrences->first()->start_date->format('Y-m-d'))
+                ->map(fn ($group) => $group->map(fn (Theme $t) => [
+                    'slug' => $t->slug,
+                    'title' => $t->title,
+                    'fiche_count' => $t->fiches_count,
+                ])->values()->all())
+                ->all()
+        );
 
         return view('home', [
             'initiatives' => $initiatives,

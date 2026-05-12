@@ -107,7 +107,7 @@
 
                                 @if($theme->fiches->isNotEmpty())
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                                        @foreach($theme->fiches as $fiche)
+                                        @foreach($theme->fiches->take(6) as $fiche)
                                             <x-fiche-card :fiche="$fiche" />
                                         @endforeach
                                     </div>

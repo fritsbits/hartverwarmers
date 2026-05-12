@@ -6,6 +6,7 @@ use App\Models\Theme;
 use App\Services\JsonContent;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class ThemeController extends Controller
@@ -14,14 +15,19 @@ class ThemeController extends Controller
     {
         $month = $this->parseMonth($request->query('maand'));
 
-        $themes = Theme::query()
-            ->forMonth($month->year, $month->month)
-            ->with([
-                'occurrences' => fn ($q) => $q->where('year', $month->year),
-                'fiches' => fn ($q) => $q->published()->with('initiative', 'user', 'tags', 'files')->withCount('comments')->take(6),
-            ])
-            ->get()
-            ->sortBy(fn (Theme $t) => optional($t->occurrences->first())->start_date);
+        $themes = Cache::remember(
+            'themes:index:'.$month->format('Y-m'),
+            now()->addMinutes(15),
+            fn () => Theme::query()
+                ->forMonth($month->year, $month->month)
+                ->with([
+                    'occurrences' => fn ($q) => $q->where('year', $month->year),
+                    'fiches' => fn ($q) => $q->published()->with('initiative', 'user')->withCount('comments'),
+                ])
+                ->get()
+                ->sortBy(fn (Theme $t) => optional($t->occurrences->first())->start_date)
+                ->values()
+        );
 
         [$seasonThemes, $dayThemes] = $themes->partition(fn (Theme $t) => $t->is_month);
 
@@ -54,7 +60,10 @@ class ThemeController extends Controller
      */
     private function loadMonthIntro(int $month): ?array
     {
-        $all = JsonContent::getContent('themes/monthly-intros');
+        $all = Cache::rememberForever(
+            'themes:monthly-intros',
+            fn () => JsonContent::getContent('themes/monthly-intros') ?: []
+        );
         if (! is_array($all) || ! isset($all[(string) $month])) {
             return null;
         }

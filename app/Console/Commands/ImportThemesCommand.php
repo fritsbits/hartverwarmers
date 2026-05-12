@@ -139,6 +139,14 @@ class ImportThemesCommand extends Command
 
         if (! $dryRun) {
             Cache::forget('home:upcoming-themes:'.today()->toDateString());
+            Cache::forget('themes:monthly-intros');
+            // Page-level theme caches (15-min TTL) — flush all month variants
+            foreach (range(2024, 2030) as $y) {
+                for ($m = 1; $m <= 12; $m++) {
+                    Cache::forget('themes:index:'.sprintf('%d-%02d', $y, $m));
+                    Cache::forget('home:themes-by-date:'.sprintf('%d-%02d', $y, $m));
+                }
+            }
         }
 
         $this->newLine();
