@@ -69,4 +69,15 @@ class ThemeScopeTest extends TestCase
 
         $this->assertCount(1, Theme::forMonth(2026, 6)->get());
     }
+
+    public function test_for_month_includes_occurrence_spanning_entire_month(): void
+    {
+        $theme = Theme::factory()->create(['title' => 'Zomervakantie']);
+        ThemeOccurrence::factory()->for($theme)->create([
+            'year' => 2026, 'start_date' => '2026-06-15', 'end_date' => '2026-09-01',
+        ]);
+
+        $this->assertTrue(Theme::forMonth(2026, 7)->get()->contains($theme));
+        $this->assertTrue(Theme::forMonth(2026, 8)->get()->contains($theme));
+    }
 }
