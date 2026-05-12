@@ -45,17 +45,13 @@
     <div class="bg-[var(--color-bg-cream)] border-b border-[var(--color-border-light)]">
         <div class="max-w-6xl mx-auto px-6 py-3 flex items-center {{ $showPrev ? 'justify-between' : 'justify-end' }}">
             @if($showPrev)
-                <a href="{{ route('themes.index', ['maand' => $prevMonth->format('Y-m')]) }}"
-                   class="inline-flex items-center gap-2 bg-[var(--color-bg-white)] border border-[var(--color-border-hover)] rounded-full px-5 py-2 text-sm font-semibold text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] active:scale-[0.96] shadow-[0_1px_2px_rgba(35,30,26,0.06)] hover:shadow-[0_4px_10px_-2px_rgba(35,30,26,0.12)] transition-[color,border-color,box-shadow,transform] duration-150">
-                    <span aria-hidden="true">←</span>
-                    <span>{{ $prevMonthLabel }}</span>
-                </a>
+                <flux:button variant="filled" icon="arrow-left" :href="route('themes.index', ['maand' => $prevMonth->format('Y-m')])">
+                    {{ $prevMonthLabel }}
+                </flux:button>
             @endif
-            <a href="{{ route('themes.index', ['maand' => $nextMonth->format('Y-m')]) }}"
-               class="inline-flex items-center gap-2 bg-[var(--color-bg-white)] border border-[var(--color-border-hover)] rounded-full px-5 py-2 text-sm font-semibold text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] active:scale-[0.96] shadow-[0_1px_2px_rgba(35,30,26,0.06)] hover:shadow-[0_4px_10px_-2px_rgba(35,30,26,0.12)] transition-[color,border-color,box-shadow,transform] duration-150">
-                <span>{{ $nextMonthLabel }}</span>
-                <span aria-hidden="true">→</span>
-            </a>
+            <flux:button variant="filled" icon:trailing="arrow-right" :href="route('themes.index', ['maand' => $nextMonth->format('Y-m')])">
+                {{ $nextMonthLabel }}
+            </flux:button>
         </div>
     </div>
 
@@ -142,18 +138,15 @@
             </div>
 
             {{-- Footer nav --}}
-            <div class="flex items-center justify-between pt-8 border-t border-[var(--color-border-light)] text-base">
+            <div class="flex items-center {{ $showPrev ? 'justify-between' : 'justify-end' }} pt-8 border-t border-[var(--color-border-light)]">
                 @if($showPrev)
-                    <a href="{{ route('themes.index', ['maand' => $prevMonth->format('Y-m')]) }}"
-                       class="font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
-                        ← {{ $prevMonthLabel }}
-                    </a>
-                @else
-                    <span></span>
+                    <flux:button variant="filled" icon="arrow-left" :href="route('themes.index', ['maand' => $prevMonth->format('Y-m')])">
+                        {{ $prevMonthLabel }}
+                    </flux:button>
                 @endif
-                <a href="{{ route('themes.index', ['maand' => $nextMonth->format('Y-m')]) }}" class="cta-link">
+                <flux:button variant="filled" icon:trailing="arrow-right" :href="route('themes.index', ['maand' => $nextMonth->format('Y-m')])">
                     {{ $nextMonthLabel }}
-                </a>
+                </flux:button>
             </div>
         </div>
     </section>
