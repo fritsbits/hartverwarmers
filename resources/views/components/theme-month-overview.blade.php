@@ -10,7 +10,7 @@
     $monthLabel = $month->locale('nl_BE')->translatedFormat('F Y');
 @endphp
 
-<div class="select-none w-60 -rotate-[0.5deg] bg-[var(--color-bg-white)] border border-[var(--color-border-light)] rounded-md shadow-[0_1px_2px_rgba(35,30,26,0.04),0_8px_16px_-4px_rgba(35,30,26,0.08),0_24px_48px_-12px_rgba(35,30,26,0.14)] overflow-hidden">
+<div class="select-none w-60 rotate-[1deg] bg-[var(--color-bg-white)] border border-[var(--color-border-light)] rounded-md shadow-[0_1px_2px_rgba(35,30,26,0.04),0_8px_16px_-4px_rgba(35,30,26,0.08),0_24px_48px_-12px_rgba(35,30,26,0.14)] overflow-hidden">
     {{-- Orange month band (acts as the real 'header' of the calendar page) --}}
     <div class="bg-[var(--color-primary)] text-center px-4 py-2.5 relative">
         <div class="font-heading font-bold text-base text-white lowercase tabular-nums tracking-wide">
