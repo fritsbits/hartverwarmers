@@ -23,15 +23,22 @@
                 <flux:breadcrumbs.item>Themakalender</flux:breadcrumbs.item>
             </flux:breadcrumbs>
 
-            <span class="section-label section-label-hero">Themakalender</span>
-            <h1 class="text-6xl mt-2 font-heading font-bold leading-none">{{ $monthLabel }}</h1>
+            <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 items-start">
+                <div>
+                    <span class="section-label section-label-hero">Themakalender</span>
+                    <h1 class="text-6xl mt-2 font-heading font-bold leading-none">{{ $monthLabel }}</h1>
 
-            @if(! empty($monthIntro))
-                <div class="mt-10 max-w-2xl">
-                    <h2 class="font-heading font-bold text-2xl text-[var(--color-text-primary)]">{{ $monthIntro['title'] }}</h2>
-                    <p class="text-base text-[var(--color-text-secondary)] mt-3 leading-relaxed">{{ $monthIntro['intro'] }}</p>
+                    @if(! empty($monthIntro))
+                        <div class="mt-10 max-w-2xl">
+                            <h2 class="font-heading font-bold text-2xl text-[var(--color-text-primary)]">{{ $monthIntro['title'] }}</h2>
+                            <p class="text-base text-[var(--color-text-secondary)] mt-3 leading-relaxed">{{ $monthIntro['intro'] }}</p>
+                        </div>
+                    @endif
                 </div>
-            @endif
+                <div class="hidden lg:block">
+                    <x-theme-month-overview :month="$month" :dates-with-themes="$datesWithThemes" />
+                </div>
+            </div>
         </div>
     </section>
 

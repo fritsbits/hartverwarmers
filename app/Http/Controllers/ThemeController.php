@@ -25,11 +25,20 @@ class ThemeController extends Controller
 
         [$seasonThemes, $dayThemes] = $themes->partition(fn (Theme $t) => $t->is_month);
 
+        $datesWithThemes = $themes
+            ->flatMap(fn (Theme $t) => $t->occurrences->pluck('start_date'))
+            ->filter()
+            ->map(fn ($d) => $d->format('Y-m-d'))
+            ->unique()
+            ->values()
+            ->all();
+
         return view('themes.index', [
             'month' => $month,
             'monthIntro' => $this->loadMonthIntro($month->month),
             'seasonThemes' => $seasonThemes->values(),
             'dayThemes' => $dayThemes->values(),
+            'datesWithThemes' => $datesWithThemes,
         ]);
     }
 
