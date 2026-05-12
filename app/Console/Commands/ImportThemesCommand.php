@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enums\ThemeRecurrenceRule;
+use App\Models\Fiche;
 use App\Models\Theme;
 use App\Models\ThemeOccurrence;
 use Illuminate\Console\Command;
@@ -60,6 +61,31 @@ class ImportThemesCommand extends Command
                     }
                 }
 
+                foreach ($data['themes'] as $row) {
+                    if (! array_key_exists('fiche_slugs', $row)) {
+                        continue;
+                    }
+
+                    $theme = Theme::where('slug', $row['slug'])->first();
+                    $slugs = is_array($row['fiche_slugs']) ? array_values(array_filter($row['fiche_slugs'])) : [];
+
+                    if ($slugs === []) {
+                        $theme->fiches()->sync([]);
+
+                        continue;
+                    }
+
+                    $found = Fiche::whereIn('slug', $slugs)->pluck('id', 'slug');
+
+                    foreach ($slugs as $slug) {
+                        if (! $found->has($slug)) {
+                            $this->warn("Onbekende fiche-slug bij thema {$row['slug']}: {$slug}");
+                        }
+                    }
+
+                    $theme->fiches()->sync($found->values()->all());
+                }
+
                 foreach ($data as $key => $rows) {
                     if (! str_starts_with($key, 'occurrences_') || ! is_array($rows)) {
                         continue;
@@ -88,7 +114,7 @@ class ImportThemesCommand extends Command
         }
 
         $this->info(sprintf(
-            'Klaar. Thema\'s: %d aangemaakt, %d bijgewerkt. Occurrences: %d.',
+            'Klaar. Thema\'s: %d aangemaakt, %d bijgewerkt. Occurrences: %d. Fiche-links gesynchroniseerd voor thema\'s met fiche_slugs.',
             $stats['themes_created'], $stats['themes_updated'], $stats['occurrences_upserted'],
         ));
 

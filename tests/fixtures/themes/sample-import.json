@@ -6,7 +6,8 @@
       "description": "Op Wereldyogadag vieren we de kracht van yoga.",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 06-21"
+      "recurrence_detail": "Fixed: month-day 06-21",
+      "fiche_slugs": ["yoga-voor-bewoners", "stoel-yoga-quiz"]
     },
     {
       "title": "Zomer",
