@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ThemeRecurrenceRule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Theme extends Model
 {
@@ -25,5 +26,10 @@ class Theme extends Model
             'is_month' => 'boolean',
             'recurrence_rule' => ThemeRecurrenceRule::class,
         ];
+    }
+
+    public function occurrences(): HasMany
+    {
+        return $this->hasMany(ThemeOccurrence::class);
     }
 }
