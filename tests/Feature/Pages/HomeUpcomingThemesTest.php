@@ -70,7 +70,7 @@ class HomeUpcomingThemesTest extends TestCase
         $this->assertEquals(['Future'], $upcoming->pluck('theme.title')->all());
     }
 
-    public function test_includes_currently_active_multi_day(): void
+    public function test_excludes_currently_active_multi_day(): void
     {
         $active = Theme::factory()->create(['title' => 'Active']);
         ThemeOccurrence::factory()->for($active)->create([
@@ -78,7 +78,24 @@ class HomeUpcomingThemesTest extends TestCase
         ]);
 
         $upcoming = $this->get(route('home'))->viewData('upcomingThemes');
-        $this->assertTrue($upcoming->pluck('theme.title')->contains('Active'));
+        $this->assertFalse($upcoming->pluck('theme.title')->contains('Active'));
+    }
+
+    public function test_excludes_themes_starting_today(): void
+    {
+        // Carbon::setTestNow is '2026-05-12 09:00:00' from setUp, so today = 2026-05-12.
+        $todayTheme = Theme::factory()->create(['title' => 'Today only']);
+        ThemeOccurrence::factory()->for($todayTheme)->create([
+            'year' => 2026, 'start_date' => '2026-05-12',
+        ]);
+
+        $tomorrowTheme = Theme::factory()->create(['title' => 'Tomorrow']);
+        ThemeOccurrence::factory()->for($tomorrowTheme)->create([
+            'year' => 2026, 'start_date' => '2026-05-13',
+        ]);
+
+        $upcoming = $this->get(route('home'))->viewData('upcomingThemes');
+        $this->assertEquals(['Tomorrow'], $upcoming->pluck('theme.title')->all());
     }
 
     public function test_block_renders_with_links_and_calendar_cta(): void

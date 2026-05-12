@@ -92,18 +92,12 @@ class HomeController extends Controller
         ]);
 
         $today = today();
+        $tomorrow = $today->copy()->addDay()->toDateString();
         $upcomingThemes = Cache::remember(
             'home:upcoming-themes:'.$today->toDateString(),
             now()->addHour(),
             fn () => ThemeOccurrence::query()
-                ->where(function ($q) use ($today) {
-                    $q->where('start_date', '>=', $today)
-                        ->orWhere(function ($q2) use ($today) {
-                            $q2->where('start_date', '<', $today)
-                                ->whereNotNull('end_date')
-                                ->where('end_date', '>=', $today);
-                        });
-                })
+                ->where('start_date', '>=', $tomorrow)
                 ->orderBy('start_date')
                 ->with('theme')
                 ->limit(3)
