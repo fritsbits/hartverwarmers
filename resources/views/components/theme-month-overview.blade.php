@@ -8,19 +8,19 @@
     $monthLabel = $month->locale('nl_BE')->translatedFormat('F Y');
 @endphp
 
-<div class="select-none w-64 bg-[var(--color-bg-white)] border border-[var(--color-border-light)] rounded-md shadow-[0_6px_16px_-4px_rgba(35,30,26,0.12),0_2px_4px_rgba(35,30,26,0.06)] overflow-hidden">
+<div class="select-none w-60 bg-[var(--color-bg-white)] border border-[var(--color-border-light)] rounded-md shadow-[0_1px_2px_rgba(35,30,26,0.04),0_8px_16px_-4px_rgba(35,30,26,0.08),0_24px_48px_-12px_rgba(35,30,26,0.14)] overflow-hidden">
     {{-- Paper header --}}
-    <div class="text-center px-4 pt-4 pb-3 border-b border-[var(--color-border-light)]">
+    <div class="text-center px-4 pt-3 pb-2 border-b border-[var(--color-border-light)]">
         <div class="font-heading font-bold text-base text-[var(--color-primary)] lowercase tabular-nums">
             {{ $monthLabel }}
         </div>
     </div>
 
     {{-- Calendar grid --}}
-    <div class="px-4 pt-3 pb-4">
-        <div class="grid grid-cols-7 gap-y-1.5 text-center">
+    <div class="px-4 pt-2 pb-3">
+        <div class="grid grid-cols-7 gap-y-1 text-center">
             @foreach(['ma','di','wo','do','vr','za','zo'] as $wd)
-                <div class="text-[10px] uppercase tracking-widest text-[var(--color-text-tertiary)] font-semibold pb-2">{{ $wd }}</div>
+                <div class="text-[10px] uppercase tracking-widest text-[var(--color-text-tertiary)] font-semibold pb-1">{{ $wd }}</div>
             @endforeach
             @for($i = 0; $i < $leadingEmpty; $i++)
                 <div></div>
@@ -46,7 +46,7 @@
                         $href = route('themes.index', ['maand' => $month->format('Y-m')]).'#thema-'.$first_slug;
                     }
 
-                    $cellClass = 'inline-flex items-center justify-center w-8 h-8 text-xs tabular-nums leading-none rounded-full transition-[background-color,color,transform] duration-150';
+                    $cellClass = 'inline-flex items-center justify-center w-7 h-7 text-xs tabular-nums leading-none rounded-full transition-[background-color,color,transform] duration-150';
                     if ($isToday) {
                         $cellClass .= ' bg-[var(--color-primary)] text-white font-semibold';
                     } elseif ($themesHere) {

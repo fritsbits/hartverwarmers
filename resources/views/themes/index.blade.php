@@ -17,7 +17,7 @@
 <x-layout title="Themakalender — {{ $monthLabel }}" :full-width="true">
     {{-- Hero + monthly intro (one band) --}}
     <section class="bg-[var(--color-bg-cream)]">
-        <div class="max-w-6xl mx-auto px-6 pt-8 pb-12">
+        <div class="max-w-6xl mx-auto px-6 pt-8 pb-10">
             <flux:breadcrumbs class="mb-10">
                 <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
                 <flux:breadcrumbs.item>Themakalender</flux:breadcrumbs.item>
