@@ -59,50 +59,50 @@
             {{-- Day themes, grouped by date --}}
             @forelse($groupedDayThemes as $dateKey => $themesOnDate)
                 @php($firstOcc = $themesOnDate->first()->occurrences->first())
-                <div class="space-y-12">
-                    {{-- Shared date header --}}
-                    <div class="flex items-baseline gap-4">
-                        <span class="font-heading font-bold text-base uppercase tracking-widest text-[var(--color-primary)] tabular-nums">
-                            {{ $firstOcc?->start_date->locale('nl_BE')->translatedFormat('j F') }}
-                        </span>
-                        <span class="flex-1 border-t border-[var(--color-border-light)] mt-1"></span>
+                <div class="md:grid md:grid-cols-[5rem_1fr] md:gap-x-10 lg:gap-x-14">
+                    {{-- Date stamp column --}}
+                    <div class="mb-6 md:mb-0">
+                        <x-theme-date-stamp :date="$firstOcc->start_date" />
                     </div>
 
-                    @foreach($themesOnDate as $theme)
-                        @php($occ = $theme->occurrences->first())
-                        @php($isRange = $occ && $occ->end_date && ! $occ->end_date->equalTo($occ->start_date))
-                        <article id="thema-{{ $theme->slug }}">
-                            <div class="flex items-baseline gap-3 flex-wrap mb-3">
-                                <h2 class="text-3xl font-heading font-bold leading-tight">{{ $theme->title }}</h2>
-                                @if($isRange)
-                                    <span class="text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] whitespace-nowrap">
-                                        t/m {{ $occ->end_date->locale('nl_BE')->translatedFormat('j F') }}
-                                    </span>
+                    {{-- Themes column --}}
+                    <div class="space-y-14">
+                        @foreach($themesOnDate as $theme)
+                            @php($occ = $theme->occurrences->first())
+                            @php($isRange = $occ && $occ->end_date && ! $occ->end_date->equalTo($occ->start_date))
+                            <article id="thema-{{ $theme->slug }}">
+                                <div class="flex items-baseline gap-3 flex-wrap mb-3">
+                                    <h2 class="text-3xl font-heading font-bold leading-tight">{{ $theme->title }}</h2>
+                                    @if($isRange)
+                                        <span class="text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] whitespace-nowrap">
+                                            t/m {{ $occ->end_date->locale('nl_BE')->translatedFormat('j F') }}
+                                        </span>
+                                    @endif
+                                </div>
+
+                                @if($theme->description)
+                                    <p class="text-[var(--color-text-secondary)] max-w-2xl">{{ $theme->description }}</p>
                                 @endif
-                            </div>
 
-                            @if($theme->description)
-                                <p class="text-[var(--color-text-secondary)] max-w-2xl">{{ $theme->description }}</p>
-                            @endif
-
-                            @if($theme->fiches->isNotEmpty())
-                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                                    @foreach($theme->fiches as $fiche)
-                                        <x-fiche-card :fiche="$fiche" />
-                                    @endforeach
-                                </div>
-                            @else
-                                <div class="mt-6 rounded-lg border border-dashed border-[var(--color-border-hover)] bg-[var(--color-bg-cream)] px-6 py-5 max-w-2xl">
-                                    <p class="text-[var(--color-text-secondary)] text-sm">
-                                        Nog geen activiteiten gekoppeld aan dit thema.
-                                    </p>
-                                    <a href="{{ route('fiches.create') }}" class="cta-link mt-1.5 inline-flex text-sm">
-                                        Heb jij een idee? Deel je activiteit!
-                                    </a>
-                                </div>
-                            @endif
-                        </article>
-                    @endforeach
+                                @if($theme->fiches->isNotEmpty())
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                                        @foreach($theme->fiches as $fiche)
+                                            <x-fiche-card :fiche="$fiche" />
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="mt-6 rounded-lg border border-dashed border-[var(--color-border-hover)] bg-[var(--color-bg-cream)] px-6 py-5 max-w-2xl">
+                                        <p class="text-[var(--color-text-secondary)] text-sm">
+                                            Nog geen activiteiten gekoppeld aan dit thema.
+                                        </p>
+                                        <a href="{{ route('fiches.create') }}" class="cta-link mt-1.5 inline-flex text-sm">
+                                            Heb jij een idee? Deel je activiteit!
+                                        </a>
+                                    </div>
+                                @endif
+                            </article>
+                        @endforeach
+                    </div>
                 </div>
             @empty
                 @if($seasonThemes->isEmpty())

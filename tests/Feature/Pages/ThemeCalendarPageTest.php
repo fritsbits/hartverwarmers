@@ -79,7 +79,7 @@ class ThemeCalendarPageTest extends TestCase
         ]);
 
         $response = $this->get(route('themes.index', ['maand' => '2026-07']));
-        $response->assertOk()->assertSee('4 juli')->assertSee('26 juli');
+        $response->assertOk()->assertSee('t/m 26 juli');
     }
 
     public function test_season_theme_renders_as_banner_above_day_themes(): void
