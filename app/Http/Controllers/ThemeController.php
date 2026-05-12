@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Theme;
+use App\Services\JsonContent;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,9 +27,28 @@ class ThemeController extends Controller
 
         return view('themes.index', [
             'month' => $month,
+            'monthIntro' => $this->loadMonthIntro($month->month),
             'seasonThemes' => $seasonThemes->values(),
             'dayThemes' => $dayThemes->values(),
         ]);
+    }
+
+    /**
+     * @return array{title: string, intro: string}|null
+     */
+    private function loadMonthIntro(int $month): ?array
+    {
+        $all = JsonContent::getContent('themes/monthly-intros');
+        if (! is_array($all) || ! isset($all[(string) $month])) {
+            return null;
+        }
+
+        $entry = $all[(string) $month];
+        if (! is_array($entry) || empty($entry['title']) || empty($entry['intro'])) {
+            return null;
+        }
+
+        return ['title' => $entry['title'], 'intro' => $entry['intro']];
     }
 
     private function parseMonth(?string $input): CarbonImmutable

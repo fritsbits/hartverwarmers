@@ -15,23 +15,23 @@
 @endphp
 
 <x-layout title="Themakalender — {{ $monthLabel }}" :full-width="true">
-    {{-- Hero --}}
+    {{-- Hero + monthly intro (one band) --}}
     <section class="bg-[var(--color-bg-cream)]">
         <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
-            <flux:breadcrumbs class="mb-8">
+            <flux:breadcrumbs class="mb-10">
                 <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
                 <flux:breadcrumbs.item>Themakalender</flux:breadcrumbs.item>
             </flux:breadcrumbs>
 
             <span class="section-label section-label-hero">Themakalender</span>
-            <h1 class="text-5xl mt-1 font-heading font-bold leading-tight">Thema's en speciale momenten</h1>
-            <p class="text-base text-[var(--color-text-secondary)] mt-3 max-w-xl">
-                Ontdek welke themadagen eraan komen en vind activiteiten om ermee aan de slag te gaan.
-            </p>
+            <h1 class="text-6xl mt-2 font-heading font-bold leading-none">{{ $monthLabel }}</h1>
 
-            <p class="font-heading text-3xl text-[var(--color-text-primary)] mt-10 leading-none">
-                {{ $monthLabel }}
-            </p>
+            @if(! empty($monthIntro))
+                <div class="mt-10 max-w-2xl">
+                    <h2 class="font-heading font-bold text-2xl text-[var(--color-text-primary)]">{{ $monthIntro['title'] }}</h2>
+                    <p class="text-base text-[var(--color-text-secondary)] mt-3 leading-relaxed">{{ $monthIntro['intro'] }}</p>
+                </div>
+            @endif
         </div>
     </section>
 

@@ -155,4 +155,20 @@ class ThemeCalendarPageTest extends TestCase
         $response = $this->get(route('themes.index', ['maand' => '2026-06']));
         $response->assertSee('id="thema-wereldyogadag"', false);
     }
+
+    public function test_h1_is_the_month_label(): void
+    {
+        $response = $this->get(route('themes.index', ['maand' => '2026-06']));
+        $response->assertSee('<h1', false)->assertSee('juni 2026');
+    }
+
+    public function test_renders_monthly_intro_when_available(): void
+    {
+        $response = $this->get(route('themes.index', ['maand' => '2026-06']));
+
+        $monthIntro = $response->viewData('monthIntro');
+        $this->assertNotNull($monthIntro);
+        $this->assertSame('Licht binnen', $monthIntro['title']);
+        $response->assertSee('Licht binnen')->assertSee('Vaders worden gevierd');
+    }
 }
