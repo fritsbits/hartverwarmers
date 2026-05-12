@@ -6,37 +6,44 @@
 
 @if($themes->isNotEmpty())
     <section class="bg-[var(--color-bg-cream)] border-y border-[var(--color-border-light)]">
-        <div class="max-w-6xl mx-auto px-6 py-14">
+        <div class="max-w-6xl mx-auto px-6 py-16">
             <div class="grid grid-cols-1 lg:grid-cols-[1fr_24rem] gap-12 items-center">
-                {{-- Left: heading + list + CTA --}}
+                {{-- Left: heading + list --}}
                 <div>
-                    <span class="section-label">Op de kalender</span>
-                    <h2 class="text-5xl font-heading font-bold mt-2 leading-none text-balance">Plan deze dagen alvast in</h2>
+                    <div class="flex items-baseline justify-between gap-4 flex-wrap mb-10">
+                        <div>
+                            <span class="section-label">Op de kalender</span>
+                            <h2 class="text-3xl mt-1 text-balance">Plan deze dagen alvast in</h2>
+                        </div>
+                        <a href="{{ route('themes.index') }}" class="cta-link shrink-0">Alle themadagen</a>
+                    </div>
 
-                    <ul class="mt-8 divide-y divide-[var(--color-border-light)] border-y border-[var(--color-border-light)]">
+                    <ul class="divide-y divide-[var(--color-border-light)] border-y border-[var(--color-border-light)]">
                         @foreach($themes as $occ)
                             @php($start = $occ->start_date->locale('nl_BE'))
                             @php($monthSlug = $start->format('Y-m'))
+                            @php($count = $occ->theme->fiches_count ?? 0)
                             <li>
                                 <a href="{{ route('themes.index', ['maand' => $monthSlug]) }}#thema-{{ $occ->theme->slug }}"
                                    class="group flex items-baseline gap-6 py-4 hover:bg-[var(--color-bg-accent-light)] -mx-3 px-3 rounded transition-colors">
                                     <span class="text-sm uppercase tracking-wider text-[var(--color-text-secondary)] {{ $allInSameMonth ? 'w-10' : 'w-20' }} shrink-0 tabular-nums">
                                         {{ $allInSameMonth ? $start->translatedFormat('j') : $start->translatedFormat('j M') }}
                                     </span>
-                                    <span class="font-heading text-xl flex-1 text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)]">
-                                        {{ $occ->theme->title }}
+                                    <span class="flex-1 min-w-0">
+                                        <span class="block font-heading text-xl text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] truncate">
+                                            {{ $occ->theme->title }}
+                                        </span>
+                                        @if($count > 0)
+                                            <span class="block text-xs text-[var(--color-text-secondary)] tabular-nums mt-0.5">
+                                                {{ $count }} {{ $count === 1 ? 'activiteit' : 'activiteiten' }}
+                                            </span>
+                                        @endif
                                     </span>
-                                    <span class="text-[var(--color-text-tertiary)] group-hover:text-[var(--color-primary)] transition-colors">→</span>
+                                    <span aria-hidden="true" class="text-[var(--color-text-tertiary)] group-hover:text-[var(--color-primary)] group-hover:translate-x-0.5 transition-[color,transform]">→</span>
                                 </a>
                             </li>
                         @endforeach
                     </ul>
-
-                    <div class="mt-8">
-                        <flux:button variant="filled" icon:trailing="arrow-right" :href="route('themes.index')">
-                            Bekijk de hele themakalender
-                        </flux:button>
-                    </div>
                 </div>
 
                 {{-- Right: mini-cal --}}

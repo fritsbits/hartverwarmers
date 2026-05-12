@@ -99,7 +99,7 @@ class HomeController extends Controller
             fn () => ThemeOccurrence::query()
                 ->where('start_date', '>=', $tomorrow)
                 ->orderBy('start_date')
-                ->with('theme')
+                ->with(['theme' => fn ($q) => $q->withCount(['fiches' => fn ($q) => $q->published()])])
                 ->limit(3)
                 ->get()
         );
