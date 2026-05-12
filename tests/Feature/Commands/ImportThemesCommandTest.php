@@ -15,7 +15,7 @@ class ImportThemesCommandTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->fixturePath = base_path('tests/Fixtures/themes/sample-import.json');
+        $this->fixturePath = base_path('tests/fixtures/themes/sample-import.json');
     }
 
     public function test_imports_themes_and_occurrences(): void
