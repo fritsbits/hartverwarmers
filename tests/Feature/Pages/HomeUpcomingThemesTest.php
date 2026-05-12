@@ -106,7 +106,7 @@ class HomeUpcomingThemesTest extends TestCase
         ]);
 
         $response = $this->get(route('home'));
-        $response->assertSee('Binnenkort')
+        $response->assertSee('Plan deze dagen alvast in')
             ->assertSee('Wereldyogadag')
             ->assertSee(route('themes.index', ['maand' => '2026-06']).'#thema-wereldyogadag')
             ->assertSee(route('themes.index'));
@@ -115,6 +115,6 @@ class HomeUpcomingThemesTest extends TestCase
     public function test_block_is_hidden_when_no_upcoming_themes(): void
     {
         $response = $this->get(route('home'));
-        $response->assertDontSee('Binnenkort');
+        $response->assertDontSee('Plan deze dagen alvast in');
     }
 }

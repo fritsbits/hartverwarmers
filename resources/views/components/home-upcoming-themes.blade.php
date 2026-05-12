@@ -11,7 +11,7 @@
                 {{-- Left: heading + list + CTA --}}
                 <div>
                     <span class="section-label">Op de kalender</span>
-                    <h2 class="text-5xl font-heading font-bold mt-2 leading-none">Binnenkort</h2>
+                    <h2 class="text-5xl font-heading font-bold mt-2 leading-none text-balance">Plan deze dagen alvast in</h2>
 
                     <ul class="mt-8 divide-y divide-[var(--color-border-light)] border-y border-[var(--color-border-light)]">
                         @foreach($themes as $occ)
