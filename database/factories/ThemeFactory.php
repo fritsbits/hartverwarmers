@@ -14,11 +14,11 @@ class ThemeFactory extends Factory
 {
     public function definition(): array
     {
-        $title = fake()->unique()->words(2, true);
+        $title = fake()->unique()->sentence(3);
 
         return [
-            'title' => ucfirst($title),
-            'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(1, 99999),
+            'title' => $title,
+            'slug' => Str::slug($title),
             'description' => fake()->sentence(),
             'is_month' => false,
             'recurrence_rule' => ThemeRecurrenceRule::Fixed,
