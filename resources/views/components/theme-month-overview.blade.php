@@ -46,11 +46,11 @@
                         $href = route('themes.index', ['maand' => $month->format('Y-m')]).'#thema-'.$first_slug;
                     }
 
-                    $cellClass = 'inline-flex items-center justify-center w-7 h-7 text-xs tabular-nums leading-none rounded-full transition-colors';
+                    $cellClass = 'inline-flex items-center justify-center w-8 h-8 text-xs tabular-nums leading-none rounded-full transition-[background-color,color,transform] duration-150';
                     if ($isToday) {
                         $cellClass .= ' bg-[var(--color-primary)] text-white font-semibold';
                     } elseif ($themesHere) {
-                        $cellClass .= ' text-[var(--color-primary)] font-semibold hover:bg-[var(--color-bg-accent-light)]';
+                        $cellClass .= ' text-[var(--color-primary)] font-semibold hover:bg-[var(--color-bg-accent-light)] active:scale-[0.96]';
                     } else {
                         $cellClass .= ' text-[var(--color-text-secondary)]';
                     }

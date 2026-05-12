@@ -29,7 +29,7 @@
                     <h1 class="text-6xl mt-2 font-heading font-bold leading-none">{{ $monthLabel }}</h1>
 
                     @if(! empty($monthIntro))
-                        <p class="mt-8 max-w-2xl text-xl text-[var(--color-text-secondary)] leading-relaxed">
+                        <p class="mt-8 max-w-2xl text-xl text-[var(--color-text-secondary)] leading-relaxed text-pretty">
                             {{ $monthIntro['intro'] }}
                         </p>
                     @endif
@@ -47,13 +47,13 @@
             <div class="max-w-6xl mx-auto px-6 flex items-center {{ $showPrev ? 'justify-between' : 'justify-end' }}">
                 @if($showPrev)
                     <a href="{{ route('themes.index', ['maand' => $prevMonth->format('Y-m')]) }}"
-                       class="pointer-events-auto inline-flex items-center gap-2 bg-[var(--color-bg-white)] border border-[var(--color-border-hover)] rounded-full px-5 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] shadow-[0_4px_12px_-2px_rgba(35,30,26,0.12)] hover:shadow-[0_6px_16px_-4px_rgba(35,30,26,0.16)] transition-all">
+                       class="pointer-events-auto inline-flex items-center gap-2 bg-[var(--color-bg-white)] border border-[var(--color-border-hover)] rounded-full px-5 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] active:scale-[0.96] shadow-[0_4px_12px_-2px_rgba(35,30,26,0.12)] hover:shadow-[0_6px_16px_-4px_rgba(35,30,26,0.16)] transition-[color,border-color,box-shadow,transform] duration-150">
                         <span aria-hidden="true">←</span>
                         <span>{{ $prevMonthLabel }}</span>
                     </a>
                 @endif
                 <a href="{{ route('themes.index', ['maand' => $nextMonth->format('Y-m')]) }}"
-                   class="pointer-events-auto inline-flex items-center gap-2 bg-[var(--color-bg-white)] border border-[var(--color-border-hover)] rounded-full px-5 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] shadow-[0_4px_12px_-2px_rgba(35,30,26,0.12)] hover:shadow-[0_6px_16px_-4px_rgba(35,30,26,0.16)] transition-all">
+                   class="pointer-events-auto inline-flex items-center gap-2 bg-[var(--color-bg-white)] border border-[var(--color-border-hover)] rounded-full px-5 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] active:scale-[0.96] shadow-[0_4px_12px_-2px_rgba(35,30,26,0.12)] hover:shadow-[0_6px_16px_-4px_rgba(35,30,26,0.16)] transition-[color,border-color,box-shadow,transform] duration-150">
                     <span>{{ $nextMonthLabel }}</span>
                     <span aria-hidden="true">→</span>
                 </a>
@@ -98,7 +98,7 @@
                             @php($isRange = $occ && $occ->end_date && ! $occ->end_date->equalTo($occ->start_date))
                             <article id="thema-{{ $theme->slug }}">
                                 <div class="flex items-baseline gap-3 flex-wrap mb-3">
-                                    <h2 class="text-3xl font-heading font-bold leading-tight">{{ $theme->title }}</h2>
+                                    <h2 class="text-3xl font-heading font-bold leading-tight text-balance">{{ $theme->title }}</h2>
                                     @if($isRange)
                                         <span class="text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] whitespace-nowrap">
                                             t/m {{ $occ->end_date->locale('nl_BE')->translatedFormat('j F') }}
@@ -107,7 +107,7 @@
                                 </div>
 
                                 @if($theme->description)
-                                    <p class="text-[var(--color-text-secondary)] max-w-2xl">{{ $theme->description }}</p>
+                                    <p class="text-[var(--color-text-secondary)] max-w-2xl text-pretty">{{ $theme->description }}</p>
                                 @endif
 
                                 @if($theme->fiches->isNotEmpty())
