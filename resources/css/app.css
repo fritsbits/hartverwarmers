@@ -232,8 +232,11 @@
 @layer components {
   /* Text CTA style (per brand guidelines - text + arrow, not filled buttons) */
   .cta-link {
-    @apply inline-flex items-center gap-1 font-semibold transition-all;
+    @apply inline-flex items-center gap-1 font-semibold;
     color: var(--color-primary);
+    transition-property: color, gap;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .cta-link:hover {

@@ -26,7 +26,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 items-start">
                 <div>
                     <span class="section-label section-label-hero">Themakalender</span>
-                    <h1 class="text-6xl mt-2 font-heading font-bold leading-none">{{ $monthLabel }}</h1>
+                    <h1 class="text-6xl mt-2 font-heading font-bold leading-none tabular-nums">{{ $monthLabel }}</h1>
 
                     @if(! empty($monthIntro))
                         <p class="mt-8 max-w-2xl text-xl text-[var(--color-text-secondary)] leading-relaxed text-pretty">
@@ -100,7 +100,7 @@
                                 <div class="flex items-baseline gap-3 flex-wrap mb-3">
                                     <h2 class="text-3xl font-heading font-bold leading-tight text-balance">{{ $theme->title }}</h2>
                                     @if($isRange)
-                                        <span class="text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] whitespace-nowrap">
+                                        <span class="text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] whitespace-nowrap tabular-nums">
                                             t/m {{ $occ->end_date->locale('nl_BE')->translatedFormat('j F') }}
                                         </span>
                                     @endif
