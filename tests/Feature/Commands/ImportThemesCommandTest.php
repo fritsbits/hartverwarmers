@@ -29,7 +29,7 @@ class ImportThemesCommandTest extends TestCase
         $this->assertDatabaseCount('theme_occurrences', 2);
         $this->assertDatabaseHas('theme_occurrences', [
             'year' => 2026,
-            'start_date' => '2026-06-21 00:00:00',
+            'start_date' => '2026-06-21',
             'end_date' => null,
         ]);
     }
