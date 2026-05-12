@@ -33,21 +33,6 @@
                             {{ $monthIntro['intro'] }}
                         </p>
                     @endif
-
-                    {{-- Top month nav (subtle, hide prev if entirely past) --}}
-                    <div class="mt-10 flex items-center gap-5 text-sm">
-                        @if($showPrev)
-                            <a href="{{ route('themes.index', ['maand' => $prevMonth->format('Y-m')]) }}"
-                               class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">
-                                ← {{ $prevMonthLabel }}
-                            </a>
-                            <span class="text-[var(--color-border-hover)]">·</span>
-                        @endif
-                        <a href="{{ route('themes.index', ['maand' => $nextMonth->format('Y-m')]) }}"
-                           class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">
-                            {{ $nextMonthLabel }} →
-                        </a>
-                    </div>
                 </div>
                 <div class="hidden lg:block">
                     <x-theme-month-overview :month="$month" :themes-by-date="$themesByDate" />
@@ -56,9 +41,29 @@
         </div>
     </section>
 
+    {{-- Floating month nav, overlays the cream → white boundary --}}
+    <div class="relative">
+        <div class="absolute inset-x-0 -top-6 z-10 pointer-events-none">
+            <div class="max-w-6xl mx-auto px-6 flex items-center {{ $showPrev ? 'justify-between' : 'justify-end' }}">
+                @if($showPrev)
+                    <a href="{{ route('themes.index', ['maand' => $prevMonth->format('Y-m')]) }}"
+                       class="pointer-events-auto inline-flex items-center gap-2 bg-[var(--color-bg-white)] border border-[var(--color-border-hover)] rounded-full px-5 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] shadow-[0_4px_12px_-2px_rgba(35,30,26,0.12)] hover:shadow-[0_6px_16px_-4px_rgba(35,30,26,0.16)] transition-all">
+                        <span aria-hidden="true">←</span>
+                        <span>{{ $prevMonthLabel }}</span>
+                    </a>
+                @endif
+                <a href="{{ route('themes.index', ['maand' => $nextMonth->format('Y-m')]) }}"
+                   class="pointer-events-auto inline-flex items-center gap-2 bg-[var(--color-bg-white)] border border-[var(--color-border-hover)] rounded-full px-5 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] shadow-[0_4px_12px_-2px_rgba(35,30,26,0.12)] hover:shadow-[0_6px_16px_-4px_rgba(35,30,26,0.16)] transition-all">
+                    <span>{{ $nextMonthLabel }}</span>
+                    <span aria-hidden="true">→</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
     {{-- Content --}}
     <section class="bg-[var(--color-bg-white)] border-t border-[var(--color-border-light)]">
-        <div class="max-w-6xl mx-auto px-6 py-20 space-y-20">
+        <div class="max-w-6xl mx-auto px-6 pt-24 pb-20 space-y-20">
 
             {{-- Season banners --}}
             @foreach($seasonThemes as $theme)
