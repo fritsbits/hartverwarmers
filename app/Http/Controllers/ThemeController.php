@@ -17,7 +17,7 @@ class ThemeController extends Controller
             ->forMonth($month->year, $month->month)
             ->with([
                 'occurrences' => fn ($q) => $q->where('year', $month->year),
-                'fiches' => fn ($q) => $q->published()->with('initiative', 'user', 'tags', 'files')->take(6),
+                'fiches' => fn ($q) => $q->published()->with('initiative', 'user', 'tags', 'files')->withCount('comments')->take(6),
             ])
             ->get()
             ->sortBy(fn (Theme $t) => optional($t->occurrences->first())->start_date);
