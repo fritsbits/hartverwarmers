@@ -46,22 +46,35 @@
     <section class="bg-[var(--color-bg-cream)]">
         <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
             {{-- Breadcrumbs + admin dropdown --}}
-            <div class="mb-6 flex items-center justify-between gap-4">
-                <flux:breadcrumbs>
+            <div class="mb-6 flex items-center justify-between gap-3">
+                {{-- Below lg: back link to parent initiative (mirrors nav hamburger breakpoint) --}}
+                <a href="{{ route('initiatives.show', $initiative) }}"
+                   class="lg:hidden inline-flex min-w-0 items-center gap-1.5 text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 shrink-0">
+                        <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 0 1-.02 1.06L8.832 10l3.938 3.71a.75.75 0 1 1-1.04 1.08l-4.5-4.25a.75.75 0 0 1 0-1.08l4.5-4.25a.75.75 0 0 1 1.06.02Z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="truncate">{{ $initiative->title }}</span>
+                </a>
+
+                {{-- lg+: full breadcrumbs --}}
+                <flux:breadcrumbs class="hidden lg:flex min-w-0">
                     <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
                     <flux:breadcrumbs.item href="{{ route('initiatives.index') }}">Initiatieven</flux:breadcrumbs.item>
                     <flux:breadcrumbs.item href="{{ route('initiatives.show', $initiative) }}">{{ $initiative->title }}</flux:breadcrumbs.item>
                     <flux:breadcrumbs.item>{{ $fiche->title }}</flux:breadcrumbs.item>
                 </flux:breadcrumbs>
 
-                <div class="flex items-center gap-2">
-                    <button onclick="window.print()" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[var(--color-border-light)] bg-white hover:border-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)] transition-all text-sm font-medium" style="color: var(--color-primary)">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="window.print()"
+                            aria-label="Druk af"
+                            class="inline-flex items-center gap-2 px-3 sm:px-5 py-2.5 rounded-full border border-[var(--color-border-light)] bg-white hover:border-[var(--color-primary)] hover:bg-[var(--color-bg-accent-light)] transition-all text-sm font-medium whitespace-nowrap"
+                            style="color: var(--color-primary)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 shrink-0">
                             <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
                             <path d="M6 9V3h12v6"/>
                             <rect x="6" y="14" width="12" height="8"/>
                         </svg>
-                        Druk af
+                        <span class="hidden sm:inline">Druk af</span>
                     </button>
 
                     @auth
