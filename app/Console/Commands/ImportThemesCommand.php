@@ -7,6 +7,7 @@ use App\Models\Fiche;
 use App\Models\Theme;
 use App\Models\ThemeOccurrence;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ImportThemesCommand extends Command
@@ -112,6 +113,8 @@ class ImportThemesCommand extends Command
 
             return self::FAILURE;
         }
+
+        Cache::forget('home:upcoming-themes:'.today()->toDateString());
 
         $this->info(sprintf(
             'Klaar. Thema\'s: %d aangemaakt, %d bijgewerkt. Occurrences: %d. Fiche-links gesynchroniseerd voor thema\'s met fiche_slugs.',
