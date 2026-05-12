@@ -27,8 +27,9 @@ class ThemeRecurrenceRuleTest extends TestCase
         ], $values);
     }
 
-    public function test_does_not_include_needs_verification(): void
+    public function test_from_throws_for_unknown_value(): void
     {
-        $this->assertNull(ThemeRecurrenceRule::tryFrom('needs_verification'));
+        $this->expectException(\ValueError::class);
+        ThemeRecurrenceRule::from('needs_verification');
     }
 }
