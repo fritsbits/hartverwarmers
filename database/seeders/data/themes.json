@@ -3,7 +3,7 @@
     {
       "title": "Bloeddonordag",
       "slug": "bloeddonordag",
-      "description": "Bloeddonordag is een dag in het teken van het belang van bloeddonoren. We zetten ons dan in voor hun erkenning en waardering en voor het werven van nieuwe bloeddonoren.",
+      "description": "Bespreek het belang van bloed geven of haal verhalen op bij bewoners die ooit gegeven hebben.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 06-14"
@@ -11,7 +11,7 @@
     {
       "title": "Dag tegen ouderenmisbehandeling",
       "slug": "dag-tegen-ouderenmisbehandeling",
-      "description": "Op de Dag tegen ouderenmisbehandeling staan we stil bij het belang van goede zorg voor ouderen en zetten we ons in tegen ouderenmisbehandeling.",
+      "description": "Een dag om bij de waardigheid van bewoners stil te staan. Wat betekent goede zorg voor jullie team?",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 06-15",
@@ -24,7 +24,7 @@
     {
       "title": "Dag van de animator",
       "slug": "dag-van-de-animator",
-      "description": "Dag van de animator staat in het teken van animators. We zetten ons in voor hun creativiteit en professionele vaardigheden en voor de positieve impact van hun werk.",
+      "description": "Vandaag word jij in de bloemetjes gezet — laat bewoners en collega's iets bedenken: een kaart, een lied, een traktatie.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 07-27",
@@ -39,7 +39,7 @@
     {
       "title": "Dag van de buren",
       "slug": "dag-van-de-buren",
-      "description": "Dag van de buren is een dag waarop we stilstaan bij het belang van buurtbewoners en ons inzetten voor hun betrokkenheid en samenwerking en voor een gezonde en veilige buurt.",
+      "description": "Nodig de buurt binnen: kinderen, vrijwilligers, familie. Een koffie, een terrasmoment, een gezellig kletsje.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 05-26",
@@ -55,7 +55,7 @@
     {
       "title": "Dag van de culturele diversiteit",
       "slug": "dag-van-de-culturele-diversiteit",
-      "description": "Dag van de culturele diversiteit is een dag waarop we stilstaan bij het belang van culturele verschillen en ons inzetten voor hun respect en waardering en voor een inclusieve samenleving.",
+      "description": "Reis met de bewoners de wereld rond: een land, een gerecht, een lied per dag van de week.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 05-21",
@@ -72,7 +72,7 @@
     {
       "title": "Dag van de fotografie",
       "slug": "dag-van-de-fotografie",
-      "description": "Wereldfotografiedag: samen fotoalbums bekijken, herinneringen ophalen, levensverhalen vertellen aan de hand van oude fotos.",
+      "description": "Haal de oude albums boven en laat bewoners hun mooiste foto vertellen — of maak vandaag nieuwe portretten.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: 08-19",
@@ -90,7 +90,7 @@
     {
       "title": "Dag van de jeugd",
       "slug": "dag-van-de-jeugd",
-      "description": "Op Dag van de jeugd vieren we de talenten en aspiraties van jongeren en zetten we ons in voor hun ontwikkeling en betrokkenheid bij onze samenleving.",
+      "description": "Breng jong en oud samen: een schoolbezoek, een spelnamiddag met kleinkinderen, een brief tussen generaties.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 08-12",
@@ -106,7 +106,7 @@
     {
       "title": "Dag van de linkshandigen",
       "slug": "dag-van-de-linkshandigen",
-      "description": "Op Dag van de linkshandigen eren we linkshandigen en zetten we ons in voor hun erkenning en waardering en voor gelijkheid van kansen en mogelijkheden voor linkshandigen.",
+      "description": "Vraag de linkshandige bewoners hoe zij het door de jaren heen hebben opgelost. Een onverwacht gespreksonderwerp.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 08-13"
@@ -114,7 +114,7 @@
     {
       "title": "Dag van de mantelzorger",
       "slug": "dag-van-de-mantelzorger",
-      "description": "Op de Dag van de mantelzorger eren we mensen die mantelzorg verlenen en zetten we ons in voor hun erkenning en waardering en voor ondersteuning in hun taak.",
+      "description": "Verras de mantelzorgers in jullie netwerk: een attentie, een rustig moment, een dankwoord. Zij houden de zorg recht.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 06-23",
@@ -129,7 +129,7 @@
     {
       "title": "Dag van de senioren",
       "slug": "dag-van-de-senioren",
-      "description": "Dag van de senioren: bewoners in de kijker, hun wijsheid en levenservaring vieren.",
+      "description": "Vandaag staan jouw bewoners centraal: hun verhalen, hun wijsheid, hun aanwezigheid. Laat hen schitteren.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: 08-21",
@@ -144,7 +144,7 @@
     {
       "title": "Dag van de verpleegkundige",
       "slug": "dag-van-de-verpleegkundige",
-      "description": "Dag van de verpleegkundige is een dag waarop we stilstaan bij het belang van verpleegkundigen en ons inzetten voor hun erkenning en waardering en voor hun professionele ontwikkeling en welzijn.",
+      "description": "Een dag voor de stille helden in jouw huis: een bedankje, een traktatie, een moment van rust.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 05-12",
@@ -158,7 +158,7 @@
     {
       "title": "French Fries Day",
       "slug": "french-fries-day",
-      "description": "Op French Fries Day vieren we het lekkere en populaire gerecht van frietjes en zetten we ons in voor de creativiteit en diversiteit in hun bereiding en serveren.",
+      "description": "Patatten, frietjes, mayonaise — maak er een feestje van met een bakje voor iedereen.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 07-13",
@@ -171,7 +171,7 @@
     {
       "title": "Internationale dag van de vriendschap",
       "slug": "internationale-dag-van-de-vriendschap",
-      "description": "We vieren de waarde van vriendschap en zetten ons in voor het onderhouden en uitbreiden van onze vriendschappen en sociale netwerken.",
+      "description": "Wie zijn de vriendschappen in jullie huis? Een babbelmoment, een kaart, een telefoontje naar een oude vriend.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 07-30",
@@ -189,7 +189,7 @@
     {
       "title": "Internationale dag van het bier",
       "slug": "internationale-dag-van-het-bier",
-      "description": "Op Internationale dag van het bier vieren we de rijke traditie en smaak van bier en zetten we ons in voor de erkenning en waardering van brouwers en hun bieren.",
+      "description": "Een proeverij met Belgische bieren en een terrasmoment — voor wie er trek in heeft.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 08-05",
@@ -201,7 +201,7 @@
     {
       "title": "Internationale kattendag",
       "slug": "internationale-kattendag",
-      "description": "Op Internationale kattendag eren we katten en zetten we ons in voor hun welzijn en de positieve impact van hun aanwezigheid op ons leven.",
+      "description": "Breng een kat op bezoek of vraag bewoners over de katten uit hun leven. Zo komen verhalen vanzelf los.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 08-08",
@@ -218,7 +218,7 @@
     {
       "title": "Moederdag (Antwerpen)",
       "slug": "moederdag-antwerpen",
-      "description": "We eren onze moeders en laten hen weten hoeveel we van ze houden en waarderen door ze cadeaus te geven en speciale gebaren te maken.",
+      "description": "Vier de moeders in jullie huis met een bloemetje, een herinnering of een rustig moment samen.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Aug 15 (Maria Hemelvaart)",
@@ -230,7 +230,7 @@
     {
       "title": "Nationale Frietjesdag",
       "slug": "nationale-frietjesdag",
-      "description": "We vieren de heerlijke smaak van frietjes en zetten ons in voor hun gezonde opties en de creativiteit in hun bereiding.",
+      "description": "België eet frietjes. Een bakje voor iedereen — en herinneringen aan de friettent van vroeger.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 08-01",
@@ -243,7 +243,7 @@
     {
       "title": "Nationale feestdag",
       "slug": "nationale-feestdag",
-      "description": "Op de Nationale feestdag vieren we onze nationale identiteit en waarden en zetten we ons in voor eenheid en vrede binnen ons land en met andere landen.",
+      "description": "21 juli: Belgische muziek, Belgische lekkernijen, Belgische verhalen. Een trots momentje voor de bewoners.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 07-21",
@@ -256,7 +256,7 @@
     {
       "title": "Nationale kappersdag",
       "slug": "nationale-kappersdag",
-      "description": "Op Nationale kappersdag eren we kappers en zetten we ons in voor hun erkenning en waardering en voor hun bijdragen aan ons uiterlijk en welzijn.",
+      "description": "Een dag voor de kappers in jullie huis, of voor de kapsels van vroeger. Foto's, herinneringen, een handmassage.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 06-30"
@@ -264,7 +264,7 @@
     {
       "title": "Onze Lieve Heer Hemelvaart",
       "slug": "onze-lieve-heer-hemelvaart",
-      "description": "Onze Lieve Heer Hemelvaart is een katholieke en christelijke feestdag die wordt gevierd om de hemelvaart van Jezus naar de hemel te herdenken en te vieren.",
+      "description": "Een rustig moment van bezinning of een gezamenlijk lied — een kerkelijke feestdag op je eigen manier.",
       "is_month": false,
       "recurrence_rule": "easter",
       "recurrence_detail": "Easter + 39 days (Thu)",
@@ -275,7 +275,7 @@
     {
       "title": "Pinksteren",
       "slug": "pinksteren",
-      "description": "Pinksteren is een katholieke en christelijke feestdag die wordt gevierd om de komst van de Heilige Geest op de apostelen te herdenken en te vieren.",
+      "description": "Pinksteren — een dag voor samenzijn en een rustig moment. Een lied uit vroeger past hier mooi bij.",
       "is_month": false,
       "recurrence_rule": "easter",
       "recurrence_detail": "Easter + 49 days",
@@ -286,7 +286,7 @@
     {
       "title": "Ronde van Frankrijk",
       "slug": "ronde-van-frankrijk",
-      "description": "De Ronde van Frankrijk is een prestigieuze wielerwedstrijd waaraan professionele renners uit verschillende landen deelnemen en die plaatsvindt in Frankrijk.",
+      "description": "Drie weken wielerkoorts: kijk samen, voorspel een ritwinnaar of haal de wielrenherinneringen boven.",
       "is_month": true,
       "recurrence_rule": "variable_annual",
       "recurrence_detail": "Tour de France ~first 3 weeks of July",
@@ -301,20 +301,7 @@
     {
       "title": "Vaderdag",
       "slug": "vaderdag",
-      "description": "Vaderdag is een dag waarop we onze vaders eren en laten weten hoeveel we van ze houden en waarderen door ze cadeaus te geven en speciale gebaren te maken.",
-      "is_month": false,
-      "recurrence_rule": "nth_weekday",
-      "recurrence_detail": "2nd Sunday of June",
-      "fiche_slugs": [
-        "interactieve-belevingsplank-voor-mannen",
-        "frank-sinatra-levensspel",
-        "verzamel-levensverhalen-met-families"
-      ]
-    },
-    {
-      "title": "Vaderdag (NL)",
-      "slug": "vaderdag-nl",
-      "description": "Op Vaderdag in Nederland eren we onze vaders en laten we ze weten hoeveel we van ze houden en waarderen door ze cadeaus te geven en speciale gebaren te maken.",
+      "description": "Vier de vaders in jullie huis met een gezellig moment, een herinnering of een verrassing.",
       "is_month": false,
       "recurrence_rule": "nth_weekday",
       "recurrence_detail": "2nd Sunday of June",
@@ -327,7 +314,7 @@
     {
       "title": "Vlaamse feestdag",
       "slug": "vlaamse-feestdag",
-      "description": "Op de Vlaamse feestdag vieren we de Vlaamse cultuur en taal en zetten we ons in voor hun behoud en uitbreiding.",
+      "description": "11 juli: Vlaamse liedjes, Vlaamse smaken, Vlaamse verhalen. Vier de Vlaamse cultuur samen.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 07-11",
@@ -340,7 +327,7 @@
     {
       "title": "Wereld Bijendag",
       "slug": "wereld-bijendag",
-      "description": "Wereld Bijendag is een dag waarop we stilstaan bij het belang van bijen en hun rol in de natuur en ons inzetten voor hun behoud en bescherming.",
+      "description": "Bijen, bloemen en het zoemende leven buiten. Een wandeling, een zaaiactiviteit, een gesprek over de tuin van vroeger.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 05-20",
@@ -354,7 +341,7 @@
     {
       "title": "Wereld Chocoladedag",
       "slug": "wereld-chocoladedag",
-      "description": "Op Wereld Chocoladedag vieren we de heerlijke smaak van chocolade en zetten we ons in voor haar gezonde eigenschappen en de duurzame productie ervan.",
+      "description": "Een stukje chocolade voor iedereen — en herinneringen aan de chocolaatjes van vroeger.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 07-07"
@@ -362,7 +349,7 @@
     {
       "title": "Wereld MS-dag",
       "slug": "wereld-ms-dag",
-      "description": "Wereld MS-dag is een dag waarop we stilstaan bij het belang van mensen met multiple sclerose (MS) en ons inzetten voor hun erkenning en waardering en voor onderzoek naar de oorzaken en behandeling van MS.",
+      "description": "Een dag om stil te staan bij veerkracht: bij bewoners die met chronische ziekte leven, en bij wat het team draagt.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 05-30",
@@ -374,7 +361,7 @@
     {
       "title": "Wereld humanitaire dag",
       "slug": "wereld-humanitaire-dag",
-      "description": "Wereld humanitaire dag: verhalen delen over solidariteit, vrijwilligerswerk en menselijkheid.",
+      "description": "Verhalen delen over solidariteit en vrijwilligerswerk. Misschien een dankwoord aan jullie eigen vrijwilligers?",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: 08-19",
@@ -388,7 +375,7 @@
     {
       "title": "Wereldemojidag 😄",
       "slug": "wereldemojidag",
-      "description": "Op Wereldemojidag 😄 vieren we de emoticons die ons leven gemakkelijker en leuker maken en zetten we ons in voor hun gebruik en toepassing in communicatie en expressie.",
+      "description": "Wat is jouw lievelingssmiley? Een klein, ludiek gespreksonderwerp voor onderweg.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 07-17"
@@ -396,7 +383,7 @@
     {
       "title": "Wereldyogadag",
       "slug": "wereldyogadag",
-      "description": "Op Wereldyogadag vieren we de kracht van yoga en zetten we ons in voor zijn gezondheid en welzijnseffecten en voor zijn toegankelijkheid voor iedereen.",
+      "description": "Stoelyoga, ademhalingsoefeningen, een rustig moment. Yoga past bij elk lichaam, op elk tempo.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 06-21",
@@ -461,12 +448,6 @@
     },
     {
       "theme_slug": "bloeddonordag",
-      "year": 2026,
-      "start_date": "2026-06-14",
-      "end_date": null
-    },
-    {
-      "theme_slug": "vaderdag-nl",
       "year": 2026,
       "start_date": "2026-06-14",
       "end_date": null
