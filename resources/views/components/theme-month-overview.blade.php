@@ -11,30 +11,22 @@
 @endphp
 
 <div class="select-none w-60 -rotate-[0.5deg] bg-[var(--color-bg-white)] border border-[var(--color-border-light)] rounded-md shadow-[0_1px_2px_rgba(35,30,26,0.04),0_8px_16px_-4px_rgba(35,30,26,0.08),0_24px_48px_-12px_rgba(35,30,26,0.14)] overflow-hidden">
-    {{-- Spiral-binding stripe at the very top --}}
-    <div class="h-2.5 bg-[var(--color-primary)] flex items-center justify-evenly">
-        @for($i = 0; $i < 6; $i++)
-            <span class="w-1 h-1 rounded-full bg-[var(--color-bg-cream)]/55"></span>
-        @endfor
+    {{-- Orange month band (acts as the real 'header' of the calendar page) --}}
+    <div class="bg-[var(--color-primary)] text-center px-4 py-2.5 relative">
+        <div class="font-heading font-bold text-base text-white lowercase tabular-nums tracking-wide">
+            {{ $monthLabel }}
+        </div>
+        {{-- Subtle inner shadow under the band (paper meets the colored top) --}}
+        <div class="absolute inset-x-0 bottom-0 h-1.5 translate-y-full pointer-events-none"
+             style="background: linear-gradient(to bottom, rgba(35,30,26,0.10), transparent);"></div>
     </div>
 
-    {{-- Paper body with subtle grain + inner top shadow under the binding --}}
+    {{-- Paper body with subtle grain --}}
     <div class="relative"
          style="background-image: repeating-linear-gradient(0deg, rgba(35,30,26,0.014) 0px, rgba(35,30,26,0.014) 1px, transparent 1px, transparent 3px);">
 
-        {{-- Inset shadow under the binding (paper compressed where it folds) --}}
-        <div class="absolute inset-x-0 top-0 h-3 pointer-events-none"
-             style="background: linear-gradient(to bottom, rgba(35,30,26,0.10), transparent);"></div>
-
-        {{-- Month header --}}
-        <div class="text-center px-4 pt-3 pb-2 border-b border-[var(--color-border-light)]">
-            <div class="font-heading font-bold text-base text-[var(--color-primary)] lowercase tabular-nums">
-                {{ $monthLabel }}
-            </div>
-        </div>
-
         {{-- Weekday header row --}}
-        <div class="px-3 pt-2 pb-1">
+        <div class="px-3 pt-3 pb-1">
             <div class="grid grid-cols-7 text-center">
                 @foreach(['ma','di','wo','do','vr','za','zo'] as $wd)
                     <div class="text-[10px] uppercase tracking-widest text-[var(--color-text-tertiary)] font-semibold">{{ $wd }}</div>

@@ -23,7 +23,7 @@
                 <flux:breadcrumbs.item>Themakalender</flux:breadcrumbs.item>
             </flux:breadcrumbs>
 
-            <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-10 items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-[1fr_24rem] gap-6 items-center">
                 <div>
                     <span class="section-label section-label-hero">Themakalender</span>
                     <h1 class="text-6xl mt-2 font-heading font-bold leading-none tabular-nums">{{ $monthLabel }}</h1>
@@ -34,7 +34,7 @@
                         </p>
                     @endif
                 </div>
-                <div class="hidden lg:block lg:mr-12">
+                <div class="hidden lg:flex justify-center">
                     <x-theme-month-overview :month="$month" :themes-by-date="$themesByDate" />
                 </div>
             </div>
@@ -61,7 +61,7 @@
 
     {{-- Content --}}
     <section class="bg-[var(--color-bg-white)]">
-        <div class="max-w-6xl mx-auto px-6 py-20 space-y-20">
+        <div class="max-w-6xl mx-auto px-6 py-20 space-y-16">
 
             {{-- Season banners --}}
             @foreach($seasonThemes as $theme)
@@ -80,10 +80,11 @@
                 </div>
             @endforeach
 
-            {{-- Day themes, grouped by date --}}
+            {{-- Day themes, grouped by date, with horizontal dividers between groups --}}
+            <div class="divide-y divide-[var(--color-border-light)]">
             @forelse($groupedDayThemes as $dateKey => $themesOnDate)
                 @php($firstOcc = $themesOnDate->first()->occurrences->first())
-                <div class="md:grid md:grid-cols-[5rem_1fr] md:gap-x-10 lg:gap-x-14">
+                <div class="md:grid md:grid-cols-[5rem_1fr] md:gap-x-10 lg:gap-x-14 py-14 first:pt-0 last:pb-0">
                     {{-- Date stamp column --}}
                     <div class="mb-6 md:mb-0">
                         <x-theme-date-stamp :date="$firstOcc->start_date" :badge="$firstOcc->relativeBadge()" />
@@ -138,6 +139,7 @@
                     </flux:card>
                 @endif
             @endforelse
+            </div>
 
             {{-- Footer nav --}}
             <div class="flex items-center justify-between pt-8 border-t border-[var(--color-border-light)] text-base">
