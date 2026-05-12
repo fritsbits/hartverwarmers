@@ -37,17 +37,9 @@ class ThemeOccurrenceBadgeTest extends TestCase
         $this->assertSame(['label' => 'Morgen', 'emphatic' => false], $badge);
     }
 
-    public function test_three_days_out_returns_over_x_dagen(): void
+    public function test_two_days_out_returns_null(): void
     {
-        $occ = $this->occurrence('2026-06-18');
-        $badge = $occ->relativeBadge(CarbonImmutable::create(2026, 6, 15));
-
-        $this->assertSame(['label' => 'Over 3 dagen', 'emphatic' => false], $badge);
-    }
-
-    public function test_seven_days_out_returns_null(): void
-    {
-        $occ = $this->occurrence('2026-06-22');
+        $occ = $this->occurrence('2026-06-17');
 
         $this->assertNull($occ->relativeBadge(CarbonImmutable::create(2026, 6, 15)));
     }

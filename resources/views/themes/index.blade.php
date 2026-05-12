@@ -17,7 +17,7 @@
 <x-layout title="Themakalender — {{ $monthLabel }}" :full-width="true">
     {{-- Hero + monthly intro (one band) --}}
     <section class="bg-[var(--color-bg-cream)]">
-        <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
+        <div class="max-w-6xl mx-auto px-6 pt-8 pb-12">
             <flux:breadcrumbs class="mb-10">
                 <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
                 <flux:breadcrumbs.item>Themakalender</flux:breadcrumbs.item>
@@ -29,14 +29,28 @@
                     <h1 class="text-6xl mt-2 font-heading font-bold leading-none">{{ $monthLabel }}</h1>
 
                     @if(! empty($monthIntro))
-                        <div class="mt-10 max-w-xl border-l-2 border-[var(--color-primary)] pl-5">
-                            <h2 class="font-heading font-bold text-2xl text-[var(--color-text-primary)] leading-tight">{{ $monthIntro['title'] }}</h2>
-                            <p class="text-base text-[var(--color-text-secondary)] mt-3 leading-relaxed">{{ $monthIntro['intro'] }}</p>
-                        </div>
+                        <p class="mt-8 max-w-2xl text-xl text-[var(--color-text-secondary)] leading-relaxed">
+                            {{ $monthIntro['intro'] }}
+                        </p>
                     @endif
+
+                    {{-- Top month nav (subtle, hide prev if entirely past) --}}
+                    <div class="mt-10 flex items-center gap-5 text-sm">
+                        @if($showPrev)
+                            <a href="{{ route('themes.index', ['maand' => $prevMonth->format('Y-m')]) }}"
+                               class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">
+                                ← {{ $prevMonthLabel }}
+                            </a>
+                            <span class="text-[var(--color-border-hover)]">·</span>
+                        @endif
+                        <a href="{{ route('themes.index', ['maand' => $nextMonth->format('Y-m')]) }}"
+                           class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">
+                            {{ $nextMonthLabel }} →
+                        </a>
+                    </div>
                 </div>
                 <div class="hidden lg:block">
-                    <x-theme-month-overview :month="$month" :dates-with-themes="$datesWithThemes" />
+                    <x-theme-month-overview :month="$month" :themes-by-date="$themesByDate" />
                 </div>
             </div>
         </div>
@@ -124,11 +138,16 @@
 
             {{-- Footer nav --}}
             <div class="flex items-center justify-between pt-8 border-t border-[var(--color-border-light)] text-base">
-                <a href="{{ route('themes.index', ['maand' => $prevMonth->format('Y-m')]) }}" class="cta-link">
-                    ← {{ $prevMonthLabel }}
-                </a>
+                @if($showPrev)
+                    <a href="{{ route('themes.index', ['maand' => $prevMonth->format('Y-m')]) }}"
+                       class="font-semibold text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] transition-colors">
+                        ← {{ $prevMonthLabel }}
+                    </a>
+                @else
+                    <span></span>
+                @endif
                 <a href="{{ route('themes.index', ['maand' => $nextMonth->format('Y-m')]) }}" class="cta-link">
-                    {{ $nextMonthLabel }} →
+                    {{ $nextMonthLabel }}
                 </a>
             </div>
         </div>

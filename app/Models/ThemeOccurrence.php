@@ -53,13 +53,6 @@ class ThemeOccurrence extends Model
             return ['label' => 'Morgen', 'emphatic' => false];
         }
 
-        if ($start->gt($now)) {
-            $days = (int) round($now->diffInDays($start));
-            if ($days >= 2 && $days <= 6) {
-                return ['label' => "Over {$days} dagen", 'emphatic' => false];
-            }
-        }
-
         return null;
     }
 }

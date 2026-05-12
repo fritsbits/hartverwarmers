@@ -169,7 +169,7 @@ class ThemeCalendarPageTest extends TestCase
         $monthIntro = $response->viewData('monthIntro');
         $this->assertNotNull($monthIntro);
         $this->assertSame('Licht binnen', $monthIntro['title']);
-        $response->assertSee('Licht binnen')->assertSee('Vaders worden gevierd');
+        $response->assertSee('Vaders worden gevierd');
     }
 
     public function test_today_theme_renders_vandaag_badge(): void
@@ -200,5 +200,35 @@ class ThemeCalendarPageTest extends TestCase
         $response->assertSee('Morgen');
 
         Carbon::setTestNow();
+    }
+
+    public function test_mini_calendar_links_themed_days_to_theme_anchor(): void
+    {
+        $theme = Theme::factory()->create(['title' => 'Wereldyogadag', 'slug' => 'wereldyogadag']);
+        ThemeOccurrence::factory()->for($theme)->create([
+            'year' => 2026, 'start_date' => '2026-06-21',
+        ]);
+
+        $response = $this->get(route('themes.index', ['maand' => '2026-06']));
+
+        // The mini-calendar should include a link to the theme anchor.
+        $expectedHref = route('themes.index', ['maand' => '2026-06']).'#thema-wereldyogadag';
+        $response->assertSee($expectedHref, false);
+    }
+
+    public function test_top_month_nav_hides_prev_when_entirely_past(): void
+    {
+        // Today is the project's fixed date (2026-05-12). April 2026 is entirely past.
+        $response = $this->get(route('themes.index', ['maand' => '2026-05']));
+
+        $response->assertViewHas('showPrev', false);
+    }
+
+    public function test_top_month_nav_shows_prev_when_overlaps_today(): void
+    {
+        // Viewing June; previous month (May) contains today, so prev is shown.
+        $response = $this->get(route('themes.index', ['maand' => '2026-06']));
+
+        $response->assertViewHas('showPrev', true);
     }
 }

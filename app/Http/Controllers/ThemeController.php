@@ -25,20 +25,27 @@ class ThemeController extends Controller
 
         [$seasonThemes, $dayThemes] = $themes->partition(fn (Theme $t) => $t->is_month);
 
-        $datesWithThemes = $themes
-            ->flatMap(fn (Theme $t) => $t->occurrences->pluck('start_date'))
-            ->filter()
-            ->map(fn ($d) => $d->format('Y-m-d'))
-            ->unique()
-            ->values()
+        $themesByDate = $themes
+            ->filter(fn (Theme $t) => $t->occurrences->first() !== null)
+            ->groupBy(fn (Theme $t) => $t->occurrences->first()->start_date->format('Y-m-d'))
+            ->map(fn ($group) => $group->map(fn (Theme $t) => [
+                'slug' => $t->slug,
+                'title' => $t->title,
+                'fiche_count' => $t->fiches->count(),
+            ])->values()->all())
             ->all();
+
+        $today = CarbonImmutable::now('Europe/Brussels')->startOfDay();
+        $prevMonth = $month->subMonth();
+        $showPrev = $prevMonth->endOfMonth()->gte($today);
 
         return view('themes.index', [
             'month' => $month,
             'monthIntro' => $this->loadMonthIntro($month->month),
             'seasonThemes' => $seasonThemes->values(),
             'dayThemes' => $dayThemes->values(),
-            'datesWithThemes' => $datesWithThemes,
+            'themesByDate' => $themesByDate,
+            'showPrev' => $showPrev,
         ]);
     }
 
