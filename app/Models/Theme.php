@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ThemeRecurrenceRule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Theme extends Model
@@ -31,5 +32,10 @@ class Theme extends Model
     public function occurrences(): HasMany
     {
         return $this->hasMany(ThemeOccurrence::class);
+    }
+
+    public function fiches(): BelongsToMany
+    {
+        return $this->belongsToMany(Fiche::class)->withTimestamps();
     }
 }
