@@ -17,7 +17,7 @@
 <x-layout title="Themakalender — {{ $monthLabel }}" :full-width="true">
     {{-- Hero --}}
     <section class="bg-[var(--color-bg-cream)]">
-        <div class="max-w-6xl mx-auto px-6 pt-8 pb-12">
+        <div class="max-w-6xl mx-auto px-6 pt-8 pb-16">
             <flux:breadcrumbs class="mb-8">
                 <flux:breadcrumbs.item href="{{ route('home') }}">Home</flux:breadcrumbs.item>
                 <flux:breadcrumbs.item>Themakalender</flux:breadcrumbs.item>
@@ -29,48 +29,11 @@
                 Ontdek welke themadagen eraan komen en vind activiteiten om ermee aan de slag te gaan.
             </p>
 
-            {{-- Month selector --}}
-            <div class="mt-10 flex items-baseline gap-6 flex-wrap">
-                <strong class="font-heading text-4xl text-[var(--color-text-primary)] leading-none">{{ $monthLabel }}</strong>
-                <span class="flex items-baseline gap-5 text-base">
-                    <a href="{{ route('themes.index', ['maand' => $prevMonth->format('Y-m')]) }}"
-                       class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">
-                        ← {{ $prevMonthLabel }}
-                    </a>
-                    <span class="text-[var(--color-border-hover)]">·</span>
-                    <a href="{{ route('themes.index', ['maand' => $nextMonth->format('Y-m')]) }}"
-                       class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">
-                        {{ $nextMonthLabel }} →
-                    </a>
-                </span>
-            </div>
+            <p class="font-heading text-3xl text-[var(--color-text-primary)] mt-10 leading-none">
+                {{ $monthLabel }}
+            </p>
         </div>
     </section>
-
-    {{-- Jump strip --}}
-    @if($groupedDayThemes->isNotEmpty() || $seasonThemes->isNotEmpty())
-        <div class="bg-[var(--color-bg-cream)] border-t border-[var(--color-border-light)]">
-            <div class="max-w-6xl mx-auto px-6 py-5 flex flex-wrap gap-x-6 gap-y-3 items-baseline text-sm">
-                <span class="font-semibold uppercase tracking-widest text-xs text-[var(--color-text-tertiary)]">In deze maand</span>
-                @foreach($seasonThemes as $theme)
-                    <a href="#thema-{{ $theme->slug }}"
-                       class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">
-                        {{ $theme->title }}
-                    </a>
-                @endforeach
-                @foreach($dayThemes as $theme)
-                    @php($occ = $theme->occurrences->first())
-                    <a href="#thema-{{ $theme->slug }}"
-                       class="group inline-flex items-baseline gap-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] transition-colors">
-                        @if($occ)
-                            <span class="text-xs font-heading font-bold text-[var(--color-primary)] tabular-nums">{{ $occ->start_date->locale('nl_BE')->translatedFormat('j M') }}</span>
-                        @endif
-                        <span>{{ $theme->title }}</span>
-                    </a>
-                @endforeach
-            </div>
-        </div>
-    @endif
 
     {{-- Content --}}
     <section class="bg-[var(--color-bg-white)] border-t border-[var(--color-border-light)]">
