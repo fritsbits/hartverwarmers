@@ -5,26 +5,26 @@
     $isToday = $badge && $badge['label'] === 'Vandaag';
 @endphp
 
-<div class="inline-flex flex-col items-stretch w-28">
-    <div class="w-full overflow-hidden rounded border shadow-[0_6px_16px_-4px_rgba(35,30,26,0.12),0_2px_4px_rgba(35,30,26,0.06)]
+<div class="inline-flex flex-col items-stretch w-[5.5rem]">
+    <div class="w-full overflow-hidden rounded border shadow-[0_5px_12px_-3px_rgba(35,30,26,0.10),0_2px_4px_rgba(35,30,26,0.05)]
         {{ $isToday
             ? 'bg-[var(--color-primary)] border-[var(--color-primary)]'
-            : 'bg-[var(--color-bg-cream)] border-[var(--color-border-light)]' }}">
+            : 'bg-[var(--color-bg-white)] border-[var(--color-border-light)]' }}">
         @if(! $isToday)
-            <div class="h-2 bg-[var(--color-primary)]"></div>
+            <div class="h-1.5 bg-[var(--color-primary)]"></div>
         @endif
-        <div class="px-3 py-3 text-center">
-            <div class="font-body text-[10px] font-semibold uppercase tracking-wider
+        <div class="px-2 py-2 text-center">
+            <div class="font-body text-[9px] font-semibold uppercase tracking-wide
                 {{ $isToday ? 'text-white/85' : 'text-[var(--color-text-tertiary)]' }}">
                 {{ $d->translatedFormat('l') }}
             </div>
-            <div class="font-heading font-bold text-5xl tabular-nums leading-none mt-2
+            <div class="font-heading font-bold text-4xl tabular-nums leading-none mt-1
                 {{ $isToday ? 'text-white' : 'text-[var(--color-primary)]' }}">
                 {{ $d->translatedFormat('j') }}
             </div>
-            <div class="font-body text-xs lowercase mt-2
-                {{ $isToday ? 'text-white/85' : 'text-[var(--color-text-secondary)]' }}">
-                {{ $d->translatedFormat('M') }}
+            <div class="font-body text-[11px] lowercase mt-1
+                {{ $isToday ? 'text-white/85' : 'text-[var(--color-text-tertiary)]' }}">
+                {{ $d->translatedFormat('F') }}
             </div>
         </div>
     </div>
