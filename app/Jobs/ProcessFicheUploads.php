@@ -16,6 +16,13 @@ class ProcessFicheUploads implements ShouldQueue
 {
     use Queueable;
 
+    public int $tries = 3;
+
+    public int $timeout = 300;
+
+    /** @var array<int, int> */
+    public array $backoff = [10, 60, 300];
+
     /**
      * @param  array<int>  $fileIds
      */
@@ -45,6 +52,8 @@ class ProcessFicheUploads implements ShouldQueue
         } catch (\Throwable $e) {
             Log::warning('ProcessFicheUploads failed', ['error' => $e->getMessage()]);
             $this->updateStatus('failed', ['error' => $e->getMessage()]);
+
+            throw $e;
         }
     }
 

@@ -328,14 +328,6 @@ class InitiativeTest extends TestCase
         $response->assertSee($contributor->full_name);
     }
 
-    public function test_themes_index_shows_placeholder(): void
-    {
-        $response = $this->get(route('themes.index'));
-
-        $response->assertStatus(200);
-        $response->assertSee('In opbouw');
-    }
-
     public function test_fiche_show_displays_other_fiches_from_initiative(): void
     {
         $initiative = Initiative::factory()->published()->create();

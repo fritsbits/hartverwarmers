@@ -21,7 +21,8 @@ class AboutPageTest extends TestCase
 
         $response->assertOk();
         $response->assertSeeText('Meer tijd voor wat écht telt');
-        $response->assertSee('Deel Hartverwarmers');
+        $response->assertSee('Deel Hartverwarmers')
+            ->assertSee('Doe een gift');
     }
 
     public function test_support_message_mailable_has_correct_envelope(): void
