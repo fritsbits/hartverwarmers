@@ -136,7 +136,7 @@
     <!-- Recent Fiches -->
     @if($recentFiches->isNotEmpty())
         <section class="bg-[var(--color-bg-base)]">
-            <div class="max-w-6xl mx-auto px-6 pb-16">
+            <div class="max-w-6xl mx-auto px-6 py-16">
                 <div class="mb-10">
                     <span class="section-label">
                         Uitgewerkte fiches
