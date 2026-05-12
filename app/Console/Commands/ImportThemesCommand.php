@@ -36,9 +36,10 @@ class ImportThemesCommand extends Command
         try {
             DB::transaction(function () use ($data, &$stats) {
                 foreach ($data['themes'] as $row) {
-                    $rule = ThemeRecurrenceRule::tryFrom($row['recurrence_rule'] ?? '');
+                    $rawRule = $row['recurrence_rule'] ?? '(ontbreekt)';
+                    $rule = ThemeRecurrenceRule::tryFrom($rawRule);
                     if ($rule === null) {
-                        throw new \RuntimeException("Onbekende recurrence_rule: {$row['recurrence_rule']} (thema: {$row['slug']}).");
+                        throw new \RuntimeException("Onbekende recurrence_rule: {$rawRule} (thema: {$row['slug']}).");
                     }
 
                     $theme = Theme::where('slug', $row['slug'])->first();
