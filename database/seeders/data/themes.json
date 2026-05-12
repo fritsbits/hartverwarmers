@@ -395,6 +395,534 @@
         "mediteer-met-bewoners-of-medewerkers",
         "lichaamsgerichte-activiteiten"
       ]
+    },
+    {
+      "title": "10 daagse van de veerkracht",
+      "slug": "10-daagse-van-de-veerkracht",
+      "description": "Tijdens de 10 daagse van de veerkracht vieren we de veerkracht van mensen en zetten we ons in voor het ondersteunen en ontwikkelen van veerkracht bij mensen die te maken hebben met stress, trauma en andere uitdagingen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-01"
+    },
+    {
+      "title": "Allerheiligen",
+      "slug": "allerheiligen",
+      "description": "Op Allerheiligen staan we stil bij onze overleden dierbaren en zetten we ons in voor de erkenning en waardering van hun leven en hun nagedachtenis en voor troost en steun voor degenen die achterblijven.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-01"
+    },
+    {
+      "title": "Alzheimerdag",
+      "slug": "alzheimerdag",
+      "description": "Op Alzheimerdag staan we stil bij het belang van goede zorg voor mensen met Alzheimer en zetten we ons in voor hun erkenning en waardering en voor onderzoek naar de oorzaken en behandeling van deze ziekte.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 09-21"
+    },
+    {
+      "title": "Baarddag",
+      "slug": "baarddag",
+      "description": "Baarddag is een dag waarop we onze baard laten staan en ons inzetten voor de erkenning en waardering van mannen met baarden en voor de gezondheid en verzorging van onze baarden.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 09-02"
+    },
+    {
+      "title": "Balletdag",
+      "slug": "balletdag",
+      "description": "Op Balletdag vieren we de elegantie en kracht van ballet en zetten we ons in voor de erkenning en waardering van balletdansers en ballet als kunstvorm en voor de toegankelijkheid van ballet voor iedereen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-19"
+    },
+    {
+      "title": "Black Friday",
+      "slug": "black-friday",
+      "description": "Op Black Friday kunnen we profiteren van aanbiedingen en kortingen in winkels. Deze dag is ingevoerd door de Amerikaanse winkelindustrie in de jaren 1950 om aandacht te vragen voor de start van het winkelseizoen en om klanten te verleiden om te winkelen en geld te spenderen.",
+      "is_month": false,
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "4th Friday of November"
+    },
+    {
+      "title": "Coming Out Day",
+      "slug": "coming-out-day",
+      "description": "Coming Out Day is een dag waarop we de mogelijkheid om onszelf te zijn en lief te hebben vieren en zetten we ons in voor de erkenning en waardering van LGBTQ+ mensen en voor gelijkheid en respect voor iedereen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-11"
+    },
+    {
+      "title": "Cyber Monday",
+      "slug": "cyber-monday",
+      "description": "Op Cyber Monday kunnen we profiteren van aanbiedingen en kortingen Deze dag is ingevoerd door de Amerikaanse e-commerce industrie in 2005 om aandacht te vragen voor de voordelen van online winkelen en om klanten te verleiden om online te winkelen en geld te spenderen. Cyber Monday is de drukste onli",
+      "is_month": false,
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "Monday after 4th Friday of November"
+    },
+    {
+      "title": "Dag tegen kanker",
+      "slug": "dag-tegen-kanker",
+      "description": "Op Dag tegen kanker staan we stil bij de mogelijkheid om te herstellen van kanker en engageren we ons voor de erkenning en waardering van mensen die te maken hebben met kanker en voor onderzoek naar de oorzaken en behandeling van kanker.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-21"
+    },
+    {
+      "title": "Dag van de ergotherapeut",
+      "slug": "dag-van-de-ergotherapeut",
+      "description": "We vieren we de mogelijkheid om te genezen en te herstellen door middel van ergotherapie en creatief denken. We engageren ons voor de erkenning en waardering van ergotherapeuten en voor de toegang tot hun professionele ondersteuning en begeleiding.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-27"
+    },
+    {
+      "title": "Dag van de jeugdbeweging",
+      "slug": "dag-van-de-jeugdbeweging",
+      "description": "Op Dag van de jeugdbeweging vieren we de mogelijkheid voor kinderen en jongeren om zich te ontwikkelen door middel van activiteiten en avonturen in de natuur en zetten we ons in voor de erkenning en waardering van jeugdbewegingen en voor de toegankelijkheid van jeugdbewegingen voor iedereen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-20"
+    },
+    {
+      "title": "Dag van de koffie",
+      "slug": "dag-van-de-koffie",
+      "description": "Op Dag van de koffie vieren we de heerlijke smaak en aroma van koffie en zetten we ons in voor de erkenning en waardering van koffiebonen en koffiebereiding als kunst en vakmanschap.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 09-26"
+    },
+    {
+      "title": "Dag van de mensenrechten",
+      "slug": "dag-van-de-mensenrechten",
+      "description": "Dit is de dag waarop in 1948 door de Verenigde Naties de Universele Verklaring van de Rechten van de Mens werd aanvaard.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-10"
+    },
+    {
+      "title": "Dag van de migrant",
+      "slug": "dag-van-de-migrant",
+      "description": "Deze dag herinnert de ondertekening van de Internationale Conventie voor de bescherming van de rechten van alle arbeidsmigranten en hun gezinsleden.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-18"
+    },
+    {
+      "title": "Dag van de onschuldige kinderen",
+      "slug": "dag-van-de-onschuldige-kinderen",
+      "description": "Op Dag van de onschuldige kinderen staan we stil bij het lijden en de dood van de onschuldige kinderen. De dag is ingevoerd door de Verenigde Naties in 1989 om aandacht te vragen voor de wreedheid en de onrechtvaardigheid van oorlog en geweld tegen kinderen en om mensen te informeren over de situati",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-28"
+    },
+    {
+      "title": "Dag van de ouderen",
+      "slug": "dag-van-de-ouderen",
+      "description": "Op Dag van de ouderen eren we ouderen en zetten we ons in voor hun erkenning en waardering en voor toegang tot kwalitatief hoogstaande zorg en ondersteuning.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-01"
+    },
+    {
+      "title": "Dag van de palliatieve zorg",
+      "slug": "dag-van-de-palliatieve-zorg",
+      "description": "Op Dag van de palliatieve zorg vieren we de mogelijkheid om mensen met een levensbedreigende ziekte comfortabel en met waardigheid te begeleiden en zetten we ons in voor de erkenning en waardering van de mensen die zich inzetten voor palliatieve zorg.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-09"
+    },
+    {
+      "title": "Dag van de thee",
+      "slug": "dag-van-de-thee",
+      "description": "Het doel van deze dag is om wereldwijd aandacht te vragen (van zowel burgers als overheden) voor de impact van de wereldwijde theehandel op arbeiders en telers in de thee-industrie. Ook is er extra aandacht voor prijsondersteuning en eerlijke handel.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-15"
+    },
+    {
+      "title": "Dag van de tolerantie",
+      "slug": "dag-van-de-tolerantie",
+      "description": "Op Dag van de tolerantie vieren we de waarde en noodzaak van tolerantie en zetten we ons in voor de erkenning en waardering van tolerantie en voor een samenleving waarin mensen met verschillende overtuigingen en achtergronden respectvol en in harmonie samenleven.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-16"
+    },
+    {
+      "title": "Dag van de verzorgenden en zorgkundigen",
+      "slug": "dag-van-de-verzorgenden-en-zorgkundigen",
+      "description": "Op Dag van de verzorgenden en zorgkundigen vieren we de professionele vaardigheden en menselijkheid van verzorgenden en zorgkundigen en engageren we ons voor hun erkenning en waardering en voor hun toegang tot kwalitatief hoogstaande opleiding en ondersteuning.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-20"
+    },
+    {
+      "title": "Dag van de wetenschap",
+      "slug": "dag-van-de-wetenschap",
+      "description": "Deze dag is ingevoerd door de Verenigde Naties in 2001 om aandacht te vragen voor de betekenis en het belang van wetenschap en technologie en om mensen te inspireren om deel te nemen aan wetenschappelijke activiteiten en om te leren over wetenschap",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-28"
+    },
+    {
+      "title": "Dag van de witte stok",
+      "slug": "dag-van-de-witte-stok",
+      "description": "Op Dag van de witte stok zetten we ons in voor de erkenning en waardering van mensen met een visuele beperking en voor hun toegang tot ondersteuning en hulpmiddelen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-15"
+    },
+    {
+      "title": "Dag van het therapiedier",
+      "slug": "dag-van-het-therapiedier",
+      "description": "Op Dag van het therapiedier vieren we de positieve effecten van dieren op de gezondheid en het welzijn van mensen en zetten we ons in voor de erkenning en waardering van therapiedieren en voor de toegankelijkheid van therapiedieren voor mensen met fysieke, mentale en emotionele uitdagingen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-17"
+    },
+    {
+      "title": "Dag van mensen met een beperking",
+      "slug": "dag-van-mensen-met-een-beperking",
+      "description": "Deze dag is bedoeld als aanmoediging om de discussie over mensenrechten en gelijke kansen voor mensen met een functiebeperking op de agenda te houden.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-03"
+    },
+    {
+      "title": "Dag voor de uitbanning van geweld tegen vrouwen",
+      "slug": "dag-voor-de-uitbanning-van-geweld-tegen-vrouwen",
+      "description": "Deze dag is ingevoerd door de Verenigde Naties in 1999 om aandacht te vragen voor de omvang en de gevolgen van geweld tegen vrouwen en om mensen te mobiliseren om actie te ondernemen voor de preventie en de bestrijding van geweld tegen vrouwen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-25"
+    },
+    {
+      "title": "Dierendag",
+      "slug": "dierendag",
+      "description": "Dierendag is een dag waarop we ons engageren voor het welzijn van dieren en voor de erkenning en waardering van dieren als belangrijke leden van onze samenleving.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-04"
+    },
+    {
+      "title": "Duurzame dinsdag",
+      "slug": "duurzame-dinsdag",
+      "description": "Duurzame dinsdag is een dag waarop we stilstaan bij de impact van onze levensstijl op het milieu en ons inzetten voor duurzame oplossingen en gedragsverandering.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 09-05"
+    },
+    {
+      "title": "E-mailloze vrijdag",
+      "slug": "e-mailloze-vrijdag",
+      "description": "Deze dag is ingevoerd in 2012 door een Nederlands bedrijf om aandacht te vragen voor de overbelasting van e-mails en om mensen te helpen om beter te communiceren en te werken zonder overmatig gebruik van e-mails.",
+      "is_month": false,
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "Last Friday of November (approx)"
+    },
+    {
+      "title": "Eerste Kerstdag",
+      "slug": "eerste-kerstdag",
+      "description": "Het is een christelijke religieuze feestdag.  Eerste kerstdag wordt meestal thuis in familiekring gevierd met een kerstdiner.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-25"
+    },
+    {
+      "title": "Halloween",
+      "slug": "halloween",
+      "description": "Op Halloween kunnen we ons verkleden als onze favoriete spook en lekkere snoepjes halen en zetten we ons in voor de erkenning en waardering van deze leuke en spannende feestdag.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-31"
+    },
+    {
+      "title": "Herfst",
+      "slug": "herfst",
+      "description": "In de herfst vieren we de overgang van de zomer naar de winter en genieten we van de veranderende kleuren van de natuur en de oogst van de landbouw.",
+      "is_month": true,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 09-21"
+    },
+    {
+      "title": "Herfstvakantie",
+      "slug": "herfstvakantie",
+      "description": "Tijdens de Herfstvakantie kunnen we lekker genieten van het mooie herfstweer en leuke dingen doen met vrienden en familie en zetten we ons in voor de erkenning en waardering van vakantie en tijd voor ontspanning en plezier.",
+      "is_month": false,
+      "recurrence_rule": "school_calendar",
+      "recurrence_detail": "Flemish school calendar (set by gov)"
+    },
+    {
+      "title": "Kerstavond",
+      "slug": "kerstavond",
+      "description": "Christenen houden op kerstavond vaak een kerstnachtdienst om de geboorte van Jezus Christus te vieren.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-24"
+    },
+    {
+      "title": "Kinderrechtendag",
+      "slug": "kinderrechtendag",
+      "description": "Op Kinderrechtendag vieren we de rechten van kinderen en staan we stil bij de verantwoordelijkheid van volwassenen om de rechten van kinderen te beschermen en te respecteren. Deze dag is ingevoerd door de Verenigde Naties in 1989 om aandacht te vragen voor de situatie van kinderen over de hele werel",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-20"
+    },
+    {
+      "title": "Lichtjesdag",
+      "slug": "lichtjesdag",
+      "description": "Elk jaar op de tweede zondag in december wordt Wereld Lichtjesdag georganiseerd. Dan staan we met elkaar stil bij alle kinderen die, op welke leeftijd en om welke reden dan ook, zijn overleden.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-11"
+    },
+    {
+      "title": "Muziekdag",
+      "slug": "muziekdag",
+      "description": "Op Muziekdag vieren we de kracht van muziek en zetten we ons in voor de erkenning en waardering van muzikanten en muziek en voor de toegankelijkheid van muziek voor iedereen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-01"
+    },
+    {
+      "title": "Nacht van de duisternis",
+      "slug": "nacht-van-de-duisternis",
+      "description": "Nacht van de duisternis is een periode waarin we stilstaan bij de waarde van duisternis en zetten we ons in voor het behoud van donkere nachten en voor de erkenning en waardering van de natuur en het leven in de nacht.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-09"
+    },
+    {
+      "title": "Open monumentendag",
+      "slug": "open-monumentendag",
+      "description": "Op Open monumentendag openen we historische gebouwen en monumenten voor het publiek en organiseren we activiteiten om de geschiedenis en culturele waarde ervan te delen en te vieren.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 09-14"
+    },
+    {
+      "title": "Oudejaarsavond",
+      "slug": "oudejaarsavond",
+      "description": "Oudejaarsavond (ook wel Silvester, vernoemd naar de heilige paus Silvester). Het is de vooravond van de oorspronkelijk christelijke dag om het nieuwe jaar in te luiden volgens de christelijke kalender.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-31"
+    },
+    {
+      "title": "Reumadag",
+      "slug": "reumadag",
+      "description": "Op Reumadag vieren we de mogelijkheid om te leven met reuma en zetten we ons in voor de erkenning en waardering van mensen met reuma en voor onderzoek naar de oorzaken en behandeling van reuma.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-11"
+    },
+    {
+      "title": "Sint Elooi",
+      "slug": "sint-elooi",
+      "description": "Deze dag is ingevoerd in de Lage Landen in de middeleeuwen om aandacht te vragen voor de waarde en het belang van goudsmeden en goudsmedenkunst en om mensen te inspireren om te leren over goudsmeden en goudsmedenkunst. Weetje: Sint Elooi is de patroonheilige van de goudsmeden en wordt afgebeeld met ",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-01"
+    },
+    {
+      "title": "Sint Maarten",
+      "slug": "sint-maarten",
+      "description": "Op Sint-Maarten vieren we de traditionele legende van Sint-Maarten die zijn mantel deelde met een arm en verkleumd kind en zetten we ons in voor de erkenning en waardering van goedheid en mededogen en voor vriendschap en samenwerking.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-11"
+    },
+    {
+      "title": "Sinterklaas",
+      "slug": "sinterklaas",
+      "description": "Sinterklaas is gebaseerd op de bisschop Nicolaas van Myra, een Griekse heilige die in de derde eeuw na Christus in Lycië in Klein-Azië leefde.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-06"
+    },
+    {
+      "title": "Terug naar school",
+      "slug": "terug-naar-school",
+      "description": "Terug naar school is een periode waarin kinderen en jongeren na hun vakantie terugkeren naar school en zich voorbereiden op een nieuw schooljaar vol leren en ontwikkeling.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 09-01"
+    },
+    {
+      "title": "Transgender Gedenkdag",
+      "slug": "transgender-gedenkdag",
+      "description": "Op Transgender Gedenkdag staan we stil bij de situatie en de rechten van transgender mensen en zetten we ons in voor de erkenning en waardering van transgender mensen en voor gelijke behandeling en respect voor transgender mensen. Deze dag is ingevoerd in 1998 door transgender activisten om aandacht",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-20"
+    },
+    {
+      "title": "Vegan Dag",
+      "slug": "vegan-dag",
+      "description": "Vegan day viert de voordelen van een veganistisch dieet voor onze gezondheid en het milieu. Deze dag is in 1994 gestart in de Verenigde Staten om de levensstijl te bevorderen en te laten zien dat plantaardige voeding lekker, gezond en duurzaam kan zijn.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-01"
+    },
+    {
+      "title": "Veggiedag",
+      "slug": "veggiedag",
+      "description": "Veggiedag is een dag waarop we ons engageren voor het bevorderen van plantaardige voeding en voor het bewustmaken van de voordelen van een vegetarisch dieet voor onze gezondheid en het milieu.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-01"
+    },
+    {
+      "title": "Verjaardag Adolphe Sax",
+      "slug": "verjaardag-adolphe-sax",
+      "description": "We vieren de uitvinding van de saxofoon door de Belgische instrumentenbouwer Adolphe Sax in 1846.  Hij werd geboren in Dinant in 1814 en groeide op in een muzikale familie. Hij studeerde muziek en instrumentenbouw en ontwikkelde een aantal nieuwe instrumenten, waaronder de saxofoon die hij patenteer",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-06"
+    },
+    {
+      "title": "Verjaardag Pablo Picasso",
+      "slug": "verjaardag-pablo-picasso",
+      "description": "Op Verjaardag Pablo Picasso vieren we de geweldige kunstenaar en zijn kleurrijke en expressieve werken en engageren we ons voor de erkenning en waardering van zijn bijdragen aan de kunstwereld en voor de inspiratie die hij geeft aan kunstenaars over de hele wereld.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-25"
+    },
+    {
+      "title": "Voorleesweek",
+      "slug": "voorleesweek",
+      "description": "Tijdens de Voorleesweek kunnen we genieten van leuke en spannende verhalen en staan we stil bij het belang van voorlezen voor de ontwikkeling en het welzijn van kinderen. Deze week is ingevoerd door de Vereniging van Openbare Bibliotheken om aandacht te vragen voor het voorlezen als een leuke en waa",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-20"
+    },
+    {
+      "title": "Vrijwilligersdag",
+      "slug": "vrijwilligersdag",
+      "description": "Deze dag is bedoeld om wereldwijd het vrijwilligerswerk respect te tonen en het te promoten.  Vrijwilligersdag is ingevoerd door de Verenigde Naties in 1985 om aandacht te vragen voor de waarde en het belang van vrijwilligerswerk en om mensen te inspireren om vrijwilligerswerk te doen en om te leren",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-07"
+    },
+    {
+      "title": "Wapenstilstand",
+      "slug": "wapenstilstand",
+      "description": "Op Wapenstilstand herdenken we de einde van de Eerste Wereldoorlog in 1918 en zetten we ons in voor de erkenning en waardering van de oorlogsslachtoffers en veteranen en voor vrede en verzoening tussen landen en mensen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-11"
+    },
+    {
+      "title": "Week tegen pijn",
+      "slug": "week-tegen-pijn",
+      "description": "Tijdens de Week tegen pijn staan we stil bij de mogelijkheid om pijn te beheersen en zetten we ons in voor de erkenning en waardering van mensen met chronische pijn en voor onderzoek naar pijnbestrijding en -behandeling.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 10-09"
+    },
+    {
+      "title": "Week van de geletterdheid",
+      "slug": "week-van-de-geletterdheid",
+      "description": "Tijdens de Week van de geletterdheid staan we stil bij het belang van goed lezen, schrijven en begrijpen en zetten we ons in voor de ontwikkeling en ondersteuning van deze vaardigheden.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 09-07"
+    },
+    {
+      "title": "Week van de ouderen",
+      "slug": "week-van-de-ouderen",
+      "description": "Tijdens de Week van de ouderen staan we stil bij de waarde en bijdrage van ouderen in onze samenleving en zetten we ons in voor de erkenning en waardering van ouderen en voor hun toegang tot kwalitatief hoogstaande zorg en ondersteuning.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-20"
+    },
+    {
+      "title": "Week van smaak",
+      "slug": "week-van-smaak",
+      "description": "Tijdens de Week van smaak staan we stil bij de verscheidenheid en heerlijkheid van voedsel en zetten we ons in voor de erkenning en waardering van lekker eten en voor gezonde en duurzame voeding.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-20"
+    },
+    {
+      "title": "Wereld Aidsdag",
+      "slug": "wereld-aidsdag",
+      "description": "Deze dag is ingevoerd door de Verenigde Naties in 1988 om aandacht te vragen voor de toenemende prevalentie van HIV en AIDS en om mensen te informeren over HIV en AIDS en om stigma en discriminatie tegen mensen met HIV en AIDS te verminderen. Wereld aidsdag valt elk jaar op 1 december, ter herdenkin",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-01"
+    },
+    {
+      "title": "Wereld Diabetes Dag",
+      "slug": "wereld-diabetes-dag",
+      "description": "Op Wereld Diabetes Dag staan we stil bij de toenemende prevalentie van diabetes en zetten we ons in voor de erkenning en waardering van mensen met diabetes en voor onderzoek naar de oorzakens en behandeling van diabetes.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-14"
+    },
+    {
+      "title": "Wereld Toiletdag",
+      "slug": "wereld-toiletdag",
+      "description": "De dag richt zich op het belang van goede sanitaire voorzieningen en voor toegang tot schone en veilige toiletten voor iedereen. Wereld Toiletdag is ingevoerd door de Wereldgezondheidsorganisatie en de Verenigde Naties in 2001 om aandacht te vragen voor de uitdagingen en de kansen van de sanitaire s",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-19"
+    },
+    {
+      "title": "Wereld dovendag",
+      "slug": "wereld-dovendag",
+      "description": "Op Wereld dovendag eren we doven en hardhorenden en zetten we ons in voor hun erkenning en waardering en voor de toegankelijkheid van informatie en communicatie voor hen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 09-23"
+    },
+    {
+      "title": "Wereld hartdag",
+      "slug": "wereld-hartdag",
+      "description": "Op Wereld hartdag staan we stil bij het belang van een gezond hart en zetten we ons in voor de preventie en behandeling van hartaandoeningen en voor de erkenning en waardering van mensen met een gezond hart.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 09-29"
+    },
+    {
+      "title": "Wereld knuffeldag",
+      "slug": "wereld-knuffeldag",
+      "description": "Op Wereld knuffeldag kunnen we lekker knuffelen met onze geliefden en staan we stil bij de positieve effecten van knuffelen op onze gezondheid en het welzijn. Deze dag is ingevoerd in 1986 door een Amerikaans stel om aandacht te vragen voor de waarde en het belang van knuffelen en om mensen te verle",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-21"
+    },
+    {
+      "title": "Wereld vriendelijkheidsdag",
+      "slug": "wereld-vriendelijkheidsdag",
+      "description": "Op Wereld vriendelijkheidsdag vieren we de waarde van vriendelijkheid en zetten we ons in voor de erkenning en waardering van vriendelijke mensen en voor een wereld waarin vriendelijkheid de norm is.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-13"
+    },
+    {
+      "title": "Wereldmannendag",
+      "slug": "wereldmannendag",
+      "description": "Op Wereldmannendag vieren we de positieve eigenschappen en bijdragen van mannen en zetten we ons in voor de erkenning en waardering van mannen en voor gendergelijkheid en respect voor iedereen.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 11-19"
+    },
+    {
+      "title": "Winter",
+      "slug": "winter",
+      "description": "De winter begint op het noordelijk halfrond meestal op 21 december en eindigt meestal op 21 maart.",
+      "is_month": true,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 12-21"
+    },
+    {
+      "title": "Winteruur",
+      "slug": "winteruur",
+      "description": "Op Winteruur vieren we het extra licht in de ochtend en zetten we ons in voor het behoud van een gezonde slaap-waakritme en voor de erkenning en waardering van de natuur en het leven in de winter.",
+      "is_month": false,
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "Last Sunday of October"
     }
   ],
   "occurrences_2026": [
@@ -576,6 +1104,402 @@
       "theme_slug": "dag-van-de-senioren",
       "year": 2026,
       "start_date": "2026-08-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "terug-naar-school",
+      "year": 2026,
+      "start_date": "2026-09-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "baarddag",
+      "year": 2026,
+      "start_date": "2026-09-02",
+      "end_date": null
+    },
+    {
+      "theme_slug": "duurzame-dinsdag",
+      "year": 2026,
+      "start_date": "2026-09-05",
+      "end_date": null
+    },
+    {
+      "theme_slug": "week-van-de-geletterdheid",
+      "year": 2026,
+      "start_date": "2026-09-07",
+      "end_date": null
+    },
+    {
+      "theme_slug": "open-monumentendag",
+      "year": 2026,
+      "start_date": "2026-09-14",
+      "end_date": "2026-09-15"
+    },
+    {
+      "theme_slug": "herfst",
+      "year": 2026,
+      "start_date": "2026-09-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "alzheimerdag",
+      "year": 2026,
+      "start_date": "2026-09-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-dovendag",
+      "year": 2026,
+      "start_date": "2026-09-23",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-koffie",
+      "year": 2026,
+      "start_date": "2026-09-26",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-hartdag",
+      "year": 2026,
+      "start_date": "2026-09-29",
+      "end_date": null
+    },
+    {
+      "theme_slug": "10-daagse-van-de-veerkracht",
+      "year": 2026,
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-10"
+    },
+    {
+      "theme_slug": "dag-van-de-ouderen",
+      "year": 2026,
+      "start_date": "2026-10-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "muziekdag",
+      "year": 2026,
+      "start_date": "2026-10-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "veggiedag",
+      "year": 2026,
+      "start_date": "2026-10-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dierendag",
+      "year": 2026,
+      "start_date": "2026-10-04",
+      "end_date": null
+    },
+    {
+      "theme_slug": "week-tegen-pijn",
+      "year": 2026,
+      "start_date": "2026-10-09",
+      "end_date": "2026-10-15"
+    },
+    {
+      "theme_slug": "nacht-van-de-duisternis",
+      "year": 2026,
+      "start_date": "2026-10-09",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-palliatieve-zorg",
+      "year": 2026,
+      "start_date": "2026-10-09",
+      "end_date": null
+    },
+    {
+      "theme_slug": "coming-out-day",
+      "year": 2026,
+      "start_date": "2026-10-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "reumadag",
+      "year": 2026,
+      "start_date": "2026-10-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-witte-stok",
+      "year": 2026,
+      "start_date": "2026-10-15",
+      "end_date": null
+    },
+    {
+      "theme_slug": "balletdag",
+      "year": 2026,
+      "start_date": "2026-10-19",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-verzorgenden-en-zorgkundigen",
+      "year": 2026,
+      "start_date": "2026-10-20",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-jeugdbeweging",
+      "year": 2026,
+      "start_date": "2026-10-20",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-tegen-kanker",
+      "year": 2026,
+      "start_date": "2026-10-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "winteruur",
+      "year": 2026,
+      "start_date": "2026-10-25",
+      "end_date": null
+    },
+    {
+      "theme_slug": "verjaardag-pablo-picasso",
+      "year": 2026,
+      "start_date": "2026-10-25",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-ergotherapeut",
+      "year": 2026,
+      "start_date": "2026-10-27",
+      "end_date": null
+    },
+    {
+      "theme_slug": "halloween",
+      "year": 2026,
+      "start_date": "2026-10-31",
+      "end_date": null
+    },
+    {
+      "theme_slug": "herfstvakantie",
+      "year": 2026,
+      "start_date": "2026-10-31",
+      "end_date": "2026-11-08"
+    },
+    {
+      "theme_slug": "allerheiligen",
+      "year": 2026,
+      "start_date": "2026-11-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "vegan-dag",
+      "year": 2026,
+      "start_date": "2026-11-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "verjaardag-adolphe-sax",
+      "year": 2026,
+      "start_date": "2026-11-06",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wapenstilstand",
+      "year": 2026,
+      "start_date": "2026-11-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "sint-maarten",
+      "year": 2026,
+      "start_date": "2026-11-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-vriendelijkheidsdag",
+      "year": 2026,
+      "start_date": "2026-11-13",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-diabetes-dag",
+      "year": 2026,
+      "start_date": "2026-11-14",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-tolerantie",
+      "year": 2026,
+      "start_date": "2026-11-16",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-het-therapiedier",
+      "year": 2026,
+      "start_date": "2026-11-17",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereldmannendag",
+      "year": 2026,
+      "start_date": "2026-11-19",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-toiletdag",
+      "year": 2026,
+      "start_date": "2026-11-19",
+      "end_date": null
+    },
+    {
+      "theme_slug": "kinderrechtendag",
+      "year": 2026,
+      "start_date": "2026-11-20",
+      "end_date": null
+    },
+    {
+      "theme_slug": "transgender-gedenkdag",
+      "year": 2026,
+      "start_date": "2026-11-20",
+      "end_date": null
+    },
+    {
+      "theme_slug": "voorleesweek",
+      "year": 2026,
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-28"
+    },
+    {
+      "theme_slug": "week-van-de-ouderen",
+      "year": 2026,
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-26"
+    },
+    {
+      "theme_slug": "week-van-smaak",
+      "year": 2026,
+      "start_date": "2026-11-20",
+      "end_date": "2026-11-26"
+    },
+    {
+      "theme_slug": "wereld-knuffeldag",
+      "year": 2026,
+      "start_date": "2026-11-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-voor-de-uitbanning-van-geweld-tegen-vrouwen",
+      "year": 2026,
+      "start_date": "2026-11-25",
+      "end_date": null
+    },
+    {
+      "theme_slug": "e-mailloze-vrijdag",
+      "year": 2026,
+      "start_date": "2026-11-27",
+      "end_date": null
+    },
+    {
+      "theme_slug": "black-friday",
+      "year": 2026,
+      "start_date": "2026-11-27",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-wetenschap",
+      "year": 2026,
+      "start_date": "2026-11-28",
+      "end_date": null
+    },
+    {
+      "theme_slug": "cyber-monday",
+      "year": 2026,
+      "start_date": "2026-11-30",
+      "end_date": null
+    },
+    {
+      "theme_slug": "sint-elooi",
+      "year": 2026,
+      "start_date": "2026-12-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-aidsdag",
+      "year": 2026,
+      "start_date": "2026-12-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-mensen-met-een-beperking",
+      "year": 2026,
+      "start_date": "2026-12-03",
+      "end_date": null
+    },
+    {
+      "theme_slug": "sinterklaas",
+      "year": 2026,
+      "start_date": "2026-12-06",
+      "end_date": null
+    },
+    {
+      "theme_slug": "vrijwilligersdag",
+      "year": 2026,
+      "start_date": "2026-12-07",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-mensenrechten",
+      "year": 2026,
+      "start_date": "2026-12-10",
+      "end_date": null
+    },
+    {
+      "theme_slug": "lichtjesdag",
+      "year": 2026,
+      "start_date": "2026-12-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-thee",
+      "year": 2026,
+      "start_date": "2026-12-15",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-migrant",
+      "year": 2026,
+      "start_date": "2026-12-18",
+      "end_date": null
+    },
+    {
+      "theme_slug": "winter",
+      "year": 2026,
+      "start_date": "2026-12-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "kerstavond",
+      "year": 2026,
+      "start_date": "2026-12-24",
+      "end_date": null
+    },
+    {
+      "theme_slug": "eerste-kerstdag",
+      "year": 2026,
+      "start_date": "2026-12-25",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-onschuldige-kinderen",
+      "year": 2026,
+      "start_date": "2026-12-28",
+      "end_date": null
+    },
+    {
+      "theme_slug": "oudejaarsavond",
+      "year": 2026,
+      "start_date": "2026-12-31",
       "end_date": null
     }
   ]
