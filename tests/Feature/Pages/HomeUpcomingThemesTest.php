@@ -1,0 +1,83 @@
+<?php
+
+namespace Tests\Feature\Pages;
+
+use App\Models\Theme;
+use App\Models\ThemeOccurrence;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Tests\TestCase;
+
+class HomeUpcomingThemesTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Cache::flush();
+        Carbon::setTestNow('2026-05-12 09:00:00');
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+        parent::tearDown();
+    }
+
+    public function test_passes_upcoming_themes_to_view(): void
+    {
+        $next = Theme::factory()->create(['title' => 'Wereldyogadag']);
+        ThemeOccurrence::factory()->for($next)->create([
+            'year' => 2026, 'start_date' => '2026-06-21',
+        ]);
+
+        $response = $this->get(route('home'));
+        $response->assertOk();
+        $upcoming = $response->viewData('upcomingThemes');
+        $this->assertNotNull($upcoming);
+        $this->assertCount(1, $upcoming);
+        $this->assertEquals('Wereldyogadag', $upcoming->first()->theme->title);
+    }
+
+    public function test_caps_to_three_upcoming(): void
+    {
+        foreach (range(1, 5) as $i) {
+            $t = Theme::factory()->create();
+            ThemeOccurrence::factory()->for($t)->create([
+                'year' => 2026, 'start_date' => "2026-06-0{$i}",
+            ]);
+        }
+
+        $response = $this->get(route('home'));
+        $this->assertCount(3, $response->viewData('upcomingThemes'));
+    }
+
+    public function test_excludes_past_single_day_occurrences(): void
+    {
+        $past = Theme::factory()->create(['title' => 'Past']);
+        ThemeOccurrence::factory()->for($past)->create([
+            'year' => 2026, 'start_date' => '2026-05-01',
+        ]);
+
+        $future = Theme::factory()->create(['title' => 'Future']);
+        ThemeOccurrence::factory()->for($future)->create([
+            'year' => 2026, 'start_date' => '2026-06-21',
+        ]);
+
+        $upcoming = $this->get(route('home'))->viewData('upcomingThemes');
+        $this->assertEquals(['Future'], $upcoming->pluck('theme.title')->all());
+    }
+
+    public function test_includes_currently_active_multi_day(): void
+    {
+        $active = Theme::factory()->create(['title' => 'Active']);
+        ThemeOccurrence::factory()->for($active)->create([
+            'year' => 2026, 'start_date' => '2026-05-01', 'end_date' => '2026-05-31',
+        ]);
+
+        $upcoming = $this->get(route('home'))->viewData('upcomingThemes');
+        $this->assertTrue($upcoming->pluck('theme.title')->contains('Active'));
+    }
+}

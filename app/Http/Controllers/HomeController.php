@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Fiche;
 use App\Models\Initiative;
+use App\Models\ThemeOccurrence;
 use App\Models\User;
 use App\Services\DiamantService;
 use Illuminate\Support\Facades\Cache;
@@ -88,6 +89,25 @@ class HomeController extends Controller
             'initiatives' => Initiative::where('published', true)->count(),
         ]);
 
+        $today = today();
+        $upcomingThemes = Cache::remember(
+            'home:upcoming-themes:'.$today->toDateString(),
+            now()->addHour(),
+            fn () => ThemeOccurrence::query()
+                ->where(function ($q) use ($today) {
+                    $q->where('start_date', '>=', $today)
+                        ->orWhere(function ($q2) use ($today) {
+                            $q2->where('start_date', '<', $today)
+                                ->whereNotNull('end_date')
+                                ->where('end_date', '>=', $today);
+                        });
+                })
+                ->orderBy('start_date')
+                ->with('theme')
+                ->limit(3)
+                ->get()
+        );
+
         return view('home', [
             'initiatives' => $initiatives,
             'goals' => $eligibleGoals,
@@ -96,6 +116,7 @@ class HomeController extends Controller
             'recentDiamond' => $recentDiamond,
             'diamonds' => $diamonds,
             'stats' => $stats,
+            'upcomingThemes' => $upcomingThemes,
         ]);
     }
 }
