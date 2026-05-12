@@ -16,12 +16,16 @@ class HomeController extends Controller
 {
     public function __invoke(DiamantService $diamant): View
     {
-        $initiatives = Initiative::query()
-            ->published()
-            ->with(['tags' => fn ($q) => $q->where('type', 'goal')], 'creator')
-            ->withCount(['fiches' => fn ($q) => $q->published()])
-            ->latest()
-            ->get();
+        $initiatives = Cache::remember(
+            'home:initiatives',
+            now()->addMinutes(10),
+            fn () => Initiative::query()
+                ->published()
+                ->with(['tags' => fn ($q) => $q->where('type', 'goal')], 'creator')
+                ->withCount(['fiches' => fn ($q) => $q->published()])
+                ->latest()
+                ->get()
+        );
 
         $inspiratieTitels = [
             'doen' => 'actief mee te doen',
@@ -56,33 +60,29 @@ class HomeController extends Controller
             ? collect($eligibleGoals)->random()['tagSlug']
             : collect($goals)->first()['tagSlug'];
 
-        $recentFiches = Fiche::query()
-            ->published()
-            ->with('initiative', 'user', 'tags', 'files')
-            ->withCount('comments')
-            ->latest()
-            ->take(4)
-            ->get();
+        $recentFiches = Cache::remember(
+            'home:recent-fiches',
+            now()->addMinutes(5),
+            fn () => Fiche::query()
+                ->published()
+                ->with('initiative', 'user')
+                ->withCount('comments')
+                ->latest()
+                ->take(4)
+                ->get()
+        );
 
-        $recentDiamond = Fiche::query()
-            ->published()
-            ->where('has_diamond', true)
-            ->with(['initiative', 'user', 'tags', 'files'])
-            ->withCount('comments')
-            ->latest()
-            ->first();
-
-        $diamondCount = Fiche::query()->published()->where('has_diamond', true)->count();
-        $diamonds = $diamondCount >= 3
-            ? Fiche::query()
+        $recentDiamond = Cache::remember(
+            'home:recent-diamond',
+            now()->addMinutes(5),
+            fn () => Fiche::query()
                 ->published()
                 ->where('has_diamond', true)
-                ->with(['user', 'initiative', 'tags', 'files'])
-                ->withCount(['likes', 'comments'])
-                ->inRandomOrder()
-                ->limit(3)
-                ->get()
-            : collect();
+                ->with(['initiative', 'user', 'files'])
+                ->withCount('comments')
+                ->latest()
+                ->first()
+        );
 
         $stats = Cache::remember('home:stats', 300, fn () => [
             'fiches' => Fiche::published()->count(),
@@ -132,7 +132,6 @@ class HomeController extends Controller
             'defaultGoal' => $defaultGoal,
             'recentFiches' => $recentFiches,
             'recentDiamond' => $recentDiamond,
-            'diamonds' => $diamonds,
             'stats' => $stats,
             'upcomingThemes' => $upcomingThemes,
             'upcomingMonth' => $upcomingMonth,

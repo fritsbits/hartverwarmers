@@ -113,42 +113,4 @@ class HomeControllerTest extends TestCase
         $defaultGoal = $response->viewData('defaultGoal');
         $this->assertEquals('doel-doen', $defaultGoal);
     }
-
-    public function test_home_page_shows_diamantjes_section_when_three_or_more_exist(): void
-    {
-        $initiative = Initiative::factory()->published()->create();
-        Fiche::factory()->published()->withDiamond()->count(3)->create([
-            'initiative_id' => $initiative->id,
-        ]);
-
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-        $response->assertSee('Diamantjes');
-        $response->assertViewHas('diamonds');
-        $this->assertCount(3, $response->viewData('diamonds'));
-    }
-
-    public function test_home_page_hides_diamantjes_section_when_fewer_than_three_exist(): void
-    {
-        $initiative = Initiative::factory()->published()->create();
-        Fiche::factory()->published()->withDiamond()->count(2)->create([
-            'initiative_id' => $initiative->id,
-        ]);
-
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-        $response->assertViewHas('diamonds');
-        $this->assertCount(0, $response->viewData('diamonds'));
-    }
-
-    public function test_home_page_diamantjes_section_hidden_when_none_exist(): void
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-        $response->assertViewHas('diamonds');
-        $this->assertCount(0, $response->viewData('diamonds'));
-    }
 }
