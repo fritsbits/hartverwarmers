@@ -2,10 +2,13 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Livewire\AdminFicheOverview;
 use App\Models\Fiche;
 use App\Models\Initiative;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class AdminFicheOverviewTest extends TestCase
@@ -165,6 +168,49 @@ class AdminFicheOverviewTest extends TestCase
             ->get(route('admin.fiches.index', ['status' => 'q-strong']))
             ->assertSee('Grensgeval zxq009')
             ->assertDontSee('Net eronder zxq010');
+    }
+
+    public function test_livewire_toggle_diamond_sets_and_clears_awarded_at(): void
+    {
+        $admin = $this->createAdmin();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->for($initiative)->for(User::factory())->published()->create([
+            'has_diamond' => false,
+            'diamond_awarded_at' => null,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(AdminFicheOverview::class)
+            ->call('toggleDiamond', $fiche->id);
+
+        $fiche->refresh();
+        $this->assertTrue($fiche->has_diamond);
+        $this->assertNotNull($fiche->diamond_awarded_at);
+
+        Livewire::actingAs($admin)
+            ->test(AdminFicheOverview::class)
+            ->call('toggleDiamond', $fiche->id);
+
+        $fiche->refresh();
+        $this->assertFalse($fiche->has_diamond);
+        $this->assertNull($fiche->diamond_awarded_at);
+    }
+
+    public function test_livewire_toggle_diamond_invalidates_homepage_cache(): void
+    {
+        $admin = $this->createAdmin();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->for($initiative)->for(User::factory())->published()->create([
+            'has_diamond' => false,
+        ]);
+
+        Cache::put('home:recent-diamond', 'stale', now()->addMinutes(5));
+
+        Livewire::actingAs($admin)
+            ->test(AdminFicheOverview::class)
+            ->call('toggleDiamond', $fiche->id);
+
+        $this->assertFalse(Cache::has('home:recent-diamond'));
     }
 
     public function test_quadrant_filter_excludes_unscored_fiches(): void

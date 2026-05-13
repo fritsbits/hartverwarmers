@@ -44,6 +44,7 @@ class FicheFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'has_diamond' => true,
+            'diamond_awarded_at' => now(),
         ]);
     }
 

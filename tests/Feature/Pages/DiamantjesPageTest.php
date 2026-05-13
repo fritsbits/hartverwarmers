@@ -5,6 +5,7 @@ namespace Tests\Feature\Pages;
 use App\Models\Fiche;
 use App\Models\Initiative;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class DiamantjesPageTest extends TestCase
@@ -134,5 +135,33 @@ class DiamantjesPageTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Hoe kiezen we?');
         $response->assertSee('Er zijn nog geen diamantjes');
+    }
+
+    public function test_diamantjes_ordered_by_award_time_not_fiche_creation(): void
+    {
+        Carbon::setTestNow('2026-05-13 12:00:00');
+
+        $initiative = Initiative::factory()->published()->create();
+
+        $oldFicheRecentAward = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'title' => 'Old fiche, recently awarded',
+            'has_diamond' => true,
+            'created_at' => now()->subYears(3),
+            'diamond_awarded_at' => now()->subMinutes(5),
+        ]);
+
+        Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'title' => 'Newer fiche, older award',
+            'has_diamond' => true,
+            'created_at' => now()->subMonths(2),
+            'diamond_awarded_at' => now()->subMonths(2),
+        ]);
+
+        $response = $this->get('/diamantjes');
+
+        $response->assertStatus(200);
+        $this->assertSame($oldFicheRecentAward->id, $response->viewData('fiches')->first()->id);
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Initiative;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
@@ -83,7 +84,14 @@ class AdminFicheOverview extends Component
     public function toggleDiamond(int $ficheId): void
     {
         $fiche = Fiche::findOrFail($ficheId);
-        $fiche->updateQuietly(['has_diamond' => ! $fiche->has_diamond]);
+        $awarding = ! $fiche->has_diamond;
+
+        $fiche->updateQuietly([
+            'has_diamond' => $awarding,
+            'diamond_awarded_at' => $awarding ? now() : null,
+        ]);
+
+        Cache::forget('home:recent-diamond');
     }
 
     public function assess(int $ficheId): void

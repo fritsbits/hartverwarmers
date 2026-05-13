@@ -14,7 +14,8 @@ class DiamantjesController extends Controller
             ->where('has_diamond', true)
             ->with(['user', 'initiative', 'tags', 'files'])
             ->withCount(['likes', 'comments'])
-            ->latest()
+            ->orderByDesc('diamond_awarded_at')
+            ->orderByDesc('created_at')
             ->get();
 
         return view('diamantjes.index', compact('fiches'));

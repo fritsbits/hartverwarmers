@@ -80,7 +80,8 @@ class HomeController extends Controller
                 ->where('has_diamond', true)
                 ->with(['initiative', 'user', 'files'])
                 ->withCount('comments')
-                ->latest()
+                ->orderByDesc('diamond_awarded_at')
+                ->orderByDesc('created_at')
                 ->first()
         );
 

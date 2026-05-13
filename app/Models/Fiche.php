@@ -32,6 +32,7 @@ class Fiche extends Model
         'target_audience',
         'published',
         'has_diamond',
+        'diamond_awarded_at',
         'download_count',
         'kudos_count',
         'icon',
@@ -53,6 +54,7 @@ class Fiche extends Model
             'target_audience' => 'array',
             'published' => 'boolean',
             'has_diamond' => 'boolean',
+            'diamond_awarded_at' => 'datetime',
             'quality_assessed_at' => 'datetime',
             'ai_suggestions' => 'array',
         ];

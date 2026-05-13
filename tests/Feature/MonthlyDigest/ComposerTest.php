@@ -73,6 +73,26 @@ class ComposerTest extends TestCase
         $this->assertNull($payload->diamond);
     }
 
+    public function test_diamond_ordered_by_award_time_not_fiche_creation(): void
+    {
+        Carbon::setTestNow('2026-05-13 12:00:00');
+
+        Fiche::factory()->published()->create([
+            'has_diamond' => true,
+            'created_at' => now()->subMonths(1),
+            'diamond_awarded_at' => now()->subMonths(1),
+        ]);
+        $recentlyAwarded = Fiche::factory()->published()->create([
+            'has_diamond' => true,
+            'created_at' => now()->subYears(2),
+            'diamond_awarded_at' => now()->subHour(),
+        ]);
+
+        $payload = app(Composer::class)->compose(now());
+
+        $this->assertSame($recentlyAwarded->id, $payload->diamond->id);
+    }
+
     public function test_upcoming_theme_count_returns_total_not_just_displayed(): void
     {
         Carbon::setTestNow('2026-05-13 08:00:00');

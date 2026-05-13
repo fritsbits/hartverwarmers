@@ -29,7 +29,8 @@ class Composer
             ->published()
             ->where('has_diamond', true)
             ->with(['user', 'initiative'])
-            ->latest()
+            ->orderByDesc('diamond_awarded_at')
+            ->orderByDesc('created_at')
             ->first();
 
         $recentFiches = Fiche::query()
