@@ -32,7 +32,7 @@ class FicheCommentDigestMail extends Mailable
         $this->fiche->loadMissing('initiative');
 
         return new Content(
-            view: 'emails.fiche-comment-digest',
+            markdown: 'emails.fiche-comment-digest',
             with: [
                 'user' => $this->user,
                 'fiche' => $this->fiche,
