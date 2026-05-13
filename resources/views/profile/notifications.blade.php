@@ -1,14 +1,14 @@
-<x-sidebar-layout title="Meldingen" section-label="Profiel" description="Beheer welke e-mailmeldingen je ontvangt.">
+<x-sidebar-layout title="Meldingen" section-label="Profiel" description="Kies welke e-mails je wil krijgen, en hoe vaak.">
     <flux:card>
         <form action="{{ route('profile.notifications.update') }}" method="POST">
             @csrf
 
-            <div class="space-y-8">
+            <div class="divide-y divide-[var(--color-border-light)]">
 
                 {{-- Comment digests --}}
-                <div>
+                <section class="pb-8">
                     <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Reacties op fiches</p>
-                    <p class="text-sm text-[var(--color-text-secondary)] mb-3">Ontvang een overzicht van nieuwe reacties op je fiches.</p>
+                    <p class="text-sm text-[var(--color-text-secondary)] mb-3">In plaats van een mail per reactie krijg je een overzicht — kies hoe vaak.</p>
                     <flux:radio.group
                         name="notification_frequency"
                         :value="old('notification_frequency', $user->notification_frequency)"
@@ -21,10 +21,10 @@
                     @error('notification_frequency')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
-                </div>
+                </section>
 
                 {{-- Kudos milestones --}}
-                <div>
+                <section class="py-8">
                     <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Kudos en bladwijzers</p>
                     <flux:field variant="inline">
                         <flux:checkbox
@@ -32,24 +32,24 @@
                             value="1"
                             :checked="old('notify_on_kudos_milestones', $user->notify_on_kudos_milestones)"
                         />
-                        <flux:label>Stuur me een melding wanneer mensen mijn fiche opslaan (eerste keer, 10×, 50×)</flux:label>
+                        <flux:label>Laat het me weten als iemand mijn fiche bookmarkt — de eerste keer, en bij 10 en 50.</flux:label>
                     </flux:field>
-                </div>
+                </section>
 
-                {{-- Onboarding --}}
-                <div>
-                    <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Onboarding</p>
+                {{-- Welkom & inspiratie --}}
+                <section class="py-8">
+                    <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Welkom &amp; inspiratie</p>
                     <flux:field variant="inline">
                         <flux:checkbox
                             name="notify_on_onboarding_emails"
                             value="1"
                             :checked="old('notify_on_onboarding_emails', $user->notify_on_onboarding_emails)"
                         />
-                        <flux:label>Stuur me tips en suggesties na registratie</flux:label>
+                        <flux:label>Stuur me af en toe inspiratie als ik net begin.</flux:label>
                     </flux:field>
-                </div>
+                </section>
 
-                <div class="flex justify-end">
+                <div class="pt-8 flex justify-end">
                     <flux:button type="submit" variant="primary">Opslaan</flux:button>
                 </div>
             </div>
