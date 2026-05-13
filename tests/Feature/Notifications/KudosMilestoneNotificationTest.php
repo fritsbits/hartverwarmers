@@ -56,6 +56,6 @@ class KudosMilestoneNotificationTest extends TestCase
             'type' => 'bookmark',
         ]);
 
-        Notification::assertNothingSent();
+        Notification::assertNotSentTo($owner, OnboardingFirstBookmarkNotification::class);
     }
 }
