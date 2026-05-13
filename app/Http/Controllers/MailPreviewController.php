@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\FicheCommentDigestMail;
 use App\Models\Fiche;
 use App\Notifications\OnboardingCuratedActivitiesNotification;
 use App\Notifications\OnboardingDownloadMilestoneNotification;
@@ -14,6 +15,7 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Mail\Mailable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\View\View;
 
@@ -36,6 +38,10 @@ class MailPreviewController extends Controller
         'welcome' => [
             'label' => 'Welkomstmail',
             'description' => 'Na e-mailverificatie, oriënterend en warm.',
+        ],
+        'fiche-comment-digest' => [
+            'label' => 'Reactie-digest',
+            'description' => 'Dagelijks of wekelijks overzicht van nieuwe reacties op je fiches.',
         ],
         'onboarding-curated-activities' => [
             'label' => 'Onboarding — Curated activiteiten',
@@ -97,10 +103,9 @@ class MailPreviewController extends Controller
             abort(404);
         }
 
-        $user = $request->user();
-        $mail = $this->buildMailMessage($email, $user);
+        $mail = $this->buildMail($email, $request->user());
 
-        return response($this->renderMailMessage($mail))->header('Content-Type', 'text/html');
+        return response($this->renderHtml($mail))->header('Content-Type', 'text/html');
     }
 
     /**
@@ -108,7 +113,18 @@ class MailPreviewController extends Controller
      */
     private function getMailMeta(string $email, mixed $user): array
     {
-        $mail = $this->buildMailMessage($email, $user);
+        $mail = $this->buildMail($email, $user);
+
+        if ($mail instanceof Mailable) {
+            $envelope = $mail->envelope();
+            $fromAddress = $envelope->from?->address ?? config('mail.from.address');
+            $fromName = $envelope->from?->name ?? config('mail.from.name');
+
+            return [
+                'subject' => $envelope->subject ?? '',
+                'from' => $fromName ? "{$fromName} <{$fromAddress}>" : $fromAddress,
+            ];
+        }
 
         $fromAddress = $mail->from[0] ?? config('mail.from.address');
         $fromName = $mail->from[1] ?? config('mail.from.name');
@@ -119,12 +135,13 @@ class MailPreviewController extends Controller
         ];
     }
 
-    private function buildMailMessage(string $email, mixed $user): MailMessage
+    private function buildMail(string $email, mixed $user): MailMessage|Mailable
     {
         return match ($email) {
             'verify-email' => (new VerifyEmail)->toMail($user),
             'reset-password' => (new ResetPassword('fake-token-for-preview'))->toMail($user),
             'welcome' => (new WelcomeNotification)->toMail($user),
+            'fiche-comment-digest' => $this->buildFicheCommentDigestMail($user),
             'onboarding-curated-activities' => (new OnboardingCuratedActivitiesNotification)->toMail($user),
             'onboarding-top-five' => (new OnboardingTopFiveNotification)->toMail($user),
             'onboarding-contribute-invitation' => (new OnboardingDownloadMilestoneNotification(5))->toMail($user),
@@ -142,8 +159,34 @@ class MailPreviewController extends Controller
         return (new OnboardingFirstBookmarkNotification($fiche))->toMail($user);
     }
 
-    private function renderMailMessage(MailMessage $message): string
+    private function buildFicheCommentDigestMail(mixed $user): FicheCommentDigestMail
     {
-        return $message->render()->toHtml();
+        $fiche = Fiche::published()->with(['user', 'initiative'])->firstOrFail();
+
+        $payloads = [
+            [
+                'comment_id' => 1,
+                'commenter_name' => 'Anna Janssens',
+                'body_excerpt' => 'Wat een mooi initiatief! Onze bewoners hebben er enorm van genoten. Bedankt voor de inspiratie.',
+                'comment_url' => route('fiches.show', [$fiche->initiative, $fiche]).'#comment-1',
+            ],
+            [
+                'comment_id' => 2,
+                'commenter_name' => 'Sofie Peeters',
+                'body_excerpt' => 'Hebben jullie ook tips voor bewoners met dementie? Ik wil dit graag aanpassen voor onze afdeling.',
+                'comment_url' => route('fiches.show', [$fiche->initiative, $fiche]).'#comment-2',
+            ],
+        ];
+
+        return new FicheCommentDigestMail($user, $fiche, $payloads);
+    }
+
+    private function renderHtml(MailMessage|Mailable $mail): string
+    {
+        if ($mail instanceof Mailable) {
+            return $mail->render();
+        }
+
+        return $mail->render()->toHtml();
     }
 }
