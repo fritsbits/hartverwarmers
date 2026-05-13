@@ -102,4 +102,31 @@ class SendFicheCommentNotificationTest extends TestCase
         $this->assertArrayHasKey('commenter_name', $notification->payload);
         $this->assertArrayHasKey('comment_url', $notification->payload);
     }
+
+    public function test_body_excerpt_escapes_markdown_characters(): void
+    {
+        $owner = User::factory()->create(['notification_frequency' => 'daily']);
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'user_id' => $owner->id,
+            'initiative_id' => $initiative->id,
+        ]);
+        $commenter = User::factory()->create();
+        $comment = Comment::factory()->create([
+            'user_id' => $commenter->id,
+            'commentable_type' => Fiche::class,
+            'commentable_id' => $fiche->id,
+            'body' => 'Klik [hier](https://evil.example.com) **nu** of `voer code uit`',
+        ]);
+
+        (new SendFicheCommentNotification)->handle(new CommentPosted($comment));
+
+        $excerpt = PendingNotification::where('user_id', $owner->id)->first()->payload['body_excerpt'];
+
+        $this->assertStringNotContainsString('[hier](', $excerpt);
+        $this->assertStringNotContainsString('**nu**', $excerpt);
+        $this->assertStringContainsString('\\[hier\\]', $excerpt);
+        $this->assertStringContainsString('\\*\\*nu\\*\\*', $excerpt);
+        $this->assertStringContainsString('\\`voer code uit\\`', $excerpt);
+    }
 }

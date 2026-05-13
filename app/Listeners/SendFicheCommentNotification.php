@@ -39,12 +39,19 @@ class SendFicheCommentNotification
             'fiche_id' => $fiche->id,
             'payload' => [
                 'comment_id' => $comment->id,
-                'body_excerpt' => mb_substr($comment->body, 0, 200),
+                'body_excerpt' => $this->safeExcerpt($comment->body),
                 'commenter_name' => $comment->user?->full_name ?? 'Anoniem',
                 'comment_url' => route('fiches.show', [$fiche->initiative, $fiche])
                     .'?reply='.$comment->id
                     .'#comment-'.$comment->id,
             ],
         ]);
+    }
+
+    private function safeExcerpt(string $body): string
+    {
+        $truncated = mb_substr($body, 0, 200);
+
+        return preg_replace('/([\\\\`*_{}\[\]()#+\-!>|~])/u', '\\\\$1', $truncated);
     }
 }
