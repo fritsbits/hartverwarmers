@@ -7,11 +7,16 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class MonthlyDigestNotification extends BaseMailNotification
 {
-    public function __construct(public Payload $payload) {}
+    public function __construct(public Payload $payload, public int $cycle = 1) {}
 
     public function via(object $notifiable): array
     {
         return ['mail'];
+    }
+
+    public function idempotencyKey(object $notifiable): string
+    {
+        return sprintf('digest-%d-cycle-%d', $notifiable->id ?? 0, $this->cycle);
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -21,6 +26,7 @@ class MonthlyDigestNotification extends BaseMailNotification
         return (new MailMessage)
             ->subject('Verse ideeën voor de komende weken')
             ->metadata('preview_text', $previewText)
+            ->metadata('idempotency_key', $this->idempotencyKey($notifiable))
             ->view('emails.monthly-digest', [
                 'notifiable' => $notifiable,
                 'payload' => $this->payload,
