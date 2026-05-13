@@ -22,11 +22,14 @@ class MonthlyDigestNotification extends BaseMailNotification
     public function toMail(object $notifiable): MailMessage
     {
         $previewText = $this->previewText();
+        $idempotencyKey = $this->idempotencyKey($notifiable);
 
         return (new MailMessage)
             ->subject('Verse ideeën voor de komende weken')
             ->metadata('preview_text', $previewText)
-            ->metadata('idempotency_key', $this->idempotencyKey($notifiable))
+            ->withSymfonyMessage(function ($message) use ($idempotencyKey): void {
+                $message->getHeaders()->addTextHeader('Idempotency-Key', $idempotencyKey);
+            })
             ->view('emails.monthly-digest', [
                 'notifiable' => $notifiable,
                 'payload' => $this->payload,

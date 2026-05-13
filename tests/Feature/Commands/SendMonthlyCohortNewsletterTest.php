@@ -5,9 +5,11 @@ namespace Tests\Feature\Commands;
 use App\Models\Fiche;
 use App\Models\User;
 use App\Notifications\MonthlyDigestNotification;
+use App\Services\MonthlyDigest\Composer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
+use Symfony\Component\Mime\Email;
 use Tests\TestCase;
 
 class SendMonthlyCohortNewsletterTest extends TestCase
@@ -66,6 +68,28 @@ class SendMonthlyCohortNewsletterTest extends TestCase
         });
     }
 
+    public function test_idempotency_key_lands_on_symfony_message_header(): void
+    {
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        Fiche::factory()->published()->create();
+
+        $user = User::factory()->create(['created_at' => now()->subDays(30)]);
+
+        $payload = app(Composer::class)->compose(now());
+        $mail = (new MonthlyDigestNotification($payload, cycle: 1))->toMail($user);
+
+        $symfonyMessage = new Email;
+        foreach ($mail->callbacks as $callback) {
+            $callback($symfonyMessage);
+        }
+
+        $this->assertSame(
+            "digest-{$user->id}-cycle-1",
+            $symfonyMessage->getHeaders()->get('Idempotency-Key')?->getBodyAsString()
+        );
+    }
+
     public function test_for_flag_sends_only_to_one_address(): void
     {
         Notification::fake();
@@ -73,7 +97,7 @@ class SendMonthlyCohortNewsletterTest extends TestCase
         $target = User::factory()->create(['email' => 'qa@example.com', 'created_at' => now()->subDays(60)]);
         $other = User::factory()->create(['created_at' => now()->subDays(30)]);
 
-        \App\Models\Fiche::factory()->published()->create();
+        Fiche::factory()->published()->create();
 
         $this->artisan('newsletter:send-monthly-cohort', ['--for' => 'qa@example.com'])
             ->assertSuccessful();

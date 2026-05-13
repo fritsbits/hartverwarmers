@@ -15,6 +15,11 @@
         @media (max-width: 600px) {
             .fiche-cell { display: block !important; width: 100% !important; }
         }
+        @media (prefers-color-scheme: dark) {
+            body { background: #FEF8F4 !important; color: #231E1A !important; }
+            a { color: #E8764B !important; }
+            .meta { color: #756C65 !important; }
+        }
     </style>
 </head>
 <body style="margin:0;padding:0;background:#FEF8F4">
@@ -127,6 +132,13 @@
                     </td>
                 </tr>
                 @endif
+                {{-- Signoff --}}
+                <tr>
+                    <td style="padding:0 0 24px 0;line-height:1.6;font-size:15px;color:#231E1A">
+                        <p style="margin:0">Warme groet,<br>Het Hartverwarmers-team</p>
+                    </td>
+                </tr>
+
                 {{-- Footer --}}
                 <tr>
                     <td style="padding:24px 0 0 0;border-top:1px solid #EBE4DE;text-align:center;color:#756C65;font-size:12px;line-height:1.6">
@@ -137,7 +149,7 @@
                         <p style="margin:0">Je krijgt deze e-mail omdat je een account hebt op Hartverwarmers.<br>
                             <a href="{{ \Illuminate\Support\Facades\URL::signedRoute('newsletter.unsubscribe', ['user' => $notifiable->id]) }}" style="color:#756C65;text-decoration:underline">Uitschrijven</a>
                         </p>
-                        <p style="margin:8px 0 0 0;font-size:11px">Hartverwarmers · {{ config('mail.from.postal_address') }}, België</p>
+                        <p style="margin:8px 0 0 0;font-size:11px">Hartverwarmers · {{ config('mail.from.postal_address') }}</p>
                     </td>
                 </tr>
 

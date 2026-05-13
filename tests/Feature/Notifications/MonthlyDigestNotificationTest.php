@@ -255,6 +255,17 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringContainsString('Marleen Geertsen', $html);
     }
 
+    public function test_rendered_html_includes_team_signoff(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('Warme groet', $html);
+        $this->assertStringContainsString('Het Hartverwarmers-team', $html);
+    }
+
     public function test_footer_contains_signed_unsubscribe_link(): void
     {
         $user = User::factory()->create();
