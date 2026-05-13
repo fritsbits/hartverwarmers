@@ -51,6 +51,28 @@ class SendCommentDigestsTest extends TestCase
         $this->assertStringContainsString('2 nieuwe reacties', $mail->envelope()->subject);
     }
 
+    public function test_mail_renders_to_html(): void
+    {
+        $user = User::factory()->create(['first_name' => 'Frederik']);
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'user_id' => $user->id,
+            'initiative_id' => $initiative->id,
+            'title' => 'Voorleesnamiddag',
+        ]);
+
+        $html = (new FicheCommentDigestMail($user, $fiche, [
+            ['comment_id' => 1, 'body_excerpt' => 'Geweldig!', 'commenter_name' => 'Anna', 'comment_url' => 'https://example.com/c/1'],
+        ]))->render();
+
+        $this->assertStringContainsString('Frederik', $html);
+        $this->assertStringContainsString('Voorleesnamiddag', $html);
+        $this->assertStringContainsString('Anna', $html);
+        $this->assertStringContainsString('Geweldig!', $html);
+        $this->assertStringContainsString('Bekijk alle reacties', $html);
+        $this->assertStringContainsString('Uitschrijven', $html);
+    }
+
     private function makePendingNotification(User $user, Fiche $fiche): void
     {
         PendingNotification::create([
