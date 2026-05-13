@@ -92,7 +92,39 @@
                     </td>
                 </tr>
                 @endif
-                {{-- Recent fiches block (Task 9) --}}
+                @if ($payload->recentFiches->isNotEmpty())
+                <tr>
+                    <td style="padding:0 0 36px 0">
+                        <div class="section-label" style="margin-bottom:14px">Recent gedeeld</div>
+                        <div class="heading-serif" style="font-size:22px;color:#231E1A;margin-bottom:6px">Fiches uit andere woonzorgcentra</div>
+                        <p class="meta" style="margin:0 0 18px 0">Pak wat past, pas aan, deel terug.</p>
+
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                            @foreach ($payload->recentFiches->chunk(2) as $row)
+                                <tr>
+                                    @foreach ($row as $fiche)
+                                        <td class="fiche-cell" valign="top" width="50%" style="padding:0 5px 10px 0">
+                                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" style="text-decoration:none;color:inherit;display:block">
+                                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FFFFFF;border:1px solid #EBE4DE;border-radius:8px;min-height:90px">
+                                                    <tr>
+                                                        <td style="padding:14px">
+                                                            <div class="heading-serif" style="font-size:15px;line-height:1.3;margin-bottom:6px">{{ $fiche->title }}</div>
+                                                            <div style="color:#756C65;font-size:12px">{{ $fiche->user->first_name }} · {{ $fiche->user->organisation }}</div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </a>
+                                        </td>
+                                    @endforeach
+                                    @if ($row->count() === 1)
+                                        <td width="50%"></td>
+                                    @endif
+                                </tr>
+                            @endforeach
+                        </table>
+                    </td>
+                </tr>
+                @endif
                 {{-- Footer (Task 11) --}}
 
             </table>

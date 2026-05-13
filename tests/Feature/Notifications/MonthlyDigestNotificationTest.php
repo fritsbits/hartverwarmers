@@ -169,6 +169,43 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringNotContainsString('Diamantje van de maand', $html);
     }
 
+    public function test_recent_fiches_section_renders_each_fiche(): void
+    {
+        $fiches = new Collection;
+        foreach (['Boekenruil-namiddag', 'Stoelendans light', 'Vroeger-en-nu fotoquiz'] as $title) {
+            $fiches->push(Fiche::factory()->published()->create(['title' => $title]));
+        }
+
+        $payload = new Payload(
+            themes: new Collection,
+            diamond: null,
+            recentFiches: $fiches->load(['user', 'initiative']),
+            upcomingThemeCount: 0,
+            newFicheCount: 3,
+            sentAt: now(),
+        );
+
+        $user = User::factory()->create();
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('Recent gedeeld', $html);
+        $this->assertStringContainsString('Fiches uit andere woonzorgcentra', $html);
+        $this->assertStringContainsString('Pak wat past, pas aan, deel terug.', $html);
+        $this->assertStringContainsString('Boekenruil-namiddag', $html);
+        $this->assertStringContainsString('Stoelendans light', $html);
+        $this->assertStringContainsString('Vroeger-en-nu fotoquiz', $html);
+    }
+
+    public function test_recent_fiches_section_hidden_when_empty(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringNotContainsString('Recent gedeeld', $html);
+    }
+
     private function emptyPayload(): Payload
     {
         return new Payload(
