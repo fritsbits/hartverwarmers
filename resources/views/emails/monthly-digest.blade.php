@@ -41,7 +41,38 @@
                     </td>
                 </tr>
 
-                {{-- Themes block (Task 7) --}}
+                @if ($payload->themes->isNotEmpty())
+                <tr>
+                    <td style="padding:0 0 36px 0">
+                        <div class="section-label" style="margin-bottom:14px">De komende weken</div>
+                        <div class="heading-serif" style="font-size:22px;color:#231E1A;margin-bottom:18px">Thema's om alvast in te plannen</div>
+
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FFFFFF;border:1px solid #EBE4DE;border-radius:10px">
+                            @foreach ($payload->themes as $occurrence)
+                                <tr>
+                                    <td style="padding:14px 16px;{{ ! $loop->last ? 'border-bottom:1px solid #EBE4DE;' : '' }}">
+                                        <a href="{{ url('/themas#thema-' . $occurrence->theme->slug) }}" style="text-decoration:none;color:inherit;display:block">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                <tr>
+                                                    <td width="80" valign="middle" style="padding-right:14px">
+                                                        <div class="heading-serif" style="background:#FDF3EE;color:#E8764B;font-size:12px;padding:6px 10px;border-radius:6px;text-align:center;white-space:nowrap">{{ $occurrence->start_date->locale('nl_BE')->isoFormat('D MMM') }}</div>
+                                                    </td>
+                                                    <td valign="middle">
+                                                        <div style="font-weight:600;font-size:14px">{{ $occurrence->theme->title }}</div>
+                                                        <div class="meta">{{ $occurrence->theme->fiches_count ?? 0 }} fiches beschikbaar</div>
+                                                    </td>
+                                                    <td valign="middle" width="20" align="right" style="color:#E8764B;font-size:18px">&rarr;</td>
+                                                </tr>
+                                            </table>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </table>
+                    </td>
+                </tr>
+                @endif
+                {{-- Diamond block (Task 8) --}}
                 {{-- Diamond block (Task 8) --}}
                 {{-- Recent fiches block (Task 9) --}}
                 {{-- Footer (Task 11) --}}

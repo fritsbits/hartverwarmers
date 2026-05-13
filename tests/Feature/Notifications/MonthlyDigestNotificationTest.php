@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Notifications;
 
+use App\Models\Theme;
+use App\Models\ThemeOccurrence;
 use App\Models\User;
 use App\Notifications\MonthlyDigestNotification;
 use App\Services\MonthlyDigest\Payload;
@@ -86,6 +88,41 @@ class MonthlyDigestNotificationTest extends TestCase
 
         // Defensive fallback: a non-greeting paragraph should be present.
         $this->assertStringContainsString('Hartverwarmers van de afgelopen periode', $html);
+    }
+
+    public function test_themes_section_renders_each_theme_title(): void
+    {
+        $theme1 = Theme::factory()->create(['title' => 'Moederdag']);
+        $theme2 = Theme::factory()->create(['title' => 'Pinksteren']);
+
+        $payload = new Payload(
+            themes: new Collection([
+                ThemeOccurrence::factory()->for($theme1)->create(['start_date' => '2026-05-14']),
+                ThemeOccurrence::factory()->for($theme2)->create(['start_date' => '2026-05-28']),
+            ]),
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 2,
+            newFicheCount: 0,
+            sentAt: now(),
+        );
+
+        $user = User::factory()->create();
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('Moederdag', $html);
+        $this->assertStringContainsString('Pinksteren', $html);
+        $this->assertStringContainsString("Thema's om alvast in te plannen", $html);
+    }
+
+    public function test_themes_section_hidden_when_zero_themes(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringNotContainsString("Thema's om alvast in te plannen", $html);
     }
 
     private function emptyPayload(): Payload
