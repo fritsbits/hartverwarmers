@@ -46,6 +46,37 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertSame($user->id, $mail->viewData['notifiable']->id);
     }
 
+    public function test_rendered_html_contains_user_first_name(): void
+    {
+        $user = User::factory()->create(['first_name' => 'Marleen']);
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('Hoi Marleen', $html);
+    }
+
+    public function test_rendered_html_contains_logo_img(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('hartverwarmers-logo-email.png', $html);
+    }
+
+    public function test_rendered_html_uses_table_layout(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('<table', $html);
+        $this->assertStringContainsString('role="presentation"', $html);
+    }
+
     private function emptyPayload(): Payload
     {
         return new Payload(
