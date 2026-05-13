@@ -19,15 +19,18 @@ class SendCommentDigests extends Command
     {
         $frequency = $this->option('frequency');
 
+        if (! in_array($frequency, ['daily', 'weekly'], true)) {
+            $this->error("Invalid frequency: {$frequency}. Use 'daily' or 'weekly'.");
+
+            return self::INVALID;
+        }
+
         User::query()
             ->where('notification_frequency', $frequency)
             ->whereHas('pendingNotifications', fn ($q) => $q->where('type', 'fiche_comment'))
             ->with(['pendingNotifications' => fn ($q) => $q->where('type', 'fiche_comment')])
-            ->chunk(100, function ($users) {
-                foreach ($users as $user) {
-                    $this->sendDigestsForUser($user);
-                }
-            });
+            ->lazyById(100)
+            ->each(fn (User $user) => $this->sendDigestsForUser($user));
 
         return self::SUCCESS;
     }
@@ -38,20 +41,28 @@ class SendCommentDigests extends Command
 
         foreach ($byFiche as $ficheId => $notifications) {
             $fiche = Fiche::with('initiative')->find($ficheId);
+            $ids = $notifications->pluck('id');
 
             if ($fiche === null) {
-                PendingNotification::whereIn('id', $notifications->pluck('id'))->delete();
+                PendingNotification::whereIn('id', $ids)->delete();
 
                 continue;
             }
 
-            Mail::to($user)->send(new FicheCommentDigestMail(
-                $user,
-                $fiche,
-                $notifications->pluck('payload')->all(),
-            ));
+            try {
+                Mail::to($user)->send(new FicheCommentDigestMail(
+                    $user,
+                    $fiche,
+                    $notifications->pluck('payload')->all(),
+                ));
+            } catch (\Throwable $e) {
+                report($e);
+                $this->error("Failed to send digest to user {$user->id} for fiche {$ficheId}: {$e->getMessage()}");
 
-            PendingNotification::whereIn('id', $notifications->pluck('id'))->delete();
+                continue;
+            }
+
+            PendingNotification::whereIn('id', $ids)->delete();
         }
     }
 }

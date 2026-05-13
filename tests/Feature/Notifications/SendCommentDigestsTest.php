@@ -167,12 +167,34 @@ class SendCommentDigestsTest extends TestCase
 
         Mail::shouldReceive('to')->andThrow(new \RuntimeException('Mail server down'));
 
-        try {
-            $this->artisan('notifications:send-digests --frequency=daily');
-        } catch (\RuntimeException) {
-            // expected — the command may propagate the exception
-        }
+        $this->artisan('notifications:send-digests --frequency=daily')->assertExitCode(0);
 
         $this->assertDatabaseHas('pending_notifications', ['user_id' => $user->id]);
+    }
+
+    public function test_continues_processing_other_users_when_one_send_fails(): void
+    {
+        $failingUser = User::factory()->create(['notification_frequency' => 'daily']);
+        $succeedingUser = User::factory()->create(['notification_frequency' => 'daily']);
+        $initiative = Initiative::factory()->published()->create();
+        $failingFiche = Fiche::factory()->published()->create(['user_id' => $failingUser->id, 'initiative_id' => $initiative->id]);
+        $succeedingFiche = Fiche::factory()->published()->create(['user_id' => $succeedingUser->id, 'initiative_id' => $initiative->id]);
+        $this->makePendingNotification($failingUser, $failingFiche);
+        $this->makePendingNotification($succeedingUser, $succeedingFiche);
+
+        Mail::shouldReceive('to')
+            ->with(\Mockery::on(fn ($u) => $u->id === $failingUser->id))
+            ->andThrow(new \RuntimeException('Send failed'));
+
+        $pendingMailable = \Mockery::mock();
+        $pendingMailable->shouldReceive('send')->once();
+        Mail::shouldReceive('to')
+            ->with(\Mockery::on(fn ($u) => $u->id === $succeedingUser->id))
+            ->andReturn($pendingMailable);
+
+        $this->artisan('notifications:send-digests --frequency=daily')->assertExitCode(0);
+
+        $this->assertDatabaseHas('pending_notifications', ['user_id' => $failingUser->id]);
+        $this->assertDatabaseMissing('pending_notifications', ['user_id' => $succeedingUser->id]);
     }
 }
