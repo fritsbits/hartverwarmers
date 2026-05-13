@@ -19,6 +19,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InitiativeController;
 use App\Http\Controllers\MailPreviewController;
 use App\Http\Controllers\MyFichesController;
+use App\Http\Controllers\NewsletterUnsubscribeController;
 use App\Http\Controllers\ProfileController as HvProfileController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ThemeController;
@@ -135,10 +136,9 @@ Route::view('/auteursrecht', 'legal.copyright')->name('legal.copyright');
 Route::redirect('/uitwerkingen/nieuw', '/fiches/nieuw', 301);
 Route::get('/uitwerkingen/{slug}/bewerken', fn (string $slug) => redirect("/fiches/{$slug}/bewerken", 301));
 
-// Newsletter unsubscribe (placeholder — Task 12 replaces with real controller)
-Route::get('/nieuwsbrief/uitschrijven/{user}', function () {
-    abort(501);
-})->name('newsletter.unsubscribe');
+// Newsletter unsubscribe
+Route::get('/nieuwsbrief/uitschrijven/{user}', NewsletterUnsubscribeController::class)
+    ->name('newsletter.unsubscribe');
 
 // Breeze auth routes
 require __DIR__.'/auth.php';
