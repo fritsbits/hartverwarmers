@@ -2,10 +2,8 @@
 
 namespace Tests\Feature\Notifications;
 
-use App\Models\Comment;
 use App\Models\Fiche;
 use App\Notifications\BaseMailNotification;
-use App\Notifications\FicheCommentNotification;
 use App\Notifications\OnboardingCuratedActivitiesNotification;
 use App\Notifications\OnboardingDownloadMilestoneNotification;
 use App\Notifications\OnboardingFirstBookmarkNotification;
@@ -57,19 +55,6 @@ class ResendRateLimitingTest extends TestCase
             'OnboardingMilestone10BookmarksNotification' => [new OnboardingMilestone10BookmarksNotification(10)],
             'OnboardingMilestone50BookmarksNotification' => [new OnboardingMilestone50BookmarksNotification(50)],
         ];
-    }
-
-    public function test_fiche_comment_notification_has_rate_limited_middleware(): void
-    {
-        $fiche = Fiche::factory()->create();
-        $comment = Comment::factory()->for($fiche, 'commentable')->create();
-        $notification = new FicheCommentNotification($comment);
-
-        $middleware = $notification->middleware();
-        $rateLimited = collect($middleware)->first(fn ($m) => $m instanceof RateLimited);
-
-        $this->assertNotNull($rateLimited);
-        $this->assertInstanceOf(BaseMailNotification::class, $notification);
     }
 
     public function test_onboarding_first_bookmark_notification_has_rate_limited_middleware(): void

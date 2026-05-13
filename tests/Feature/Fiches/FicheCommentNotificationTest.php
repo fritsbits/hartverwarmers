@@ -7,41 +7,15 @@ use App\Models\Comment;
 use App\Models\Fiche;
 use App\Models\Initiative;
 use App\Models\User;
-use App\Notifications\FicheCommentNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class FicheCommentNotificationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_notification_has_correct_subject_and_greeting(): void
+    public function test_pending_notification_is_queued_when_another_user_comments(): void
     {
-        $initiative = Initiative::factory()->create();
-        $ficheOwner = User::factory()->create(['first_name' => 'Marie']);
-        $fiche = Fiche::factory()->for($ficheOwner)->for($initiative)->create(['published' => true]);
-        $commenter = User::factory()->create(['first_name' => 'Liesbet']);
-        $comment = Comment::create([
-            'body' => 'Mooi initiatief!',
-            'user_id' => $commenter->id,
-            'commentable_type' => Fiche::class,
-            'commentable_id' => $fiche->id,
-            'parent_id' => null,
-        ]);
-
-        $mail = (new FicheCommentNotification($comment))->toMail($ficheOwner);
-
-        $this->assertStringContainsString("Nieuwe reactie op je fiche: {$fiche->title}", $mail->subject);
-        $rendered = $mail->render()->toHtml();
-        $this->assertStringContainsString('Hoi Marie!', $rendered);
-        $this->assertStringContainsString('Liesbet', $rendered);
-    }
-
-    public function test_notification_is_sent_when_another_user_comments(): void
-    {
-        Notification::fake();
-
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
         $fiche = Fiche::factory()->for($ficheOwner)->for($initiative)->create(['published' => true]);
@@ -57,13 +31,14 @@ class FicheCommentNotificationTest extends TestCase
 
         CommentPosted::dispatch($comment);
 
-        Notification::assertSentTo($ficheOwner, FicheCommentNotification::class);
+        $this->assertDatabaseHas('pending_notifications', [
+            'user_id' => $ficheOwner->id,
+            'type' => 'fiche_comment',
+        ]);
     }
 
-    public function test_notification_is_not_sent_when_owner_comments_on_own_fiche(): void
+    public function test_pending_notification_is_not_queued_when_owner_comments_on_own_fiche(): void
     {
-        Notification::fake();
-
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
         $fiche = Fiche::factory()->for($ficheOwner)->for($initiative)->create(['published' => true]);
@@ -78,13 +53,11 @@ class FicheCommentNotificationTest extends TestCase
 
         CommentPosted::dispatch($comment);
 
-        Notification::assertNothingSent();
+        $this->assertDatabaseMissing('pending_notifications', ['user_id' => $ficheOwner->id]);
     }
 
-    public function test_notification_is_not_sent_when_owner_has_opted_out(): void
+    public function test_pending_notification_is_not_queued_when_owner_has_opted_out(): void
     {
-        Notification::fake();
-
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create(['notification_frequency' => 'never']);
         $fiche = Fiche::factory()->for($ficheOwner)->for($initiative)->create(['published' => true]);
@@ -100,13 +73,11 @@ class FicheCommentNotificationTest extends TestCase
 
         CommentPosted::dispatch($comment);
 
-        Notification::assertNothingSent();
+        $this->assertDatabaseMissing('pending_notifications', ['user_id' => $ficheOwner->id]);
     }
 
-    public function test_notification_is_not_sent_when_fiche_owner_is_soft_deleted(): void
+    public function test_pending_notification_is_not_queued_when_fiche_owner_is_soft_deleted(): void
     {
-        Notification::fake();
-
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
         $fiche = Fiche::factory()->for($ficheOwner)->for($initiative)->create(['published' => true]);
@@ -124,13 +95,11 @@ class FicheCommentNotificationTest extends TestCase
 
         CommentPosted::dispatch($comment);
 
-        Notification::assertNothingSent();
+        $this->assertDatabaseMissing('pending_notifications', ['user_id' => $ficheOwner->id]);
     }
 
-    public function test_notification_is_sent_for_reply_on_another_users_fiche(): void
+    public function test_pending_notification_is_queued_for_reply_on_another_users_fiche(): void
     {
-        Notification::fake();
-
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
         $fiche = Fiche::factory()->for($ficheOwner)->for($initiative)->create(['published' => true]);
@@ -154,13 +123,14 @@ class FicheCommentNotificationTest extends TestCase
 
         CommentPosted::dispatch($reply);
 
-        Notification::assertSentTo($ficheOwner, FicheCommentNotification::class);
+        $this->assertDatabaseHas('pending_notifications', [
+            'user_id' => $ficheOwner->id,
+            'type' => 'fiche_comment',
+        ]);
     }
 
-    public function test_notification_is_not_sent_when_owner_replies_on_own_fiche(): void
+    public function test_pending_notification_is_not_queued_when_owner_replies_on_own_fiche(): void
     {
-        Notification::fake();
-
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
         $fiche = Fiche::factory()->for($ficheOwner)->for($initiative)->create(['published' => true]);
@@ -175,18 +145,15 @@ class FicheCommentNotificationTest extends TestCase
 
         CommentPosted::dispatch($reply);
 
-        Notification::assertNothingSent();
+        $this->assertDatabaseMissing('pending_notifications', ['user_id' => $ficheOwner->id]);
     }
 
-    public function test_notification_is_sent_for_guest_comment(): void
+    public function test_pending_notification_is_queued_for_guest_comment(): void
     {
-        Notification::fake();
-
         $initiative = Initiative::factory()->create();
         $ficheOwner = User::factory()->create();
         $fiche = Fiche::factory()->for($ficheOwner)->for($initiative)->create(['published' => true]);
 
-        // Simulate what addGuestComment does: a fresh user is created, distinct from the fiche owner
         $guestUser = User::factory()->create(['first_name' => 'Karen']);
         $this->assertNotEquals($ficheOwner->id, $guestUser->id);
 
@@ -200,7 +167,10 @@ class FicheCommentNotificationTest extends TestCase
 
         CommentPosted::dispatch($comment);
 
-        Notification::assertSentTo($ficheOwner, FicheCommentNotification::class);
+        $this->assertDatabaseHas('pending_notifications', [
+            'user_id' => $ficheOwner->id,
+            'type' => 'fiche_comment',
+        ]);
     }
 
     public function test_new_user_has_daily_notification_frequency_by_default(): void

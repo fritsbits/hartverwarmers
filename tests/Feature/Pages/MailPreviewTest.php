@@ -42,18 +42,6 @@ class MailPreviewTest extends TestCase
         $response->assertSee('Welkomstmail');
     }
 
-    public function test_admin_can_preview_fiche_comment_email(): void
-    {
-        $admin = User::factory()->admin()->create();
-        $initiative = Initiative::factory()->create();
-        Fiche::factory()->for(User::factory())->for($initiative)->create(['published' => true]);
-
-        $response = $this->actingAs($admin)->get(route('admin.mails.preview', 'fiche-comment'));
-
-        $response->assertStatus(200);
-        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
-    }
-
     public function test_admin_can_preview_verify_email(): void
     {
         $admin = User::factory()->admin()->create();

@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Comment;
 use App\Models\Fiche;
-use App\Models\User;
-use App\Notifications\FicheCommentNotification;
 use App\Notifications\OnboardingCuratedActivitiesNotification;
 use App\Notifications\OnboardingDownloadMilestoneNotification;
 use App\Notifications\OnboardingFirstBookmarkNotification;
@@ -39,10 +36,6 @@ class MailPreviewController extends Controller
         'welcome' => [
             'label' => 'Welkomstmail',
             'description' => 'Na e-mailverificatie, oriënterend en warm.',
-        ],
-        'fiche-comment' => [
-            'label' => 'Reactie op fiche',
-            'description' => 'Notificatie naar de bijdrager wanneer iemand reageert op hun fiche.',
         ],
         'onboarding-curated-activities' => [
             'label' => 'Onboarding — Curated activiteiten',
@@ -132,7 +125,6 @@ class MailPreviewController extends Controller
             'verify-email' => (new VerifyEmail)->toMail($user),
             'reset-password' => (new ResetPassword('fake-token-for-preview'))->toMail($user),
             'welcome' => (new WelcomeNotification)->toMail($user),
-            'fiche-comment' => $this->buildFicheCommentMailMessage(),
             'onboarding-curated-activities' => (new OnboardingCuratedActivitiesNotification)->toMail($user),
             'onboarding-top-five' => (new OnboardingTopFiveNotification)->toMail($user),
             'onboarding-contribute-invitation' => (new OnboardingDownloadMilestoneNotification(5))->toMail($user),
@@ -141,17 +133,6 @@ class MailPreviewController extends Controller
             'onboarding-milestone-50-bookmarks' => (new OnboardingMilestone50BookmarksNotification(50))->toMail($user),
             default => throw new \InvalidArgumentException("Unknown email key: {$email}"),
         };
-    }
-
-    private function buildFicheCommentMailMessage(): MailMessage
-    {
-        $fiche = Fiche::published()->with(['user', 'initiative'])->firstOrFail();
-        $commenter = User::factory()->make(['first_name' => 'Liesbet']);
-        $comment = new Comment(['body' => 'Wat een mooi initiatief!', 'user_id' => $commenter->id]);
-        $comment->setRelation('commentable', $fiche);
-        $comment->setRelation('user', $commenter);
-
-        return (new FicheCommentNotification($comment))->toMail($fiche->user);
     }
 
     private function buildOnboardingFirstBookmarkMailMessage(mixed $user): MailMessage
