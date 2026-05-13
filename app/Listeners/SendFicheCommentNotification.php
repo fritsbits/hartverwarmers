@@ -4,7 +4,7 @@ namespace App\Listeners;
 
 use App\Events\CommentPosted;
 use App\Models\Fiche;
-use App\Notifications\FicheCommentNotification;
+use App\Models\PendingNotification;
 
 class SendFicheCommentNotification
 {
@@ -31,6 +31,20 @@ class SendFicheCommentNotification
             return;
         }
 
-        $owner->notify(new FicheCommentNotification($comment));
+        $fiche->loadMissing('initiative');
+
+        PendingNotification::create([
+            'user_id' => $owner->id,
+            'type' => 'fiche_comment',
+            'fiche_id' => $fiche->id,
+            'payload' => [
+                'comment_id' => $comment->id,
+                'body_excerpt' => mb_substr($comment->body, 0, 200),
+                'commenter_name' => $comment->user?->full_name ?? 'Anoniem',
+                'comment_url' => route('fiches.show', [$fiche->initiative, $fiche])
+                    .'?reply='.$comment->id
+                    .'#comment-'.$comment->id,
+            ],
+        ]);
     }
 }
