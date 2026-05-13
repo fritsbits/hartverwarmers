@@ -16,3 +16,6 @@ Schedule::command('server:health-check')->everyFiveMinutes();
 Schedule::command('onboarding:send-emails')->dailyAt('08:00');
 Schedule::command('notifications:send-digests --frequency=daily')->dailyAt('08:00');
 Schedule::command('notifications:send-digests --frequency=weekly')->weeklyOn(1, '08:00');
+Schedule::command('newsletter:send-monthly-cohort')
+    ->dailyAt('08:00')
+    ->timezone('Europe/Brussels');

@@ -113,6 +113,7 @@ return [
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
+        'postal_address' => env('MAIL_FROM_POSTAL_ADDRESS', 'Impact Studio, Kasteeldreef 47, 1083 Ganshoren'),
     ],
 
     'support_address' => env('SUPPORT_ADDRESS'),

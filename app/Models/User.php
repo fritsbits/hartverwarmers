@@ -37,6 +37,7 @@ class User extends Authenticatable
         'notification_frequency',
         'notify_on_kudos_milestones',
         'notify_on_onboarding_emails',
+        'newsletter_unsubscribed_at',
     ];
 
     /**
@@ -59,6 +60,7 @@ class User extends Authenticatable
             'first_return_at' => 'datetime',
             'notify_on_kudos_milestones' => 'boolean',
             'notify_on_onboarding_emails' => 'boolean',
+            'newsletter_unsubscribed_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -170,5 +172,27 @@ class User extends Authenticatable
             ->where('likeable_id', $fiche->id)
             ->where('type', 'bookmark')
             ->exists();
+    }
+
+    public function qualifiesForMonthlyDigestToday(): bool
+    {
+        if (! $this->email_verified_at) {
+            return false;
+        }
+
+        if ($this->newsletter_unsubscribed_at) {
+            return false;
+        }
+
+        $days = (int) $this->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay());
+
+        return $days >= 30 && $days % 30 === 0;
+    }
+
+    public function currentDigestCycleNumber(): int
+    {
+        $days = (int) $this->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay());
+
+        return intdiv($days, 30);
     }
 }
