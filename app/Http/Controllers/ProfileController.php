@@ -92,8 +92,14 @@ class ProfileController extends Controller
 
     public function updateNotifications(Request $request): RedirectResponse
     {
+        $request->validate([
+            'notification_frequency' => ['required', 'in:daily,weekly,never'],
+        ]);
+
         $user = $request->user();
-        $user->notify_on_fiche_comments = $request->boolean('notify_on_fiche_comments');
+        $user->notification_frequency = $request->input('notification_frequency');
+        $user->notify_on_kudos_milestones = $request->boolean('notify_on_kudos_milestones');
+        $user->notify_on_onboarding_emails = $request->boolean('notify_on_onboarding_emails');
         $user->save();
 
         return redirect()->route('profile.notifications')->with('toast', [

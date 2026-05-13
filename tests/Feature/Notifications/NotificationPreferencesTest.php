@@ -30,4 +30,41 @@ class NotificationPreferencesTest extends TestCase
 
         $this->get('/meldingen/uitschrijven?user='.$user->id)->assertStatus(403);
     }
+
+    public function test_update_notifications_saves_all_fields(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->post(route('profile.notifications.update'), [
+            'notification_frequency' => 'weekly',
+            'notify_on_kudos_milestones' => '1',
+            'notify_on_onboarding_emails' => '0',
+        ])->assertRedirect(route('profile.notifications'));
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'notification_frequency' => 'weekly',
+            'notify_on_kudos_milestones' => true,
+            'notify_on_onboarding_emails' => false,
+        ]);
+    }
+
+    public function test_update_notifications_rejects_invalid_frequency(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->post(route('profile.notifications.update'), [
+            'notification_frequency' => 'instantly',
+        ])->assertSessionHasErrors('notification_frequency');
+    }
+
+    public function test_notifications_page_loads(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->get(route('profile.notifications'))->assertOk();
+    }
 }
