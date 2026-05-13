@@ -22,9 +22,7 @@ Er zijn {{ count($commentPayloads) }} nieuwe reacties op je fiche **{{ $fiche->t
 Bekijk alle reacties
 @endcomponent
 
----
-
-[Meldingen beheren]({{ $manageUrl }}) &middot; [Uitschrijven]({{ $unsubscribeUrl }})
+@include('emails.partials.notification-footer', ['notifiable' => $user, 'type' => 'comments'])
 
 Warme groet,
 Het Hartverwarmers-team

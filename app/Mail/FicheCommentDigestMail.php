@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Support\Facades\URL;
 
 class FicheCommentDigestMail extends Mailable
 {
@@ -38,8 +37,6 @@ class FicheCommentDigestMail extends Mailable
                 'fiche' => $this->fiche,
                 'commentPayloads' => $this->commentPayloads,
                 'ficheUrl' => route('fiches.show', [$this->fiche->initiative, $this->fiche]),
-                'manageUrl' => route('profile.notifications'),
-                'unsubscribeUrl' => URL::signedRoute('notifications.unsubscribe', ['user' => $this->user->id]),
             ],
         );
     }

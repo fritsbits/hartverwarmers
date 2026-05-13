@@ -20,6 +20,8 @@ We hebben voor Hartverwarmers een kleine selectie fiches samengesteld die ons é
 Bekijk alle diamantjes
 @endcomponent
 
+@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'onboarding'])
+
 Warme groet,
 Het Hartverwarmers-team
 @endcomponent
