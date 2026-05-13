@@ -135,5 +135,10 @@ Route::view('/auteursrecht', 'legal.copyright')->name('legal.copyright');
 Route::redirect('/uitwerkingen/nieuw', '/fiches/nieuw', 301);
 Route::get('/uitwerkingen/{slug}/bewerken', fn (string $slug) => redirect("/fiches/{$slug}/bewerken", 301));
 
+// Newsletter unsubscribe (placeholder — Task 12 replaces with real controller)
+Route::get('/nieuwsbrief/uitschrijven/{user}', function () {
+    abort(501);
+})->name('newsletter.unsubscribe');
+
 // Breeze auth routes
 require __DIR__.'/auth.php';

@@ -255,6 +255,41 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringContainsString('Marleen Geertsen', $html);
     }
 
+    public function test_footer_contains_signed_unsubscribe_link(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('Uitschrijven', $html);
+        $this->assertMatchesRegularExpression(
+            '#/nieuwsbrief/uitschrijven/\d+\?[^"]*signature=[a-f0-9]+#',
+            $html,
+            'Footer should contain a Laravel signed-URL unsubscribe link'
+        );
+    }
+
+    public function test_footer_contains_postal_address(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('Impact Studio, Kasteeldreef 47, 1083 Ganshoren', $html);
+    }
+
+    public function test_footer_contains_contribution_cta(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('Deel jouw fiche', $html);
+    }
+
     private function emptyPayload(): Payload
     {
         return new Payload(
