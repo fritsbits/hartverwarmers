@@ -147,6 +147,8 @@
                         </p>
                         <p style="margin:18px 0 4px 0">Hartverwarmers · jouw maandelijkse update</p>
                         <p style="margin:0">Je krijgt deze e-mail omdat je een account hebt op Hartverwarmers.<br>
+                            <a href="{{ route('profile.notifications') }}" style="color:#756C65;text-decoration:underline">Meldingen beheren</a>
+                            &middot;
                             <a href="{{ \Illuminate\Support\Facades\URL::signedRoute('newsletter.unsubscribe', ['user' => $notifiable->id]) }}" style="color:#756C65;text-decoration:underline">Uitschrijven</a>
                         </p>
                         <p style="margin:8px 0 0 0;font-size:11px">Hartverwarmers · {{ config('mail.from.postal_address') }}</p>

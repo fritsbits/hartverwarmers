@@ -87,6 +87,7 @@ class NotificationPreferencesTest extends TestCase
             'notification_frequency' => 'weekly',
             'notify_on_kudos_milestones' => '1',
             'notify_on_onboarding_emails' => '0',
+            'newsletter_subscribed' => '1',
         ])->assertRedirect(route('profile.notifications'));
 
         $this->assertDatabaseHas('users', [
@@ -95,6 +96,50 @@ class NotificationPreferencesTest extends TestCase
             'notify_on_kudos_milestones' => true,
             'notify_on_onboarding_emails' => false,
         ]);
+        $this->assertNull($user->fresh()->newsletter_unsubscribed_at);
+    }
+
+    public function test_unchecking_newsletter_sets_unsubscribed_at(): void
+    {
+        $user = User::factory()->create(['newsletter_unsubscribed_at' => null]);
+        $this->actingAs($user);
+
+        $this->post(route('profile.notifications.update'), [
+            'notification_frequency' => 'daily',
+            // newsletter_subscribed omitted → unchecked
+        ]);
+
+        $this->assertNotNull($user->fresh()->newsletter_unsubscribed_at);
+    }
+
+    public function test_checking_newsletter_clears_unsubscribed_at(): void
+    {
+        $user = User::factory()->create(['newsletter_unsubscribed_at' => now()->subDays(10)]);
+        $this->actingAs($user);
+
+        $this->post(route('profile.notifications.update'), [
+            'notification_frequency' => 'daily',
+            'newsletter_subscribed' => '1',
+        ]);
+
+        $this->assertNull($user->fresh()->newsletter_unsubscribed_at);
+    }
+
+    public function test_re_unsubscribing_preserves_original_timestamp(): void
+    {
+        $originalTimestamp = now()->subDays(30);
+        $user = User::factory()->create(['newsletter_unsubscribed_at' => $originalTimestamp]);
+        $this->actingAs($user);
+
+        $this->post(route('profile.notifications.update'), [
+            'notification_frequency' => 'daily',
+            // newsletter_subscribed omitted → still unchecked
+        ]);
+
+        $this->assertEquals(
+            $originalTimestamp->toDateTimeString(),
+            $user->fresh()->newsletter_unsubscribed_at->toDateTimeString()
+        );
     }
 
     public function test_update_notifications_rejects_invalid_frequency(): void

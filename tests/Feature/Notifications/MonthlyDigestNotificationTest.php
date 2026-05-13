@@ -80,6 +80,18 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringContainsString('role="presentation"', $html);
     }
 
+    public function test_footer_links_to_manage_and_unsubscribe(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('Meldingen beheren', $html);
+        $this->assertStringContainsString(route('profile.notifications'), $html);
+        $this->assertStringContainsString('Uitschrijven', $html);
+    }
+
     public function test_rendered_html_has_intro_text_even_when_payload_empty(): void
     {
         $user = User::factory()->create();

@@ -100,6 +100,14 @@ class ProfileController extends Controller
         $user->notification_frequency = $request->input('notification_frequency');
         $user->notify_on_kudos_milestones = $request->boolean('notify_on_kudos_milestones');
         $user->notify_on_onboarding_emails = $request->boolean('notify_on_onboarding_emails');
+
+        $wantsNewsletter = $request->boolean('newsletter_subscribed');
+        if ($wantsNewsletter && $user->newsletter_unsubscribed_at !== null) {
+            $user->newsletter_unsubscribed_at = null;
+        } elseif (! $wantsNewsletter && $user->newsletter_unsubscribed_at === null) {
+            $user->newsletter_unsubscribed_at = now();
+        }
+
         $user->save();
 
         return redirect()->route('profile.notifications')->with('toast', [

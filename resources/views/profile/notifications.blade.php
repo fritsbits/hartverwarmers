@@ -36,6 +36,19 @@
                     </flux:field>
                 </section>
 
+                {{-- Maandelijkse nieuwsbrief --}}
+                <section class="py-8">
+                    <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Maandelijkse nieuwsbrief</p>
+                    <flux:field variant="inline">
+                        <flux:checkbox
+                            name="newsletter_subscribed"
+                            value="1"
+                            :checked="old('newsletter_subscribed', $user->newsletter_unsubscribed_at === null)"
+                        />
+                        <flux:label>Stuur me elke maand een overzicht — themadagen, nieuwe fiches, en het diamantje van de maand.</flux:label>
+                    </flux:field>
+                </section>
+
                 {{-- Welkom & inspiratie --}}
                 <section class="py-8">
                     <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-3">Welkom &amp; inspiratie</p>
