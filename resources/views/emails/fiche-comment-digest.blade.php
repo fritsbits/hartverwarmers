@@ -12,6 +12,8 @@ Er zijn {{ count($commentPayloads) }} nieuwe reacties op je fiche **{{ $fiche->t
 **{{ $comment['commenter_name'] }}** schreef:
 
 {{ $comment['body_excerpt'] }}
+
+[Bekijk reactie]({{ $comment['comment_url'] }})
 @endcomponent
 
 @endforeach
