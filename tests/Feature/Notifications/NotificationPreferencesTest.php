@@ -67,4 +67,36 @@ class NotificationPreferencesTest extends TestCase
 
         $this->get(route('profile.notifications'))->assertOk();
     }
+
+    public function test_notifications_page_preselects_saved_frequency(): void
+    {
+        $user = User::factory()->create(['notification_frequency' => 'weekly']);
+        $this->actingAs($user);
+
+        $response = $this->get(route('profile.notifications'));
+
+        $response->assertOk();
+        $this->assertEquals('weekly', $this->checkedRadioValue($response->getContent()));
+    }
+
+    public function test_notifications_page_falls_back_to_daily_when_value_empty(): void
+    {
+        $user = User::factory()->create();
+        \DB::table('users')->where('id', $user->id)->update(['notification_frequency' => '']);
+        $this->actingAs($user);
+
+        $response = $this->get(route('profile.notifications'));
+
+        $this->assertEquals('daily', $this->checkedRadioValue($response->getContent()));
+    }
+
+    private function checkedRadioValue(string $html): ?string
+    {
+        if (preg_match('/<ui-radio[^>]*\bchecked\b[^>]*>/i', $html, $m)
+            && preg_match('/value="([^"]+)"/', $m[0], $v)) {
+            return $v[1];
+        }
+
+        return null;
+    }
 }
