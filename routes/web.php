@@ -32,6 +32,11 @@ Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 // Home
 Route::get('/', HomeController::class)->name('home');
 
+// Notification unsubscribe (signed, no auth required)
+Route::get('/meldingen/uitschrijven', [HvProfileController::class, 'unsubscribe'])
+    ->name('notifications.unsubscribe')
+    ->middleware('signed');
+
 // Initiatives
 Route::get('/initiatieven', [InitiativeController::class, 'index'])->name('initiatives.index');
 Route::get('/initiatieven/{initiative:slug}', [InitiativeController::class, 'show'])->name('initiatives.show');

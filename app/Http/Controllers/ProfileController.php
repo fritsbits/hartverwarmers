@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\User;
 use App\Services\AvatarThumbnailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -98,6 +99,19 @@ class ProfileController extends Controller
         return redirect()->route('profile.notifications')->with('toast', [
             'heading' => 'Meldingen bijgewerkt',
             'text' => 'Je meldingsvoorkeuren zijn opgeslagen.',
+            'variant' => 'success',
+        ]);
+    }
+
+    public function unsubscribe(Request $request): RedirectResponse
+    {
+        $user = User::findOrFail($request->query('user'));
+        $user->notification_frequency = 'never';
+        $user->save();
+
+        return redirect()->route('home')->with('toast', [
+            'heading' => 'Uitgeschreven',
+            'text' => 'Je ontvangt geen e-mails meer over reacties op je fiches.',
             'variant' => 'success',
         ]);
     }
