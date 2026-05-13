@@ -77,6 +77,17 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringContainsString('role="presentation"', $html);
     }
 
+    public function test_rendered_html_has_intro_text_even_when_payload_empty(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        // Defensive fallback: a non-greeting paragraph should be present.
+        $this->assertStringContainsString('Hartverwarmers van de afgelopen periode', $html);
+    }
+
     private function emptyPayload(): Payload
     {
         return new Payload(
