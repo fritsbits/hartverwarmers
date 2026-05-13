@@ -1,8 +1,9 @@
 <?php
 
-namespace Tests\Unit\MonthlyDigest;
+namespace Tests\Feature\MonthlyDigest;
 
 use App\Models\Fiche;
+use App\Models\Theme;
 use App\Models\ThemeOccurrence;
 use App\Services\MonthlyDigest\Composer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,7 +33,7 @@ class ComposerTest extends TestCase
         $payload = app(Composer::class)->compose(now());
 
         $this->assertCount(5, $payload->themes);
-        $this->assertSame(5, $payload->upcomingThemeCount);
+        $this->assertSame(6, $payload->upcomingThemeCount);
     }
 
     public function test_returns_most_recent_published_diamond(): void
@@ -70,5 +71,22 @@ class ComposerTest extends TestCase
         $payload = app(Composer::class)->compose(now());
 
         $this->assertNull($payload->diamond);
+    }
+
+    public function test_upcoming_theme_count_returns_total_not_just_displayed(): void
+    {
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        // 7 occurrences in window, each on a different theme (since (theme_id, year) is unique)
+        for ($i = 0; $i < 7; $i++) {
+            ThemeOccurrence::factory()
+                ->for(Theme::factory()->create())
+                ->create(['year' => 2026, 'start_date' => now()->addDays(3 + $i)]);
+        }
+
+        $payload = app(Composer::class)->compose(now());
+
+        $this->assertCount(5, $payload->themes, 'themes collection should be capped at 5');
+        $this->assertSame(7, $payload->upcomingThemeCount, 'upcomingThemeCount should reflect the true total');
     }
 }
