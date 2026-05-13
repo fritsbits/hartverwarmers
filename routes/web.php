@@ -24,6 +24,9 @@ use App\Http\Controllers\ProfileController as HvProfileController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\ToolsInspirationController;
+use App\Models\User;
+use App\Notifications\MonthlyDigestNotification;
+use App\Services\MonthlyDigest\Composer;
 use Illuminate\Support\Facades\Route;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
@@ -140,6 +143,17 @@ Route::get('/uitwerkingen/{slug}/bewerken', fn (string $slug) => redirect("/fich
 Route::get('/nieuwsbrief/uitschrijven/{user}', NewsletterUnsubscribeController::class)
     ->name('newsletter.unsubscribe')
     ->withTrashed();
+
+// Dev-only newsletter preview (local environment only, runtime-gated)
+Route::get('/dev/newsletter-preview/{user}', function (User $user, Composer $composer) {
+    abort_unless(app()->environment('local'), 404);
+
+    $payload = $composer->compose(now());
+
+    return (new MonthlyDigestNotification($payload, cycle: $user->currentDigestCycleNumber()))
+        ->toMail($user)
+        ->render();
+});
 
 // Breeze auth routes
 require __DIR__.'/auth.php';
