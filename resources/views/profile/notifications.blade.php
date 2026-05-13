@@ -9,15 +9,15 @@
                 <div>
                     <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Reacties op fiches</p>
                     <p class="text-sm text-[var(--color-text-secondary)] mb-3">Ontvang een overzicht van nieuwe reacties op je fiches.</p>
-                    @php($currentFrequency = old('notification_frequency', $user->notification_frequency))
-                    <div class="flex flex-wrap items-center gap-x-6 gap-y-2" role="radiogroup">
-                        @foreach(['daily' => 'Dagelijks', 'weekly' => 'Wekelijks', 'never' => 'Nooit'] as $value => $label)
-                            <flux:field variant="inline">
-                                <flux:radio name="notification_frequency" :value="$value" :checked="$currentFrequency === $value" />
-                                <flux:label>{{ $label }}</flux:label>
-                            </flux:field>
-                        @endforeach
-                    </div>
+                    <flux:radio.group
+                        name="notification_frequency"
+                        :value="old('notification_frequency', $user->notification_frequency)"
+                        class="flex! flex-wrap items-center gap-x-6 gap-y-2 *:data-flux-field:mb-0!"
+                    >
+                        <flux:radio value="daily" label="Dagelijks" />
+                        <flux:radio value="weekly" label="Wekelijks" />
+                        <flux:radio value="never" label="Nooit" />
+                    </flux:radio.group>
                     @error('notification_frequency')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
