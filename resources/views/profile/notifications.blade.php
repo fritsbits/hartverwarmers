@@ -9,11 +9,11 @@
                 <div>
                     <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Reacties op fiches</p>
                     <p class="text-sm text-[var(--color-text-secondary)] mb-3">Ontvang een overzicht van nieuwe reacties op je fiches.</p>
-                    <flux:select name="notification_frequency" class="max-w-xs">
-                        <flux:select.option value="daily" :selected="old('notification_frequency', $user->notification_frequency) === 'daily'">Dagelijks</flux:select.option>
-                        <flux:select.option value="weekly" :selected="old('notification_frequency', $user->notification_frequency) === 'weekly'">Wekelijks (elke maandag)</flux:select.option>
-                        <flux:select.option value="never" :selected="old('notification_frequency', $user->notification_frequency) === 'never'">Nooit</flux:select.option>
-                    </flux:select>
+                    <flux:radio.group name="notification_frequency" :value="old('notification_frequency', $user->notification_frequency)">
+                        <flux:radio value="daily" label="Dagelijks" />
+                        <flux:radio value="weekly" label="Wekelijks (elke maandag)" />
+                        <flux:radio value="never" label="Nooit" />
+                    </flux:radio.group>
                     @error('notification_frequency')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
