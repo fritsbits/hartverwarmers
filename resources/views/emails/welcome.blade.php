@@ -21,8 +21,8 @@ Ontdek initiatieven
 
 De komende weken sturen we je de beste fiches en tips van onze community. Zodat je Hartverwarmers van alle kanten leert kennen.
 
-@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'onboarding'])
-
 Warme groet,
 Het Hartverwarmers-team
+
+@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'onboarding'])
 @endcomponent

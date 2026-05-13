@@ -31,8 +31,8 @@ Wil je zelf iets delen? Het duurt maar een paar minuten en andere teams hebben e
 Deel je eerste fiche
 @endcomponent
 
-@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'onboarding'])
-
 Warme groet,
 Het Hartverwarmers-team
+
+@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'onboarding'])
 @endcomponent

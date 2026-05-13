@@ -13,8 +13,8 @@ Benieuwd welke andere fiches zo populair zijn? Bekijk onze diamantjes — de bes
 Bekijk de diamantjes
 @endcomponent
 
-@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'kudos'])
-
 Warme groet,
 Het Hartverwarmers-team
+
+@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'kudos'])
 @endcomponent

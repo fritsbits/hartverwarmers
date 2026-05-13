@@ -22,8 +22,8 @@ Er zijn {{ count($commentPayloads) }} nieuwe reacties op je fiche **{{ $fiche->t
 Bekijk alle reacties
 @endcomponent
 
-@include('emails.partials.notification-footer', ['notifiable' => $user, 'type' => 'comments'])
-
 Warme groet,
 Het Hartverwarmers-team
+
+@include('emails.partials.notification-footer', ['notifiable' => $user, 'type' => 'comments'])
 @endcomponent

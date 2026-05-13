@@ -18,8 +18,8 @@ Er zijn initiatieven op Hartverwarmers die nog maar weinig fiches hebben. Missch
 Deel nog een fiche
 @endcomponent
 
-@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'kudos'])
-
 Warme groet,
 Het Hartverwarmers-team
+
+@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'kudos'])
 @endcomponent

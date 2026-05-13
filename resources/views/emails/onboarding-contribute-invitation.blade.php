@@ -13,8 +13,8 @@ Deel je eerste activiteit
 
 Andere animatoren in Vlaanderen zullen je er dankbaar voor zijn.
 
-@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'onboarding'])
-
 Warme groet,
 Het Hartverwarmers-team
+
+@include('emails.partials.notification-footer', ['notifiable' => $notifiable, 'type' => 'onboarding'])
 @endcomponent
