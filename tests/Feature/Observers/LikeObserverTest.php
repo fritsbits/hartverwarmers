@@ -175,7 +175,7 @@ class LikeObserverTest extends TestCase
     public function test_opt_out_prevents_milestone_notification(): void
     {
         Notification::fake();
-        $owner = User::factory()->create(['notify_on_onboarding_emails' => false]);
+        $owner = User::factory()->create(['notify_on_kudos_milestones' => false]);
         $fiche = Fiche::withoutEvents(fn () => Fiche::factory()->for($owner)->create(['published' => true]));
 
         Like::factory()->bookmark()->create([
