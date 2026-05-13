@@ -27,7 +27,7 @@ class LikeObserver
         $fiche = $like->likeable;
         $owner = $fiche->user;
 
-        if (! $owner || ! $owner->notify_on_onboarding_emails) {
+        if (! $owner || ! $owner->notify_on_kudos_milestones) {
             return;
         }
 
