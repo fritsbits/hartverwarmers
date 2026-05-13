@@ -11,7 +11,20 @@ class NotificationPreferencesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_unsubscribe_sets_frequency_to_never(): void
+    public function test_unsubscribe_comments_sets_frequency_to_never(): void
+    {
+        $user = User::factory()->create(['notification_frequency' => 'daily']);
+        $url = URL::signedRoute('notifications.unsubscribe', ['user' => $user->id, 'type' => 'comments']);
+
+        $this->get($url)->assertRedirect(route('home'));
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'notification_frequency' => 'never',
+        ]);
+    }
+
+    public function test_unsubscribe_defaults_to_comments_when_type_omitted(): void
     {
         $user = User::factory()->create(['notification_frequency' => 'daily']);
         $url = URL::signedRoute('notifications.unsubscribe', ['user' => $user->id]);
@@ -22,6 +35,40 @@ class NotificationPreferencesTest extends TestCase
             'id' => $user->id,
             'notification_frequency' => 'never',
         ]);
+    }
+
+    public function test_unsubscribe_kudos_turns_off_milestone_emails(): void
+    {
+        $user = User::factory()->create(['notify_on_kudos_milestones' => true]);
+        $url = URL::signedRoute('notifications.unsubscribe', ['user' => $user->id, 'type' => 'kudos']);
+
+        $this->get($url)->assertRedirect(route('home'));
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'notify_on_kudos_milestones' => false,
+        ]);
+    }
+
+    public function test_unsubscribe_onboarding_turns_off_onboarding_emails(): void
+    {
+        $user = User::factory()->create(['notify_on_onboarding_emails' => true]);
+        $url = URL::signedRoute('notifications.unsubscribe', ['user' => $user->id, 'type' => 'onboarding']);
+
+        $this->get($url)->assertRedirect(route('home'));
+
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'notify_on_onboarding_emails' => false,
+        ]);
+    }
+
+    public function test_unsubscribe_rejects_unknown_type(): void
+    {
+        $user = User::factory()->create();
+        $url = URL::signedRoute('notifications.unsubscribe', ['user' => $user->id, 'type' => 'bogus']);
+
+        $this->get($url)->assertStatus(400);
     }
 
     public function test_unsubscribe_requires_valid_signature(): void

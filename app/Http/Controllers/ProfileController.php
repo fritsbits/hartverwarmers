@@ -112,12 +112,26 @@ class ProfileController extends Controller
     public function unsubscribe(Request $request): RedirectResponse
     {
         $user = User::findOrFail($request->query('user'));
-        $user->notification_frequency = 'never';
+        $type = $request->query('type', 'comments');
+
+        match ($type) {
+            'comments' => $user->notification_frequency = 'never',
+            'kudos' => $user->notify_on_kudos_milestones = false,
+            'onboarding' => $user->notify_on_onboarding_emails = false,
+            default => abort(400, "Unknown unsubscribe type: {$type}"),
+        };
+
         $user->save();
+
+        $message = match ($type) {
+            'comments' => 'Je ontvangt geen e-mails meer over reacties op je fiches.',
+            'kudos' => 'Je ontvangt geen e-mails meer over kudos en bladwijzers.',
+            'onboarding' => 'Je ontvangt geen tips en inspiratie meer.',
+        };
 
         return redirect()->route('home')->with('toast', [
             'heading' => 'Uitgeschreven',
-            'text' => 'Je ontvangt geen e-mails meer over reacties op je fiches.',
+            'text' => $message,
             'variant' => 'success',
         ]);
     }
