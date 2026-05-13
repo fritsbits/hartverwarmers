@@ -9,9 +9,9 @@
                 <div>
                     <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Reacties op fiches</p>
                     <p class="text-sm text-[var(--color-text-secondary)] mb-3">Ontvang een overzicht van nieuwe reacties op je fiches.</p>
-                    <flux:radio.group name="notification_frequency" :value="old('notification_frequency', $user->notification_frequency)">
+                    <flux:radio.group name="notification_frequency" :value="old('notification_frequency', $user->notification_frequency)" class="flex flex-row gap-6">
                         <flux:radio value="daily" label="Dagelijks" />
-                        <flux:radio value="weekly" label="Wekelijks (elke maandag)" />
+                        <flux:radio value="weekly" label="Wekelijks" />
                         <flux:radio value="never" label="Nooit" />
                     </flux:radio.group>
                     @error('notification_frequency')
