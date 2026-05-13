@@ -2,13 +2,10 @@
 
 namespace App\Livewire;
 
-use App\Events\CommentPosted;
 use App\Livewire\Concerns\CreatesGuestAccount;
-use App\Models\Comment;
 use App\Models\Fiche;
 use App\Models\Like;
 use Livewire\Attributes\Computed;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class FicheKudos extends Component
@@ -24,12 +21,6 @@ class FicheKudos extends Component
     public bool $showBookmarkAuth = false;
 
     public bool $justBookmarked = false;
-
-    #[Validate('required|string|max:1000', message: [
-        'body.required' => 'Schrijf een berichtje.',
-        'body.max' => 'Je berichtje mag maximaal 1000 tekens bevatten.',
-    ])]
-    public string $body = '';
 
     #[Computed]
     public function isOwnFiche(): bool
@@ -93,32 +84,6 @@ class FicheKudos extends Component
         ]);
 
         unset($this->totalKudos, $this->myKudos, $this->kudosGiversCount);
-    }
-
-    public function addComment(): void
-    {
-        if (! auth()->check()) {
-            return;
-        }
-
-        if (auth()->id() === $this->fiche->user_id) {
-            return;
-        }
-
-        $this->validate(['body' => 'required|string|max:1000']);
-
-        $comment = Comment::create([
-            'body' => $this->body,
-            'user_id' => auth()->id(),
-            'commentable_type' => Fiche::class,
-            'commentable_id' => $this->fiche->id,
-            'parent_id' => null,
-        ]);
-
-        CommentPosted::dispatch($comment);
-
-        $this->reset('body');
-        $this->dispatch('comment-added');
     }
 
     public function toggleBookmark(): void
