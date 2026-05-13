@@ -29,11 +29,7 @@ class FicheCommentDigestMail extends Mailable
 
     public function content(): Content
     {
-        try {
-            $unsubscribeUrl = URL::signedRoute('notifications.unsubscribe', ['user' => $this->user->id]);
-        } catch (\Exception $e) {
-            $unsubscribeUrl = '#';
-        }
+        $this->fiche->loadMissing('initiative');
 
         return new Content(
             view: 'emails.fiche-comment-digest',
@@ -43,7 +39,7 @@ class FicheCommentDigestMail extends Mailable
                 'commentPayloads' => $this->commentPayloads,
                 'ficheUrl' => route('fiches.show', [$this->fiche->initiative, $this->fiche]),
                 'manageUrl' => route('profile.notifications'),
-                'unsubscribeUrl' => $unsubscribeUrl,
+                'unsubscribeUrl' => URL::signedRoute('notifications.unsubscribe', ['user' => $this->user->id]),
             ],
         );
     }
