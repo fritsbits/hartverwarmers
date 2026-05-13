@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Notifications;
 
+use App\Models\Fiche;
 use App\Models\Theme;
 use App\Models\ThemeOccurrence;
 use App\Models\User;
@@ -123,6 +124,49 @@ class MonthlyDigestNotificationTest extends TestCase
         $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
 
         $this->assertStringNotContainsString("Thema's om alvast in te plannen", $html);
+    }
+
+    public function test_diamond_section_renders_title_author_and_excerpt(): void
+    {
+        $author = User::factory()->create([
+            'first_name' => 'Marleen',
+            'last_name' => 'Geertsen',
+            'organisation' => 'WZC Avondrust',
+        ]);
+        $diamond = Fiche::factory()->published()->create([
+            'user_id' => $author->id,
+            'title' => 'Geurtjes-bingo voor mensen met dementie',
+            'description' => str_repeat('Met flesjes essentiële olie. ', 30),
+            'has_diamond' => true,
+        ]);
+
+        $payload = new Payload(
+            themes: new Collection,
+            diamond: $diamond->fresh(['user', 'initiative']),
+            recentFiches: new Collection,
+            upcomingThemeCount: 0,
+            newFicheCount: 0,
+            sentAt: now(),
+        );
+
+        $user = User::factory()->create();
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('Diamantje van de maand', $html);
+        $this->assertStringContainsString('Geurtjes-bingo voor mensen met dementie', $html);
+        $this->assertStringContainsString('Marleen Geertsen', $html);
+        $this->assertStringContainsString('WZC Avondrust', $html);
+        $this->assertStringContainsString('Lees de fiche', $html);
+    }
+
+    public function test_diamond_section_hidden_when_null(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringNotContainsString('Diamantje van de maand', $html);
     }
 
     private function emptyPayload(): Payload

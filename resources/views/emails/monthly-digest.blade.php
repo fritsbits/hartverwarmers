@@ -72,8 +72,26 @@
                     </td>
                 </tr>
                 @endif
-                {{-- Diamond block (Task 8) --}}
-                {{-- Diamond block (Task 8) --}}
+                @if ($payload->diamond)
+                <tr>
+                    <td style="padding:0 0 36px 0">
+                        <div class="section-label" style="margin-bottom:14px">&#9733; Diamantje van de maand</div>
+
+                        <a href="{{ route('fiches.show', [$payload->diamond->initiative, $payload->diamond]) }}" style="text-decoration:none;color:inherit;display:block">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FFFFFF;border:1px solid #EBE4DE;border-radius:10px">
+                                <tr>
+                                    <td style="padding:22px">
+                                        <div class="heading-serif" style="font-size:21px;line-height:1.25;margin-bottom:10px">{{ $payload->diamond->title }}</div>
+                                        <div class="meta" style="margin-bottom:14px">door {{ $payload->diamond->user->full_name }} · {{ $payload->diamond->user->organisation }}</div>
+                                        <p style="margin:0 0 16px 0;color:#231E1A;font-size:14px;line-height:1.6">{{ \Illuminate\Support\Str::limit(strip_tags($payload->diamond->description), 180) }}</p>
+                                        <div style="color:#E8764B;font-weight:600;font-size:14px">Lees de fiche &rarr;</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </a>
+                    </td>
+                </tr>
+                @endif
                 {{-- Recent fiches block (Task 9) --}}
                 {{-- Footer (Task 11) --}}
 
