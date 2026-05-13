@@ -34,7 +34,8 @@ class User extends Authenticatable
         'contributor_onboarded_at',
         'last_visited_at',
         'first_return_at',
-        'notify_on_fiche_comments',
+        'notification_frequency',
+        'notify_on_kudos_milestones',
         'notify_on_onboarding_emails',
     ];
 
@@ -56,7 +57,7 @@ class User extends Authenticatable
             'contributor_onboarded_at' => 'datetime',
             'last_visited_at' => 'datetime',
             'first_return_at' => 'datetime',
-            'notify_on_fiche_comments' => 'boolean',
+            'notify_on_kudos_milestones' => 'boolean',
             'notify_on_onboarding_emails' => 'boolean',
             'password' => 'hashed',
         ];
@@ -113,6 +114,11 @@ class User extends Authenticatable
     public function onboardingEmailLogs(): HasMany
     {
         return $this->hasMany(OnboardingEmailLog::class);
+    }
+
+    public function pendingNotifications(): HasMany
+    {
+        return $this->hasMany(PendingNotification::class);
     }
 
     public function interactions(): HasMany

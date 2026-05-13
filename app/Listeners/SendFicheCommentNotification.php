@@ -27,7 +27,7 @@ class SendFicheCommentNotification
             return;
         }
 
-        if (! $owner->notify_on_fiche_comments) {
+        if ($owner->notification_frequency === 'never') {
             return;
         }
 
