@@ -34,9 +34,7 @@ class SendCommentDigests extends Command
 
     private function sendDigestsForUser(User $user): void
     {
-        $byFiche = $user->pendingNotifications
-            ->where('type', 'fiche_comment')
-            ->groupBy('fiche_id');
+        $byFiche = $user->pendingNotifications->groupBy('fiche_id');
 
         foreach ($byFiche as $ficheId => $notifications) {
             $fiche = Fiche::with('initiative')->find($ficheId);

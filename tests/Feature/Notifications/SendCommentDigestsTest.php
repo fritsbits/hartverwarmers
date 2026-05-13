@@ -137,4 +137,42 @@ class SendCommentDigestsTest extends TestCase
 
         Mail::assertSent(FicheCommentDigestMail::class, fn ($mail) => $mail->hasTo($user->email));
     }
+
+    public function test_deletes_orphan_notifications_when_fiche_is_deleted(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create(['notification_frequency' => 'daily']);
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['user_id' => $user->id, 'initiative_id' => $initiative->id]);
+        $this->makePendingNotification($user, $fiche);
+
+        $ficheId = $fiche->id;
+        $fiche->forceDelete();
+
+        $this->artisan('notifications:send-digests --frequency=daily');
+
+        $this->assertDatabaseMissing('pending_notifications', [
+            'user_id' => $user->id,
+            'fiche_id' => $ficheId,
+        ]);
+    }
+
+    public function test_preserves_pending_notifications_when_mailer_throws(): void
+    {
+        $user = User::factory()->create(['notification_frequency' => 'daily']);
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['user_id' => $user->id, 'initiative_id' => $initiative->id]);
+        $this->makePendingNotification($user, $fiche);
+
+        Mail::shouldReceive('to')->andThrow(new \RuntimeException('Mail server down'));
+
+        try {
+            $this->artisan('notifications:send-digests --frequency=daily');
+        } catch (\RuntimeException) {
+            // expected — the command may propagate the exception
+        }
+
+        $this->assertDatabaseHas('pending_notifications', ['user_id' => $user->id]);
+    }
 }
