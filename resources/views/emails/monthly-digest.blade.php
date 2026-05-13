@@ -82,7 +82,7 @@
                                 <tr>
                                     <td style="padding:22px">
                                         <div class="heading-serif" style="font-size:21px;line-height:1.25;margin-bottom:10px">{{ $payload->diamond->title }}</div>
-                                        <div class="meta" style="margin-bottom:14px">door {{ $payload->diamond->user->full_name }} · {{ $payload->diamond->user->organisation }}</div>
+                                        <div class="meta" style="margin-bottom:14px">door {{ $payload->diamond->user->full_name }}@if ($payload->diamond->user->organisation) · {{ $payload->diamond->user->organisation }}@endif</div>
                                         <p style="margin:0 0 16px 0;color:#231E1A;font-size:14px;line-height:1.6">{{ \Illuminate\Support\Str::limit(strip_tags($payload->diamond->description), 180) }}</p>
                                         <div style="color:#E8764B;font-weight:600;font-size:14px">Lees de fiche &rarr;</div>
                                     </td>
@@ -105,11 +105,11 @@
                                     @foreach ($row as $fiche)
                                         <td class="fiche-cell" valign="top" width="50%" style="padding:0 5px 10px 0">
                                             <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" style="text-decoration:none;color:inherit;display:block">
-                                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FFFFFF;border:1px solid #EBE4DE;border-radius:8px;min-height:90px">
+                                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FFFFFF;border:1px solid #EBE4DE;border-radius:8px">
                                                     <tr>
                                                         <td style="padding:14px">
                                                             <div class="heading-serif" style="font-size:15px;line-height:1.3;margin-bottom:6px">{{ $fiche->title }}</div>
-                                                            <div style="color:#756C65;font-size:12px">{{ $fiche->user->first_name }} · {{ $fiche->user->organisation }}</div>
+                                                            <div style="color:#756C65;font-size:12px">{{ $fiche->user->first_name }}@if ($fiche->user->organisation) · {{ $fiche->user->organisation }}@endif</div>
                                                         </td>
                                                     </tr>
                                                 </table>

@@ -206,6 +206,55 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringNotContainsString('Recent gedeeld', $html);
     }
 
+    public function test_recent_fiches_meta_has_no_trailing_middot_when_organisation_empty(): void
+    {
+        $author = User::factory()->create(['first_name' => 'Lena', 'organisation' => '']);
+        $fiche = Fiche::factory()->published()->create([
+            'user_id' => $author->id,
+            'title' => 'Stoelendans light',
+        ]);
+
+        $payload = new Payload(
+            themes: new Collection,
+            diamond: null,
+            recentFiches: (new Collection([$fiche]))->load(['user', 'initiative']),
+            upcomingThemeCount: 0,
+            newFicheCount: 1,
+            sentAt: now(),
+        );
+
+        $user = User::factory()->create();
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringNotContainsString('Lena · ', $html);
+        $this->assertStringContainsString('Lena', $html);
+    }
+
+    public function test_diamond_meta_has_no_trailing_middot_when_organisation_empty(): void
+    {
+        $author = User::factory()->create(['first_name' => 'Marleen', 'last_name' => 'Geertsen', 'organisation' => '']);
+        $diamond = Fiche::factory()->published()->create([
+            'user_id' => $author->id,
+            'title' => 'Geurtjes-bingo',
+            'has_diamond' => true,
+        ]);
+
+        $payload = new Payload(
+            themes: new Collection,
+            diamond: $diamond->fresh(['user', 'initiative']),
+            recentFiches: new Collection,
+            upcomingThemeCount: 0,
+            newFicheCount: 0,
+            sentAt: now(),
+        );
+
+        $user = User::factory()->create();
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringNotContainsString('Marleen Geertsen · ', $html);
+        $this->assertStringContainsString('Marleen Geertsen', $html);
+    }
+
     private function emptyPayload(): Payload
     {
         return new Payload(
