@@ -85,4 +85,21 @@ class UserNewsletterCohortTest extends TestCase
 
         $this->assertSame(3, $user->currentDigestCycleNumber());
     }
+
+    public function test_created_at_is_not_mutated_by_qualifies_check(): void
+    {
+        Carbon::setTestNow('2026-05-13 14:30:00');
+
+        $user = User::factory()->create(['created_at' => '2026-04-13 09:15:00']);
+
+        $originalCreatedAt = $user->created_at->copy();
+
+        $user->qualifiesForMonthlyDigestToday();
+        $user->currentDigestCycleNumber();
+
+        $this->assertTrue(
+            $user->created_at->equalTo($originalCreatedAt),
+            'created_at should not be mutated by the cohort methods'
+        );
+    }
 }

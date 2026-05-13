@@ -178,14 +178,14 @@ class User extends Authenticatable
             return false;
         }
 
-        $days = (int) $this->created_at->startOfDay()->diffInDays(now()->startOfDay());
+        $days = (int) $this->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay());
 
         return $days >= 30 && $days % 30 === 0;
     }
 
     public function currentDigestCycleNumber(): int
     {
-        $days = (int) $this->created_at->startOfDay()->diffInDays(now()->startOfDay());
+        $days = (int) $this->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay());
 
         return intdiv($days, 30);
     }
