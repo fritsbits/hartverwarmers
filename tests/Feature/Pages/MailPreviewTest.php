@@ -72,6 +72,16 @@ class MailPreviewTest extends TestCase
         $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
     }
 
+    public function test_admin_can_preview_monthly_digest_email(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->get(route('admin.mails.preview', 'monthly-digest'));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+    }
+
     public function test_admin_can_view_individual_mail(): void
     {
         $admin = User::factory()->admin()->create();

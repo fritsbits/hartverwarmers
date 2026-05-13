@@ -69,6 +69,10 @@
                                     <flux:icon name="envelope" variant="mini" class="size-4" />
                                     Reactie-digest
                                 </a>
+                                <a href="{{ route('admin.mails.show', 'monthly-digest') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->is('*/mails/monthly-digest') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="envelope" variant="mini" class="size-4" />
+                                    Maandelijks
+                                </a>
                                 <a href="{{ route('admin.mails.show', 'onboarding-curated-activities') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->is('*/mails/onboarding-curated-activities') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
                                     <flux:icon name="envelope" variant="mini" class="size-4" />
                                     Curated
@@ -124,6 +128,7 @@
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'reset-password') }}" :current="request()->is('*/mails/reset-password')">Wachtwoord reset</flux:navlist.item>
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'welcome') }}" :current="request()->is('*/mails/welcome')">Welkomstmail</flux:navlist.item>
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'fiche-comment-digest') }}" :current="request()->is('*/mails/fiche-comment-digest')">Reactie-digest</flux:navlist.item>
+                                        <flux:navlist.item href="{{ route('admin.mails.show', 'monthly-digest') }}" :current="request()->is('*/mails/monthly-digest')">Maandelijkse nieuwsbrief</flux:navlist.item>
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'onboarding-curated-activities') }}" :current="request()->is('*/mails/onboarding-curated-activities')">Curated activiteiten</flux:navlist.item>
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'onboarding-top-five') }}" :current="request()->is('*/mails/onboarding-top-five')">Top 5 activiteiten</flux:navlist.item>
                                         <flux:navlist.item href="{{ route('admin.mails.show', 'onboarding-contribute-invitation') }}" :current="request()->is('*/mails/onboarding-contribute-invitation')">Uitnodiging bijdragen</flux:navlist.item>

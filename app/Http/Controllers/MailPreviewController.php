@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\FicheCommentDigestMail;
 use App\Models\Fiche;
+use App\Notifications\MonthlyDigestNotification;
 use App\Notifications\OnboardingCuratedActivitiesNotification;
 use App\Notifications\OnboardingDownloadMilestoneNotification;
 use App\Notifications\OnboardingFirstBookmarkNotification;
@@ -11,6 +12,7 @@ use App\Notifications\OnboardingMilestone10BookmarksNotification;
 use App\Notifications\OnboardingMilestone50BookmarksNotification;
 use App\Notifications\OnboardingTopFiveNotification;
 use App\Notifications\WelcomeNotification;
+use App\Services\MonthlyDigest\Composer;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\Request;
@@ -42,6 +44,10 @@ class MailPreviewController extends Controller
         'fiche-comment-digest' => [
             'label' => 'Reactie-digest',
             'description' => 'Dagelijks of wekelijks overzicht van nieuwe reacties op je fiches.',
+        ],
+        'monthly-digest' => [
+            'label' => 'Maandelijkse nieuwsbrief',
+            'description' => 'Cohort-gebaseerde maandelijkse update: themadagen, diamantje, recente fiches.',
         ],
         'onboarding-curated-activities' => [
             'label' => 'Onboarding — Curated activiteiten',
@@ -142,6 +148,7 @@ class MailPreviewController extends Controller
             'reset-password' => (new ResetPassword('fake-token-for-preview'))->toMail($user),
             'welcome' => (new WelcomeNotification)->toMail($user),
             'fiche-comment-digest' => $this->buildFicheCommentDigestMail($user),
+            'monthly-digest' => $this->buildMonthlyDigestMail($user),
             'onboarding-curated-activities' => (new OnboardingCuratedActivitiesNotification)->toMail($user),
             'onboarding-top-five' => (new OnboardingTopFiveNotification)->toMail($user),
             'onboarding-contribute-invitation' => (new OnboardingDownloadMilestoneNotification(5))->toMail($user),
@@ -157,6 +164,14 @@ class MailPreviewController extends Controller
         $fiche = Fiche::published()->with(['user', 'initiative'])->firstOrFail();
 
         return (new OnboardingFirstBookmarkNotification($fiche))->toMail($user);
+    }
+
+    private function buildMonthlyDigestMail(mixed $user): MailMessage
+    {
+        $payload = app(Composer::class)->compose(now());
+        $cycle = $user->currentDigestCycleNumber();
+
+        return (new MonthlyDigestNotification($payload, cycle: $cycle))->toMail($user);
     }
 
     private function buildFicheCommentDigestMail(mixed $user): FicheCommentDigestMail
@@ -183,10 +198,8 @@ class MailPreviewController extends Controller
 
     private function renderHtml(MailMessage|Mailable $mail): string
     {
-        if ($mail instanceof Mailable) {
-            return $mail->render();
-        }
+        $rendered = $mail->render();
 
-        return $mail->render()->toHtml();
+        return is_string($rendered) ? $rendered : $rendered->toHtml();
     }
 }
