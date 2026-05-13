@@ -29,6 +29,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'notification_frequency' => 'daily',
             'notify_on_onboarding_emails' => true,
+            'notify_on_kudos_milestones' => true,
         ];
     }
 
