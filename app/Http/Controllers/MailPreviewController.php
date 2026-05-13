@@ -23,55 +23,84 @@ use Illuminate\View\View;
 
 class MailPreviewController extends Controller
 {
+    public const CATEGORIES = [
+        'notifications' => 'Notificaties',
+        'newsletter' => 'Nieuwsbrief',
+        'onboarding' => 'Onboarding',
+        'transactional' => 'Transactioneel',
+    ];
+
     /**
      * Known email types with display metadata.
      *
-     * @var array<string, array{label: string, description: string}>
+     * @var array<string, array{label: string, description: string, category: string, trigger: string}>
      */
     private const EMAILS = [
-        'verify-email' => [
-            'label' => 'E-mailverificatie',
-            'description' => 'Bij registratie en aanmaak gastaccount.',
-        ],
-        'reset-password' => [
-            'label' => 'Wachtwoord resetten',
-            'description' => 'Bij "wachtwoord vergeten" en na aanmaak gastaccount.',
-        ],
-        'welcome' => [
-            'label' => 'Welkomstmail',
-            'description' => 'Na e-mailverificatie, oriënterend en warm.',
-        ],
         'fiche-comment-digest' => [
             'label' => 'Reactie-digest',
             'description' => 'Dagelijks of wekelijks overzicht van nieuwe reacties op je fiches.',
+            'category' => 'notifications',
+            'trigger' => 'Dagelijks / wekelijks om 08:00',
+        ],
+        'onboarding-first-bookmark' => [
+            'label' => 'Eerste bookmark',
+            'description' => 'Realtime: eerste bookmark op een fiche van de gebruiker.',
+            'category' => 'notifications',
+            'trigger' => 'Eerste bookmark op een fiche',
+        ],
+        'onboarding-milestone-10-bookmarks' => [
+            'label' => '10 bookmarks',
+            'description' => 'Realtime: 10e bookmark op fiches van de gebruiker.',
+            'category' => 'notifications',
+            'trigger' => '10e bookmark op fiches',
+        ],
+        'onboarding-milestone-50-bookmarks' => [
+            'label' => '50 bookmarks',
+            'description' => 'Realtime: 50e bookmark op fiches van de gebruiker.',
+            'category' => 'notifications',
+            'trigger' => '50e bookmark op fiches',
         ],
         'monthly-digest' => [
             'label' => 'Maandelijkse nieuwsbrief',
             'description' => 'Cohort-gebaseerde maandelijkse update: themadagen, diamantje, recente fiches.',
+            'category' => 'newsletter',
+            'trigger' => 'Maandelijks (cohort, 08:00)',
+        ],
+        'welcome' => [
+            'label' => 'Welkomstmail',
+            'description' => 'Na e-mailverificatie, oriënterend en warm.',
+            'category' => 'onboarding',
+            'trigger' => 'Na e-mailverificatie',
         ],
         'onboarding-curated-activities' => [
-            'label' => 'Onboarding — Curated activiteiten',
+            'label' => 'Curated activiteiten',
             'description' => 'Dag 3–5 na activatie. 2–3 handgepickte fiches.',
+            'category' => 'onboarding',
+            'trigger' => 'Dag 3–5 na activatie',
         ],
         'onboarding-top-five' => [
-            'label' => 'Onboarding — Top 5 activiteiten',
+            'label' => 'Top 5 activiteiten',
             'description' => 'Dag 7–14 na activatie. Dynamische top-5 meest gebookmarkte fiches.',
+            'category' => 'onboarding',
+            'trigger' => 'Dag 7–14 na activatie',
         ],
         'onboarding-contribute-invitation' => [
-            'label' => 'Onboarding — Download milestone',
-            'description' => 'Triggered after user has downloaded X activiteiten (based on fiche-download count).',
+            'label' => 'Uitnodiging bijdragen',
+            'description' => 'Na het downloaden van een aantal activiteiten.',
+            'category' => 'onboarding',
+            'trigger' => 'Na X downloads',
         ],
-        'onboarding-first-bookmark' => [
-            'label' => 'Onboarding — Eerste bookmark',
-            'description' => 'Realtime: eerste bookmark op een fiche van de gebruiker.',
+        'verify-email' => [
+            'label' => 'E-mailverificatie',
+            'description' => 'Bij registratie en aanmaak gastaccount.',
+            'category' => 'transactional',
+            'trigger' => 'Bij registratie',
         ],
-        'onboarding-milestone-10-bookmarks' => [
-            'label' => 'Onboarding — 10 bookmarks',
-            'description' => 'Realtime: 10e bookmark op fiches van de gebruiker.',
-        ],
-        'onboarding-milestone-50-bookmarks' => [
-            'label' => 'Onboarding — 50 bookmarks',
-            'description' => 'Realtime: 50e bookmark op fiches van de gebruiker.',
+        'reset-password' => [
+            'label' => 'Wachtwoord resetten',
+            'description' => 'Bij "wachtwoord vergeten" en na aanmaak gastaccount.',
+            'category' => 'transactional',
+            'trigger' => 'Bij "wachtwoord vergeten"',
         ],
     ];
 
@@ -80,11 +109,20 @@ class MailPreviewController extends Controller
         $user = $request->user();
 
         $emails = collect(self::EMAILS)->map(fn ($meta, $key) => [
+            'key' => $key,
             ...$meta,
             ...$this->getMailMeta($key, $user),
         ]);
 
-        return view('admin.mails.index', ['emails' => $emails, 'emailTypes' => self::EMAILS]);
+        $grouped = collect(self::CATEGORIES)
+            ->map(fn (string $label, string $key) => [
+                'key' => $key,
+                'label' => $label,
+                'emails' => $emails->where('category', $key)->values(),
+            ])
+            ->values();
+
+        return view('admin.mails.index', ['categories' => $grouped]);
     }
 
     public function show(Request $request, string $email): View

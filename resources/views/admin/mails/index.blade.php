@@ -1,42 +1,56 @@
-<x-sidebar-layout title="E-mails" section-label="Beheer">
+<x-sidebar-layout title="E-mails" section-label="Beheer" description="Alle uitgaande e-mails, gegroepeerd per type.">
 
     <div class="space-y-10">
-        @foreach($emails as $key => $email)
+        @foreach($categories as $category)
+            @if($category['emails']->isEmpty())
+                @continue
+            @endif
+
             <section>
-                <div class="flex items-baseline gap-3 mb-2">
-                    <h2 class="font-heading font-bold text-lg">{{ $email['label'] }}</h2>
-                    <span class="text-sm text-[var(--color-text-muted)]">{{ $email['description'] }}</span>
-                    <a href="{{ route('admin.mails.preview', $key) }}" target="_blank" class="ml-auto text-[var(--color-text-muted)] hover:text-[var(--color-primary)] transition-colors" title="Open in nieuw tabblad">
-                        <flux:icon name="arrow-top-right-on-square" variant="mini" class="size-4" />
-                    </a>
-                </div>
+                <h2 class="section-label mb-3">{{ $category['label'] }}</h2>
 
-                <dl class="flex flex-wrap gap-x-6 gap-y-1 text-sm mb-3">
-                    <div class="flex gap-1.5">
-                        <dt class="text-[var(--color-text-muted)]">Onderwerp:</dt>
-                        <dd class="font-medium">{{ $email['subject'] }}</dd>
-                    </div>
-                    <div class="flex gap-1.5">
-                        <dt class="text-[var(--color-text-muted)]">Afzender:</dt>
-                        <dd class="font-medium">{{ $email['from'] }}</dd>
-                    </div>
-                </dl>
-
-                <div class="border border-[var(--color-border-light)] rounded-lg overflow-hidden">
-                    <iframe
-                        src="{{ route('admin.mails.preview', $key) }}"
-                        class="w-full border-0"
-                        style="min-height: 500px;"
-                        loading="lazy"
-                        onload="this.style.height = this.contentDocument.body.scrollHeight + 'px'"
-                    ></iframe>
+                <div class="border border-[var(--color-border-light)] rounded-xl overflow-hidden bg-white">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-[var(--color-border-light)] text-left text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">
+                                <th class="px-4 py-3 font-semibold w-1/4">Naam</th>
+                                <th class="px-4 py-3 font-semibold">Onderwerp</th>
+                                <th class="px-4 py-3 font-semibold w-1/4 whitespace-nowrap">Trigger</th>
+                                <th class="px-2 py-3 w-8"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[var(--color-border-light)]">
+                            @foreach($category['emails'] as $email)
+                                <tr class="group hover:bg-[var(--color-bg-accent-light)] transition-colors">
+                                    <td class="px-4 py-3">
+                                        <a href="{{ route('admin.mails.show', $email['key']) }}" class="font-semibold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors">
+                                            {{ $email['label'] }}
+                                        </a>
+                                    </td>
+                                    <td class="px-4 py-3 text-[var(--color-text-secondary)] truncate max-w-0">
+                                        <a href="{{ route('admin.mails.show', $email['key']) }}" class="block truncate">
+                                            {{ $email['subject'] }}
+                                        </a>
+                                    </td>
+                                    <td class="px-4 py-3 text-[var(--color-text-secondary)] whitespace-nowrap">
+                                        {{ $email['trigger'] }}
+                                    </td>
+                                    <td class="px-2 py-3 text-[var(--color-text-tertiary)] group-hover:text-[var(--color-primary)] transition-colors">
+                                        <a href="{{ route('admin.mails.show', $email['key']) }}" class="block px-2" aria-label="Open {{ $email['label'] }}">
+                                            &rarr;
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </section>
         @endforeach
     </div>
 
-    <p class="text-xs text-[var(--color-text-muted)] mt-10">
-        Templates: <span class="font-mono">resources/views/vendor/mail/</span> en <span class="font-mono">resources/views/vendor/notifications/</span>
+    <p class="text-xs text-[var(--color-text-tertiary)] mt-10">
+        Templates: <span class="font-mono">resources/views/emails/</span>
     </p>
 
 </x-sidebar-layout>

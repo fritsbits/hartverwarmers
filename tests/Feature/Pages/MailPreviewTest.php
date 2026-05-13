@@ -42,6 +42,33 @@ class MailPreviewTest extends TestCase
         $response->assertSee('Welkomstmail');
     }
 
+    public function test_mails_index_groups_emails_by_category(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $initiative = Initiative::factory()->create();
+        Fiche::factory()->for(User::factory())->for($initiative)->create(['published' => true]);
+
+        $response = $this->actingAs($admin)->get(route('admin.mails'));
+
+        $response->assertSee('Notificaties');
+        $response->assertSee('Nieuwsbrief');
+        $response->assertSee('Onboarding');
+        $response->assertSee('Transactioneel');
+    }
+
+    public function test_mails_index_shows_trigger_column(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $initiative = Initiative::factory()->create();
+        Fiche::factory()->for(User::factory())->for($initiative)->create(['published' => true]);
+
+        $response = $this->actingAs($admin)->get(route('admin.mails'));
+
+        $response->assertSee('Bij registratie');
+        $response->assertSee('Maandelijks (cohort, 08:00)');
+        $response->assertSee('10e bookmark op fiches');
+    }
+
     public function test_admin_can_preview_verify_email(): void
     {
         $admin = User::factory()->admin()->create();
