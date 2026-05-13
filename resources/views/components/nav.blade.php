@@ -61,28 +61,15 @@
                                     <span class="shrink-0 text-[var(--color-text-secondary)] text-sm">&rarr;</span>
                                 </a>
 
-                                <a href="{{ route('bookmarks.index') }}" class="flex items-center gap-3 w-full px-4 py-3 hover:bg-[var(--color-bg-cream)] transition-colors">
+                                <a href="{{ route('themes.index') }}" class="flex items-center gap-3 w-full px-4 py-3 hover:bg-[var(--color-bg-cream)] transition-colors">
                                     <span class="shrink-0 w-7 flex items-center justify-center text-[var(--color-primary)]">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                                         </svg>
                                     </span>
                                     <div class="flex-1 min-w-0">
-                                        <span class="font-semibold text-sm text-[var(--color-text-primary)]">Downloads & favorieten</span>
-                                        <p class="text-xs text-[var(--color-text-secondary)]">Gedownloade en opgeslagen fiches</p>
-                                    </div>
-                                    <span class="shrink-0 text-[var(--color-text-secondary)] text-sm">&rarr;</span>
-                                </a>
-
-                                <a href="{{ route('my-fiches.index') }}" class="flex items-center gap-3 w-full px-4 py-3 hover:bg-[var(--color-bg-cream)] transition-colors">
-                                    <span class="shrink-0 w-7 flex items-center justify-center text-[var(--color-primary)]">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                        </svg>
-                                    </span>
-                                    <div class="flex-1 min-w-0">
-                                        <span class="font-semibold text-sm text-[var(--color-text-primary)]">Mijn fiches</span>
-                                        <p class="text-xs text-[var(--color-text-secondary)]">Fiches die je hebt bijgedragen</p>
+                                        <span class="font-semibold text-sm text-[var(--color-text-primary)]">Thema's</span>
+                                        <p class="text-xs text-[var(--color-text-secondary)]">Activiteiten gegroepeerd per thema</p>
                                     </div>
                                     <span class="shrink-0 text-[var(--color-text-secondary)] text-sm">&rarr;</span>
                                 </a>
@@ -168,6 +155,9 @@
                         <flux:menu>
                             <flux:menu.item href="{{ route('profile.show') }}" icon="user">Profiel</flux:menu.item>
                             <flux:menu.item href="{{ route('profile.security') }}" icon="lock-closed">Beveiliging</flux:menu.item>
+                            <flux:menu.separator />
+                            <flux:menu.item href="{{ route('bookmarks.index') }}" icon="arrow-down-tray">Downloads & favorieten</flux:menu.item>
+                            <flux:menu.item href="{{ route('my-fiches.index') }}" icon="document-text">Mijn fiches</flux:menu.item>
                             @if(auth()->user()->isAdmin() || auth()->user()->isCurator())
                                 <flux:menu.separator />
                                 @if(auth()->user()->isAdmin())
@@ -238,17 +228,11 @@
                         </svg>
                         <span class="text-sm font-medium text-[var(--color-text-primary)]">Diamantjes</span>
                     </a>
-                    <a href="{{ route('bookmarks.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-bg-cream)]">
+                    <a href="{{ route('themes.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-bg-cream)]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                         </svg>
-                        <span class="text-sm font-medium text-[var(--color-text-primary)]">Downloads & favorieten</span>
-                    </a>
-                    <a href="{{ route('my-fiches.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[var(--color-bg-cream)]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                        </svg>
-                        <span class="text-sm font-medium text-[var(--color-text-primary)]">Mijn fiches</span>
+                        <span class="text-sm font-medium text-[var(--color-text-primary)]">Thema's</span>
                     </a>
                 </div>
             </div>
