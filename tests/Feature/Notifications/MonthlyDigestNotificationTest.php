@@ -290,6 +290,76 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringContainsString('Deel jouw fiche', $html);
     }
 
+    public function test_preview_text_lists_theme_names_when_three_or_more(): void
+    {
+        $themes = collect([
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Moederdag']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Hemelvaart']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Pinksteren']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Vaderdag']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Wereldfietsdag']))->create(),
+        ]);
+
+        $payload = new Payload(
+            themes: $themes,
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 5,
+            newFicheCount: 6,
+            sentAt: now(),
+        );
+
+        $user = User::factory()->create();
+        $mail = (new MonthlyDigestNotification($payload))->toMail($user);
+
+        $this->assertSame(
+            "Moederdag, Hemelvaart, Pinksteren en 2 andere thema's — plus 6 nieuwe fiches van collega's.",
+            $mail->metadata['preview_text'] ?? null
+        );
+    }
+
+    public function test_preview_text_when_only_one_theme(): void
+    {
+        $themes = collect([
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Moederdag']))->create(),
+        ]);
+
+        $payload = new Payload(
+            themes: $themes,
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 1,
+            newFicheCount: 6,
+            sentAt: now(),
+        );
+
+        $mail = (new MonthlyDigestNotification($payload))->toMail(User::factory()->create());
+
+        $this->assertSame(
+            "Moederdag en 6 nieuwe fiches van collega's.",
+            $mail->metadata['preview_text'] ?? null
+        );
+    }
+
+    public function test_preview_text_when_zero_themes(): void
+    {
+        $payload = new Payload(
+            themes: new Collection,
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 0,
+            newFicheCount: 6,
+            sentAt: now(),
+        );
+
+        $mail = (new MonthlyDigestNotification($payload))->toMail(User::factory()->create());
+
+        $this->assertSame(
+            '6 nieuwe fiches uit andere woonzorgcentra om uit te putten.',
+            $mail->metadata['preview_text'] ?? null
+        );
+    }
+
     private function emptyPayload(): Payload
     {
         return new Payload(

@@ -19,6 +19,8 @@
 </head>
 <body style="margin:0;padding:0;background:#FEF8F4">
 
+<div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all">{{ $previewText }}</div>
+
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#FEF8F4">
     <tr>
         <td align="center" style="padding:32px 16px">
