@@ -28,7 +28,7 @@
                             value="1"
                             :checked="old('notify_on_kudos_milestones', $user->notify_on_kudos_milestones)"
                         />
-                        <flux:label>Stuur me een melding bij mijlpalen (eerste kudos, 10×, 50×)</flux:label>
+                        <flux:label>Stuur me een melding wanneer mensen mijn fiche opslaan (eerste keer, 10×, 50×)</flux:label>
                     </flux:field>
                 </div>
 
