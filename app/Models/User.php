@@ -36,6 +36,7 @@ class User extends Authenticatable
         'first_return_at',
         'notify_on_fiche_comments',
         'notify_on_onboarding_emails',
+        'newsletter_unsubscribed_at',
     ];
 
     /**
@@ -58,6 +59,7 @@ class User extends Authenticatable
             'first_return_at' => 'datetime',
             'notify_on_fiche_comments' => 'boolean',
             'notify_on_onboarding_emails' => 'boolean',
+            'newsletter_unsubscribed_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
