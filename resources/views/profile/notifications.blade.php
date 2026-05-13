@@ -9,14 +9,14 @@
                 <section class="pb-8">
                     <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Reacties op fiches</p>
                     <p class="text-sm text-[var(--color-text-secondary)] mb-3">In plaats van een mail per reactie krijg je een overzicht — kies hoe vaak.</p>
+                    @php($currentFrequency = old('notification_frequency', $user->notification_frequency ?: 'daily'))
                     <flux:radio.group
                         name="notification_frequency"
-                        :value="old('notification_frequency', $user->notification_frequency)"
                         class="flex! flex-wrap items-center gap-x-6 gap-y-2 *:data-flux-field:mb-0!"
                     >
-                        <flux:radio value="daily" label="Dagelijks" />
-                        <flux:radio value="weekly" label="Wekelijks" />
-                        <flux:radio value="never" label="Nooit" />
+                        <flux:radio value="daily" label="Dagelijks" :checked="$currentFrequency === 'daily'" />
+                        <flux:radio value="weekly" label="Wekelijks" :checked="$currentFrequency === 'weekly'" />
+                        <flux:radio value="never" label="Nooit" :checked="$currentFrequency === 'never'" />
                     </flux:radio.group>
                     @error('notification_frequency')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
