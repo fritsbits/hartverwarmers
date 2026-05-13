@@ -47,4 +47,18 @@ class NewsletterUnsubscribeTest extends TestCase
         $response->assertOk();
         $response->assertSeeText('uitgeschreven');
     }
+
+    public function test_soft_deleted_user_can_still_unsubscribe(): void
+    {
+        $user = User::factory()->create(['newsletter_unsubscribed_at' => null]);
+
+        $url = URL::signedRoute('newsletter.unsubscribe', ['user' => $user->id]);
+
+        $user->delete(); // soft delete
+
+        $response = $this->get($url);
+
+        $response->assertOk();
+        $response->assertSeeText('uitgeschreven');
+    }
 }

@@ -138,7 +138,8 @@ Route::get('/uitwerkingen/{slug}/bewerken', fn (string $slug) => redirect("/fich
 
 // Newsletter unsubscribe
 Route::get('/nieuwsbrief/uitschrijven/{user}', NewsletterUnsubscribeController::class)
-    ->name('newsletter.unsubscribe');
+    ->name('newsletter.unsubscribe')
+    ->withTrashed();
 
 // Breeze auth routes
 require __DIR__.'/auth.php';
