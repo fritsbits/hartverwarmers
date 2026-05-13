@@ -65,4 +65,28 @@ class SendMonthlyCohortNewsletterTest extends TestCase
             return $notification->idempotencyKey($user) === "digest-{$user->id}-cycle-2";
         });
     }
+
+    public function test_for_flag_sends_only_to_one_address(): void
+    {
+        Notification::fake();
+
+        $target = User::factory()->create(['email' => 'qa@example.com', 'created_at' => now()->subDays(60)]);
+        $other = User::factory()->create(['created_at' => now()->subDays(30)]);
+
+        \App\Models\Fiche::factory()->published()->create();
+
+        $this->artisan('newsletter:send-monthly-cohort', ['--for' => 'qa@example.com'])
+            ->assertSuccessful();
+
+        Notification::assertSentTo($target, MonthlyDigestNotification::class);
+        Notification::assertNotSentTo($other, MonthlyDigestNotification::class);
+    }
+
+    public function test_for_flag_with_unknown_email_fails(): void
+    {
+        Notification::fake();
+
+        $this->artisan('newsletter:send-monthly-cohort', ['--for' => 'nobody@example.com'])
+            ->assertFailed();
+    }
 }
