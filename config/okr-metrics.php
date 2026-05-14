@@ -6,6 +6,7 @@ use App\Metrics\OnboardingReturn7dRateMetric;
 use App\Metrics\OnboardingSignupCountMetric;
 use App\Metrics\OnboardingVerificationRateMetric;
 use App\Metrics\PresentationScoreAvgMetric;
+use App\Metrics\ThankRateMetric;
 
 /*
  * Map of metric_key (string used by KeyResult.metric_key) to a Metric-class FQN.
@@ -19,4 +20,5 @@ return [
     'onboarding_return_7d_rate' => OnboardingReturn7dRateMetric::class,
     'onboarding_interaction_30d_rate' => OnboardingInteraction30dRateMetric::class,
     'onboarding_followup_response_rate' => OnboardingFollowupResponseRateMetric::class,
+    'thank_rate' => ThankRateMetric::class,
 ];
