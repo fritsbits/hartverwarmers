@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\FicheCommentDigestMail;
 use App\Models\Fiche;
+use App\Notifications\ContributorAnniversaryNotification;
 use App\Notifications\FicheDiamondAwardedNotification;
 use App\Notifications\MonthlyDigestNotification;
 use App\Notifications\OnboardingCuratedActivitiesNotification;
@@ -13,6 +14,7 @@ use App\Notifications\OnboardingMilestone10BookmarksNotification;
 use App\Notifications\OnboardingMilestone50BookmarksNotification;
 use App\Notifications\OnboardingTopFiveNotification;
 use App\Notifications\WelcomeNotification;
+use App\Services\ContributorAnniversary\Composer as AnniversaryComposer;
 use App\Services\MonthlyDigest\Composer;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
@@ -97,6 +99,12 @@ class MailPreviewController extends Controller
             'description' => 'Realtime: jouw fiche werd door ons uitgekozen als diamantje.',
             'category' => 'recognition',
             'trigger' => 'Wanneer has_diamond=true wordt gezet',
+        ],
+        'anniversary' => [
+            'label' => 'Bijdragers-verjaardag',
+            'description' => 'Jaarlijks op de verjaardag van iemands eerste fiche.',
+            'category' => 'recognition',
+            'trigger' => 'Dagelijks om 08:00 (cohort)',
         ],
         'verify-email' => [
             'label' => 'E-mailverificatie',
@@ -202,6 +210,7 @@ class MailPreviewController extends Controller
             'onboarding-milestone-10-bookmarks' => (new OnboardingMilestone10BookmarksNotification(10))->toMail($user),
             'onboarding-milestone-50-bookmarks' => (new OnboardingMilestone50BookmarksNotification(50))->toMail($user),
             'diamond-awarded' => $this->buildDiamondAwardedMail($user),
+            'anniversary' => $this->buildAnniversaryMail($user),
             default => throw new \InvalidArgumentException("Unknown email key: {$email}"),
         };
     }
@@ -226,6 +235,13 @@ class MailPreviewController extends Controller
         $fiche = Fiche::published()->with('initiative')->firstOrFail();
 
         return (new FicheDiamondAwardedNotification($fiche))->toMail($user);
+    }
+
+    private function buildAnniversaryMail(mixed $user): MailMessage
+    {
+        $payload = app(AnniversaryComposer::class)->compose($user);
+
+        return (new ContributorAnniversaryNotification($payload, year: 1))->toMail($user);
     }
 
     private function buildFicheCommentDigestMail(mixed $user): FicheCommentDigestMail

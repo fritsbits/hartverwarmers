@@ -19,3 +19,6 @@ Schedule::command('notifications:send-digests --frequency=weekly')->weeklyOn(1, 
 Schedule::command('newsletter:send-monthly-cohort')
     ->dailyAt('08:00')
     ->timezone('Europe/Brussels');
+Schedule::command('contributors:send-anniversary-emails')
+    ->dailyAt('08:00')
+    ->timezone('Europe/Brussels');
