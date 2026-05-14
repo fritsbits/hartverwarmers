@@ -186,7 +186,22 @@ class User extends Authenticatable
 
         $days = (int) $this->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay());
 
-        return $days >= 30 && $days % 30 === 0;
+        if ($days < 30 || $days % 30 !== 0) {
+            return false;
+        }
+
+        // Grace window: cycles 1–3 always send, regardless of activity, so
+        // dormant users have three real chances to be re-engaged.
+        if ($this->currentDigestCycleNumber() <= 3) {
+            return true;
+        }
+
+        // After the grace window, require a sign of life within 6 months.
+        // last_visited_at is bumped by the TrackLastVisit middleware (authed)
+        // and by the newsletter click-tracking route (anonymous).
+        $lastActive = $this->last_visited_at ?? $this->created_at;
+
+        return $lastActive->greaterThanOrEqualTo(now()->subMonths(6));
     }
 
     public function currentDigestCycleNumber(): int

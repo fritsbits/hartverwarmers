@@ -58,7 +58,7 @@
                             @foreach ($payload->themes as $occurrence)
                                 <tr>
                                     <td style="padding:14px 16px;{{ ! $loop->last ? 'border-bottom:1px solid #EBE4DE;' : '' }}">
-                                        <a href="{{ url('/themas#thema-' . $occurrence->theme->slug) }}" style="text-decoration:none;color:inherit;display:block">
+                                        <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, url('/themas#thema-' . $occurrence->theme->slug)) }}" style="text-decoration:none;color:inherit;display:block">
                                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                                                 <tr>
                                                     <td width="80" valign="middle" style="padding-right:14px">
@@ -84,7 +84,7 @@
                     <td style="padding:0 0 36px 0">
                         <div class="section-label" style="margin-bottom:14px">&#9733; Diamantje van de maand</div>
 
-                        <a href="{{ route('fiches.show', [$payload->diamond->initiative, $payload->diamond]) }}" style="text-decoration:none;color:inherit;display:block">
+                        <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, route('fiches.show', [$payload->diamond->initiative, $payload->diamond])) }}" style="text-decoration:none;color:inherit;display:block">
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FFFFFF;border:1px solid #EBE4DE;border-radius:10px">
                                 <tr>
                                     <td style="padding:22px">
@@ -111,7 +111,7 @@
                                 <tr>
                                     @foreach ($row as $fiche)
                                         <td class="fiche-cell" valign="top" width="50%" style="padding:0 5px 10px 0">
-                                            <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" style="text-decoration:none;color:inherit;display:block">
+                                            <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, route('fiches.show', [$fiche->initiative, $fiche])) }}" style="text-decoration:none;color:inherit;display:block">
                                                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FFFFFF;border:1px solid #EBE4DE;border-radius:8px">
                                                     <tr>
                                                         <td style="padding:14px">
@@ -143,7 +143,7 @@
                 <tr>
                     <td style="padding:24px 0 0 0;border-top:1px solid #EBE4DE;text-align:center;color:#756C65;font-size:12px;line-height:1.6">
                         <p style="margin:0 0 8px 0;color:#231E1A;font-size:14px">Heb je zelf iets moois op poten gezet?<br>
-                            <a href="{{ url('/fiches/nieuw') }}" style="color:#E8764B;font-weight:600;text-decoration:none">Deel jouw fiche &rarr;</a>
+                            <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, url('/fiches/nieuw')) }}" style="color:#E8764B;font-weight:600;text-decoration:none">Deel jouw fiche &rarr;</a>
                         </p>
                         <p style="margin:18px 0 4px 0">Hartverwarmers · jouw maandelijkse update</p>
                         <p style="margin:0">Je krijgt deze e-mail omdat je een account hebt op Hartverwarmers.<br>

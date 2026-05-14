@@ -19,6 +19,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InitiativeController;
 use App\Http\Controllers\MailPreviewController;
 use App\Http\Controllers\MyFichesController;
+use App\Http\Controllers\NewsletterClickController;
 use App\Http\Controllers\NewsletterUnsubscribeController;
 use App\Http\Controllers\ProfileController as HvProfileController;
 use App\Http\Controllers\SitemapController;
@@ -147,6 +148,13 @@ Route::get('/uitwerkingen/{slug}/bewerken', fn (string $slug) => redirect("/fich
 // Newsletter unsubscribe
 Route::get('/nieuwsbrief/uitschrijven/{user}', NewsletterUnsubscribeController::class)
     ->name('newsletter.unsubscribe')
+    ->withTrashed();
+
+// Newsletter click tracking — bumps last_visited_at so anonymous clicks
+// count as activity for the inactivity gate, then redirects.
+Route::get('/n/{user}/click', NewsletterClickController::class)
+    ->name('newsletter.click')
+    ->middleware('signed')
     ->withTrashed();
 
 // Dev-only newsletter preview (local environment only, runtime-gated)

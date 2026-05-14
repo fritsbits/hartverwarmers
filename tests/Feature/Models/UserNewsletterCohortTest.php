@@ -102,4 +102,76 @@ class UserNewsletterCohortTest extends TestCase
             'created_at should not be mutated by the cohort methods'
         );
     }
+
+    public function test_cycle_one_always_sends_even_without_visits(): void
+    {
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        $user = User::factory()->create([
+            'created_at' => now()->subDays(30),
+            'last_visited_at' => null,
+        ]);
+
+        $this->assertTrue($user->qualifiesForMonthlyDigestToday());
+    }
+
+    public function test_cycle_three_always_sends_even_without_visits(): void
+    {
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        $user = User::factory()->create([
+            'created_at' => now()->subDays(90),
+            'last_visited_at' => null,
+        ]);
+
+        $this->assertTrue($user->qualifiesForMonthlyDigestToday());
+    }
+
+    public function test_cycle_four_sends_when_visit_is_within_six_months(): void
+    {
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        $user = User::factory()->create([
+            'created_at' => now()->subDays(120),
+            'last_visited_at' => now()->subMonths(2),
+        ]);
+
+        $this->assertTrue($user->qualifiesForMonthlyDigestToday());
+    }
+
+    public function test_cycle_seven_skips_when_user_has_never_visited(): void
+    {
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        $user = User::factory()->create([
+            'created_at' => now()->subDays(210),
+            'last_visited_at' => null,
+        ]);
+
+        $this->assertFalse($user->qualifiesForMonthlyDigestToday());
+    }
+
+    public function test_cycle_seven_skips_when_last_visit_is_stale(): void
+    {
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        $user = User::factory()->create([
+            'created_at' => now()->subDays(210),
+            'last_visited_at' => now()->subMonths(7),
+        ]);
+
+        $this->assertFalse($user->qualifiesForMonthlyDigestToday());
+    }
+
+    public function test_cycle_seven_sends_when_user_visited_recently(): void
+    {
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        $user = User::factory()->create([
+            'created_at' => now()->subDays(210),
+            'last_visited_at' => now()->subMonth(),
+        ]);
+
+        $this->assertTrue($user->qualifiesForMonthlyDigestToday());
+    }
 }

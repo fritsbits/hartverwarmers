@@ -313,6 +313,43 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringContainsString('Deel jouw fiche', $html);
     }
 
+    public function test_primary_content_links_use_tracked_click_urls(): void
+    {
+        $theme = Theme::factory()->create(['title' => 'Moederdag']);
+        $occurrence = ThemeOccurrence::factory()->for($theme)->create();
+
+        $diamond = Fiche::factory()->published()->create(['has_diamond' => true]);
+        $recentFiche = Fiche::factory()->published()->create();
+
+        $payload = new Payload(
+            themes: new Collection([$occurrence]),
+            diamond: $diamond->fresh(['user', 'initiative']),
+            recentFiches: (new Collection([$recentFiche]))->load(['user', 'initiative']),
+            upcomingThemeCount: 1,
+            newFicheCount: 1,
+            sentAt: now(),
+        );
+
+        $user = User::factory()->create();
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        // 4 wrap sites: theme link, diamond fiche, recent fiche tile, footer share CTA.
+        // Count the click-redirect anchors to confirm every primary link was wrapped.
+        $count = substr_count($html, '/n/'.$user->id.'/click');
+        $this->assertGreaterThanOrEqual(4, $count, "Expected 4+ tracked click URLs (one per primary link site), found {$count}.");
+    }
+
+    public function test_unsubscribe_and_manage_links_are_not_tracked(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('/nieuwsbrief/uitschrijven/'.$user->id, $html);
+        $this->assertStringContainsString(route('profile.notifications'), $html);
+    }
+
     public function test_preview_text_lists_theme_names_when_three_or_more(): void
     {
         $themes = collect([
