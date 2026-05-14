@@ -154,14 +154,13 @@
 
                         <flux:menu>
                             <flux:menu.item href="{{ route('profile.show') }}" icon="user">Profiel</flux:menu.item>
-                            <flux:menu.item href="{{ route('profile.security') }}" icon="lock-closed">Beveiliging</flux:menu.item>
                             <flux:menu.separator />
                             <flux:menu.item href="{{ route('bookmarks.index') }}" icon="arrow-down-tray">Downloads & favorieten</flux:menu.item>
                             <flux:menu.item href="{{ route('my-fiches.index') }}" icon="document-text">Mijn fiches</flux:menu.item>
                             @if(auth()->user()->isAdmin() || auth()->user()->isCurator())
                                 <flux:menu.separator />
                                 @if(auth()->user()->isAdmin())
-                                    <flux:menu.item href="{{ route('admin.dashboard') }}" icon="chart-bar">Beheer</flux:menu.item>
+                                    <flux:menu.item href="{{ route('admin.dashboard') }}" icon="chart-bar">Dashboard</flux:menu.item>
                                 @else
                                     <flux:menu.item href="{{ route('admin.fiches.index') }}" icon="document-text">Fiches</flux:menu.item>
                                 @endif

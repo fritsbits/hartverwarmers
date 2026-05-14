@@ -19,7 +19,7 @@
                             </a>
                             <a href="{{ route('profile.security') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('profile.security') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
                                 <flux:icon name="lock-closed" variant="mini" class="size-4" />
-                                Beveiliging
+                                Wachtwoord
                             </a>
                             @if(!auth()->user()->isMember())
                                 <a href="{{ route('profile.notifications') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('profile.notifications') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
@@ -69,7 +69,7 @@
                         <flux:navlist>
                             <flux:navlist.group heading="Profiel">
                                 <flux:navlist.item href="{{ route('profile.show') }}" icon="user" :current="request()->routeIs('profile.show')">Persoonlijke info</flux:navlist.item>
-                                <flux:navlist.item href="{{ route('profile.security') }}" icon="lock-closed" :current="request()->routeIs('profile.security')">Beveiliging</flux:navlist.item>
+                                <flux:navlist.item href="{{ route('profile.security') }}" icon="lock-closed" :current="request()->routeIs('profile.security')">Wachtwoord</flux:navlist.item>
                                 @if(!auth()->user()->isMember())
                                     <flux:navlist.item href="{{ route('profile.notifications') }}" icon="bell" :current="request()->routeIs('profile.notifications')">Meldingen</flux:navlist.item>
                                 @endif

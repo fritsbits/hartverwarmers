@@ -1,4 +1,4 @@
-<x-sidebar-layout title="Beveiliging" section-label="Profiel" description="Wijzig je wachtwoord en beveiligingsinstellingen.">
+<x-sidebar-layout title="Wachtwoord" section-label="Profiel" description="Wijzig je wachtwoord.">
     <flux:card>
             <form action="{{ route('password.update') }}" method="POST">
                 @csrf
