@@ -59,6 +59,8 @@ class AdminDashboardController extends Controller
             $adoption = $this->adoptionStats($fichesWithSuggestions);
             $fieldAdoption = $this->fieldAdoption($fichesWithSuggestions);
             $ficheAdoptionDetails = $this->ficheAdoptionDetails($fichesWithSuggestions);
+            $lowestScoredFiches = $this->lowestScoredFiches();
+            $recentAiSuggestionAcceptances = $this->recentAiSuggestionAcceptances();
         } else {
             $weeklyTrend = [];
             $trendDelta = null;
@@ -68,6 +70,8 @@ class AdminDashboardController extends Controller
             $adoption = ['withSuggestions' => 0, 'withAnyApplied' => 0, 'adoptionRate' => 0];
             $fieldAdoption = [];
             $ficheAdoptionDetails = [];
+            $lowestScoredFiches = [];
+            $recentAiSuggestionAcceptances = [];
         }
 
         $signupTrend = $tab === 'onboarding' ? $this->signupTrend($range) : [];
@@ -97,17 +101,25 @@ class AdminDashboardController extends Controller
             ...$adoption,
             'fieldAdoption' => $fieldAdoption,
             'ficheAdoptionDetails' => $ficheAdoptionDetails,
+            'lowestScoredFiches' => $lowestScoredFiches,
+            'recentAiSuggestionAcceptances' => $recentAiSuggestionAcceptances,
             'onboardingStats' => $tab === 'onboarding' ? $this->onboardingStats($range) : [],
             'onboardingEmailCounts' => $tab === 'onboarding' ? $this->onboardingEmailCounts($range) : [],
+            'recentSignupsFunnel' => $tab === 'onboarding' ? $this->recentSignupsFunnel() : [],
+            'stalledVerifications' => $tab === 'onboarding' ? $this->stalledVerifications() : [],
             'signupTrend' => $signupTrend,
             'signupStats' => $signupStats,
             'thankTrend' => $tab === 'bedankjes' ? $this->thankTrend($range) : [],
             'thankStats' => $tab === 'bedankjes' ? $this->thankStats($range) : [],
+            'recentThankComments' => $tab === 'bedankjes' ? $this->recentThankComments() : [],
+            'topThankedFiches' => $tab === 'bedankjes' ? $this->topThankedFiches($cutoff) : [],
             'newsletterTrend' => $tab === 'nieuwsbrief' ? $this->newsletterTrend($range) : [],
             'newsletterStats' => $tab === 'nieuwsbrief' ? $this->newsletterStats($range) : [],
             'unsubscribeByCycle' => $tab === 'nieuwsbrief' ? $this->unsubscribeByCycle($range) : [],
             'activationStats' => $tab === 'nieuwsbrief' ? $this->activationStats($range) : [],
             'upcomingNewsletterSends' => $tab === 'nieuwsbrief' ? $this->upcomingNewsletterSends() : [],
+            'lastNewsletterDigestMeta' => $tab === 'nieuwsbrief' ? $this->lastNewsletterDigestMeta() : null,
+            'recentUnsubscribes' => $tab === 'nieuwsbrief' ? $this->recentUnsubscribes() : [],
         ]);
     }
 
@@ -1416,5 +1428,336 @@ class AdminDashboardController extends Controller
             'buckets' => $buckets,
             'windowDays' => $windowDays,
         ];
+    }
+
+    /**
+     * @return array{cycle: int, sent_at: Carbon, recipients: int}|null
+     */
+    private function lastNewsletterDigestMeta(): ?array
+    {
+        $log = OnboardingEmailLog::query()
+            ->where('mail_key', 'LIKE', 'newsletter-cycle-%')
+            ->latest('sent_at')
+            ->first(['mail_key', 'sent_at']);
+
+        if (! $log) {
+            return null;
+        }
+
+        $cycle = (int) str_replace('newsletter-cycle-', '', $log->mail_key);
+        $recipients = OnboardingEmailLog::query()
+            ->where('mail_key', $log->mail_key)
+            ->where('sent_at', '>=', $log->sent_at->copy()->subHours(6))
+            ->count();
+
+        return [
+            'cycle' => $cycle,
+            'sent_at' => $log->sent_at,
+            'recipients' => $recipients,
+        ];
+    }
+
+    /**
+     * @return array<int, array{title: string, meta: string}>
+     */
+    private function recentUnsubscribes(): array
+    {
+        $users = User::query()
+            ->whereNotNull('newsletter_unsubscribed_at')
+            ->where('role', '!=', 'admin')
+            ->where('email', 'NOT LIKE', '%@import.hartverwarmers.be')
+            ->latest('newsletter_unsubscribed_at')
+            ->limit(5)
+            ->get(['id', 'first_name', 'last_name', 'email', 'newsletter_unsubscribed_at']);
+
+        if ($users->isEmpty()) {
+            return [];
+        }
+
+        // Find each user's last received newsletter-cycle BEFORE their unsubscribe.
+        $userIds = $users->pluck('id');
+        $logs = OnboardingEmailLog::query()
+            ->whereIn('user_id', $userIds)
+            ->where('mail_key', 'LIKE', 'newsletter-cycle-%')
+            ->get(['user_id', 'mail_key', 'sent_at']);
+
+        $lastCycleByUser = [];
+        foreach ($users as $user) {
+            $userLogs = $logs
+                ->where('user_id', $user->id)
+                ->filter(fn ($log) => $log->sent_at <= $user->newsletter_unsubscribed_at)
+                ->sortByDesc('sent_at');
+            $latestLog = $userLogs->first();
+            $lastCycleByUser[$user->id] = $latestLog
+                ? (int) str_replace('newsletter-cycle-', '', $latestLog->mail_key)
+                : null;
+        }
+
+        return $users->map(function ($user) use ($lastCycleByUser) {
+            $name = trim(($user->first_name ?? '').' '.($user->last_name ?? ''));
+            $cycle = $lastCycleByUser[$user->id];
+            $meta = $cycle !== null
+                ? "na cyclus {$cycle} · ".$user->newsletter_unsubscribed_at->diffForHumans()
+                : $user->newsletter_unsubscribed_at->diffForHumans();
+
+            return [
+                'title' => $name !== '' ? $name : $user->email,
+                'meta' => $meta,
+            ];
+        })->all();
+    }
+
+    /**
+     * @return array<int, array{name: string, signed_up_at: string, verified: bool, returned_7d: bool, interacted_30d: bool, followup_received: bool}>
+     */
+    private function recentSignupsFunnel(): array
+    {
+        $users = User::query()
+            ->where('role', '!=', 'admin')
+            ->where('email', 'NOT LIKE', '%@import.hartverwarmers.be')
+            ->whereNotNull('email_verified_at')
+            ->latest('created_at')
+            ->limit(5)
+            ->get(['id', 'first_name', 'last_name', 'email', 'created_at', 'email_verified_at', 'first_return_at']);
+
+        if ($users->isEmpty()) {
+            return [];
+        }
+
+        $userIds = $users->pluck('id');
+        $usersById = $users->keyBy('id');
+
+        $kudosUsers = Like::query()
+            ->whereIn('user_id', $userIds)
+            ->where('type', 'kudos')
+            ->whereRaw('created_at >= (SELECT email_verified_at FROM users WHERE users.id = likes.user_id)')
+            ->get(['user_id', 'created_at'])
+            ->filter(function ($like) use ($usersById) {
+                $user = $usersById->get($like->user_id);
+
+                return $user && $like->created_at->diffInDays($user->email_verified_at) <= 30;
+            })
+            ->pluck('user_id');
+
+        $commentUsers = Comment::query()
+            ->whereIn('user_id', $userIds)
+            ->get(['user_id', 'created_at'])
+            ->filter(function ($comment) use ($usersById) {
+                $user = $usersById->get($comment->user_id);
+
+                return $user && $comment->created_at->diffInDays($user->email_verified_at) <= 30;
+            })
+            ->pluck('user_id');
+
+        $interactingUserIds = $kudosUsers->merge($commentUsers)->unique();
+
+        $followupUserIds = OnboardingEmailLog::query()
+            ->whereIn('user_id', $userIds)
+            ->where('mail_key', 'LIKE', 'download_followup_%')
+            ->pluck('user_id')
+            ->unique();
+
+        return $users->map(function ($user) use ($interactingUserIds, $followupUserIds) {
+            $name = trim(($user->first_name ?? '').' '.substr($user->last_name ?? '', 0, 1));
+
+            return [
+                'name' => $name !== '' ? $name.($user->last_name ? '.' : '') : $user->email,
+                'signed_up_at' => $user->created_at->isoFormat('D MMM'),
+                'verified' => $user->email_verified_at !== null,
+                'returned_7d' => $user->getRawOriginal('first_return_at') !== null,
+                'interacted_30d' => $interactingUserIds->contains($user->id),
+                'followup_received' => $followupUserIds->contains($user->id),
+            ];
+        })->all();
+    }
+
+    /**
+     * @return array<int, array{title: string, meta: string}>
+     */
+    private function stalledVerifications(): array
+    {
+        return User::query()
+            ->where('role', '!=', 'admin')
+            ->where('email', 'NOT LIKE', '%@import.hartverwarmers.be')
+            ->whereNull('email_verified_at')
+            ->where('created_at', '<', now()->subDays(7))
+            ->latest('created_at')
+            ->limit(5)
+            ->get(['id', 'first_name', 'last_name', 'email', 'created_at'])
+            ->map(function ($user) {
+                $name = trim(($user->first_name ?? '').' '.($user->last_name ?? ''));
+                $daysAgo = (int) round($user->created_at->diffInDays(now()));
+
+                return [
+                    'title' => $name !== '' ? $name : $user->email,
+                    'meta' => $daysAgo.' dagen geleden aangemeld',
+                ];
+            })
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{title: string, url: string, meta: string, body: string}>
+     */
+    private function recentThankComments(): array
+    {
+        // Pull a candidate window of recent comments on fiches.
+        // Then filter to those where the user downloaded the fiche BEFORE commenting.
+        $candidates = Comment::query()
+            ->where('commentable_type', Fiche::class)
+            ->latest('created_at')
+            ->limit(50)
+            ->with([
+                'user:id,first_name,last_name',
+                'commentable:id,title,slug,initiative_id',
+                'commentable.initiative:id,slug',
+            ])
+            ->get();
+
+        if ($candidates->isEmpty()) {
+            return [];
+        }
+
+        $userIds = $candidates->pluck('user_id')->unique()->values()->all();
+        $ficheIds = $candidates->pluck('commentable_id')->unique()->values()->all();
+
+        $downloadsByPair = UserInteraction::query()
+            ->whereIn('user_id', $userIds)
+            ->whereIn('interactable_id', $ficheIds)
+            ->where('interactable_type', Fiche::class)
+            ->where('type', 'download')
+            ->get(['user_id', 'interactable_id', 'created_at'])
+            ->groupBy(fn ($row) => $row->user_id.':'.$row->interactable_id)
+            ->map(fn ($rows) => $rows->min('created_at'));
+
+        return $candidates
+            ->filter(function ($comment) use ($downloadsByPair) {
+                $key = $comment->user_id.':'.$comment->commentable_id;
+                $downloadAt = $downloadsByPair->get($key);
+
+                return $downloadAt !== null && $downloadAt <= $comment->created_at;
+            })
+            ->take(5)
+            ->map(function ($comment) {
+                $fiche = $comment->commentable;
+                $name = $comment->user?->first_name ?? 'iemand';
+
+                return [
+                    'title' => $fiche->title,
+                    'url' => route('fiches.show', [$fiche->initiative, $fiche]),
+                    'meta' => $name.' · '.$comment->created_at->diffForHumans(),
+                    'body' => $comment->body,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{title: string, url: string, badge: int}>
+     */
+    private function topThankedFiches(?Carbon $since): array
+    {
+        $thanked = $this->computeThankedDownloads($since)->filter(fn ($row) => $row['is_thanked']);
+
+        if ($thanked->isEmpty()) {
+            return [];
+        }
+
+        $countsByFiche = $thanked
+            ->groupBy('fiche_id')
+            ->map(fn ($rows) => $rows->count())
+            ->sortDesc()
+            ->take(5);
+
+        $fiches = Fiche::query()
+            ->with('initiative:id,slug')
+            ->whereIn('id', $countsByFiche->keys()->all())
+            ->get(['id', 'title', 'slug', 'initiative_id'])
+            ->keyBy('id');
+
+        return $countsByFiche
+            ->map(function ($count, $ficheId) use ($fiches) {
+                $fiche = $fiches->get($ficheId);
+                if (! $fiche) {
+                    return null;
+                }
+
+                return [
+                    'title' => $fiche->title,
+                    'url' => route('fiches.show', [$fiche->initiative, $fiche]),
+                    'badge' => $count,
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<int, array{title: string, url: string, badge: int, badge_color: string}>
+     */
+    private function lowestScoredFiches(): array
+    {
+        return Fiche::query()
+            ->published()
+            ->whereNotNull('presentation_score')
+            ->orderBy('presentation_score')
+            ->limit(5)
+            ->with('initiative:id,slug')
+            ->get(['id', 'title', 'slug', 'initiative_id', 'presentation_score'])
+            ->map(fn ($fiche) => [
+                'title' => $fiche->title,
+                'url' => route('fiches.show', [$fiche->initiative, $fiche]),
+                'badge' => $fiche->presentation_score,
+                'badge_color' => $this->scoreColor($fiche->presentation_score),
+            ])
+            ->all();
+    }
+
+    private function scoreColor(int $score): string
+    {
+        return match (true) {
+            $score >= 70 => 'text-green-700',
+            $score >= 40 => 'text-amber-600',
+            default => 'text-red-600',
+        };
+    }
+
+    /**
+     * @return array<int, array{title: string, url: string, meta: string}>
+     */
+    private function recentAiSuggestionAcceptances(): array
+    {
+        $fieldLabels = [
+            'title' => 'Titel',
+            'description' => 'Omschrijving',
+            'preparation' => 'Voorbereiding',
+            'inventory' => 'Benodigdheden',
+            'process' => 'Werkwijze',
+        ];
+
+        return Fiche::query()
+            ->published()
+            ->whereJsonLength('ai_suggestions->applied', '>', 0)
+            ->latest('updated_at')
+            ->limit(5)
+            ->with('initiative:id,slug')
+            ->get(['id', 'title', 'slug', 'initiative_id', 'ai_suggestions', 'updated_at'])
+            ->map(function ($fiche) use ($fieldLabels) {
+                $applied = $fiche->ai_suggestions['applied'] ?? [];
+                $labels = collect($applied)
+                    ->map(fn ($field) => $fieldLabels[$field] ?? $field)
+                    ->take(3)
+                    ->implode(' · ');
+                $more = count($applied) > 3 ? ' +'.(count($applied) - 3) : '';
+
+                return [
+                    'title' => $fiche->title,
+                    'url' => route('fiches.show', [$fiche->initiative, $fiche]),
+                    'meta' => $labels.$more.' overgenomen',
+                ];
+            })
+            ->all();
     }
 }
