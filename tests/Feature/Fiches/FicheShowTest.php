@@ -82,7 +82,8 @@ class FicheShowTest extends TestCase
             'mime_type' => 'application/pdf',
         ]);
 
-        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
         $response->assertSee('Download bestand');
@@ -283,7 +284,8 @@ class FicheShowTest extends TestCase
             'fiche_id' => $fiche->id,
         ]);
 
-        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+        $response = $this->actingAs(User::factory()->create())
+            ->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
         $response->assertDontSee('data-carousel', false);

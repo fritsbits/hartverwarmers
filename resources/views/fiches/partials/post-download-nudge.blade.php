@@ -1,6 +1,6 @@
 {{-- Post-download takeover: full-screen overlay with three Alpine sub-states. --}}
 {{-- Lives inside the FicheKudos Livewire component so wire:model + wire:click bind. --}}
-{{-- Triggered by the 'fiche-downloaded' window event dispatched by the download button. --}}
+{{-- Triggered by the 'fiche-download-click' window event dispatched by the download button. --}}
 @auth
     @php
         $contributor = $fiche->user;

@@ -3,10 +3,12 @@
 namespace Tests\Feature\Interactions;
 
 use App\Models\Fiche;
+use App\Models\File;
 use App\Models\Initiative;
 use App\Models\User;
 use App\Models\UserInteraction;
 use App\Services\FicheInteractionService;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -48,7 +50,7 @@ class UserInteractionTest extends TestCase
             'type' => 'view',
         ]);
 
-        $this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(QueryException::class);
 
         UserInteraction::create([
             'user_id' => $user->id,
@@ -195,7 +197,7 @@ class UserInteractionTest extends TestCase
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
-        \App\Models\File::factory()->create(['fiche_id' => $fiche->id, 'path' => 'files/test-file.pdf']);
+        File::factory()->create(['fiche_id' => $fiche->id, 'path' => 'files/test-file.pdf']);
 
         $this->actingAs($user)->get(route('fiches.download', [$initiative, $fiche]));
 
@@ -215,7 +217,7 @@ class UserInteractionTest extends TestCase
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id, 'download_count' => 0]);
-        \App\Models\File::factory()->create(['fiche_id' => $fiche->id, 'path' => 'files/test-file.pdf']);
+        File::factory()->create(['fiche_id' => $fiche->id, 'path' => 'files/test-file.pdf']);
 
         $this->actingAs($user)->get(route('fiches.download', [$initiative, $fiche]));
 
@@ -277,17 +279,17 @@ class UserInteractionTest extends TestCase
         $this->assertArrayHasKey($otherFiche->id, $interactions);
     }
 
-    public function test_guest_downloading_fiche_does_not_create_interaction(): void
+    public function test_guest_downloading_fiche_is_redirected_to_login_and_creates_no_interaction(): void
     {
         Storage::fake('public');
         Storage::disk('public')->put('files/test-file.pdf', 'test content');
 
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
-        \App\Models\File::factory()->create(['fiche_id' => $fiche->id, 'path' => 'files/test-file.pdf']);
+        File::factory()->create(['fiche_id' => $fiche->id, 'path' => 'files/test-file.pdf']);
 
         $response = $this->get(route('fiches.download', [$initiative, $fiche]));
-        $response->assertStatus(200);
+        $response->assertRedirect(route('login'));
 
         $this->assertDatabaseMissing('user_interactions', [
             'interactable_type' => Fiche::class,

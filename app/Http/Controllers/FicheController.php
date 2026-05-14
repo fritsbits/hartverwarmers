@@ -104,14 +104,12 @@ class FicheController extends Controller
 
         $fiche->increment('download_count');
 
-        if (auth()->check()) {
-            UserInteraction::firstOrCreate([
-                'user_id' => auth()->id(),
-                'interactable_type' => Fiche::class,
-                'interactable_id' => $fiche->id,
-                'type' => 'download',
-            ]);
-        }
+        UserInteraction::firstOrCreate([
+            'user_id' => auth()->id(),
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'download',
+        ]);
 
         if ($files->count() === 1) {
             $file = $files->first();
@@ -144,6 +142,21 @@ class FicheController extends Controller
         return response()->download($tempPath, $fiche->slug.'-bestanden.zip', [
             'Content-Type' => 'application/zip',
         ])->deleteFileAfterSend();
+    }
+
+    public function downloadGate(Initiative $initiative, Fiche $fiche): RedirectResponse
+    {
+        if (! $initiative->published || ! $fiche->published) {
+            abort(404);
+        }
+
+        if (auth()->check()) {
+            return redirect()->route('fiches.download', [$initiative, $fiche]);
+        }
+
+        session(['url.intended' => route('fiches.show', [$initiative, $fiche])]);
+
+        return redirect()->route('register');
     }
 
     public function toggleDiamond(Initiative $initiative, Fiche $fiche, Request $request): RedirectResponse

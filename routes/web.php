@@ -48,7 +48,10 @@ Route::get('/initiatieven/{initiative:slug}', [InitiativeController::class, 'sho
 
 // Fiches
 Route::get('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'show'])->name('fiches.show');
-Route::get('/initiatieven/{initiative:slug}/{fiche:slug}/download', [FicheController::class, 'downloadFiles'])->name('fiches.download');
+Route::get('/initiatieven/{initiative:slug}/{fiche:slug}/download/aanmelden', [FicheController::class, 'downloadGate'])->name('fiches.download.gate');
+Route::get('/initiatieven/{initiative:slug}/{fiche:slug}/download', [FicheController::class, 'downloadFiles'])
+    ->middleware('auth')
+    ->name('fiches.download');
 
 // Themes (placeholder)
 Route::get('/themas', [ThemeController::class, 'index'])->name('themes.index');

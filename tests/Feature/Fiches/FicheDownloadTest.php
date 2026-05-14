@@ -5,6 +5,7 @@ namespace Tests\Feature\Fiches;
 use App\Models\Fiche;
 use App\Models\File;
 use App\Models\Initiative;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -17,12 +18,15 @@ class FicheDownloadTest extends TestCase
 
     private Fiche $fiche;
 
+    private User $user;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         Storage::fake('public');
 
+        $this->user = User::factory()->create();
         $this->initiative = Initiative::factory()->published()->create();
         $this->fiche = Fiche::factory()->published()->create([
             'initiative_id' => $this->initiative->id,
@@ -40,7 +44,7 @@ class FicheDownloadTest extends TestCase
         ]);
         Storage::disk('public')->put($file->path, 'fake pdf content');
 
-        $response = $this->get(route('fiches.download', [$this->initiative, $this->fiche]));
+        $response = $this->actingAs($this->user)->get(route('fiches.download', [$this->initiative, $this->fiche]));
 
         $response->assertStatus(200);
         $response->assertDownload('activiteit.pdf');
@@ -59,7 +63,7 @@ class FicheDownloadTest extends TestCase
             Storage::disk('public')->put($fileData['path'], 'fake content');
         }
 
-        $response = $this->get(route('fiches.download', [$this->initiative, $this->fiche]));
+        $response = $this->actingAs($this->user)->get(route('fiches.download', [$this->initiative, $this->fiche]));
 
         $response->assertStatus(200);
         $response->assertDownload($this->fiche->slug.'-bestanden.zip');
@@ -75,7 +79,7 @@ class FicheDownloadTest extends TestCase
 
         $this->assertEquals(0, $this->fiche->download_count);
 
-        $this->get(route('fiches.download', [$this->initiative, $this->fiche]));
+        $this->actingAs($this->user)->get(route('fiches.download', [$this->initiative, $this->fiche]));
 
         $this->assertEquals(1, $this->fiche->fresh()->download_count);
     }
@@ -88,19 +92,50 @@ class FicheDownloadTest extends TestCase
         ]);
         File::factory()->create(['fiche_id' => $unpublishedFiche->id]);
 
-        $response = $this->get(route('fiches.download', [$this->initiative, $unpublishedFiche]));
+        $response = $this->actingAs($this->user)->get(route('fiches.download', [$this->initiative, $unpublishedFiche]));
 
         $response->assertStatus(404);
     }
 
     public function test_download_404_for_fiche_without_files(): void
     {
-        $response = $this->get(route('fiches.download', [$this->initiative, $this->fiche]));
+        $response = $this->actingAs($this->user)->get(route('fiches.download', [$this->initiative, $this->fiche]));
 
         $response->assertStatus(404);
     }
 
-    public function test_show_page_displays_download_section_with_single_file(): void
+    public function test_guest_download_redirects_to_login(): void
+    {
+        $file = File::factory()->create([
+            'fiche_id' => $this->fiche->id,
+            'path' => 'files/test.pdf',
+        ]);
+        Storage::disk('public')->put($file->path, 'fake content');
+
+        $response = $this->get(route('fiches.download', [$this->initiative, $this->fiche]));
+
+        $response->assertRedirect(route('login'));
+        $this->assertEquals(0, $this->fiche->fresh()->download_count);
+    }
+
+    public function test_show_page_displays_download_section_with_single_file_for_auth_user(): void
+    {
+        File::factory()->create([
+            'fiche_id' => $this->fiche->id,
+            'original_filename' => 'rapport.pdf',
+            'mime_type' => 'application/pdf',
+            'size_bytes' => 2_500_000,
+        ]);
+
+        $response = $this->actingAs($this->user)->get(route('fiches.show', [$this->initiative, $this->fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('Download');
+        $response->assertSee('2 MB');
+        $response->assertSee(route('fiches.download', [$this->initiative, $this->fiche]));
+    }
+
+    public function test_show_page_displays_auth_gate_cta_for_guest(): void
     {
         File::factory()->create([
             'fiche_id' => $this->fiche->id,
@@ -112,9 +147,38 @@ class FicheDownloadTest extends TestCase
         $response = $this->get(route('fiches.show', [$this->initiative, $this->fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('Download');
-        $response->assertSee('2 MB');
-        $response->assertSee(route('fiches.download', [$this->initiative, $this->fiche]));
+        $response->assertSee('Meld je aan om te downloaden');
+        $response->assertSee(route('fiches.download.gate', [$this->initiative, $this->fiche]));
+    }
+
+    public function test_auth_gate_redirects_guest_to_register_with_intended_fiche_url(): void
+    {
+        $response = $this->get(route('fiches.download.gate', [$this->initiative, $this->fiche]));
+
+        $response->assertRedirect(route('register'));
+        $this->assertEquals(
+            route('fiches.show', [$this->initiative, $this->fiche]),
+            session('url.intended'),
+        );
+    }
+
+    public function test_auth_gate_redirects_authenticated_user_directly_to_download(): void
+    {
+        $response = $this->actingAs($this->user)->get(route('fiches.download.gate', [$this->initiative, $this->fiche]));
+
+        $response->assertRedirect(route('fiches.download', [$this->initiative, $this->fiche]));
+    }
+
+    public function test_auth_gate_404_for_unpublished_fiche(): void
+    {
+        $unpublishedFiche = Fiche::factory()->create([
+            'initiative_id' => $this->initiative->id,
+            'published' => false,
+        ]);
+
+        $response = $this->get(route('fiches.download.gate', [$this->initiative, $unpublishedFiche]));
+
+        $response->assertStatus(404);
     }
 
     public function test_download_includes_generated_pdf_versions(): void
@@ -132,7 +196,7 @@ class FicheDownloadTest extends TestCase
         ]);
         Storage::disk('public')->put($pdfFile->path, 'fake pdf');
 
-        $response = $this->get(route('fiches.download', [$this->initiative, $this->fiche]));
+        $response = $this->actingAs($this->user)->get(route('fiches.download', [$this->initiative, $this->fiche]));
 
         $response->assertStatus(200);
         $response->assertDownload($this->fiche->slug.'-bestanden.zip');
@@ -150,7 +214,7 @@ class FicheDownloadTest extends TestCase
             'size_bytes' => 500_000,
         ]);
 
-        $response = $this->get(route('fiches.show', [$this->initiative, $this->fiche]));
+        $response = $this->actingAs($this->user)->get(route('fiches.show', [$this->initiative, $this->fiche]));
 
         $response->assertStatus(200);
         $response->assertSee('Download bestand');
@@ -178,7 +242,7 @@ class FicheDownloadTest extends TestCase
             'size_bytes' => 500_000,
         ]);
 
-        $response = $this->get(route('fiches.show', [$this->initiative, $this->fiche]));
+        $response = $this->actingAs($this->user)->get(route('fiches.show', [$this->initiative, $this->fiche]));
 
         $response->assertStatus(200);
         $response->assertSee('3 bestanden');
