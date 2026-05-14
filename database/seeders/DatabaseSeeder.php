@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        $this->call(OkrSeeder::class);
+
         // Create admin
         User::factory()->admin()->create([
             'first_name' => config('hartverwarmers.admin_first_name', 'Admin'),
