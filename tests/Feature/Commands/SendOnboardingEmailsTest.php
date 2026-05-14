@@ -247,4 +247,69 @@ class SendOnboardingEmailsTest extends TestCase
 
         Notification::assertNotSentTo($user, OnboardingDownloadMilestoneNotification::class);
     }
+
+    // ── Global 24h cap ────────────────────────────────────────────────────────
+
+    public function test_mail_1_skipped_when_user_received_another_logged_email_in_last_24h(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create(['email_verified_at' => now()->subDays(4)]);
+        // A recent newsletter send blocks mail_1 today.
+        OnboardingEmailLog::create([
+            'user_id' => $user->id,
+            'mail_key' => 'newsletter-cycle-1',
+            'sent_at' => now()->subHours(3),
+        ]);
+
+        $this->artisan('onboarding:send-emails')->assertExitCode(0);
+
+        Notification::assertNotSentTo($user, OnboardingCuratedActivitiesNotification::class);
+        $this->assertDatabaseMissing('onboarding_email_log', ['user_id' => $user->id, 'mail_key' => 'mail_1']);
+    }
+
+    public function test_mail_2_skipped_when_user_received_another_logged_email_in_last_24h(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create(['email_verified_at' => now()->subDays(10)]);
+        // mail_1 from 3 days ago — satisfies the day-spacing requirement.
+        OnboardingEmailLog::create(['user_id' => $user->id, 'mail_key' => 'mail_1', 'sent_at' => now()->subDays(3)]);
+        // But a recent milestone email blocks mail_2 today.
+        OnboardingEmailLog::create([
+            'user_id' => $user->id,
+            'mail_key' => 'mail_4',
+            'sent_at' => now()->subHours(2),
+        ]);
+
+        $this->artisan('onboarding:send-emails')->assertExitCode(0);
+
+        Notification::assertNotSentTo($user, OnboardingTopFiveNotification::class);
+        $this->assertDatabaseMissing('onboarding_email_log', ['user_id' => $user->id, 'mail_key' => 'mail_2']);
+    }
+
+    public function test_mail_3_skipped_when_user_received_another_logged_email_in_last_24h(): void
+    {
+        Notification::fake();
+        $user = User::factory()->create(['email_verified_at' => now()->subDays(1)]);
+        $fiches = Fiche::factory()->count(5)->create(['published' => true]);
+        foreach ($fiches as $fiche) {
+            UserInteraction::create([
+                'user_id' => $user->id,
+                'interactable_type' => Fiche::class,
+                'interactable_id' => $fiche->id,
+                'type' => 'download',
+            ]);
+        }
+        // A recent newsletter send blocks mail_3 today.
+        OnboardingEmailLog::create([
+            'user_id' => $user->id,
+            'mail_key' => 'newsletter-cycle-2',
+            'sent_at' => now()->subHour(),
+        ]);
+
+        $this->artisan('onboarding:send-emails')->assertExitCode(0);
+
+        Notification::assertNotSentTo($user, OnboardingDownloadMilestoneNotification::class);
+        // Important: also NOT logged, so it can re-fire tomorrow when the cap expires.
+        $this->assertDatabaseMissing('onboarding_email_log', ['user_id' => $user->id, 'mail_key' => 'mail_3']);
+    }
 }

@@ -185,4 +185,65 @@ class LikeObserverTest extends TestCase
 
         Notification::assertNothingSent();
     }
+
+    // ── Global 24h cap ────────────────────────────────────────────────────────
+
+    public function test_mail_5_skipped_when_user_received_a_logged_email_in_last_24h(): void
+    {
+        Notification::fake();
+        [$owner, $fiche] = $this->createFicheWithOwner();
+        $this->addBookmarks($fiche, 9);
+        OnboardingEmailLog::create([
+            'user_id' => $owner->id,
+            'mail_key' => 'mail_1',
+            'sent_at' => now()->subHours(2),
+        ]);
+
+        Like::factory()->bookmark()->create([
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+        ]);
+
+        Notification::assertNotSentTo($owner, OnboardingMilestone10BookmarksNotification::class);
+        $this->assertDatabaseMissing('onboarding_email_log', ['user_id' => $owner->id, 'mail_key' => 'mail_5']);
+    }
+
+    public function test_mail_6_skipped_when_user_received_a_logged_email_in_last_24h(): void
+    {
+        Notification::fake();
+        [$owner, $fiche] = $this->createFicheWithOwner();
+        $this->addBookmarks($fiche, 49);
+        OnboardingEmailLog::create([
+            'user_id' => $owner->id,
+            'mail_key' => 'newsletter-cycle-1',
+            'sent_at' => now()->subHour(),
+        ]);
+
+        Like::factory()->bookmark()->create([
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+        ]);
+
+        Notification::assertNotSentTo($owner, OnboardingMilestone50BookmarksNotification::class);
+        $this->assertDatabaseMissing('onboarding_email_log', ['user_id' => $owner->id, 'mail_key' => 'mail_6']);
+    }
+
+    public function test_first_bookmark_mail_4_is_exempt_from_cap(): void
+    {
+        Notification::fake();
+        [$owner, $fiche] = $this->createFicheWithOwner();
+        OnboardingEmailLog::create([
+            'user_id' => $owner->id,
+            'mail_key' => 'mail_1',
+            'sent_at' => now()->subHour(),
+        ]);
+
+        Like::factory()->bookmark()->create([
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+        ]);
+
+        Notification::assertSentTo($owner, OnboardingFirstBookmarkNotification::class);
+        $this->assertDatabaseHas('onboarding_email_log', ['user_id' => $owner->id, 'mail_key' => 'mail_4']);
+    }
 }

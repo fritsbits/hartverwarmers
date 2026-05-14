@@ -210,4 +210,17 @@ class User extends Authenticatable
 
         return intdiv($days, 30);
     }
+
+    /**
+     * Has this user received any non-exempt engagement email in the last 24 hours?
+     * Used by the global daily cap so onboarding/milestone/newsletter emails don't
+     * pile up on the same day. Comment digests and the welcome email are exempt
+     * (they aren't logged to onboarding_email_logs at all).
+     */
+    public function hasRecentNonExemptMail(): bool
+    {
+        return $this->onboardingEmailLogs()
+            ->where('sent_at', '>', now()->subDay())
+            ->exists();
+    }
 }

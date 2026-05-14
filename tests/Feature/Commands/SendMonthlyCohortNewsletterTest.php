@@ -3,6 +3,7 @@
 namespace Tests\Feature\Commands;
 
 use App\Models\Fiche;
+use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Notifications\MonthlyDigestNotification;
 use App\Services\MonthlyDigest\Composer;
@@ -112,5 +113,43 @@ class SendMonthlyCohortNewsletterTest extends TestCase
 
         $this->artisan('newsletter:send-monthly-cohort', ['--for' => 'nobody@example.com'])
             ->assertFailed();
+    }
+
+    public function test_newsletter_skipped_when_user_received_a_logged_email_in_last_24h(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        Fiche::factory()->published()->create();
+
+        $user = User::factory()->create(['created_at' => now()->subDays(30)]);
+        OnboardingEmailLog::create([
+            'user_id' => $user->id,
+            'mail_key' => 'mail_1',
+            'sent_at' => now()->subHours(3),
+        ]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        Notification::assertNotSentTo($user, MonthlyDigestNotification::class);
+        $this->assertDatabaseMissing('onboarding_email_log', ['user_id' => $user->id, 'mail_key' => 'newsletter-cycle-1']);
+    }
+
+    public function test_newsletter_send_logs_a_cycle_row_in_onboarding_email_log(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        Fiche::factory()->published()->create();
+
+        $user = User::factory()->create(['created_at' => now()->subDays(60)]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        Notification::assertSentTo($user, MonthlyDigestNotification::class);
+        $this->assertDatabaseHas('onboarding_email_log', [
+            'user_id' => $user->id,
+            'mail_key' => 'newsletter-cycle-2',
+        ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Notifications\MonthlyDigestNotification;
 use App\Services\MonthlyDigest\Composer;
@@ -38,10 +39,19 @@ class SendMonthlyCohortNewsletter extends Command
                         continue;
                     }
 
-                    $user->notify(new MonthlyDigestNotification(
-                        $payload,
-                        cycle: $user->currentDigestCycleNumber(),
-                    ));
+                    if ($user->hasRecentNonExemptMail()) {
+                        continue;
+                    }
+
+                    $cycle = $user->currentDigestCycleNumber();
+
+                    $user->notify(new MonthlyDigestNotification($payload, cycle: $cycle));
+
+                    OnboardingEmailLog::create([
+                        'user_id' => $user->id,
+                        'mail_key' => "newsletter-cycle-{$cycle}",
+                        'sent_at' => now(),
+                    ]);
 
                     $sent++;
                 }

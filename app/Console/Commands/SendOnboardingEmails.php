@@ -47,6 +47,9 @@ class SendOnboardingEmails extends Command
     {
         $this->eligibleUsers('mail_1', 3)->chunk(100, function ($users): void {
             foreach ($users as $user) {
+                if ($user->hasRecentNonExemptMail()) {
+                    continue;
+                }
                 $user->notify(new OnboardingCuratedActivitiesNotification);
                 $this->log($user, 'mail_1');
             }
@@ -62,6 +65,9 @@ class SendOnboardingEmails extends Command
             )
             ->chunk(100, function ($users): void {
                 foreach ($users as $user) {
+                    if ($user->hasRecentNonExemptMail()) {
+                        continue;
+                    }
                     $user->notify(new OnboardingTopFiveNotification);
                     $this->log($user, 'mail_2');
                 }
@@ -80,6 +86,10 @@ class SendOnboardingEmails extends Command
             )
             ->chunk(100, function ($users): void {
                 foreach ($users as $user) {
+                    if ($user->hasRecentNonExemptMail()) {
+                        continue;
+                    }
+
                     $downloadCount = $user->interactions()
                         ->where('type', 'download')
                         ->where('interactable_type', Fiche::class)

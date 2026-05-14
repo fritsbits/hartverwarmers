@@ -45,6 +45,12 @@ class LikeObserver
             return;
         }
 
+        // Cap: mail_5 and mail_6 are subject to the global 24h cap; mail_4
+        // (first bookmark) is exempt because the dopamine moment can't wait.
+        if ($mailKey !== 'mail_4' && $owner->hasRecentNonExemptMail()) {
+            return;
+        }
+
         $notification = match ($mailKey) {
             'mail_4' => new OnboardingFirstBookmarkNotification($fiche),
             'mail_5' => new OnboardingMilestone10BookmarksNotification($totalBookmarks),
