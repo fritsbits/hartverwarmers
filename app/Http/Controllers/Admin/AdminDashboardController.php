@@ -13,10 +13,13 @@ use App\Models\UserInteraction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class AdminDashboardController extends Controller
 {
+    private ?Collection $allThankedDownloads = null;
+
     public function __invoke(): View
     {
         $tab = request()->get('tab', 'overzicht');
@@ -56,9 +59,10 @@ class AdminDashboardController extends Controller
                 ->when($cutoff !== null, fn ($q) => $q->where('created_at', '>=', $cutoff))
                 ->with('initiative:id,slug')
                 ->get(['id', 'title', 'slug', 'initiative_id', 'ai_suggestions']);
-            $adoption = $this->adoptionStats($fichesWithSuggestions);
-            $fieldAdoption = $this->fieldAdoption($fichesWithSuggestions);
-            $ficheAdoptionDetails = $this->ficheAdoptionDetails($fichesWithSuggestions);
+            $ficheAdoption = $this->computeFicheAdoption($fichesWithSuggestions);
+            $adoption = $ficheAdoption['adoption'];
+            $fieldAdoption = $ficheAdoption['fieldAdoption'];
+            $ficheAdoptionDetails = $ficheAdoption['details'];
             $lowestScoredFiches = $this->lowestScoredFiches();
             $recentAiSuggestionAcceptances = $this->recentAiSuggestionAcceptances();
         } else {
@@ -112,7 +116,7 @@ class AdminDashboardController extends Controller
             'thankTrend' => $tab === 'bedankjes' ? $this->thankTrend($range) : [],
             'thankStats' => $tab === 'bedankjes' ? $this->thankStats($range) : [],
             'recentThankComments' => $tab === 'bedankjes' ? $this->recentThankComments() : [],
-            'topThankedFiches' => $tab === 'bedankjes' ? $this->topThankedFiches($cutoff) : [],
+            'topThankedFiches' => $tab === 'bedankjes' ? $this->topThankedFiches($range, $cutoff) : [],
             'newsletterTrend' => $tab === 'nieuwsbrief' ? $this->newsletterTrend($range) : [],
             'newsletterStats' => $tab === 'nieuwsbrief' ? $this->newsletterStats($range) : [],
             'unsubscribeByCycle' => $tab === 'nieuwsbrief' ? $this->unsubscribeByCycle($range) : [],
@@ -268,12 +272,18 @@ class AdminDashboardController extends Controller
 
     private function globalAvg(): ?int
     {
-        $avg = Fiche::query()
-            ->published()
-            ->whereNotNull('presentation_score')
-            ->avg('presentation_score');
+        return Cache::remember(
+            'admin:dashboard:global-avg',
+            now()->addMinutes(5),
+            function () {
+                $avg = Fiche::query()
+                    ->published()
+                    ->whereNotNull('presentation_score')
+                    ->avg('presentation_score');
 
-        return $avg !== null ? (int) round($avg) : null;
+                return $avg !== null ? (int) round($avg) : null;
+            }
+        );
     }
 
     /** @param array<int, array{avg_score: int|null}> $trend */
@@ -287,43 +297,19 @@ class AdminDashboardController extends Controller
         return $scored[array_key_last($scored)]['avg_score'] - $scored[0]['avg_score'];
     }
 
-    /** @return array{withSuggestions: int, withAnyApplied: int, adoptionRate: int} */
-    private function adoptionStats(Collection $fiches): array
-    {
-        $fields = ['title', 'description', 'preparation', 'inventory', 'process'];
-
-        $withSuggestions = 0;
-        $withAnyApplied = 0;
-
-        foreach ($fiches as $fiche) {
-            $suggestions = $fiche->ai_suggestions;
-            $hasNonEmpty = collect($fields)->contains(
-                fn ($field) => isset($suggestions[$field]) && $suggestions[$field] !== ''
-            );
-
-            if (! $hasNonEmpty) {
-                continue;
-            }
-
-            $withSuggestions++;
-
-            if (! empty($suggestions['applied'])) {
-                $withAnyApplied++;
-            }
-        }
-
-        $adoptionRate = $withSuggestions > 0
-            ? (int) round($withAnyApplied / $withSuggestions * 100)
-            : 0;
-
-        return compact('withSuggestions', 'withAnyApplied', 'adoptionRate');
-    }
-
     /**
+     * Single-pass aggregator producing adoption summary, per-field stats, and
+     * per-fiche details from one walk over the fiches collection. Replaces the
+     * three separate methods that each re-iterated the same set.
+     *
      * @param  Collection<int, Fiche>  $fiches
-     * @return array<int, array{title: string, url: string, fields: array<string, array{suggested: bool, applied: bool, label: string, shortLabel: string}>, adoptedCount: int, suggestedCount: int}>
+     * @return array{
+     *   adoption: array{withSuggestions: int, withAnyApplied: int, adoptionRate: int},
+     *   fieldAdoption: array<string, array{suggested: int, applied: int, rate: int, label: string}>,
+     *   details: array<int, array{title: string, url: string, fields: array<string, array{suggested: bool, applied: bool, label: string, shortLabel: string}>, adoptedCount: int, suggestedCount: int}>,
+     * }
      */
-    private function ficheAdoptionDetails(Collection $fiches): array
+    private function computeFicheAdoption(Collection $fiches): array
     {
         $fieldMeta = [
             'title' => ['label' => 'Titel', 'shortLabel' => 'Titel'],
@@ -333,13 +319,20 @@ class AdminDashboardController extends Controller
             'process' => ['label' => 'Werkwijze', 'shortLabel' => 'Werkw.'],
         ];
 
-        $result = [];
+        $fieldStats = [];
+        foreach ($fieldMeta as $key => $meta) {
+            $fieldStats[$key] = ['suggested' => 0, 'applied' => 0, 'label' => $meta['label']];
+        }
+
+        $withSuggestions = 0;
+        $withAnyApplied = 0;
+        $details = [];
 
         foreach ($fiches as $fiche) {
             $suggestions = $fiche->ai_suggestions;
             $applied = $suggestions['applied'] ?? [];
 
-            $fields = [];
+            $perFiche = [];
             $suggestedCount = 0;
             $adoptedCount = 0;
 
@@ -349,13 +342,18 @@ class AdminDashboardController extends Controller
 
                 if ($suggested) {
                     $suggestedCount++;
+                    $fieldStats[$key]['suggested']++;
+                }
+
+                if ($isApplied) {
+                    $fieldStats[$key]['applied']++;
                 }
 
                 if ($suggested && $isApplied) {
                     $adoptedCount++;
                 }
 
-                $fields[$key] = [
+                $perFiche[$key] = [
                     'suggested' => $suggested,
                     'applied' => $isApplied,
                     'label' => $meta['label'],
@@ -367,52 +365,35 @@ class AdminDashboardController extends Controller
                 continue;
             }
 
-            $result[] = [
+            $withSuggestions++;
+            if (! empty($applied)) {
+                $withAnyApplied++;
+            }
+
+            $details[] = [
                 'title' => $fiche->title,
                 'url' => route('fiches.show', [$fiche->initiative, $fiche]),
-                'fields' => $fields,
+                'fields' => $perFiche,
                 'adoptedCount' => $adoptedCount,
                 'suggestedCount' => $suggestedCount,
             ];
         }
 
-        return $result;
-    }
-
-    /** @return array<string, array{suggested: int, applied: int, rate: int, label: string}> */
-    private function fieldAdoption(Collection $fiches): array
-    {
-        $fields = [
-            'title' => 'Titel',
-            'description' => 'Omschrijving',
-            'preparation' => 'Voorbereiding',
-            'inventory' => 'Benodigdheden',
-            'process' => 'Werkwijze',
-        ];
-
-        $result = [];
-        foreach ($fields as $field => $label) {
-            $suggested = 0;
-            $applied = 0;
-
-            foreach ($fiches as $fiche) {
-                $suggestions = $fiche->ai_suggestions;
-
-                if (isset($suggestions[$field]) && $suggestions[$field] !== '') {
-                    $suggested++;
-                }
-
-                if (in_array($field, $suggestions['applied'] ?? [], true)) {
-                    $applied++;
-                }
-            }
-
-            $rate = $suggested > 0 ? (int) round($applied / $suggested * 100) : 0;
-
-            $result[$field] = compact('suggested', 'applied', 'rate') + ['label' => $label];
+        foreach ($fieldStats as $key => $stats) {
+            $fieldStats[$key]['rate'] = $stats['suggested'] > 0
+                ? (int) round($stats['applied'] / $stats['suggested'] * 100)
+                : 0;
         }
 
-        return $result;
+        $adoptionRate = $withSuggestions > 0
+            ? (int) round($withAnyApplied / $withSuggestions * 100)
+            : 0;
+
+        return [
+            'adoption' => compact('withSuggestions', 'withAnyApplied', 'adoptionRate'),
+            'fieldAdoption' => $fieldStats,
+            'details' => $details,
+        ];
     }
 
     /**
@@ -456,6 +437,10 @@ class AdminDashboardController extends Controller
         // Use keyBy for O(1) lookup instead of firstWhere's O(n) linear scan.
         $usersById = $newUsers->keyBy('id');
 
+        // Outer SQL bounds derived from the cohort's verification dates so the
+        // database can index-scan instead of pulling every comment ever.
+        [$cohortLowerBound, $cohortUpperBound] = $this->cohortInteractionBounds($newUsers);
+
         $usersWithKudos = Like::query()
             ->whereIn('user_id', $newUserIds)
             ->where('type', 'kudos')
@@ -474,6 +459,8 @@ class AdminDashboardController extends Controller
 
         $usersWithComment = Comment::query()
             ->whereIn('user_id', $newUserIds)
+            ->when($cohortLowerBound, fn ($q) => $q->where('created_at', '>=', $cohortLowerBound))
+            ->when($cohortUpperBound, fn ($q) => $q->where('created_at', '<=', $cohortUpperBound))
             ->get(['user_id', 'created_at'])
             ->filter(function ($comment) use ($usersById) {
                 $user = $usersById->get($comment->user_id);
@@ -916,6 +903,10 @@ class AdminDashboardController extends Controller
      * Returns one row per (user, fiche) download pair, annotated with whether
      * the user later thanked that fiche (post-download kudos OR comment).
      *
+     * The full all-time dataset is fetched once per request and cached on the
+     * instance; sub-range calls filter that cache in PHP. This avoids the
+     * 3 separate SQL trips that previously fired on the bedankjes tab.
+     *
      * @param  ?Carbon  $since  Null means all downloads; otherwise only those with created_at >= $since.
      * @return Collection<int, array{
      *   user_id: int,
@@ -926,12 +917,60 @@ class AdminDashboardController extends Controller
      *   is_thanked: bool,
      * }>
      */
+    /**
+     * Outer [from, to] bounds for kudos/comment lookups scoped to a cohort whose
+     * relevant window is ±30 days around each user's email_verified_at. Returns
+     * [null, null] for empty cohorts. The precise per-user 30-day check still
+     * happens in PHP — these bounds only narrow the SQL scan.
+     *
+     * @param  Collection<int, User>  $cohort
+     * @return array{0: ?Carbon, 1: ?Carbon}
+     */
+    private function cohortInteractionBounds(Collection $cohort): array
+    {
+        if ($cohort->isEmpty()) {
+            return [null, null];
+        }
+
+        $min = $cohort->min('email_verified_at');
+        $max = $cohort->max('email_verified_at');
+
+        return [
+            $min?->copy()->subDays(30),
+            $max?->copy()->addDays(30),
+        ];
+    }
+
     private function computeThankedDownloads(?Carbon $since): Collection
+    {
+        if ($this->allThankedDownloads === null) {
+            $this->allThankedDownloads = $this->fetchAllThankedDownloads();
+        }
+
+        if ($since === null) {
+            return $this->allThankedDownloads;
+        }
+
+        return $this->allThankedDownloads
+            ->filter(fn ($row) => $row['downloaded_at'] >= $since)
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, array{
+     *   user_id: int,
+     *   fiche_id: int,
+     *   downloaded_at: Carbon,
+     *   thanked_via_kudos: bool,
+     *   thanked_via_comment: bool,
+     *   is_thanked: bool,
+     * }>
+     */
+    private function fetchAllThankedDownloads(): Collection
     {
         $downloads = UserInteraction::query()
             ->where('interactable_type', Fiche::class)
             ->where('type', 'download')
-            ->when($since !== null, fn ($q) => $q->where('created_at', '>=', $since))
             ->get(['user_id', 'interactable_id', 'created_at']);
 
         if ($downloads->isEmpty()) {
@@ -941,7 +980,6 @@ class AdminDashboardController extends Controller
         $userIds = $downloads->pluck('user_id')->unique()->values()->all();
         $ficheIds = $downloads->pluck('interactable_id')->unique()->values()->all();
 
-        // Earliest post-download kudos timestamp per (user, fiche)
         $kudosByPair = Like::query()
             ->whereIn('user_id', $userIds)
             ->whereIn('likeable_id', $ficheIds)
@@ -952,7 +990,6 @@ class AdminDashboardController extends Controller
             ->groupBy(fn ($row) => $row->user_id.':'.$row->likeable_id)
             ->map(fn ($rows) => $rows->min('created_at'));
 
-        // Earliest post-download comment timestamp per (user, fiche). soft-deleted is excluded by default scope.
         $commentByPair = Comment::query()
             ->whereIn('user_id', $userIds)
             ->whereIn('commentable_id', $ficheIds)
@@ -1004,10 +1041,17 @@ class AdminDashboardController extends Controller
             default => [30, 'deze maand'],
         };
 
-        $currentStart = null;
-
         if ($windowDays === null) {
-            $currentCount = (clone $base)->count();
+            $row = (clone $base)
+                ->selectRaw(
+                    'COUNT(*) AS total_members,
+                     SUM(CASE WHEN email_verified_at IS NOT NULL THEN 1 ELSE 0 END) AS verified_count'
+                )
+                ->first();
+
+            $totalMembers = (int) $row->total_members;
+            $verifiedCount = (int) $row->verified_count;
+            $currentCount = $totalMembers;
             $previousCount = null;
             $delta = null;
         } else {
@@ -1022,25 +1066,26 @@ class AdminDashboardController extends Controller
                 default => now()->subDays(59)->startOfDay(),
             };
 
-            $currentCount = (clone $base)
-                ->where('created_at', '>=', $currentStart)
-                ->count();
-            $previousCount = (clone $base)
-                ->where('created_at', '>=', $previousStart)
-                ->where('created_at', '<', $currentStart)
-                ->count();
+            $row = (clone $base)
+                ->selectRaw(
+                    'COUNT(*) AS total_members,
+                     SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) AS current_count,
+                     SUM(CASE WHEN created_at >= ? AND created_at < ? THEN 1 ELSE 0 END) AS previous_count,
+                     SUM(CASE WHEN created_at >= ? AND email_verified_at IS NOT NULL THEN 1 ELSE 0 END) AS verified_count',
+                    [$currentStart, $previousStart, $currentStart, $currentStart]
+                )
+                ->first();
+
+            $totalMembers = (int) $row->total_members;
+            $currentCount = (int) $row->current_count;
+            $previousCount = (int) $row->previous_count;
+            $verifiedCount = (int) $row->verified_count;
             $delta = $currentCount - $previousCount;
         }
 
-        $cohortQuery = $currentStart === null
-            ? clone $base
-            : (clone $base)->where('created_at', '>=', $currentStart);
         $cohortCount = $currentCount;
-        $verifiedCount = (clone $cohortQuery)->whereNotNull('email_verified_at')->count();
         $verificationRate = $cohortCount > 0 ? (int) round($verifiedCount / $cohortCount * 100) : 0;
         $verificationLowData = $cohortCount > 0 && $cohortCount < 5;
-
-        $totalMembers = (clone $base)->count();
 
         return compact(
             'currentCount',
@@ -1211,13 +1256,16 @@ class AdminDashboardController extends Controller
                 default => now()->subDays(59)->startOfDay(),
             };
 
-            $currentSent = (clone $base)
-                ->where('sent_at', '>=', $currentStart)
-                ->count();
-            $previousSent = (clone $base)
-                ->where('sent_at', '>=', $previousStart)
-                ->where('sent_at', '<', $currentStart)
-                ->count();
+            $row = (clone $base)
+                ->selectRaw(
+                    'SUM(CASE WHEN sent_at >= ? THEN 1 ELSE 0 END) AS current_sent,
+                     SUM(CASE WHEN sent_at >= ? AND sent_at < ? THEN 1 ELSE 0 END) AS previous_sent',
+                    [$currentStart, $previousStart, $currentStart]
+                )
+                ->first();
+
+            $currentSent = (int) $row->current_sent;
+            $previousSent = (int) $row->previous_sent;
             $delta = $currentSent - $previousSent;
         }
 
@@ -1370,6 +1418,22 @@ class AdminDashboardController extends Controller
      * }
      */
     private function upcomingNewsletterSends(): array
+    {
+        return Cache::remember(
+            'admin:dashboard:upcoming-newsletter',
+            now()->addMinutes(5),
+            fn () => $this->computeUpcomingNewsletterSends()
+        );
+    }
+
+    /**
+     * @return array{
+     *   total: int,
+     *   buckets: array<string, array{label: string, count: int}>,
+     *   windowDays: int,
+     * }
+     */
+    private function computeUpcomingNewsletterSends(): array
     {
         $windowDays = 30;
         $today = now()->startOfDay();
@@ -1527,6 +1591,8 @@ class AdminDashboardController extends Controller
         $userIds = $users->pluck('id');
         $usersById = $users->keyBy('id');
 
+        [$cohortLowerBound, $cohortUpperBound] = $this->cohortInteractionBounds($users);
+
         $kudosUsers = Like::query()
             ->whereIn('user_id', $userIds)
             ->where('type', 'kudos')
@@ -1541,6 +1607,8 @@ class AdminDashboardController extends Controller
 
         $commentUsers = Comment::query()
             ->whereIn('user_id', $userIds)
+            ->when($cohortLowerBound, fn ($q) => $q->where('created_at', '>=', $cohortLowerBound))
+            ->when($cohortUpperBound, fn ($q) => $q->where('created_at', '<=', $cohortUpperBound))
             ->get(['user_id', 'created_at'])
             ->filter(function ($comment) use ($usersById) {
                 $user = $usersById->get($comment->user_id);
@@ -1656,42 +1724,48 @@ class AdminDashboardController extends Controller
     /**
      * @return array<int, array{title: string, url: string, badge: int}>
      */
-    private function topThankedFiches(?Carbon $since): array
+    private function topThankedFiches(string $range, ?Carbon $since): array
     {
-        $thanked = $this->computeThankedDownloads($since)->filter(fn ($row) => $row['is_thanked']);
+        return Cache::remember(
+            "admin:dashboard:top-thanked:{$range}",
+            now()->addMinutes(5),
+            function () use ($since) {
+                $thanked = $this->computeThankedDownloads($since)->filter(fn ($row) => $row['is_thanked']);
 
-        if ($thanked->isEmpty()) {
-            return [];
-        }
-
-        $countsByFiche = $thanked
-            ->groupBy('fiche_id')
-            ->map(fn ($rows) => $rows->count())
-            ->sortDesc()
-            ->take(5);
-
-        $fiches = Fiche::query()
-            ->with('initiative:id,slug')
-            ->whereIn('id', $countsByFiche->keys()->all())
-            ->get(['id', 'title', 'slug', 'initiative_id'])
-            ->keyBy('id');
-
-        return $countsByFiche
-            ->map(function ($count, $ficheId) use ($fiches) {
-                $fiche = $fiches->get($ficheId);
-                if (! $fiche) {
-                    return null;
+                if ($thanked->isEmpty()) {
+                    return [];
                 }
 
-                return [
-                    'title' => $fiche->title,
-                    'url' => route('fiches.show', [$fiche->initiative, $fiche]),
-                    'badge' => $count,
-                ];
-            })
-            ->filter()
-            ->values()
-            ->all();
+                $countsByFiche = $thanked
+                    ->groupBy('fiche_id')
+                    ->map(fn ($rows) => $rows->count())
+                    ->sortDesc()
+                    ->take(5);
+
+                $fiches = Fiche::query()
+                    ->with('initiative:id,slug')
+                    ->whereIn('id', $countsByFiche->keys()->all())
+                    ->get(['id', 'title', 'slug', 'initiative_id'])
+                    ->keyBy('id');
+
+                return $countsByFiche
+                    ->map(function ($count, $ficheId) use ($fiches) {
+                        $fiche = $fiches->get($ficheId);
+                        if (! $fiche) {
+                            return null;
+                        }
+
+                        return [
+                            'title' => $fiche->title,
+                            'url' => route('fiches.show', [$fiche->initiative, $fiche]),
+                            'badge' => $count,
+                        ];
+                    })
+                    ->filter()
+                    ->values()
+                    ->all();
+            }
+        );
     }
 
     /**
