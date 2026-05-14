@@ -173,17 +173,17 @@ class FicheCommentNotificationTest extends TestCase
         ]);
     }
 
-    public function test_new_user_has_daily_notification_frequency_by_default(): void
+    public function test_new_user_has_weekly_notification_frequency_by_default(): void
     {
         $user = User::factory()->create();
 
-        $this->assertSame('daily', $user->notification_frequency);
+        $this->assertSame('weekly', $user->notification_frequency);
     }
 
-    public function test_new_user_via_make_has_daily_notification_frequency(): void
+    public function test_new_user_via_make_has_weekly_notification_frequency(): void
     {
         $user = User::factory()->make();
 
-        $this->assertSame('daily', $user->notification_frequency);
+        $this->assertSame('weekly', $user->notification_frequency);
     }
 }
