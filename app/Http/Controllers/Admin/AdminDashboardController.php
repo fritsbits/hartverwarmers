@@ -70,8 +70,8 @@ class AdminDashboardController extends Controller
             $ficheAdoptionDetails = [];
         }
 
-        $signupTrend = [];
-        $signupStats = [];
+        $signupTrend = $tab === 'onboarding' ? $this->signupTrend($range) : [];
+        $signupStats = $tab === 'onboarding' ? $this->signupStats($range) : [];
 
         $objectives = Objective::orderBy('position')->get();
 

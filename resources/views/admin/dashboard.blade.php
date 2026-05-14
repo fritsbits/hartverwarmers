@@ -32,10 +32,8 @@
     @elseif(view()->exists('admin.tabs.' . $tab))
         @include('admin.tabs.' . $tab)
     @else
-        {{-- LEGACY: inline blocks for tabs not yet refactored (Tasks 17-19 replace these one by one) --}}
-        @if($tab === 'onboarding')
-            @include('admin.partials.onboarding-tab')
-        @elseif($tab === 'bedankjes')
+        {{-- LEGACY: inline blocks for tabs not yet refactored (Tasks 18-19 replace these one by one) --}}
+        @if($tab === 'bedankjes')
             @include('admin.partials.bedankjes-tab')
         @elseif($tab === 'nieuwsbrief')
             @include('admin.partials.nieuwsbrief-tab')

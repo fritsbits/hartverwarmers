@@ -62,4 +62,43 @@ class AdminOverzichtTabTest extends TestCase
         $response->assertSee('AI-suggesties');                // Initiative label
         $response->assertSee('Laatste 5 fiches');             // Context heading
     }
+
+    public function test_onboarding_tab_renders_five_funnel_krs_and_initiative(): void
+    {
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'onboarding']));
+
+        $response->assertOk();
+        $response->assertSee('Aanmeldingen');
+        $response->assertSee('E-mailverificatie');
+        $response->assertSee('Return visit binnen 7 dagen');
+        $response->assertSee('Interactie binnen 30 dagen');
+        $response->assertSee('Follow-up reactie na download');
+        $response->assertSee('Onboarding-e-mails');
+    }
+
+    public function test_onboarding_tab_renders_krs_in_funnel_order(): void
+    {
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'onboarding']));
+
+        $html = $response->getContent();
+
+        $positions = [
+            'Aanmeldingen' => strpos($html, 'Aanmeldingen'),
+            'E-mailverificatie' => strpos($html, 'E-mailverificatie'),
+            'Return visit binnen 7 dagen' => strpos($html, 'Return visit binnen 7 dagen'),
+            'Interactie binnen 30 dagen' => strpos($html, 'Interactie binnen 30 dagen'),
+            'Follow-up reactie na download' => strpos($html, 'Follow-up reactie na download'),
+        ];
+
+        $sorted = $positions;
+        asort($sorted);
+
+        $this->assertSame(array_keys($positions), array_keys($sorted), 'KRs should render in funnel order');
+    }
 }

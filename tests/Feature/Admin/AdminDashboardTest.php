@@ -572,17 +572,21 @@ class AdminDashboardTest extends TestCase
         $this->assertEmpty($response->viewData('signupStats'));
     }
 
-    public function test_signup_trend_is_always_empty_array(): void
+    public function test_signup_trend_is_only_populated_for_onboarding_tab(): void
     {
-        // signupTrend is always [] since the aanmeldingen tab was removed in favour of the
-        // OKR-based Onboarding tab. The underlying method still exists but is not called.
+        // signupTrend is populated only for the onboarding tab (where it powers the KR1 sparkline).
+        // All other tabs receive empty arrays to avoid unnecessary queries.
         $admin = User::factory()->create(['role' => 'admin']);
 
-        foreach (['overzicht', 'presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief'] as $tab) {
+        foreach (['overzicht', 'presentatiekwaliteit', 'bedankjes', 'nieuwsbrief'] as $tab) {
             $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab='.$tab);
             $this->assertEmpty($response->viewData('signupTrend'), "signupTrend should be empty for tab={$tab}");
             $this->assertEmpty($response->viewData('signupStats'), "signupStats should be empty for tab={$tab}");
         }
+
+        $onboardingResponse = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=onboarding');
+        $this->assertNotEmpty($onboardingResponse->viewData('signupTrend'), 'signupTrend should be populated for tab=onboarding');
+        $this->assertNotEmpty($onboardingResponse->viewData('signupStats'), 'signupStats should be populated for tab=onboarding');
     }
 
     public function test_signup_stats_and_trend_are_empty_after_aanmeldingen_removal(): void
