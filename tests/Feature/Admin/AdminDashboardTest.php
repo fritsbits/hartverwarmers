@@ -1119,6 +1119,7 @@ class AdminDashboardTest extends TestCase
 
     public function test_nieuwsbrief_tab_renders_expected_copy(): void
     {
+        $this->seed(OkrSeeder::class);
         $admin = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief');

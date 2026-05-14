@@ -31,11 +31,6 @@
         @include('admin.tabs.overzicht', ['objectives' => $objectives, 'range' => $range])
     @elseif(view()->exists('admin.tabs.' . $tab))
         @include('admin.tabs.' . $tab)
-    @else
-        {{-- LEGACY: inline blocks for tabs not yet refactored (Task 19 replaces this) --}}
-        @if($tab === 'nieuwsbrief')
-            @include('admin.partials.nieuwsbrief-tab')
-        @endif
     @endif
 
 </x-sidebar-layout>

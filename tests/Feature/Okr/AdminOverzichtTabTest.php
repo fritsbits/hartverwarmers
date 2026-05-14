@@ -113,4 +113,17 @@ class AdminOverzichtTabTest extends TestCase
         $response->assertSee('Bedankratio');
         $response->assertSee('Hoe bedanken mensen');
     }
+
+    public function test_nieuwsbrief_tab_renders_kr_initiative_context(): void
+    {
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'nieuwsbrief']));
+
+        $response->assertOk();
+        $response->assertSee('Activatie na nieuwsbrief');  // KR label (from seeder)
+        $response->assertSee('Nieuwsbrief-systeem');       // Initiative label
+        $response->assertSee('Aankomende sends');          // Context heading
+    }
 }
