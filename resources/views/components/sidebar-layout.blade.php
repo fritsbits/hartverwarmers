@@ -33,6 +33,10 @@
                                     <flux:icon name="chart-bar" variant="mini" class="size-4" />
                                     Dashboard
                                 </a>
+                                <a href="{{ route('admin.health') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.health') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="signal" variant="mini" class="size-4" />
+                                    Gezondheid
+                                </a>
                                 <a href="{{ route('admin.fiches.index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.fiches.*') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
                                     <flux:icon name="document-text" variant="mini" class="size-4" />
                                     Fiches
@@ -41,21 +45,18 @@
                                     <flux:icon name="users" variant="mini" class="size-4" />
                                     Gebruikers
                                 </a>
-                                <a href="{{ route('admin.health') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.health') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
-                                    <flux:icon name="signal" variant="mini" class="size-4" />
-                                    Gezondheid
+                                <a href="{{ route('admin.mails') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.mails*') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="envelope" variant="mini" class="size-4" />
+                                    E-mails
                                 </a>
                                 <a href="{{ route('admin.features') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.features') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
                                     <flux:icon name="flag" variant="mini" class="size-4" />
                                     Features
                                 </a>
+                                <span class="w-px h-6 bg-[var(--color-border-light)] mx-1 shrink-0"></span>
                                 <a href="{{ route('admin.design-system') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.design-system') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
                                     <flux:icon name="swatch" variant="mini" class="size-4" />
-                                    Design
-                                </a>
-                                <a href="{{ route('admin.mails') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.mails*') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
-                                    <flux:icon name="envelope" variant="mini" class="size-4" />
-                                    E-mails
+                                    Design Systeem
                                 </a>
                             @endif
                             </div>
@@ -78,12 +79,15 @@
                             @if(auth()->user()->isAdmin())
                                 <flux:navlist.group heading="Admin" class="mt-4">
                                     <flux:navlist.item href="{{ route('admin.dashboard') }}" icon="chart-bar" :current="request()->routeIs('admin.dashboard')">Dashboard</flux:navlist.item>
+                                    <flux:navlist.item href="{{ route('admin.health') }}" icon="signal" :current="request()->routeIs('admin.health')">Gezondheid</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.fiches.index') }}" icon="document-text" :current="request()->routeIs('admin.fiches.*')">Fiches</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.users.index') }}" icon="users" :current="request()->routeIs('admin.users.*')">Gebruikers</flux:navlist.item>
-                                    <flux:navlist.item href="{{ route('admin.health') }}" icon="signal" :current="request()->routeIs('admin.health')">Gezondheid</flux:navlist.item>
-                                    <flux:navlist.item href="{{ route('admin.features') }}" icon="flag" :current="request()->routeIs('admin.features')">Features</flux:navlist.item>
-                                    <flux:navlist.item href="{{ route('admin.design-system') }}" icon="swatch" :current="request()->routeIs('admin.design-system')">Design Systeem</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.mails') }}" icon="envelope" :current="request()->routeIs('admin.mails*')">E-mails</flux:navlist.item>
+                                    <flux:navlist.item href="{{ route('admin.features') }}" icon="flag" :current="request()->routeIs('admin.features')">Features</flux:navlist.item>
+                                </flux:navlist.group>
+
+                                <flux:navlist.group heading="Docs" class="mt-4">
+                                    <flux:navlist.item href="{{ route('admin.design-system') }}" icon="swatch" :current="request()->routeIs('admin.design-system')">Design Systeem</flux:navlist.item>
                                 </flux:navlist.group>
                             @endif
                         </flux:navlist>
