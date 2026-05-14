@@ -58,4 +58,34 @@ class OkrSeederTest extends TestCase
         $this->assertSame(8, KeyResult::count());
         $this->assertSame(3, Initiative::count());
     }
+
+    public function test_reseeding_overwrites_label_edits(): void
+    {
+        $this->seed(OkrSeeder::class);
+
+        Objective::where('slug', 'bedankjes')->update(['title' => 'Drift']);
+        KeyResult::where('metric_key', 'thank_rate')->update(['label' => 'Drift']);
+        Initiative::where('slug', 'ai-suggesties')->update(['label' => 'Drift']);
+
+        $this->seed(OkrSeeder::class);
+
+        $this->assertSame('Bedankjes', Objective::where('slug', 'bedankjes')->value('title'));
+        $this->assertSame('Bedankratio', KeyResult::where('metric_key', 'thank_rate')->value('label'));
+        $this->assertSame('AI-suggesties', Initiative::where('slug', 'ai-suggesties')->value('label'));
+    }
+
+    public function test_reseeding_preserves_admin_set_target_values(): void
+    {
+        $this->seed(OkrSeeder::class);
+
+        KeyResult::where('metric_key', 'thank_rate')->update(['target_value' => 42]);
+
+        $this->seed(OkrSeeder::class);
+
+        $this->assertSame(
+            42,
+            KeyResult::where('metric_key', 'thank_rate')->value('target_value'),
+            'Re-seeding must not wipe admin-set target_value — strategic data lives in DB only.',
+        );
+    }
 }

@@ -19,7 +19,7 @@ class OkrSeeder extends Seeder
         ];
 
         foreach ($objectives as $data) {
-            Objective::firstOrCreate(['slug' => $data['slug']], $data);
+            Objective::updateOrCreate(['slug' => $data['slug']], $data);
         }
 
         $keyResults = [
@@ -44,7 +44,7 @@ class OkrSeeder extends Seeder
         foreach ($keyResults as $objectiveSlug => $list) {
             $objective = Objective::where('slug', $objectiveSlug)->firstOrFail();
             foreach ($list as $i => $kr) {
-                KeyResult::firstOrCreate(
+                KeyResult::updateOrCreate(
                     ['objective_id' => $objective->id, 'metric_key' => $kr['metric_key']],
                     [...$kr, 'objective_id' => $objective->id, 'position' => $i + 1],
                 );
@@ -66,7 +66,7 @@ class OkrSeeder extends Seeder
         foreach ($initiatives as $objectiveSlug => $list) {
             $objective = Objective::where('slug', $objectiveSlug)->firstOrFail();
             foreach ($list as $i => $init) {
-                Initiative::firstOrCreate(
+                Initiative::updateOrCreate(
                     ['objective_id' => $objective->id, 'slug' => $init['slug']],
                     [...$init, 'objective_id' => $objective->id, 'position' => $i + 1],
                 );

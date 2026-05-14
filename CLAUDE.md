@@ -41,6 +41,8 @@ php artisan migrate:fresh --seed
 
 ## Deployment & Migrations
 
+Production runs on **Digital Ocean managed by Laravel Forge** (not Laravel Cloud). Don't suggest `cloud` CLI, `cloud.yaml`, or Laravel Cloud dashboard workflows. The deploy script lives in the Forge UI (Site → Settings → Deployments) and uses `$FORGE_PHP` / `$FORGE_COMPOSER` between `$CREATE_RELEASE()` and `$ACTIVATE_RELEASE()`. To run a command on every deploy, add an artisan line *before* `$ACTIVATE_RELEASE()` so failures abort the release.
+
 **Before committing and pushing**, always check for untracked migrations: `git status database/migrations/`. Migrations must be committed together with the code that depends on them (models, controllers, scopes referencing new columns). Never push code that references a column without its migration — this causes production crashes.
 
 ## Architecture
