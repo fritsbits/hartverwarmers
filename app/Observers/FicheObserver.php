@@ -5,6 +5,9 @@ namespace App\Observers;
 use App\Jobs\AssessFicheQuality;
 use App\Jobs\AssignFicheIcon;
 use App\Models\Fiche;
+use App\Models\OnboardingEmailLog;
+use App\Notifications\FicheDiamondAwardedNotification;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 class FicheObserver
 {
@@ -35,6 +38,35 @@ class FicheObserver
 
         if ($becamePublished || $contentChanged) {
             $this->dispatchQualityAssessment($fiche);
+        }
+
+        if ($fiche->wasChanged('has_diamond') && $fiche->has_diamond) {
+            $this->notifyDiamondAwarded($fiche);
+        }
+    }
+
+    private function notifyDiamondAwarded(Fiche $fiche): void
+    {
+        $owner = $fiche->user;
+        if (! $owner || ! $owner->notify_on_kudos_milestones) {
+            return;
+        }
+
+        $mailKey = "diamantje-{$fiche->id}";
+
+        if (OnboardingEmailLog::where('user_id', $owner->id)->where('mail_key', $mailKey)->exists()) {
+            return;
+        }
+
+        try {
+            OnboardingEmailLog::create([
+                'user_id' => $owner->id,
+                'mail_key' => $mailKey,
+                'sent_at' => now(),
+            ]);
+            $owner->notify(new FicheDiamondAwardedNotification($fiche));
+        } catch (UniqueConstraintViolationException) {
+            // Concurrent: another request already logged this diamantje.
         }
     }
 

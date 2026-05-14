@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\FicheCommentDigestMail;
 use App\Models\Fiche;
+use App\Notifications\FicheDiamondAwardedNotification;
 use App\Notifications\MonthlyDigestNotification;
 use App\Notifications\OnboardingCuratedActivitiesNotification;
 use App\Notifications\OnboardingDownloadMilestoneNotification;
@@ -27,6 +28,7 @@ class MailPreviewController extends Controller
         'notifications' => 'Notificaties',
         'newsletter' => 'Nieuwsbrief',
         'onboarding' => 'Onboarding',
+        'recognition' => 'Bijdragers',
         'transactional' => 'Transactioneel',
     ];
 
@@ -89,6 +91,12 @@ class MailPreviewController extends Controller
             'description' => 'Na het downloaden van een aantal activiteiten.',
             'category' => 'onboarding',
             'trigger' => 'Na X downloads',
+        ],
+        'diamond-awarded' => [
+            'label' => 'Diamantje toegekend',
+            'description' => 'Realtime: jouw fiche werd door ons uitgekozen als diamantje.',
+            'category' => 'recognition',
+            'trigger' => 'Wanneer has_diamond=true wordt gezet',
         ],
         'verify-email' => [
             'label' => 'E-mailverificatie',
@@ -193,6 +201,7 @@ class MailPreviewController extends Controller
             'onboarding-first-bookmark' => $this->buildOnboardingFirstBookmarkMailMessage($user),
             'onboarding-milestone-10-bookmarks' => (new OnboardingMilestone10BookmarksNotification(10))->toMail($user),
             'onboarding-milestone-50-bookmarks' => (new OnboardingMilestone50BookmarksNotification(50))->toMail($user),
+            'diamond-awarded' => $this->buildDiamondAwardedMail($user),
             default => throw new \InvalidArgumentException("Unknown email key: {$email}"),
         };
     }
@@ -210,6 +219,13 @@ class MailPreviewController extends Controller
         $cycle = $user->currentDigestCycleNumber();
 
         return (new MonthlyDigestNotification($payload, cycle: $cycle))->toMail($user);
+    }
+
+    private function buildDiamondAwardedMail(mixed $user): MailMessage
+    {
+        $fiche = Fiche::published()->with('initiative')->firstOrFail();
+
+        return (new FicheDiamondAwardedNotification($fiche))->toMail($user);
     }
 
     private function buildFicheCommentDigestMail(mixed $user): FicheCommentDigestMail
