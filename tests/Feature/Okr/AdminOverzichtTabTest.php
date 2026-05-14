@@ -49,4 +49,17 @@ class AdminOverzichtTabTest extends TestCase
         $response->assertOk();
         $response->assertSee('Presentatiekwaliteit');  // overzicht renders all 4 objectives
     }
+
+    public function test_presentatiekwaliteit_tab_renders_kr_initiative_context(): void
+    {
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'presentatiekwaliteit']));
+
+        $response->assertOk();
+        $response->assertSee('Gemiddelde presentatiescore');  // KR label
+        $response->assertSee('AI-suggesties');                // Initiative label
+        $response->assertSee('Laatste 5 fiches');             // Context heading
+    }
 }

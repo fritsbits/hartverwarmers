@@ -8,6 +8,7 @@ use App\Models\Like;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Models\UserInteraction;
+use Database\Seeders\OkrSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -42,13 +43,14 @@ class AdminDashboardTest extends TestCase
 
     public function test_admin_can_view_dashboard(): void
     {
+        $this->seed(OkrSeeder::class);
         $user = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($user)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
-        $response->assertSee('Presentatiekwaliteit');
-        $response->assertSee('Suggestie-adoptie');
+        $response->assertSee('Gemiddelde presentatiescore');
+        $response->assertSee('AI-suggesties');
     }
 
     public function test_default_range_is_month(): void
