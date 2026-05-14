@@ -20,15 +20,20 @@
         }
     }" x-init="$watch('tab', val => navigate(val))" class="mb-6">
         <flux:tabs x-model="tab" variant="segmented">
-            <flux:tab name="presentatiekwaliteit">Presentatiekwaliteit</flux:tab>
-            <flux:tab name="onboarding">Onboarding</flux:tab>
-            <flux:tab name="aanmeldingen">Aanmeldingen</flux:tab>
-            <flux:tab name="bedankjes">Bedankjes</flux:tab>
-            <flux:tab name="nieuwsbrief">Nieuwsbrief</flux:tab>
+            <flux:tab name="overzicht">Overzicht</flux:tab>
+            @foreach($objectives as $obj)
+                <flux:tab name="{{ $obj->slug }}">{{ $obj->title }}</flux:tab>
+            @endforeach
         </flux:tabs>
     </div>
 
-    @if($tab === 'presentatiekwaliteit')
+    @if($tab === 'overzicht')
+        @include('admin.tabs.overzicht', ['objectives' => $objectives, 'range' => $range])
+    @elseif(view()->exists('admin.tabs.' . $tab))
+        @include('admin.tabs.' . $tab)
+    @else
+        {{-- LEGACY: inline blocks for tabs not yet refactored (Tasks 16-19 replace these one by one) --}}
+        @if($tab === 'presentatiekwaliteit')
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
         {{-- Weekly trend --}}
@@ -249,14 +254,13 @@
             @endif
         @endif
     </flux:card>
-    @elseif($tab === 'onboarding')
-        @include('admin.partials.onboarding-tab')
-    @elseif($tab === 'aanmeldingen')
-        @include('admin.partials.aanmeldingen-tab')
-    @elseif($tab === 'bedankjes')
-        @include('admin.partials.bedankjes-tab')
-    @elseif($tab === 'nieuwsbrief')
-        @include('admin.partials.nieuwsbrief-tab')
+        @elseif($tab === 'onboarding')
+            @include('admin.partials.onboarding-tab')
+        @elseif($tab === 'bedankjes')
+            @include('admin.partials.bedankjes-tab')
+        @elseif($tab === 'nieuwsbrief')
+            @include('admin.partials.nieuwsbrief-tab')
+        @endif
     @endif
 
 </x-sidebar-layout>
