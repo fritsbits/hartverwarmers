@@ -1,7 +1,9 @@
 @props(['kr', 'range'])
 
 @php
-    $value = app(\App\Services\Okr\MetricRegistry::class)->compute($kr->metric_key, $range);
+    $value = $kr->metric_key
+        ? app(\App\Services\Okr\MetricRegistry::class)->compute($kr->metric_key, $range)
+        : new \App\Services\Okr\MetricValue;
     $progress = $kr->target_value && $value->current !== null
         ? min(100, ($value->current / $kr->target_value) * 100)
         : null;

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Okr;
 
+use App\Models\Okr\KeyResult;
+use App\Models\Okr\Objective;
 use App\Models\User;
 use Database\Seeders\OkrSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -125,5 +127,28 @@ class AdminOverzichtTabTest extends TestCase
         $response->assertSee('Activatie na nieuwsbrief');  // KR label (from seeder)
         $response->assertSee('Nieuwsbrief-systeem');       // Initiative label
         $response->assertSee('Aankomende sends');          // Context heading
+    }
+
+    public function test_kr_with_null_metric_key_renders_without_crashing(): void
+    {
+        // Spec allows nullable metric_key for future manual KRs. The okr-kr component must not
+        // call MetricRegistry::compute() with a null key — that would throw InvalidArgumentException.
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $objective = Objective::where('slug', 'presentatiekwaliteit')->firstOrFail();
+        KeyResult::create([
+            'objective_id' => $objective->id,
+            'label' => 'Manuele KR zonder berekening',
+            'metric_key' => null,
+            'target_value' => null,
+            'target_unit' => '',
+            'position' => 99,
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'presentatiekwaliteit']));
+
+        $response->assertOk();
+        $response->assertSee('Manuele KR zonder berekening');
     }
 }
