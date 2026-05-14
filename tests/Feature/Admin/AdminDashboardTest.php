@@ -8,6 +8,7 @@ use App\Models\Like;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Models\UserInteraction;
+use Database\Seeders\OkrSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -42,20 +43,21 @@ class AdminDashboardTest extends TestCase
 
     public function test_admin_can_view_dashboard(): void
     {
+        $this->seed(OkrSeeder::class);
         $user = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($user)->get(route('admin.dashboard'));
+        $response = $this->actingAs($user)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
-        $response->assertSee('Presentatiekwaliteit');
-        $response->assertSee('Suggestie-adoptie');
+        $response->assertSee('Gemiddelde presentatiescore');
+        $response->assertSee('AI-suggesties');
     }
 
     public function test_default_range_is_month(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
         $this->assertEquals('month', $response->viewData('range'));
@@ -67,7 +69,7 @@ class AdminDashboardTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=week');
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit&range=week');
 
         $response->assertOk();
         $this->assertEquals('week', $response->viewData('range'));
@@ -78,7 +80,7 @@ class AdminDashboardTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=quarter');
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit&range=quarter');
 
         $response->assertOk();
         $this->assertEquals('quarter', $response->viewData('range'));
@@ -96,7 +98,7 @@ class AdminDashboardTest extends TestCase
             'quality_assessed_at' => now()->startOfMonth()->addDays(2),
         ]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=alltime');
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit&range=alltime');
 
         $response->assertOk();
         $this->assertEquals('alltime', $response->viewData('range'));
@@ -119,7 +121,7 @@ class AdminDashboardTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=month');
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit&range=month');
 
         $response->assertOk();
         $this->assertEquals('month', $response->viewData('range'));
@@ -146,7 +148,7 @@ class AdminDashboardTest extends TestCase
             'quality_assessed_at' => now(),
         ]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=week');
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit&range=week');
 
         $response->assertOk();
         $trend = $response->viewData('weeklyTrend');
@@ -174,7 +176,7 @@ class AdminDashboardTest extends TestCase
             'quality_assessed_at' => now(),
         ]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=month');
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit&range=month');
 
         $response->assertOk();
         $trend = $response->viewData('weeklyTrend');
@@ -207,7 +209,7 @@ class AdminDashboardTest extends TestCase
             'quality_assessed_at' => now()->startOfWeek(),
         ]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?range=month');
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit&range=month');
 
         $response->assertOk();
         $this->assertEquals(40, $response->viewData('trendDelta'));
@@ -238,7 +240,7 @@ class AdminDashboardTest extends TestCase
         // Unpublished — excluded
         Fiche::factory()->withPresentationScore(99)->create(['created_at' => now()]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
         $fiches = $response->viewData('lastFiches');
@@ -264,7 +266,7 @@ class AdminDashboardTest extends TestCase
             ]);
         }
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
         $fiches = $response->viewData('lastFiches');
@@ -290,7 +292,7 @@ class AdminDashboardTest extends TestCase
             ]);
         }
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
         $this->assertEquals(80, $response->viewData('lastFiveAvg'));
@@ -311,7 +313,7 @@ class AdminDashboardTest extends TestCase
         // Has real suggestions, one applied
         Fiche::factory()->published()->withSuggestions(['applied' => ['title']])->create();
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
         // Denominator = 2 (fiches with non-empty suggestions), numerator = 1
@@ -324,7 +326,7 @@ class AdminDashboardTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
         $this->assertEquals(0, $response->viewData('adoptionRate'));
@@ -343,7 +345,7 @@ class AdminDashboardTest extends TestCase
             'created_at' => now(),
         ]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
         // Only the recent fiche is counted
@@ -364,7 +366,7 @@ class AdminDashboardTest extends TestCase
             'ai_suggestions' => ['title' => 'Suggested title', 'description' => '', 'preparation' => '', 'inventory' => '', 'process' => '', 'applied' => []],
         ]);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
         $fieldAdoption = $response->viewData('fieldAdoption');
@@ -385,7 +387,7 @@ class AdminDashboardTest extends TestCase
         // Fiche with title suggestion NOT applied, description suggestion applied
         Fiche::factory()->published()->withSuggestions(['applied' => ['description']])->create();
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit');
 
         $response->assertOk();
         $details = $response->viewData('ficheAdoptionDetails');
@@ -508,45 +510,49 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(1, $counts['download_followup']);
     }
 
-    public function test_aanmeldingen_tab_is_accessible(): void
+    public function test_aanmeldingen_tab_falls_back_to_overzicht(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen');
 
         $response->assertOk();
-        $response->assertSee('Aanmeldingen');
-        $this->assertEquals('aanmeldingen', $response->viewData('tab'));
+        $this->assertEquals('overzicht', $response->viewData('tab'));
     }
 
-    public function test_aanmeldingen_tab_defaults_to_month_range(): void
+    public function test_aanmeldingen_slug_falls_back_to_overzicht(): void
+    {
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'aanmeldingen']));
+
+        $response->assertOk();
+        // 'aanmeldingen' is no longer in the valid tab list → falls back to overzicht.
+        // The overview shows all 4 objectives as cards; 'Bedankjes' is unique to that view
+        // and would NOT appear if we somehow rendered an old aanmeldingen tab content.
+        $response->assertSee('Bedankjes');
+        $response->assertSee('Nieuwsbrief');
+    }
+
+    public function test_default_tab_defaults_to_month_range(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen');
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
 
         $response->assertOk();
         $this->assertEquals('month', $response->viewData('range'));
     }
 
-    public function test_aanmeldingen_tab_invalid_range_falls_back_to_month(): void
+    public function test_valid_tabs_accept_quarter_and_alltime_range(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=garbage');
-
-        $response->assertOk();
-        $this->assertEquals('month', $response->viewData('range'));
-    }
-
-    public function test_aanmeldingen_tab_accepts_quarter_and_alltime(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        $quarter = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=quarter');
+        $quarter = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=overzicht&range=quarter');
         $this->assertEquals('quarter', $quarter->viewData('range'));
 
-        $alltime = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
+        $alltime = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=overzicht&range=alltime');
         $this->assertEquals('alltime', $alltime->viewData('range'));
     }
 
@@ -554,416 +560,61 @@ class AdminDashboardTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        foreach (['presentatiekwaliteit', 'onboarding', 'aanmeldingen', 'bedankjes', 'nieuwsbrief'] as $tab) {
+        foreach (['overzicht', 'presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief'] as $tab) {
             $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab='.$tab);
             $response->assertOk();
             $this->assertEquals('month', $response->viewData('range'), "tab={$tab} should default to month");
         }
     }
 
-    public function test_invalid_tab_falls_back_to_presentatiekwaliteit(): void
+    public function test_invalid_tab_falls_back_to_overzicht(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=garbage');
 
         $response->assertOk();
-        $this->assertEquals('presentatiekwaliteit', $response->viewData('tab'));
+        $this->assertEquals('overzicht', $response->viewData('tab'));
     }
 
-    public function test_signup_trend_month_produces_30_daily_buckets(): void
+    public function test_signup_trend_is_empty_since_aanmeldingen_tab_removed(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(2)]);
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(2)]);
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
-        // Outside 30-day window — excluded
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(40)]);
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'));
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $trend = $response->viewData('signupTrend');
-        $this->assertCount(30, $trend);
-        $this->assertEquals(2, collect($trend)->firstWhere('key', now()->subDays(2)->format('Y-m-d'))['count']);
-        $this->assertEquals(1, collect($trend)->firstWhere('key', now()->format('Y-m-d'))['count']);
-        $this->assertEquals(3, collect($trend)->sum('count'));
+        $this->assertEmpty($response->viewData('signupTrend'));
+        $this->assertEmpty($response->viewData('signupStats'));
     }
 
-    public function test_signup_trend_quarter_produces_13_weekly_buckets(): void
+    public function test_signup_trend_is_only_populated_for_onboarding_tab(): void
     {
+        // signupTrend is populated only for the onboarding tab (where it powers the KR1 sparkline).
+        // All other tabs receive empty arrays to avoid unnecessary queries.
         $admin = User::factory()->create(['role' => 'admin']);
 
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subWeeks(2)]);
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
-        // Outside 90-day window
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(100)]);
+        foreach (['overzicht', 'presentatiekwaliteit', 'bedankjes', 'nieuwsbrief'] as $tab) {
+            $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab='.$tab);
+            $this->assertEmpty($response->viewData('signupTrend'), "signupTrend should be empty for tab={$tab}");
+            $this->assertEmpty($response->viewData('signupStats'), "signupStats should be empty for tab={$tab}");
+        }
 
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=quarter');
-
-        $trend = $response->viewData('signupTrend');
-        $this->assertCount(13, $trend);
-        $this->assertEquals(2, collect($trend)->sum('count'));
+        $onboardingResponse = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=onboarding');
+        $this->assertNotEmpty($onboardingResponse->viewData('signupTrend'), 'signupTrend should be populated for tab=onboarding');
+        $this->assertNotEmpty($onboardingResponse->viewData('signupStats'), 'signupStats should be populated for tab=onboarding');
     }
 
-    public function test_signup_trend_alltime_starts_at_earliest_signup(): void
+    public function test_signup_stats_and_trend_are_empty_after_aanmeldingen_removal(): void
     {
+        // The aanmeldingen tab was removed in favour of the OKR-based Onboarding tab.
+        // signupStats and signupTrend are no longer populated by the controller.
         $admin = User::factory()->create(['role' => 'admin']);
 
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subMonths(2)->startOfMonth()->addDays(5)]);
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subMonth()->startOfMonth()->addDays(5)]);
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->startOfMonth()->addDays(2)]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
-
-        $trend = $response->viewData('signupTrend');
-        // 3 monthly buckets: subMonths(2), subMonth(1), current
-        $this->assertCount(3, $trend);
-        $this->assertEquals(1, $trend[0]['count']);
-        $this->assertEquals(1, $trend[1]['count']);
-        $this->assertEquals(1, $trend[2]['count']);
-    }
-
-    public function test_signup_trend_excludes_admins_and_stub_emails(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        // Admin — excluded
-        User::factory()->create(['role' => 'admin', 'created_at' => now()]);
-        // Stub import email — excluded
-        User::factory()->create([
-            'role' => 'contributor',
-            'email' => 'someone@import.hartverwarmers.be',
-            'created_at' => now(),
-        ]);
-        // Soft-deleted — excluded
-        $deleted = User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
-        $deleted->delete();
-        // Real contributor — counts
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $trend = $response->viewData('signupTrend');
-        $this->assertEquals(1, collect($trend)->sum('count'));
-    }
-
-    public function test_signup_trend_alltime_returns_empty_when_no_signups(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-        // Admin only — no real signups exist
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
-
-        $trend = $response->viewData('signupTrend');
-        $this->assertEmpty($trend);
-    }
-
-    public function test_signup_trend_month_includes_signup_at_oldest_bucket_boundary(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        // Signup at the start of the oldest bucket — must be counted
-        User::factory()->create([
-            'role' => 'contributor',
-            'created_at' => now()->subDays(29)->startOfDay()->addMinutes(5),
-        ]);
-        // Signup just outside the window — must NOT be counted
-        User::factory()->create([
-            'role' => 'contributor',
-            'created_at' => now()->subDays(29)->startOfDay()->subMinutes(5),
-        ]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $trend = $response->viewData('signupTrend');
-        $this->assertEquals(1, collect($trend)->sum('count'));
-    }
-
-    public function test_signup_stats_month_current_count_and_delta(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        // Current 30-day window: 3 signups
-        User::factory()->count(3)->create(['role' => 'contributor', 'created_at' => now()->subDays(5)]);
-        // Previous 30-day window: 1 signup
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(45)]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(3, $stats['currentCount']);
-        $this->assertEquals(1, $stats['previousCount']);
-        $this->assertEquals(2, $stats['delta']);
-        $this->assertEquals('deze maand', $stats['rangeLabel']);
-    }
-
-    public function test_signup_stats_quarter_current_and_delta(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        // Current 90-day window
-        User::factory()->count(2)->create(['role' => 'contributor', 'created_at' => now()->subDays(10)]);
-        // Previous 90-day window (90–180 days ago)
-        User::factory()->count(5)->create(['role' => 'contributor', 'created_at' => now()->subDays(120)]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=quarter');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(2, $stats['currentCount']);
-        $this->assertEquals(5, $stats['previousCount']);
-        $this->assertEquals(-3, $stats['delta']);
-        $this->assertEquals('deze 3 maanden', $stats['rangeLabel']);
-    }
-
-    public function test_signup_stats_alltime_suppresses_delta(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        User::factory()->count(4)->create(['role' => 'contributor', 'created_at' => now()->subMonths(3)]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(4, $stats['currentCount']);
-        $this->assertNull($stats['previousCount']);
-        $this->assertNull($stats['delta']);
-        $this->assertEquals('sinds start', $stats['rangeLabel']);
-    }
-
-    public function test_signup_stats_excludes_admins_and_stubs_in_count(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
-        User::factory()->create(['role' => 'admin', 'created_at' => now()]);
-        User::factory()->create([
-            'role' => 'contributor',
-            'email' => 'stub@import.hartverwarmers.be',
-            'created_at' => now(),
-        ]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(1, $stats['currentCount']);
-    }
-
-    public function test_signup_stats_month_boundary_between_current_and_previous(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        // At the exact start of the current 30-day window — counts as current
-        User::factory()->create([
-            'role' => 'contributor',
-            'created_at' => now()->subDays(29)->startOfDay()->addMinutes(5),
-        ]);
-        // 5 minutes before the current window starts — counts as previous
-        User::factory()->create([
-            'role' => 'contributor',
-            'created_at' => now()->subDays(29)->startOfDay()->subMinutes(5),
-        ]);
-        // At the exact start of the previous 30-day window — counts as previous
-        User::factory()->create([
-            'role' => 'contributor',
-            'created_at' => now()->subDays(59)->startOfDay()->addMinutes(5),
-        ]);
-        // Outside the previous window — counts as neither
-        User::factory()->create([
-            'role' => 'contributor',
-            'created_at' => now()->subDays(59)->startOfDay()->subMinutes(5),
-        ]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(1, $stats['currentCount']);
-        $this->assertEquals(2, $stats['previousCount']);
-        $this->assertEquals(-1, $stats['delta']);
-    }
-
-    public function test_verification_rate_in_month_range(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        // 6 in cohort: 4 verified, 2 unverified
-        User::factory()->count(4)->create([
-            'role' => 'contributor',
-            'created_at' => now()->subDays(5),
-            'email_verified_at' => now()->subDays(4),
-        ]);
-        User::factory()->count(2)->unverified()->create([
-            'role' => 'contributor',
-            'created_at' => now()->subDays(5),
-        ]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(6, $stats['cohortCount']);
-        $this->assertEquals(4, $stats['verifiedCount']);
-        $this->assertEquals(67, $stats['verificationRate']);
-        $this->assertFalse($stats['verificationLowData']);
-    }
-
-    public function test_verification_rate_zero_when_cohort_empty(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(0, $stats['cohortCount']);
-        $this->assertEquals(0, $stats['verifiedCount']);
-        $this->assertEquals(0, $stats['verificationRate']);
-    }
-
-    public function test_verification_rate_low_data_flag_when_cohort_under_5(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        User::factory()->count(3)->create([
-            'role' => 'contributor',
-            'created_at' => now()->subDays(2),
-            'email_verified_at' => now()->subDay(),
-        ]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(3, $stats['cohortCount']);
-        $this->assertTrue($stats['verificationLowData']);
-    }
-
-    public function test_verification_rate_alltime_uses_all_users(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        User::factory()->count(2)->create([
-            'role' => 'contributor',
-            'created_at' => now()->subYear(),
-            'email_verified_at' => now()->subYear(),
-        ]);
-        User::factory()->count(1)->unverified()->create([
-            'role' => 'contributor',
-            'created_at' => now()->subYear(),
-        ]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(3, $stats['cohortCount']);
-        $this->assertEquals(2, $stats['verifiedCount']);
-        $this->assertEquals(67, $stats['verificationRate']);
-    }
-
-    public function test_total_members_count_includes_all_non_admin_non_stub(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        User::factory()->count(3)->create(['role' => 'contributor']);
-        User::factory()->count(1)->create(['role' => 'curator']);
-        // Excluded
-        User::factory()->create(['role' => 'admin']);
-        User::factory()->create(['role' => 'contributor', 'email' => 'a@import.hartverwarmers.be']);
-        $deleted = User::factory()->create(['role' => 'contributor']);
-        $deleted->delete();
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(4, $stats['totalMembers']);
-    }
-
-    public function test_total_members_count_unaffected_by_range(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subYears(2)]);
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
-
-        $month = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-        $alltime = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
-
-        $this->assertEquals(2, $month->viewData('signupStats')['totalMembers']);
-        $this->assertEquals(2, $alltime->viewData('signupStats')['totalMembers']);
-    }
-
-    public function test_aanmeldingen_partial_shows_signup_count_and_total_members(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        User::factory()->count(3)->create(['role' => 'contributor', 'created_at' => now()->subDays(2)]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=overzicht');
 
         $response->assertOk();
-        $response->assertSee('Aanmeldingen');
-        $response->assertSee('E-mailverificatie');
-        $response->assertSee('totaal leden');
-        $response->assertSee('deze maand');
-    }
-
-    public function test_aanmeldingen_empty_state_when_no_signups_in_range(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=month');
-
-        $response->assertOk();
-        $response->assertSee('Nog geen aanmeldingen');
-    }
-
-    public function test_aanmeldingen_alltime_hides_redundant_current_count_figure(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        User::factory()->count(2)->create(['role' => 'contributor', 'created_at' => now()->subMonths(2)]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=alltime');
-
-        $stats = $response->viewData('signupStats');
-
-        $response->assertOk();
-        $response->assertSee('totaal leden');
-        // The period figure (currentCount with rangeLabel subtitle) must not render for alltime;
-        // only the totalMembers figure is shown. Confirm rangeLabel is 'sinds start' and
-        // that the stats card subtitle does NOT repeat the same number via the period figure div.
-        $this->assertEquals('sinds start', $stats['rangeLabel']);
-        $this->assertEquals($stats['currentCount'], $stats['totalMembers']);
-    }
-
-    public function test_signup_trend_week_produces_seven_daily_buckets(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(2)]);
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()]);
-        // Outside 7-day window — excluded
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(10)]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=week');
-
-        $trend = $response->viewData('signupTrend');
-        $this->assertCount(7, $trend);
-        $this->assertEquals(2, collect($trend)->sum('count'));
-    }
-
-    public function test_signup_stats_week_uses_seven_day_window(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        // Current 7-day window
-        User::factory()->count(2)->create(['role' => 'contributor', 'created_at' => now()->subDays(3)]);
-        // Previous 7-day window
-        User::factory()->create(['role' => 'contributor', 'created_at' => now()->subDays(10)]);
-
-        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=aanmeldingen&range=week');
-
-        $stats = $response->viewData('signupStats');
-        $this->assertEquals(2, $stats['currentCount']);
-        $this->assertEquals(1, $stats['previousCount']);
-        $this->assertEquals(1, $stats['delta']);
-        $this->assertEquals('deze week', $stats['rangeLabel']);
+        $this->assertEmpty($response->viewData('signupStats'));
+        $this->assertEmpty($response->viewData('signupTrend'));
     }
 
     public function test_onboarding_cohort_respects_week_range(): void
@@ -1455,6 +1106,7 @@ class AdminDashboardTest extends TestCase
 
     public function test_bedankjes_tab_renders_expected_copy(): void
     {
+        $this->seed(OkrSeeder::class);
         $admin = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=bedankjes');
@@ -1482,6 +1134,7 @@ class AdminDashboardTest extends TestCase
 
     public function test_nieuwsbrief_tab_renders_expected_copy(): void
     {
+        $this->seed(OkrSeeder::class);
         $admin = User::factory()->create(['role' => 'admin']);
 
         $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief');

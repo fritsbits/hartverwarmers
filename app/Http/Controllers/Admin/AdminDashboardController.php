@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Fiche;
 use App\Models\Like;
+use App\Models\Okr\Objective;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Models\UserInteraction;
@@ -18,9 +19,9 @@ class AdminDashboardController extends Controller
 {
     public function __invoke(): View
     {
-        $tab = request()->get('tab', 'presentatiekwaliteit');
-        if (! in_array($tab, ['presentatiekwaliteit', 'onboarding', 'aanmeldingen', 'bedankjes', 'nieuwsbrief'], true)) {
-            $tab = 'presentatiekwaliteit';
+        $tab = request()->get('tab', 'overzicht');
+        if (! in_array($tab, ['overzicht', 'presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief'], true)) {
+            $tab = 'overzicht';
         }
 
         $range = request()->get('range', 'month');
@@ -69,12 +70,24 @@ class AdminDashboardController extends Controller
             $ficheAdoptionDetails = [];
         }
 
-        $signupTrend = $tab === 'aanmeldingen' ? $this->signupTrend($range) : [];
-        $signupStats = $tab === 'aanmeldingen' ? $this->signupStats($range) : [];
+        $signupTrend = $tab === 'onboarding' ? $this->signupTrend($range) : [];
+        $signupStats = $tab === 'onboarding' ? $this->signupStats($range) : [];
+
+        $objectives = Objective::orderBy('position')->get();
+
+        $currentObjective = null;
+        if ($tab !== 'overzicht') {
+            $currentObjective = $objectives->firstWhere('slug', $tab);
+            if ($currentObjective) {
+                $currentObjective->load(['keyResults', 'initiatives']);
+            }
+        }
 
         return view('admin.dashboard', [
             'tab' => $tab,
             'range' => $range,
+            'objectives' => $objectives,
+            'currentObjective' => $currentObjective,
             'rangeLabel' => $rangeLabel,
             'weeklyTrend' => $weeklyTrend,
             'trendDelta' => $trendDelta,
