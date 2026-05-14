@@ -93,6 +93,8 @@ class FicheKudos extends Component
         ]);
 
         unset($this->totalKudos, $this->myKudos, $this->kudosGiversCount);
+
+        $this->dispatch('kudos-added', count: $kudos->count);
     }
 
     public function addComment(): void

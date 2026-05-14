@@ -34,6 +34,83 @@ class KudosTest extends TestCase
         ]);
     }
 
+    public function test_add_kudos_dispatches_kudos_added_event_with_running_total(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        $component = Livewire::actingAs($user)
+            ->test(FicheKudos::class, ['fiche' => $fiche]);
+
+        $component->call('addKudos', amount: 3)
+            ->assertDispatched('kudos-added', count: 3);
+
+        $component->call('addKudos', amount: 2)
+            ->assertDispatched('kudos-added', count: 5);
+    }
+
+    public function test_owner_giving_kudos_to_own_fiche_does_not_dispatch_kudos_added(): void
+    {
+        $owner = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'user_id' => $owner->id,
+        ]);
+
+        Livewire::actingAs($owner)
+            ->test(FicheKudos::class, ['fiche' => $fiche])
+            ->call('addKudos', amount: 1)
+            ->assertNotDispatched('kudos-added');
+    }
+
+    public function test_post_download_modal_shows_inline_kudos_acknowledgement(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Livewire::actingAs($user)
+            ->test(FicheKudos::class, ['fiche' => $fiche])
+            ->assertSeeHtml('x-show="kudosAcknowledged && !atMax"')
+            ->assertSeeHtml('Dank je wel!')
+            ->assertSeeHtml('Schrijf een persoonlijk bedankingsbericht')
+            ->assertDontSeeHtml("state === 'kudos-given'");
+    }
+
+    public function test_post_download_modal_renders_max_kudos_copy(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Livewire::actingAs($user)
+            ->test(FicheKudos::class, ['fiche' => $fiche])
+            ->assertSee('Je gaf het maximum van')
+            ->assertSee('hartjes')
+            ->assertSee('Dat moet een straffe activiteit zijn');
+    }
+
+    public function test_post_download_modal_initialises_alpine_with_current_kudos_count(): void
+    {
+        $user = User::factory()->create();
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+
+        Like::create([
+            'user_id' => $user->id,
+            'likeable_type' => Fiche::class,
+            'likeable_id' => $fiche->id,
+            'type' => 'kudos',
+            'count' => 25,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(FicheKudos::class, ['fiche' => $fiche])
+            ->assertSeeHtml('postDownloadTakeover('.$fiche->id.', 25, 25)');
+    }
+
     public function test_kudos_count_increments_on_multiple_clicks(): void
     {
         $user = User::factory()->create();

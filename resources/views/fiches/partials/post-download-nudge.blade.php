@@ -1,23 +1,18 @@
 {{-- Post-download takeover: full-screen overlay with three Alpine sub-states. --}}
 {{-- Lives inside the FicheKudos Livewire component so wire:model + wire:click bind. --}}
 {{-- Triggered by the 'fiche-download-click' window event dispatched by the download button. --}}
-@auth
-    @php
-        $contributor = $fiche->user;
-        $contributorName = $contributor?->first_name ?? 'de auteur';
-        $isOwnFiche = auth()->id() === $fiche->user_id;
-    @endphp
-@else
-    @php
-        $contributor = $fiche->user;
-        $contributorName = $contributor?->first_name ?? 'de auteur';
-        $isOwnFiche = false;
-    @endphp
-@endauth
+@php
+    $contributor = $fiche->user;
+    $contributorName = $contributor?->first_name ?? 'de auteur';
+    $isOwnFiche = auth()->check() && auth()->id() === $fiche->user_id;
+    $initialKudosCount = (int) $this->myKudos;
+    $maxKudos = \App\Livewire\FicheKudos::MAX_KUDOS_PER_USER;
+@endphp
 
-<div x-data="postDownloadTakeover({{ $fiche->id }})"
+<div x-data="postDownloadTakeover({{ $fiche->id }}, {{ $initialKudosCount }}, {{ $maxKudos }})"
      x-on:fiche-download-click.window="if ($event.detail?.ficheId === fiche_id) { waitForDownloadConfirmation(); }"
      x-on:comment-added.window="goToConfirmation()"
+     x-on:kudos-added.window="kudosAcknowledged = true; kudosCount = $event.detail?.count ?? kudosCount"
      x-on:keydown.escape.window="if (downloaded) dismiss()"
 >
 <template x-teleport="body">
@@ -121,18 +116,42 @@
                     </div>
                     <button x-on:mousedown.prevent="startGive()"
                             x-on:touchstart.prevent="startGive()"
-                            aria-label="Geef hartjes voor {{ $contributorName }} — hou ingedrukt voor meer"
-                            @if($isOwnFiche) disabled @endif
+                            :aria-label="atMax ? 'Je gaf het maximum aantal hartjes' : 'Geef hartjes voor {{ $contributorName }} — hou ingedrukt voor meer'"
+                            :disabled="atMax || {{ $isOwnFiche ? 'true' : 'false' }}"
                             class="w-full inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl bg-[var(--color-primary)] text-white transition-[transform,background-color] duration-150 hover:bg-[var(--color-primary-hover)] active:scale-[0.96] disabled:opacity-50 disabled:cursor-not-allowed select-none leading-tight"
                             :class="holding ? 'scale-[1.03]' : ''">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0 transition-transform" :class="holding ? 'scale-125' : ''" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                         </svg>
-                        <span class="flex flex-col items-start">
-                            <span class="text-base font-semibold">Geef hartjes</span>
-                            <span class="text-xs font-light opacity-75 -mt-0.5">blijf drukken voor meer</span>
+                        <span class="flex flex-col items-start text-left">
+                            <template x-if="!atMax">
+                                <span class="flex flex-col items-start">
+                                    <span class="text-base font-semibold">Geef hartjes</span>
+                                    <span class="text-xs font-light opacity-75 -mt-0.5">blijf drukken voor meer</span>
+                                </span>
+                            </template>
+                            <template x-if="atMax">
+                                <span class="flex flex-col items-start">
+                                    <span class="text-base font-semibold">Je gaf het maximum van <span x-text="maxKudos"></span> hartjes</span>
+                                    <span class="text-xs font-light opacity-75 -mt-0.5">Dat moet een straffe activiteit zijn</span>
+                                </span>
+                            </template>
                         </span>
                     </button>
+
+                    {{-- Inline kudos acknowledgement — sits below the heart button, doesn't take over the modal --}}
+                    <div x-show="kudosAcknowledged && !atMax" x-cloak
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 -translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         class="flex items-center justify-center gap-1.5 mt-3 text-sm"
+                         style="color: var(--color-primary)"
+                         role="status">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                        </svg>
+                        <span x-text="`${kudosCount} ${kudosCount === 1 ? 'hartje' : 'hartjes'} gegeven. Dank je wel!`"></span>
+                    </div>
                 </div>
 
                 {{-- Inline comment box (auth only) --}}
@@ -145,7 +164,7 @@
                                 wire:model.live="body"
                                 rows="2"
                                 maxlength="1000"
-                                placeholder="…of schrijf een berichtje voor {{ $contributorName }}"
+                                placeholder="Schrijf een persoonlijk bedankingsbericht"
                                 class="w-full px-4 py-3 rounded-2xl border border-[var(--color-border-light)] focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/15 outline-none text-base resize-none bg-[var(--color-bg-cream)] placeholder:text-[var(--color-text-secondary)]"
                             ></textarea>
                             @error('body')
@@ -200,11 +219,15 @@
 
 <script>
 if (typeof window.postDownloadTakeover === 'undefined') {
-window.postDownloadTakeover = function(ficheId) {
+window.postDownloadTakeover = function(ficheId, initialKudosCount, maxKudos) {
     return {
         fiche_id: ficheId,
         downloaded: false,
         state: 'initial',
+        kudosAcknowledged: false,
+        kudosCount: initialKudosCount,
+        maxKudos: maxKudos,
+        get atMax() { return this.kudosCount >= this.maxKudos; },
         confirmationTimer: null,
         waitTimer: null,
         // After the download click, the browser may show a "Save As" dialog
@@ -251,6 +274,7 @@ window.postDownloadTakeover = function(ficheId) {
             if (this.confirmationTimer) clearTimeout(this.confirmationTimer);
             this.downloaded = false;
             this.state = 'initial';
+            this.kudosAcknowledged = false;
             document.body.style.overflow = '';
             try { sessionStorage.setItem('takeover-dismissed-{{ $fiche->id }}', '1'); } catch (e) {}
         },
