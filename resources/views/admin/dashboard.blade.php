@@ -1,4 +1,4 @@
-<x-sidebar-layout title="Dashboard" section-label="Beheer">
+<x-sidebar-layout title="OKR's" section-label="Beheer">
 
     <x-slot:header-action>
         <flux:select size="sm" class="w-40" x-data x-on:change="window.location.href = '?tab={{ $tab }}&range=' + $event.target.value">

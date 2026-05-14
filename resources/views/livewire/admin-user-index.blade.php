@@ -14,12 +14,16 @@
         </flux:select>
     </div>
 
+    @php($canImpersonate = auth()->user()->isAdmin())
+
     {{-- Table --}}
     <flux:table :paginate="$this->users">
         <flux:table.columns>
             <flux:table.column>Gebruiker</flux:table.column>
             <flux:table.column>Rol</flux:table.column>
-            <flux:table.column></flux:table.column>
+            @if($canImpersonate)
+                <flux:table.column></flux:table.column>
+            @endif
         </flux:table.columns>
 
         <flux:table.rows>
@@ -50,18 +54,20 @@
                             default => 'zinc',
                         }">{{ $user->role }}</flux:badge>
                     </flux:table.cell>
-                    <flux:table.cell align="end">
-                        @if($user->id !== auth()->id())
-                            <form method="POST" action="{{ route('admin.impersonate.start', $user) }}">
-                                @csrf
-                                <flux:button variant="ghost" size="xs" type="submit" icon="eye">Nabootsen</flux:button>
-                            </form>
-                        @endif
-                    </flux:table.cell>
+                    @if($canImpersonate)
+                        <flux:table.cell align="end">
+                            @if($user->id !== auth()->id())
+                                <form method="POST" action="{{ route('admin.impersonate.start', $user) }}">
+                                    @csrf
+                                    <flux:button variant="ghost" size="xs" type="submit" icon="eye">Nabootsen</flux:button>
+                                </form>
+                            @endif
+                        </flux:table.cell>
+                    @endif
                 </flux:table.row>
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="3" class="text-center py-8">
+                    <flux:table.cell :colspan="$canImpersonate ? 3 : 2" class="text-center py-8">
                         <div class="text-[var(--color-text-secondary)]">
                             <flux:icon name="magnifying-glass" class="size-8 mx-auto mb-2 opacity-40" />
                             <p>Geen gebruikers gevonden</p>

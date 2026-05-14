@@ -160,7 +160,7 @@
                             @if(auth()->user()->isAdmin() || auth()->user()->isCurator())
                                 <flux:menu.separator />
                                 @if(auth()->user()->isAdmin())
-                                    <flux:menu.item href="{{ route('admin.dashboard') }}" icon="chart-bar">Dashboard</flux:menu.item>
+                                    <flux:menu.item href="{{ route('admin.dashboard') }}" icon="chart-bar">OKR's</flux:menu.item>
                                 @else
                                     <flux:menu.item href="{{ route('admin.fiches.index') }}" icon="document-text">Fiches</flux:menu.item>
                                 @endif

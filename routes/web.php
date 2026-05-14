@@ -94,6 +94,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('curator')->group(function () {
         Route::post('/initiatieven/{initiative:slug}/{fiche:slug}/diamant', [FicheController::class, 'toggleDiamond'])->name('fiches.toggleDiamond');
         Route::get('/admin/fiches', [AdminFicheController::class, 'index'])->name('admin.fiches.index');
+        Route::get('/admin/gebruikers', [AdminUserController::class, 'index'])->name('admin.users.index');
     });
 
     Route::middleware('admin')->group(function () {
@@ -106,7 +107,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/mails/{email}/preview', [MailPreviewController::class, 'preview'])->name('admin.mails.preview');
         Route::delete('/initiatieven/{initiative:slug}', [InitiativeController::class, 'destroy'])->name('initiatives.destroy');
         Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'destroy'])->name('fiches.destroy');
-        Route::get('/admin/gebruikers', [AdminUserController::class, 'index'])->name('admin.users.index');
         Route::post('/admin/impersonate/{user}', [ImpersonateController::class, 'start'])
             ->where('user', '[0-9]+')
             ->name('admin.impersonate.start');
