@@ -16,7 +16,7 @@ class OnboardingDownloadMilestoneNotification extends BaseMailNotification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("Je downloadde al {$this->downloadCount} activiteiten — tijd om iets terug te geven?")
+            ->subject('Heb jij ook een activiteit die werkt voor je bewoners?')
             ->markdown('emails.onboarding-contribute-invitation', [
                 'notifiable' => $notifiable,
                 'downloadCount' => $this->downloadCount,
