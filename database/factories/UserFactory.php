@@ -27,7 +27,7 @@ class UserFactory extends Factory
             'bio' => fake()->optional()->paragraph(),
             'remember_token' => Str::random(10),
             'email_verified_at' => now(),
-            'notification_frequency' => 'daily',
+            'notification_frequency' => 'weekly',
             'notify_on_onboarding_emails' => true,
             'notify_on_kudos_milestones' => true,
         ];

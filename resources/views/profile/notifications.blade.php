@@ -9,7 +9,7 @@
                 <section class="pb-8">
                     <p class="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Reacties op fiches</p>
                     <p class="text-sm text-[var(--color-text-secondary)] mb-3">In plaats van een mail per reactie krijg je een overzicht — kies hoe vaak.</p>
-                    @php($currentFrequency = old('notification_frequency', $user->notification_frequency ?: 'daily'))
+                    @php($currentFrequency = old('notification_frequency', $user->notification_frequency ?: 'weekly'))
                     <flux:radio.group
                         name="notification_frequency"
                         class="flex! flex-wrap items-center gap-x-6 gap-y-2 *:data-flux-field:mb-0!"

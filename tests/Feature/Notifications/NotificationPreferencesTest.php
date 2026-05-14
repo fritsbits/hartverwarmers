@@ -171,7 +171,7 @@ class NotificationPreferencesTest extends TestCase
         $this->assertEquals('weekly', $this->checkedRadioValue($response->getContent()));
     }
 
-    public function test_notifications_page_falls_back_to_daily_when_value_empty(): void
+    public function test_notifications_page_falls_back_to_weekly_when_value_empty(): void
     {
         $user = User::factory()->create();
         \DB::table('users')->where('id', $user->id)->update(['notification_frequency' => '']);
@@ -179,7 +179,14 @@ class NotificationPreferencesTest extends TestCase
 
         $response = $this->get(route('profile.notifications'));
 
-        $this->assertEquals('daily', $this->checkedRadioValue($response->getContent()));
+        $this->assertEquals('weekly', $this->checkedRadioValue($response->getContent()));
+    }
+
+    public function test_factory_default_notification_frequency_is_weekly(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertSame('weekly', $user->notification_frequency);
     }
 
     private function checkedRadioValue(string $html): ?string
