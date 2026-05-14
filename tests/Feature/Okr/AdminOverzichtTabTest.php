@@ -101,4 +101,16 @@ class AdminOverzichtTabTest extends TestCase
 
         $this->assertSame(array_keys($positions), array_keys($sorted), 'KRs should render in funnel order');
     }
+
+    public function test_bedankjes_tab_renders_kr_and_context(): void
+    {
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'bedankjes']));
+
+        $response->assertOk();
+        $response->assertSee('Bedankratio');
+        $response->assertSee('Hoe bedanken mensen');
+    }
 }
