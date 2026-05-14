@@ -1,4 +1,4 @@
-@props(['kr', 'range'])
+@props(['kr', 'range', 'step' => null])
 
 @php
     $value = $kr->metric_key
@@ -9,7 +9,10 @@
         : null;
 @endphp
 
-<div class="p-4 bg-[var(--color-bg-cream)] rounded-lg">
+<div class="relative p-4 {{ $step !== null ? 'pl-14' : '' }}">
+    @if($step !== null)
+        <span class="absolute left-4 top-4 inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--color-bg-cream)] text-[var(--color-text-secondary)] text-xs font-bold tabular-nums">{{ $step }}</span>
+    @endif
     <div class="flex items-baseline justify-between mb-1">
         <span class="text-sm font-semibold">{{ $kr->label }}</span>
         <span class="text-sm font-bold text-[var(--color-primary)] tabular-nums">

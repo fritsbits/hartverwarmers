@@ -12,21 +12,23 @@
 
 @isset($keyResults)
     <section class="mb-8">
-        <p class="section-label mb-3">Key results</p>
-        <div class="grid gap-3">{{ $keyResults }}</div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-3">Key results</p>
+        <div class="bg-white rounded-xl border border-[var(--color-border-light)] divide-y divide-[var(--color-border-light)]">
+            {{ $keyResults }}
+        </div>
     </section>
 @endisset
 
 @isset($initiatives)
     <section class="mb-8">
-        <p class="section-label mb-3">Initiatieven</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-3">Initiatieven</p>
         <div class="grid gap-4">{{ $initiatives }}</div>
     </section>
 @endisset
 
 @isset($context)
     <section class="mb-8">
-        <p class="section-label mb-3">Context</p>
+        <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-3">Context</p>
         {{ $context }}
     </section>
 @endisset

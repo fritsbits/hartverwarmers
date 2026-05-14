@@ -1,10 +1,14 @@
 @php
-    $firstLabel = $thankTrend[0]['label'] ?? null;
-    $lastLabel = collect($thankTrend)->last()['label'] ?? null;
+    $trimmedTrend = collect($thankTrend)
+        ->skipWhile(fn ($b) => $b['downloads'] === 0)
+        ->values()
+        ->all();
+    $firstLabel = $trimmedTrend[0]['label'] ?? null;
+    $lastLabel = end($trimmedTrend)['label'] ?? null;
     $isAlltime = $range === 'alltime';
     $yearMarkers = [];
     if ($isAlltime) {
-        foreach ($thankTrend as $i => $b) {
+        foreach ($trimmedTrend as $i => $b) {
             if (str_ends_with($b['key'], '-01')) {
                 $yearMarkers[] = ['year' => substr($b['key'], 0, 4), 'index' => $i];
             }
@@ -23,7 +27,7 @@
 
 <p class="text-xs text-[var(--color-text-secondary)] mb-3">Aandeel downloads door leden dat bedankt werd · {{ $rangeLabel }}</p>
 
-@if(empty($thankTrend) || collect($thankTrend)->sum('downloads') === 0)
+@if(empty($trimmedTrend) || collect($trimmedTrend)->sum('downloads') === 0)
     <p class="text-sm text-[var(--color-text-secondary)]">Nog geen downloads in deze periode.</p>
 @else
     {{-- Sparkline: bar height = thank rate % per bucket --}}
@@ -31,7 +35,7 @@
         {{-- Bar height = absolute thank rate percentage (not normalised). Charts may render short on low rates — this is intentional for data honesty. --}}
         {{-- mb-4 (not mb-1) so the tooltip's shadow over short/empty bars doesn't bleed into the axis labels row. --}}
         <div class="flex items-end {{ $isAlltime ? 'gap-px' : 'gap-1.5' }} h-16 mb-4">
-            @foreach($thankTrend as $bucket)
+            @foreach($trimmedTrend as $bucket)
                 @if($bucket['downloads'] > 0)
                     <div
                         class="flex-1 rounded-t bg-[var(--color-primary)] opacity-80 hover:opacity-100 transition-opacity"
@@ -52,7 +56,7 @@
         <div class="relative h-4 mb-4 text-xs text-[var(--color-text-secondary)]">
             @foreach($yearMarkers as $marker)
                 <span class="absolute -translate-x-1/2 tabular-nums"
-                      style="left: {{ ($marker['index'] / max(1, count($thankTrend) - 1)) * 100 }}%;">
+                      style="left: {{ ($marker['index'] / max(1, count($trimmedTrend) - 1)) * 100 }}%;">
                     {{ $marker['year'] }}
                 </span>
             @endforeach

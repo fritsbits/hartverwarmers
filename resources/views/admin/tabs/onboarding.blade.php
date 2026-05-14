@@ -2,7 +2,7 @@
     <x-okr-tab :objective="$currentObjective" :range="$range">
         <x-slot:key-results>
             @foreach($currentObjective->keyResults as $kr)
-                <x-okr-kr :kr="$kr" :range="$range">
+                <x-okr-kr :kr="$kr" :range="$range" :step="$loop->iteration">
                     @if($kr->metric_key === 'onboarding_signup_count')
                         @include('admin.partials.fragments.signup-trend')
                     @endif

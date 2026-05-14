@@ -1,12 +1,15 @@
 @php
-    $maxCount = collect($signupTrend)->max('count') ?: 1;
-    $firstLabel = $signupTrend[0]['label'] ?? null;
-    $lastLabel = collect($signupTrend)->last()['label'] ?? null;
+    $trimmedTrend = collect($signupTrend)
+        ->skipWhile(fn ($b) => $b['count'] === 0)
+        ->values()
+        ->all();
+    $maxCount = collect($trimmedTrend)->max('count') ?: 1;
+    $firstLabel = $trimmedTrend[0]['label'] ?? null;
+    $lastLabel = end($trimmedTrend)['label'] ?? null;
     $isAlltime = $range === 'alltime';
     $yearMarkers = [];
     if ($isAlltime) {
-        $total = count($signupTrend);
-        foreach ($signupTrend as $i => $b) {
+        foreach ($trimmedTrend as $i => $b) {
             if (str_ends_with($b['key'], '-01')) {
                 $yearMarkers[] = ['year' => substr($b['key'], 0, 4), 'index' => $i];
             }
@@ -23,11 +26,11 @@
     }
 @endphp
 
-@if(! empty($signupTrend))
+@if(! empty($trimmedTrend))
     {{-- Sparkline with shared tooltip --}}
     <x-chart-tooltip guide>
         <div class="flex items-end {{ $isAlltime ? 'gap-px' : 'gap-1.5' }} h-16 mb-1 mt-2">
-            @foreach($signupTrend as $bucket)
+            @foreach($trimmedTrend as $bucket)
                 @if($bucket['count'] > 0)
                     <div
                         class="flex-1 rounded-t bg-[var(--color-primary)] opacity-80 hover:opacity-100 transition-opacity"
@@ -48,7 +51,7 @@
         <div class="relative h-4 mb-2 text-xs text-[var(--color-text-secondary)]">
             @foreach($yearMarkers as $marker)
                 <span class="absolute -translate-x-1/2 tabular-nums"
-                      style="left: {{ ($marker['index'] / max(1, count($signupTrend) - 1)) * 100 }}%;">
+                      style="left: {{ ($marker['index'] / max(1, count($trimmedTrend) - 1)) * 100 }}%;">
                     {{ $marker['year'] }}
                 </span>
             @endforeach
