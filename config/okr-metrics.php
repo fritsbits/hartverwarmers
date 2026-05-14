@@ -1,5 +1,6 @@
 <?php
 
+use App\Metrics\NewsletterActivationRateMetric;
 use App\Metrics\OnboardingFollowupResponseRateMetric;
 use App\Metrics\OnboardingInteraction30dRateMetric;
 use App\Metrics\OnboardingReturn7dRateMetric;
@@ -21,4 +22,5 @@ return [
     'onboarding_interaction_30d_rate' => OnboardingInteraction30dRateMetric::class,
     'onboarding_followup_response_rate' => OnboardingFollowupResponseRateMetric::class,
     'thank_rate' => ThankRateMetric::class,
+    'newsletter_activation_rate' => NewsletterActivationRateMetric::class,
 ];
