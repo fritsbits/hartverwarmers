@@ -1,5 +1,6 @@
 <?php
 
+use App\Metrics\OnboardingReturn7dRateMetric;
 use App\Metrics\OnboardingSignupCountMetric;
 use App\Metrics\OnboardingVerificationRateMetric;
 use App\Metrics\PresentationScoreAvgMetric;
@@ -13,4 +14,5 @@ return [
     'presentation_score_avg' => PresentationScoreAvgMetric::class,
     'onboarding_signup_count' => OnboardingSignupCountMetric::class,
     'onboarding_verification_rate' => OnboardingVerificationRateMetric::class,
+    'onboarding_return_7d_rate' => OnboardingReturn7dRateMetric::class,
 ];
