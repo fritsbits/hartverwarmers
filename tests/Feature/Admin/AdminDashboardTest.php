@@ -520,6 +520,21 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals('overzicht', $response->viewData('tab'));
     }
 
+    public function test_aanmeldingen_slug_falls_back_to_overzicht(): void
+    {
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'aanmeldingen']));
+
+        $response->assertOk();
+        // 'aanmeldingen' is no longer in the valid tab list → falls back to overzicht.
+        // The overview shows all 4 objectives as cards; 'Bedankjes' is unique to that view
+        // and would NOT appear if we somehow rendered an old aanmeldingen tab content.
+        $response->assertSee('Bedankjes');
+        $response->assertSee('Nieuwsbrief');
+    }
+
     public function test_default_tab_defaults_to_month_range(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
