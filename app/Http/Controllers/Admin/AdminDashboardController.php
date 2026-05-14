@@ -19,7 +19,7 @@ class AdminDashboardController extends Controller
     public function __invoke(): View
     {
         $tab = request()->get('tab', 'presentatiekwaliteit');
-        if (! in_array($tab, ['presentatiekwaliteit', 'onboarding', 'aanmeldingen', 'bedankjes'], true)) {
+        if (! in_array($tab, ['presentatiekwaliteit', 'onboarding', 'aanmeldingen', 'bedankjes', 'nieuwsbrief'], true)) {
             $tab = 'presentatiekwaliteit';
         }
 
@@ -42,20 +42,32 @@ class AdminDashboardController extends Controller
             default => 'laatste maand',
         };
 
-        $weeklyTrend = $this->trend($range);
-        $trendDelta = $this->trendDelta($weeklyTrend);
-        $lastFiches = $this->lastFiches();
-        $scored = $lastFiches->filter(fn ($f) => $f->presentation_score !== null);
-        $lastFiveAvg = $scored->isNotEmpty() ? (int) round($scored->avg('presentation_score')) : null;
-        $globalAvg = $this->globalAvg();
-        $fichesWithSuggestions = Fiche::query()
-            ->published()
-            ->whereNotNull('ai_suggestions')
-            ->when($cutoff !== null, fn ($q) => $q->where('created_at', '>=', $cutoff))
-            ->with('initiative:id,slug')
-            ->get(['id', 'title', 'slug', 'initiative_id', 'ai_suggestions']);
-        $adoption = $this->adoptionStats($fichesWithSuggestions);
-        $fieldAdoption = $this->fieldAdoption($fichesWithSuggestions);
+        if ($tab === 'presentatiekwaliteit') {
+            $weeklyTrend = $this->trend($range);
+            $trendDelta = $this->trendDelta($weeklyTrend);
+            $lastFiches = $this->lastFiches();
+            $scored = $lastFiches->filter(fn ($f) => $f->presentation_score !== null);
+            $lastFiveAvg = $scored->isNotEmpty() ? (int) round($scored->avg('presentation_score')) : null;
+            $globalAvg = $this->globalAvg();
+            $fichesWithSuggestions = Fiche::query()
+                ->published()
+                ->whereNotNull('ai_suggestions')
+                ->when($cutoff !== null, fn ($q) => $q->where('created_at', '>=', $cutoff))
+                ->with('initiative:id,slug')
+                ->get(['id', 'title', 'slug', 'initiative_id', 'ai_suggestions']);
+            $adoption = $this->adoptionStats($fichesWithSuggestions);
+            $fieldAdoption = $this->fieldAdoption($fichesWithSuggestions);
+            $ficheAdoptionDetails = $this->ficheAdoptionDetails($fichesWithSuggestions);
+        } else {
+            $weeklyTrend = [];
+            $trendDelta = null;
+            $lastFiches = collect();
+            $lastFiveAvg = null;
+            $globalAvg = null;
+            $adoption = ['withSuggestions' => 0, 'withAnyApplied' => 0, 'adoptionRate' => 0];
+            $fieldAdoption = [];
+            $ficheAdoptionDetails = [];
+        }
 
         $signupTrend = $tab === 'aanmeldingen' ? $this->signupTrend($range) : [];
         $signupStats = $tab === 'aanmeldingen' ? $this->signupStats($range) : [];
@@ -71,13 +83,18 @@ class AdminDashboardController extends Controller
             'globalAvg' => $globalAvg,
             ...$adoption,
             'fieldAdoption' => $fieldAdoption,
-            'ficheAdoptionDetails' => $this->ficheAdoptionDetails($fichesWithSuggestions),
+            'ficheAdoptionDetails' => $ficheAdoptionDetails,
             'onboardingStats' => $tab === 'onboarding' ? $this->onboardingStats($range) : [],
             'onboardingEmailCounts' => $tab === 'onboarding' ? $this->onboardingEmailCounts($range) : [],
             'signupTrend' => $signupTrend,
             'signupStats' => $signupStats,
             'thankTrend' => $tab === 'bedankjes' ? $this->thankTrend($range) : [],
             'thankStats' => $tab === 'bedankjes' ? $this->thankStats($range) : [],
+            'newsletterTrend' => $tab === 'nieuwsbrief' ? $this->newsletterTrend($range) : [],
+            'newsletterStats' => $tab === 'nieuwsbrief' ? $this->newsletterStats($range) : [],
+            'unsubscribeByCycle' => $tab === 'nieuwsbrief' ? $this->unsubscribeByCycle($range) : [],
+            'activationStats' => $tab === 'nieuwsbrief' ? $this->activationStats($range) : [],
+            'upcomingNewsletterSends' => $tab === 'nieuwsbrief' ? $this->upcomingNewsletterSends() : [],
         ]);
     }
 
@@ -1011,5 +1028,380 @@ class AdminDashboardController extends Controller
             'verificationLowData',
             'totalMembers',
         );
+    }
+
+    /** @return Builder<OnboardingEmailLog> */
+    private function newsletterSendsQuery(): Builder
+    {
+        return OnboardingEmailLog::query()
+            ->where('mail_key', 'LIKE', 'newsletter-cycle-%')
+            ->whereHas('user', fn ($q) => $q
+                ->where('role', '!=', 'admin')
+                ->where('email', 'NOT LIKE', '%@import.hartverwarmers.be')
+            );
+    }
+
+    /** @return array<int, array{key: string, label: string, count: int}> */
+    private function newsletterTrend(string $range): array
+    {
+        $base = $this->newsletterSendsQuery();
+
+        return match ($range) {
+            'week' => $this->newsletterTrendDaily($base, days: 7),
+            'quarter' => $this->newsletterTrendWeekly($base),
+            'alltime' => $this->newsletterTrendMonthly($base),
+            default => $this->newsletterTrendDaily($base, days: 30),
+        };
+    }
+
+    /**
+     * @param  Builder<OnboardingEmailLog>  $base
+     * @return array<int, array{key: string, label: string, count: int}>
+     */
+    private function newsletterTrendDaily(Builder $base, int $days): array
+    {
+        $sends = (clone $base)
+            ->where('sent_at', '>=', now()->subDays($days - 1)->startOfDay())
+            ->get(['sent_at']);
+
+        $grouped = [];
+        foreach ($sends as $send) {
+            $key = $send->sent_at->format('Y-m-d');
+            $grouped[$key] = ($grouped[$key] ?? 0) + 1;
+        }
+
+        $result = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $key = $date->format('Y-m-d');
+            $result[] = [
+                'key' => $key,
+                'label' => $date->isoFormat('D MMM'),
+                'count' => $grouped[$key] ?? 0,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param  Builder<OnboardingEmailLog>  $base
+     * @return array<int, array{key: string, label: string, count: int}>
+     */
+    private function newsletterTrendWeekly(Builder $base): array
+    {
+        $sends = (clone $base)
+            ->where('sent_at', '>=', now()->subWeeks(12)->startOfWeek())
+            ->get(['sent_at']);
+
+        $grouped = [];
+        foreach ($sends as $send) {
+            $key = $send->sent_at->format('oW');
+            $grouped[$key] = ($grouped[$key] ?? 0) + 1;
+        }
+
+        $result = [];
+        for ($i = 12; $i >= 0; $i--) {
+            $date = now()->subWeeks($i)->startOfWeek();
+            $key = $date->format('oW');
+            $result[] = [
+                'key' => $key,
+                'label' => $date->isoFormat('D MMM'),
+                'count' => $grouped[$key] ?? 0,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param  Builder<OnboardingEmailLog>  $base
+     * @return array<int, array{key: string, label: string, count: int}>
+     */
+    private function newsletterTrendMonthly(Builder $base): array
+    {
+        $sends = (clone $base)->get(['sent_at']);
+
+        if ($sends->isEmpty()) {
+            return [];
+        }
+
+        $earliest = $sends->min('sent_at')->copy()->startOfMonth();
+        $end = now()->startOfMonth();
+
+        $grouped = [];
+        foreach ($sends as $send) {
+            $key = $send->sent_at->format('Y-m');
+            $grouped[$key] = ($grouped[$key] ?? 0) + 1;
+        }
+
+        $result = [];
+        $cursor = $earliest->copy();
+        while ($cursor <= $end) {
+            $key = $cursor->format('Y-m');
+            $result[] = [
+                'key' => $key,
+                'label' => $cursor->isoFormat('MMM YYYY'),
+                'count' => $grouped[$key] ?? 0,
+            ];
+            $cursor->addMonth();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array{
+     *   currentSent: int,
+     *   previousSent: int|null,
+     *   delta: int|null,
+     *   totalSubscribers: int,
+     *   rangeLabel: string,
+     * }
+     */
+    private function newsletterStats(string $range): array
+    {
+        $base = $this->newsletterSendsQuery();
+
+        [$windowDays, $rangeLabel] = match ($range) {
+            'week' => [7, 'deze week'],
+            'quarter' => [90, 'deze 3 maanden'],
+            'alltime' => [null, 'sinds start'],
+            default => [30, 'deze maand'],
+        };
+
+        if ($windowDays === null) {
+            $currentSent = (clone $base)->count();
+            $previousSent = null;
+            $delta = null;
+        } else {
+            $currentStart = match ($range) {
+                'quarter' => now()->subWeeks(12)->startOfWeek(),
+                'week' => now()->subDays(6)->startOfDay(),
+                default => now()->subDays(29)->startOfDay(),
+            };
+            $previousStart = match ($range) {
+                'quarter' => now()->subWeeks(24)->startOfWeek(),
+                'week' => now()->subDays(13)->startOfDay(),
+                default => now()->subDays(59)->startOfDay(),
+            };
+
+            $currentSent = (clone $base)
+                ->where('sent_at', '>=', $currentStart)
+                ->count();
+            $previousSent = (clone $base)
+                ->where('sent_at', '>=', $previousStart)
+                ->where('sent_at', '<', $currentStart)
+                ->count();
+            $delta = $currentSent - $previousSent;
+        }
+
+        $totalSubscribers = User::query()
+            ->whereNotNull('email_verified_at')
+            ->whereNull('newsletter_unsubscribed_at')
+            ->where('role', '!=', 'admin')
+            ->where('email', 'NOT LIKE', '%@import.hartverwarmers.be')
+            ->count();
+
+        return compact('currentSent', 'previousSent', 'delta', 'totalSubscribers', 'rangeLabel');
+    }
+
+    /**
+     * Per-cycle bucket: % of recipients who unsubscribed within 7 days of receiving that cycle.
+     *
+     * @return array<string, array{label: string, sent: int, unsubscribed: int, rate: int, lowData: bool}>
+     */
+    private function unsubscribeByCycle(string $range): array
+    {
+        $cutoff = match ($range) {
+            'week' => now()->subDays(7),
+            'quarter' => now()->subDays(90),
+            'alltime' => null,
+            default => now()->subDays(30),
+        };
+
+        $sends = $this->newsletterSendsQuery()
+            ->when($cutoff !== null, fn ($q) => $q->where('sent_at', '>=', $cutoff))
+            ->with('user:id,newsletter_unsubscribed_at')
+            ->get(['user_id', 'mail_key', 'sent_at']);
+
+        $buckets = [
+            'cycle1' => ['label' => 'Cyclus 1', 'sent' => 0, 'unsubscribed' => 0],
+            'cycle2' => ['label' => 'Cyclus 2', 'sent' => 0, 'unsubscribed' => 0],
+            'cycle3' => ['label' => 'Cyclus 3', 'sent' => 0, 'unsubscribed' => 0],
+            'cycle4plus' => ['label' => 'Cyclus 4+', 'sent' => 0, 'unsubscribed' => 0],
+        ];
+
+        foreach ($sends as $send) {
+            if (! $send->user) {
+                continue;
+            }
+
+            $cycle = (int) str_replace('newsletter-cycle-', '', $send->mail_key);
+            $key = match (true) {
+                $cycle === 1 => 'cycle1',
+                $cycle === 2 => 'cycle2',
+                $cycle === 3 => 'cycle3',
+                default => 'cycle4plus',
+            };
+
+            $buckets[$key]['sent']++;
+
+            $unsubAt = $send->user->newsletter_unsubscribed_at;
+            if ($unsubAt
+                && $unsubAt->greaterThanOrEqualTo($send->sent_at)
+                && $unsubAt->lessThanOrEqualTo($send->sent_at->copy()->addDays(7))
+            ) {
+                $buckets[$key]['unsubscribed']++;
+            }
+        }
+
+        foreach ($buckets as $key => $bucket) {
+            $buckets[$key]['rate'] = $bucket['sent'] > 0
+                ? (int) round($bucket['unsubscribed'] / $bucket['sent'] * 100)
+                : 0;
+            $buckets[$key]['lowData'] = $bucket['sent'] > 0 && $bucket['sent'] < 5;
+        }
+
+        return $buckets;
+    }
+
+    /**
+     * Of newsletter sends in the period, how many recipients had a site visit
+     * within 7 days after receiving the newsletter? Proxies "did the newsletter
+     * bring them back" — but counts any visit, not just newsletter clicks.
+     *
+     * @return array{
+     *   sent: int,
+     *   activated: int,
+     *   rate: int,
+     *   rangeLabel: string,
+     *   lowData: bool,
+     * }
+     */
+    private function activationStats(string $range): array
+    {
+        $cutoff = match ($range) {
+            'week' => now()->subDays(7),
+            'quarter' => now()->subDays(90),
+            'alltime' => null,
+            default => now()->subDays(30),
+        };
+
+        $rangeLabel = match ($range) {
+            'week' => 'deze week',
+            'quarter' => 'deze 3 maanden',
+            'alltime' => 'sinds start',
+            default => 'deze maand',
+        };
+
+        $sends = $this->newsletterSendsQuery()
+            ->when($cutoff !== null, fn ($q) => $q->where('sent_at', '>=', $cutoff))
+            ->with('user:id,last_visited_at')
+            ->get(['user_id', 'sent_at']);
+
+        $sent = $sends->count();
+        $activated = 0;
+
+        foreach ($sends as $send) {
+            $lastVisited = $send->user?->last_visited_at;
+            if (! $lastVisited) {
+                continue;
+            }
+
+            if ($lastVisited->greaterThanOrEqualTo($send->sent_at)
+                && $lastVisited->lessThanOrEqualTo($send->sent_at->copy()->addDays(7))
+            ) {
+                $activated++;
+            }
+        }
+
+        $rate = $sent > 0 ? (int) round($activated / $sent * 100) : 0;
+
+        return [
+            'sent' => $sent,
+            'activated' => $activated,
+            'rate' => $rate,
+            'rangeLabel' => $rangeLabel,
+            'lowData' => $sent > 0 && $sent < 5,
+        ];
+    }
+
+    /**
+     * Forecast: how many newsletter sends will fire in the next 30 days,
+     * broken down by cycle bucket. Mirrors SendMonthlyCohortNewsletter logic
+     * (30-day anniversary + grace window for cycles 1–3 + 6-month dormancy
+     * gate for cycles 4+).
+     *
+     * Each user has at most one anniversary in the 30-day window. We compute
+     * `daysAhead` in [0,29] such that `(today + daysAhead - created)` is a
+     * multiple of 30 — namely `(30 - D mod 30) mod 30`. Users created today
+     * (D=0) land on day 30, just outside the window, so they're filtered in SQL.
+     *
+     * @return array{
+     *   total: int,
+     *   buckets: array<string, array{label: string, count: int}>,
+     *   windowDays: int,
+     * }
+     */
+    private function upcomingNewsletterSends(): array
+    {
+        $windowDays = 30;
+        $today = now()->startOfDay();
+
+        $candidates = User::query()
+            ->whereNotNull('email_verified_at')
+            ->whereNull('newsletter_unsubscribed_at')
+            ->where('role', '!=', 'admin')
+            ->where('email', 'NOT LIKE', '%@import.hartverwarmers.be')
+            ->where('created_at', '<', $today)
+            ->get(['id', 'created_at', 'last_visited_at']);
+
+        $buckets = [
+            'cycle1' => ['label' => 'Cyclus 1', 'count' => 0],
+            'cycle2' => ['label' => 'Cyclus 2', 'count' => 0],
+            'cycle3' => ['label' => 'Cyclus 3', 'count' => 0],
+            'cycle4plus' => ['label' => 'Cyclus 4+', 'count' => 0],
+        ];
+
+        $total = 0;
+        $todayTs = $today->getTimestamp();
+
+        foreach ($candidates as $user) {
+            $createdTs = $user->created_at->copy()->startOfDay()->getTimestamp();
+            $d = intdiv($todayTs - $createdTs, 86400);
+
+            // A user with d=0 was filtered in SQL; defensive guard for DST/edge precision.
+            if ($d < 1) {
+                continue;
+            }
+
+            $modR = $d % 30;
+            $a = $modR === 0 ? 0 : 30 - $modR;
+            $cycle = intdiv($d + $a, 30);
+
+            if ($cycle >= 4) {
+                $fireDate = $today->copy()->addDays($a);
+                $lastActive = $user->last_visited_at ?? $user->created_at;
+                if ($lastActive->lessThan($fireDate->copy()->subMonths(6))) {
+                    continue;
+                }
+            }
+
+            $key = match (true) {
+                $cycle === 1 => 'cycle1',
+                $cycle === 2 => 'cycle2',
+                $cycle === 3 => 'cycle3',
+                default => 'cycle4plus',
+            };
+            $buckets[$key]['count']++;
+            $total++;
+        }
+
+        return [
+            'total' => $total,
+            'buckets' => $buckets,
+            'windowDays' => $windowDays,
+        ];
     }
 }

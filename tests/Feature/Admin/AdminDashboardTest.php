@@ -554,7 +554,7 @@ class AdminDashboardTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        foreach (['presentatiekwaliteit', 'onboarding', 'aanmeldingen'] as $tab) {
+        foreach (['presentatiekwaliteit', 'onboarding', 'aanmeldingen', 'bedankjes', 'nieuwsbrief'] as $tab) {
             $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab='.$tab);
             $response->assertOk();
             $this->assertEquals('month', $response->viewData('range'), "tab={$tab} should default to month");
@@ -1463,6 +1463,406 @@ class AdminDashboardTest extends TestCase
         $response->assertSee('Bedankratio');
         $response->assertSee('Hoe bedanken mensen');
         $response->assertSee('Aandeel downloads door leden dat bedankt werd', false);
+    }
+
+    public function test_nieuwsbrief_tab_is_accessible(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief');
+
+        $response->assertOk();
+        $response->assertViewHas('newsletterTrend');
+        $response->assertViewHas('newsletterStats');
+        $response->assertViewHas('unsubscribeByCycle');
+        $response->assertViewHas('activationStats');
+        $response->assertViewHas('upcomingNewsletterSends');
+        $this->assertEquals('nieuwsbrief', $response->viewData('tab'));
+    }
+
+    public function test_nieuwsbrief_tab_renders_expected_copy(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief');
+
+        $response->assertOk();
+        $response->assertSee('Verstuurd');
+        $response->assertSee('Uitschrijfratio per cyclus');
+        $response->assertSee('Activatie na nieuwsbrief');
+        $response->assertSee('Aankomende sends');
+    }
+
+    public function test_newsletter_trend_month_produces_30_daily_buckets(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $u1 = User::factory()->create(['role' => 'contributor']);
+        $u2 = User::factory()->create(['role' => 'contributor']);
+        OnboardingEmailLog::create(['user_id' => $u1->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(3)]);
+        OnboardingEmailLog::create(['user_id' => $u2->id, 'mail_key' => 'newsletter-cycle-2', 'sent_at' => now()->subDays(3)]);
+        // Outside 30-day window — excluded
+        $u3 = User::factory()->create(['role' => 'contributor']);
+        OnboardingEmailLog::create(['user_id' => $u3->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(40)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $trend = $response->viewData('newsletterTrend');
+        $this->assertCount(30, $trend);
+        $this->assertEquals(2, collect($trend)->sum('count'));
+    }
+
+    public function test_newsletter_trend_quarter_produces_thirteen_weekly_buckets(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=quarter');
+
+        $trend = $response->viewData('newsletterTrend');
+        $this->assertCount(13, $trend);
+    }
+
+    public function test_newsletter_trend_excludes_admin_sends(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $adminRecipient = User::factory()->create(['role' => 'admin']);
+        OnboardingEmailLog::create(['user_id' => $adminRecipient->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDay()]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $trend = $response->viewData('newsletterTrend');
+        $this->assertEquals(0, collect($trend)->sum('count'));
+        $this->assertEquals(0, $response->viewData('newsletterStats')['currentSent']);
+    }
+
+    public function test_newsletter_trend_excludes_other_mail_keys(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $user = User::factory()->create(['role' => 'contributor']);
+
+        OnboardingEmailLog::create(['user_id' => $user->id, 'mail_key' => 'mail_1', 'sent_at' => now()->subDays(2)]);
+        OnboardingEmailLog::create(['user_id' => $user->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(2)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $trend = $response->viewData('newsletterTrend');
+        $this->assertEquals(1, collect($trend)->sum('count'));
+    }
+
+    public function test_newsletter_total_subscribers_excludes_admin_unverified_unsubscribed_stub(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Counts
+        User::factory()->create(['role' => 'contributor', 'email_verified_at' => now()->subDay()]);
+        User::factory()->create(['role' => 'curator', 'email_verified_at' => now()->subDay()]);
+        // Excluded: admin
+        User::factory()->create(['role' => 'admin', 'email_verified_at' => now()->subDay()]);
+        // Excluded: unverified
+        User::factory()->unverified()->create(['role' => 'contributor']);
+        // Excluded: unsubscribed
+        User::factory()->create([
+            'role' => 'contributor',
+            'email_verified_at' => now()->subDay(),
+            'newsletter_unsubscribed_at' => now()->subHour(),
+        ]);
+        // Excluded: stub email
+        User::factory()->create([
+            'role' => 'contributor',
+            'email' => 'stub@import.hartverwarmers.be',
+            'email_verified_at' => now()->subDay(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $stats = $response->viewData('newsletterStats');
+        $this->assertEquals(2, $stats['totalSubscribers']);
+    }
+
+    public function test_newsletter_stats_month_delta_compares_current_vs_previous(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Current 30-day window: 3 sends
+        for ($i = 0; $i < 3; $i++) {
+            $u = User::factory()->create(['role' => 'contributor']);
+            OnboardingEmailLog::create(['user_id' => $u->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(5 + $i)]);
+        }
+        // Previous 30-day window: 1 send
+        $u4 = User::factory()->create(['role' => 'contributor']);
+        OnboardingEmailLog::create(['user_id' => $u4->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(45)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $stats = $response->viewData('newsletterStats');
+        $this->assertEquals(3, $stats['currentSent']);
+        $this->assertEquals(1, $stats['previousSent']);
+        $this->assertEquals(2, $stats['delta']);
+        $this->assertEquals('deze maand', $stats['rangeLabel']);
+    }
+
+    public function test_newsletter_stats_alltime_suppresses_delta(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $u = User::factory()->create(['role' => 'contributor']);
+        OnboardingEmailLog::create(['user_id' => $u->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subYear()]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=alltime');
+
+        $stats = $response->viewData('newsletterStats');
+        $this->assertEquals(1, $stats['currentSent']);
+        $this->assertNull($stats['previousSent']);
+        $this->assertNull($stats['delta']);
+    }
+
+    public function test_unsubscribe_by_cycle_groups_correctly(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Cycle 1 send, user unsubscribed 3 days later → counts
+        $u1 = User::factory()->create([
+            'role' => 'contributor',
+            'newsletter_unsubscribed_at' => now()->subDays(2),
+        ]);
+        OnboardingEmailLog::create(['user_id' => $u1->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(5)]);
+
+        // Cycle 2 send, no unsubscribe
+        $u2 = User::factory()->create(['role' => 'contributor']);
+        OnboardingEmailLog::create(['user_id' => $u2->id, 'mail_key' => 'newsletter-cycle-2', 'sent_at' => now()->subDays(5)]);
+
+        // Cycle 5 send, user unsubscribed 1 day later → counts in cycle4plus bucket
+        $u3 = User::factory()->create([
+            'role' => 'contributor',
+            'newsletter_unsubscribed_at' => now()->subDays(4),
+        ]);
+        OnboardingEmailLog::create(['user_id' => $u3->id, 'mail_key' => 'newsletter-cycle-5', 'sent_at' => now()->subDays(5)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $buckets = $response->viewData('unsubscribeByCycle');
+        $this->assertEquals(1, $buckets['cycle1']['sent']);
+        $this->assertEquals(1, $buckets['cycle1']['unsubscribed']);
+        $this->assertEquals(100, $buckets['cycle1']['rate']);
+
+        $this->assertEquals(1, $buckets['cycle2']['sent']);
+        $this->assertEquals(0, $buckets['cycle2']['unsubscribed']);
+        $this->assertEquals(0, $buckets['cycle2']['rate']);
+
+        $this->assertEquals(0, $buckets['cycle3']['sent']);
+
+        $this->assertEquals(1, $buckets['cycle4plus']['sent']);
+        $this->assertEquals(1, $buckets['cycle4plus']['unsubscribed']);
+        $this->assertEquals(100, $buckets['cycle4plus']['rate']);
+    }
+
+    public function test_unsubscribe_only_counts_within_seven_days_of_send(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Unsubscribed 10 days after send → outside 7-day window, not counted
+        $u1 = User::factory()->create([
+            'role' => 'contributor',
+            'newsletter_unsubscribed_at' => now()->subDays(5),
+        ]);
+        OnboardingEmailLog::create(['user_id' => $u1->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(15)]);
+
+        // Unsubscribed BEFORE send (impossible in practice, but defensive) → not counted
+        $u2 = User::factory()->create([
+            'role' => 'contributor',
+            'newsletter_unsubscribed_at' => now()->subDays(20),
+        ]);
+        OnboardingEmailLog::create(['user_id' => $u2->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(10)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $buckets = $response->viewData('unsubscribeByCycle');
+        $this->assertEquals(2, $buckets['cycle1']['sent']);
+        $this->assertEquals(0, $buckets['cycle1']['unsubscribed']);
+    }
+
+    public function test_unsubscribe_lowdata_flag_under_five_sends(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $u1 = User::factory()->create(['role' => 'contributor']);
+        OnboardingEmailLog::create(['user_id' => $u1->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(2)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $buckets = $response->viewData('unsubscribeByCycle');
+        $this->assertTrue($buckets['cycle1']['lowData']);
+        $this->assertFalse($buckets['cycle2']['lowData']);  // 0 sends — not "lowData", just empty
+    }
+
+    public function test_activation_stats_counts_visits_within_seven_days_after_send(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // User visited 3 days after receiving — counts as activated
+        $u1 = User::factory()->create([
+            'role' => 'contributor',
+            'last_visited_at' => now()->subDays(2),
+        ]);
+        OnboardingEmailLog::create(['user_id' => $u1->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(5)]);
+
+        // User visited but BEFORE the send — not activated
+        $u2 = User::factory()->create([
+            'role' => 'contributor',
+            'last_visited_at' => now()->subDays(10),
+        ]);
+        OnboardingEmailLog::create(['user_id' => $u2->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(5)]);
+
+        // User never visited — not activated
+        $u3 = User::factory()->create(['role' => 'contributor', 'last_visited_at' => null]);
+        OnboardingEmailLog::create(['user_id' => $u3->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(5)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $stats = $response->viewData('activationStats');
+        $this->assertEquals(3, $stats['sent']);
+        $this->assertEquals(1, $stats['activated']);
+        $this->assertEquals(33, $stats['rate']);
+    }
+
+    public function test_activation_stats_visit_outside_seven_day_window_not_counted(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Send 20 days ago, visited 5 days ago (15 days after send) — outside 7d window
+        $u = User::factory()->create([
+            'role' => 'contributor',
+            'last_visited_at' => now()->subDays(5),
+        ]);
+        OnboardingEmailLog::create(['user_id' => $u->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(20)]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $stats = $response->viewData('activationStats');
+        $this->assertEquals(1, $stats['sent']);
+        $this->assertEquals(0, $stats['activated']);
+    }
+
+    public function test_activation_lowdata_flag_under_five_sends(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        for ($i = 0; $i < 3; $i++) {
+            $u = User::factory()->create(['role' => 'contributor']);
+            OnboardingEmailLog::create(['user_id' => $u->id, 'mail_key' => 'newsletter-cycle-1', 'sent_at' => now()->subDays(2)]);
+        }
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $stats = $response->viewData('activationStats');
+        $this->assertTrue($stats['lowData']);
+    }
+
+    public function test_upcoming_sends_buckets_by_cycle(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Cycle 1 in 5 days: created 25 days ago
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(25)->startOfDay(),
+            'email_verified_at' => now()->subDays(25),
+        ]);
+        // Cycle 2 in 5 days: created 55 days ago
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(55)->startOfDay(),
+            'email_verified_at' => now()->subDays(55),
+        ]);
+        // Cycle 3 in 5 days: created 85 days ago
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(85)->startOfDay(),
+            'email_verified_at' => now()->subDays(85),
+        ]);
+        // Cycle 4 in 5 days: created 115 days ago — last_visited recent → passes dormancy gate
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(115)->startOfDay(),
+            'email_verified_at' => now()->subDays(115),
+            'last_visited_at' => now()->subDays(10),
+        ]);
+        // Brand-new signup (day 0) — first 30-day mark falls AT day 30, just outside the
+        // [today, today+29] forecast window, so no fire expected.
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->startOfDay(),
+            'email_verified_at' => now(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $forecast = $response->viewData('upcomingNewsletterSends');
+        $this->assertEquals(4, $forecast['total']);
+        $this->assertEquals(1, $forecast['buckets']['cycle1']['count']);
+        $this->assertEquals(1, $forecast['buckets']['cycle2']['count']);
+        $this->assertEquals(1, $forecast['buckets']['cycle3']['count']);
+        $this->assertEquals(1, $forecast['buckets']['cycle4plus']['count']);
+        $this->assertEquals(30, $forecast['windowDays']);
+    }
+
+    public function test_upcoming_sends_dormancy_gate_excludes_inactive_cycle4plus(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Cycle 4 in 5 days but last visited 7 months ago — excluded by dormancy gate
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(115)->startOfDay(),
+            'email_verified_at' => now()->subDays(115),
+            'last_visited_at' => now()->subMonths(7),
+        ]);
+        // Cycle 4 in 5 days, last visited 3 months ago — included
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(115)->startOfDay(),
+            'email_verified_at' => now()->subDays(115),
+            'last_visited_at' => now()->subMonths(3),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $forecast = $response->viewData('upcomingNewsletterSends');
+        $this->assertEquals(1, $forecast['total']);
+        $this->assertEquals(1, $forecast['buckets']['cycle4plus']['count']);
+    }
+
+    public function test_upcoming_sends_excludes_unsubscribed_unverified_admin_stub(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // All hit cycle 1 in 5 days, but each excluded for a different reason
+        User::factory()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(25)->startOfDay(),
+            'email_verified_at' => now()->subDays(25),
+            'newsletter_unsubscribed_at' => now()->subDay(),
+        ]);
+        User::factory()->unverified()->create([
+            'role' => 'contributor',
+            'created_at' => now()->subDays(25)->startOfDay(),
+        ]);
+        User::factory()->create([
+            'role' => 'admin',
+            'created_at' => now()->subDays(25)->startOfDay(),
+            'email_verified_at' => now()->subDays(25),
+        ]);
+        User::factory()->create([
+            'role' => 'contributor',
+            'email' => 'stub@import.hartverwarmers.be',
+            'created_at' => now()->subDays(25)->startOfDay(),
+            'email_verified_at' => now()->subDays(25),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=nieuwsbrief&range=month');
+
+        $forecast = $response->viewData('upcomingNewsletterSends');
+        $this->assertEquals(0, $forecast['total']);
     }
 
     public function test_thank_stats_quarter_delta_compares_current_vs_previous(): void

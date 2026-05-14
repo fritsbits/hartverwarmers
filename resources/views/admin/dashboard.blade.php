@@ -1,4 +1,4 @@
-<x-sidebar-layout title="Beheer" section-label="Beheer">
+<x-sidebar-layout title="Dashboard" section-label="Beheer">
 
     <x-slot:header-action>
         <flux:select size="sm" class="w-40" x-data x-on:change="window.location.href = '?tab={{ $tab }}&range=' + $event.target.value">
@@ -24,6 +24,7 @@
             <flux:tab name="onboarding">Onboarding</flux:tab>
             <flux:tab name="aanmeldingen">Aanmeldingen</flux:tab>
             <flux:tab name="bedankjes">Bedankjes</flux:tab>
+            <flux:tab name="nieuwsbrief">Nieuwsbrief</flux:tab>
         </flux:tabs>
     </div>
 
@@ -254,6 +255,8 @@
         @include('admin.partials.aanmeldingen-tab')
     @elseif($tab === 'bedankjes')
         @include('admin.partials.bedankjes-tab')
+    @elseif($tab === 'nieuwsbrief')
+        @include('admin.partials.nieuwsbrief-tab')
     @endif
 
 </x-sidebar-layout>
