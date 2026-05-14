@@ -124,7 +124,7 @@ class AdminFicheOverview extends Component
 
         $query = Fiche::query()
             ->published()
-            ->with(['initiative', 'user'])
+            ->with(['initiative', 'user' => fn ($q) => $q->withTrashed()])
             ->select('fiches.*')
             ->addSelect(DB::raw('(COALESCE(quality_score, 0) + COALESCE(presentation_score, 0)) as combined_score'));
 

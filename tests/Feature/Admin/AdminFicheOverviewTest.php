@@ -213,6 +213,27 @@ class AdminFicheOverviewTest extends TestCase
         $this->assertFalse(Cache::has('home:recent-diamond'));
     }
 
+    public function test_overview_renders_when_fiche_author_is_soft_deleted(): void
+    {
+        $admin = $this->createAdmin();
+        $initiative = Initiative::factory()->published()->create();
+        $author = User::factory()->create(['first_name' => 'Lotte', 'last_name' => 'Peeters']);
+
+        Fiche::factory()
+            ->for($initiative)
+            ->for($author)
+            ->published()
+            ->create(['title' => 'Fiche van verwijderde auteur']);
+
+        $author->delete();
+
+        $response = $this->actingAs($admin)->get(route('admin.fiches.index'));
+
+        $response->assertOk();
+        $response->assertSee('Fiche van verwijderde auteur');
+        $response->assertSee('Lotte Peeters');
+    }
+
     public function test_quadrant_filter_excludes_unscored_fiches(): void
     {
         $admin = $this->createAdmin();
