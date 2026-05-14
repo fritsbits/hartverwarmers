@@ -1,5 +1,6 @@
 <?php
 
+use App\Metrics\OnboardingFollowupResponseRateMetric;
 use App\Metrics\OnboardingInteraction30dRateMetric;
 use App\Metrics\OnboardingReturn7dRateMetric;
 use App\Metrics\OnboardingSignupCountMetric;
@@ -17,4 +18,5 @@ return [
     'onboarding_verification_rate' => OnboardingVerificationRateMetric::class,
     'onboarding_return_7d_rate' => OnboardingReturn7dRateMetric::class,
     'onboarding_interaction_30d_rate' => OnboardingInteraction30dRateMetric::class,
+    'onboarding_followup_response_rate' => OnboardingFollowupResponseRateMetric::class,
 ];
