@@ -54,6 +54,39 @@ class MetricRegistryTest extends TestCase
             }
         }
     }
+
+    public function test_compute_is_memoized_within_a_request(): void
+    {
+        CountingMetric::$calls = 0;
+        $registry = new MetricRegistry(['counter' => CountingMetric::class]);
+
+        $registry->compute('counter', 'month');
+        $registry->compute('counter', 'month');
+
+        $this->assertSame(1, CountingMetric::$calls);
+    }
+
+    public function test_historical_as_of_is_cached_across_instances(): void
+    {
+        CountingMetric::$calls = 0;
+        $past = CarbonImmutable::now()->subWeeks(2)->endOfWeek();
+
+        (new MetricRegistry(['counter' => CountingMetric::class]))->computeAsOf('counter', $past);
+        (new MetricRegistry(['counter' => CountingMetric::class]))->computeAsOf('counter', $past);
+
+        $this->assertSame(1, CountingMetric::$calls, 'A fully-elapsed week is immutable and must only be computed once.');
+    }
+
+    public function test_in_progress_week_is_not_persisted(): void
+    {
+        CountingMetric::$calls = 0;
+        $future = CarbonImmutable::now()->addWeek()->endOfWeek();
+
+        (new MetricRegistry(['counter' => CountingMetric::class]))->computeAsOf('counter', $future);
+        (new MetricRegistry(['counter' => CountingMetric::class]))->computeAsOf('counter', $future);
+
+        $this->assertSame(2, CountingMetric::$calls, 'An in-progress week is still accumulating data and must not be cached.');
+    }
 }
 
 class FakeMetric implements Metric
@@ -66,5 +99,24 @@ class FakeMetric implements Metric
     public function computeAsOf(CarbonImmutable $date): MetricValue
     {
         return new MetricValue(current: 42, unit: '%');
+    }
+}
+
+class CountingMetric implements Metric
+{
+    public static int $calls = 0;
+
+    public function compute(string $range): MetricValue
+    {
+        self::$calls++;
+
+        return new MetricValue(current: 1, unit: '%');
+    }
+
+    public function computeAsOf(CarbonImmutable $date): MetricValue
+    {
+        self::$calls++;
+
+        return new MetricValue(current: 1, unit: '%');
     }
 }
