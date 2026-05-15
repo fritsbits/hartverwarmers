@@ -18,15 +18,18 @@
 
     @if($hasNumbers)
         <div class="flex items-baseline gap-2">
-            <span class="text-sm text-[var(--color-text-tertiary)] tabular-nums">{{ $impact->baselineValue }}{{ $impact->unit }}</span>
-            <span class="text-xs text-[var(--color-text-tertiary)]">&rarr;</span>
-            <span class="text-2xl font-bold text-[var(--color-primary)] tabular-nums">{{ $impact->currentValue }}{{ $impact->unit }}</span>
             @if($impact->delta !== null && $impact->delta != 0)
-                <span class="text-sm font-semibold tabular-nums {{ $deltaColor }}">{{ $deltaSign }}{{ $impact->delta }}{{ $deltaUnit }}</span>
+                <span class="text-2xl font-bold tabular-nums {{ $deltaColor }}">{{ $deltaSign }}{{ $impact->delta }}{{ $deltaUnit }}</span>
+                <span class="text-sm text-[var(--color-text-secondary)] tabular-nums">sinds de start</span>
+            @else
+                <span class="text-sm font-semibold text-[var(--color-text-secondary)]">Nog geen verschil sinds de start</span>
             @endif
         </div>
+        <p class="text-xs text-[var(--color-text-secondary)] tabular-nums">
+            {{ $impact->baselineValue }}{{ $impact->unit }} &rarr; {{ $impact->currentValue }}{{ $impact->unit }}
+        </p>
     @else
-        <p class="text-sm text-[var(--color-text-tertiary)]">Nog geen meting beschikbaar.</p>
+        <p class="text-sm text-[var(--color-text-secondary)]">Nog geen meting beschikbaar.</p>
     @endif
 
     @if(! empty($impact->sparkline))
