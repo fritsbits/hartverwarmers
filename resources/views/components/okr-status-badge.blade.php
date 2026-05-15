@@ -3,14 +3,14 @@
 @php
     $labels = [
         // Objective statuses
-        'on_track' => 'On track',
-        'at_risk' => 'Bijgestuurd nodig',
+        'on_track' => 'Op koers',
+        'at_risk' => 'Bijsturen nodig',
         'paused' => 'Gepauzeerd',
         'done' => 'Afgerond',
         // Initiative statuses
-        'soon' => 'Soon',
-        'in_progress' => 'In progress',
-        'someday' => 'Someday',
+        'soon' => 'Binnenkort',
+        'in_progress' => 'Loopt',
+        'someday' => 'Ooit',
     ];
 
     $colors = [
