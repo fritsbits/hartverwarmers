@@ -2,6 +2,7 @@
 
 namespace App\Models\Okr;
 
+use App\Services\Okr\BaselineCapturer;
 use Database\Factories\Okr\InitiativeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,15 @@ class Initiative extends Model
     protected static function newFactory(): InitiativeFactory
     {
         return InitiativeFactory::new();
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (Initiative $initiative): void {
+            if ($initiative->started_at !== null) {
+                app(BaselineCapturer::class)->captureFor($initiative);
+            }
+        });
     }
 
     public function objective(): BelongsTo
