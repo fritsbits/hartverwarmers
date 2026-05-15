@@ -19,8 +19,17 @@ class Initiative extends Model
         'label',
         'status',
         'description',
+        'started_at',
         'position',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'started_at' => 'date',
+            'position' => 'integer',
+        ];
+    }
 
     protected static function newFactory(): InitiativeFactory
     {
