@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Fiche;
 use App\Models\Like;
+use App\Models\Okr\Initiative;
 use App\Models\Okr\Objective;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Models\UserInteraction;
+use App\Services\Okr\InitiativeImpact;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -91,6 +93,29 @@ class AdminDashboardController extends Controller
             }
         }
 
+        $initiativeSummaries = collect();
+        $plannedInitiatives = collect();
+
+        if ($tab === 'overzicht') {
+            $startedInitiatives = Initiative::query()
+                ->whereNotNull('started_at')
+                ->with(['objective.keyResults', 'baselines'])
+                ->orderByDesc('started_at')
+                ->get();
+
+            $plannedInitiatives = Initiative::query()
+                ->whereNull('started_at')
+                ->with('objective')
+                ->orderBy('position')
+                ->get();
+
+            $impact = app(InitiativeImpact::class);
+            $initiativeSummaries = $startedInitiatives->map(fn ($i) => [
+                'initiative' => $i,
+                'summary' => $impact->forInitiative($i),
+            ]);
+        }
+
         return view('admin.dashboard', [
             'tab' => $tab,
             'range' => $range,
@@ -124,6 +149,8 @@ class AdminDashboardController extends Controller
             'upcomingNewsletterSends' => $tab === 'nieuwsbrief' ? $this->upcomingNewsletterSends() : [],
             'lastNewsletterDigestMeta' => $tab === 'nieuwsbrief' ? $this->lastNewsletterDigestMeta() : null,
             'recentUnsubscribes' => $tab === 'nieuwsbrief' ? $this->recentUnsubscribes() : [],
+            'initiativeSummaries' => $initiativeSummaries,
+            'plannedInitiatives' => $plannedInitiatives,
         ]);
     }
 

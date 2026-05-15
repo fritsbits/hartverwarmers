@@ -1,15 +1,31 @@
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    @foreach($objectives as $obj)
-        <a href="?tab={{ $obj->slug }}&range={{ $range }}" class="block">
-            <flux:card class="hover:shadow-md transition-shadow">
-                <div class="flex items-start justify-between mb-2">
-                    <flux:heading size="lg" class="font-heading font-bold">{{ $obj->title }}</flux:heading>
-                    <x-okr-status-badge :status="$obj->status" size="sm" />
-                </div>
-                @if($obj->description)
-                    <p class="text-sm text-[var(--color-text-secondary)]">{{ $obj->description }}</p>
-                @endif
-            </flux:card>
-        </a>
-    @endforeach
-</div>
+@if($initiativeSummaries->isEmpty() && $plannedInitiatives->isEmpty())
+    <flux:card>
+        <p class="text-sm text-[var(--color-text-secondary)]">
+            Nog geen initiatieven geregistreerd. Voeg er een toe en stel een startdatum in om de impact op de OKR's te volgen.
+        </p>
+    </flux:card>
+@else
+    <div class="grid gap-4">
+        @foreach($initiativeSummaries as $entry)
+            @include('admin.partials.initiative-card', ['initiative' => $entry['initiative'], 'summary' => $entry['summary']])
+        @endforeach
+    </div>
+
+    @if($plannedInitiatives->isNotEmpty())
+        <section class="mt-10">
+            <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-3">Gepland</p>
+            <div class="grid gap-3">
+                @foreach($plannedInitiatives as $planned)
+                    <a href="?tab={{ $planned->objective->slug }}&init={{ $planned->slug }}" class="block">
+                        <flux:card class="hover:shadow-sm transition-shadow opacity-75">
+                            <div class="flex items-center justify-between gap-4">
+                                <flux:heading size="md" class="font-heading font-bold">{{ $planned->label }}</flux:heading>
+                                <span class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] whitespace-nowrap">{{ $planned->objective->title }} &rarr;</span>
+                            </div>
+                        </flux:card>
+                    </a>
+                @endforeach
+            </div>
+        </section>
+    @endif
+@endif

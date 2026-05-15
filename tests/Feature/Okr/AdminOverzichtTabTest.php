@@ -21,13 +21,14 @@ class AdminOverzichtTabTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.dashboard'));
 
         $response->assertOk();
-        $response->assertSee('Presentatiekwaliteit');
-        $response->assertSee('Onboarding');
-        $response->assertSee('Bedankjes');
-        $response->assertSee('Nieuwsbrief');
+        // New initiative tracker: seeded initiatives appear in Gepland section with their objective titles
+        $response->assertSee('AI-suggesties');
+        $response->assertSee('Onboarding-e-mails');
+        $response->assertSee('Nieuwsbrief-systeem');
+        $response->assertSee('Gepland');
     }
 
-    public function test_overzicht_renders_each_objective_as_link_card(): void
+    public function test_overzicht_renders_initiative_tracker(): void
     {
         $this->seed(OkrSeeder::class);
         $admin = User::factory()->create(['role' => 'admin']);
@@ -35,10 +36,11 @@ class AdminOverzichtTabTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'overzicht']));
 
         $response->assertOk();
-        $response->assertSee('?tab=presentatiekwaliteit', false);
-        $response->assertSee('?tab=onboarding', false);
-        $response->assertSee('?tab=bedankjes', false);
-        $response->assertSee('?tab=nieuwsbrief', false);
+        // Seeded initiatives have no started_at, so they appear in the Gepland section
+        $response->assertSee('Gepland');
+        $response->assertSee('AI-suggesties');
+        $response->assertSee('Onboarding-e-mails');
+        $response->assertSee('Nieuwsbrief-systeem');
     }
 
     public function test_unknown_tab_falls_back_to_overzicht(): void
@@ -49,7 +51,7 @@ class AdminOverzichtTabTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'nonexistent']));
 
         $response->assertOk();
-        $response->assertSee('Presentatiekwaliteit');  // overzicht renders all 4 objectives
+        $response->assertSee('Gepland');  // overzicht now renders initiative tracker
     }
 
     public function test_presentatiekwaliteit_tab_renders_kr_initiative_context(): void
