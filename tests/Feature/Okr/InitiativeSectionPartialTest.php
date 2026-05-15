@@ -36,7 +36,7 @@ class InitiativeSectionPartialTest extends TestCase
         $html = view('admin.partials.initiative-section', [
             'initiative' => $summary->initiative,
             'summary' => $summary,
-            'contextView' => 'okr-test-stub-context',
+            'contextView' => 'testing.okr-stub-context',
         ])->render();
 
         $this->assertStringContainsString('id="initiative-ai-suggesties"', $html);
