@@ -6,6 +6,7 @@ use Database\Factories\Okr\InitiativeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Initiative extends Model
 {
@@ -39,5 +40,10 @@ class Initiative extends Model
     public function objective(): BelongsTo
     {
         return $this->belongsTo(Objective::class, 'objective_id');
+    }
+
+    public function baselines(): HasMany
+    {
+        return $this->hasMany(InitiativeBaseline::class, 'initiative_id');
     }
 }
