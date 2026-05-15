@@ -70,4 +70,29 @@ class InitiativeSectionPartialTest extends TestCase
         $this->assertStringContainsString('id="initiative-iets"', $html);
         $this->assertStringNotContainsString('Context', $html);
     }
+
+    public function test_weeks_live_renders_as_whole_number_not_float(): void
+    {
+        $objective = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Onboarding']);
+        KeyResult::factory()->create([
+            'objective_id' => $objective->id,
+            'metric_key' => 'onboarding_signup_count',
+            'label' => 'Aanmeldingen',
+        ]);
+        $initiative = Initiative::create([
+            'objective_id' => $objective->id,
+            'slug' => 'recent',
+            'label' => 'Recent',
+            'status' => 'in_progress',
+            'started_at' => now()->subDays(3)->toDateString(),
+            'position' => 1,
+        ]);
+        $summary = app(InitiativeImpact::class)->forInitiative($initiative->fresh());
+
+        $html = view('admin.partials.initiative-section', ['initiative' => $summary->initiative, 'summary' => $summary, 'contextView' => null])->render();
+
+        // 3 days ago → 0 whole weeks, must NOT contain a decimal point in the weeks label
+        $this->assertStringContainsString('0 weken', $html);
+        $this->assertDoesNotMatchRegularExpression('/\d+\.\d+\s*we(ek|ken)/', $html);
+    }
 }

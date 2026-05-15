@@ -2,7 +2,7 @@
     /** @var \App\Models\Okr\Initiative $initiative */
     /** @var \App\Services\Okr\InitiativeImpactSummary $summary */
     /** @var string|null $contextView */
-    $weeksLive = $initiative->started_at?->diffInWeeks(now());
+    $weeksLive = $initiative->started_at !== null ? (int) $initiative->started_at->diffInWeeks(now()) : null;
 @endphp
 
 <section id="initiative-{{ $initiative->slug }}" class="scroll-mt-24">
