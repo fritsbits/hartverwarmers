@@ -45,6 +45,14 @@ Production runs on **Digital Ocean managed by Laravel Forge** (not Laravel Cloud
 
 **Before committing and pushing**, always check for untracked migrations: `git status database/migrations/`. Migrations must be committed together with the code that depends on them (models, controllers, scopes referencing new columns). Never push code that references a column without its migration — this causes production crashes.
 
+## Commit Granularity
+
+When committing on the user's behalf:
+
+- **Same request → one commit.** All files, tests, and copy/template fixes for one requested thing go together. No standalone `test:`/`fix:`/`polish:` commit for code committed alongside it.
+- **Revert test** sets the boundary for large requests: split only where one part could be reverted without breaking the other (≈2–3 commits, not 15). A class + its own template/route/test stay together.
+- **No commit-then-revert/fix.** Fold local unpushed iteration into one clean commit; history shows no back-and-forth. Genuinely unrelated drive-by fixes may stand alone.
+
 ## Architecture
 
 ### Domain Model
