@@ -12,14 +12,14 @@ class PresentationScoreAvgMetricTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_compute_as_of_ignores_fiches_published_after_date(): void
+    public function test_compute_as_of_ignores_fiches_created_after_date(): void
     {
         Fiche::factory()->published()->create([
-            'published_at' => '2026-03-01',
+            'created_at' => '2026-03-01',
             'presentation_score' => 60,
         ]);
         Fiche::factory()->published()->create([
-            'published_at' => '2026-04-15',
+            'created_at' => '2026-04-15',
             'presentation_score' => 90,
         ]);
 
@@ -32,7 +32,7 @@ class PresentationScoreAvgMetricTest extends TestCase
     public function test_compute_as_of_flags_low_data_when_no_fiches_pre_date(): void
     {
         Fiche::factory()->published()->create([
-            'published_at' => '2026-04-15',
+            'created_at' => '2026-04-15',
             'presentation_score' => 90,
         ]);
 

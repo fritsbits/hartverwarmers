@@ -27,7 +27,7 @@ class PresentationScoreAvgMetric implements Metric
     {
         $avg = Fiche::query()
             ->published()
-            ->where('published_at', '<=', $date)
+            ->where('created_at', '<=', $date)
             ->whereNotNull('presentation_score')
             ->avg('presentation_score');
 
