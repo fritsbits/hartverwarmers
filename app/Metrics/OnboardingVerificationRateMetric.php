@@ -5,7 +5,6 @@ namespace App\Metrics;
 use App\Models\User;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
-use BadMethodCallException;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -35,7 +34,23 @@ class OnboardingVerificationRateMetric implements Metric
 
     public function computeAsOf(CarbonImmutable $date): MetricValue
     {
-        throw new BadMethodCallException(static::class.'::computeAsOf not yet implemented.');
+        $base = $this->signupCohortQuery()
+            ->where('created_at', '>=', $date->subDays(29)->startOfDay())
+            ->where('created_at', '<=', $date);
+
+        $cohortCount = (clone $base)->count();
+        $verifiedCount = (clone $base)
+            ->whereNotNull('email_verified_at')
+            ->where('email_verified_at', '<=', $date)
+            ->count();
+
+        $rate = $cohortCount > 0 ? (int) round($verifiedCount / $cohortCount * 100) : 0;
+
+        return new MetricValue(
+            current: $rate,
+            unit: '%',
+            lowData: $cohortCount > 0 && $cohortCount < 5,
+        );
     }
 
     /** @return Builder<User> */
