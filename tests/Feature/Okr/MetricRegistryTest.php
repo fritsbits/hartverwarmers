@@ -6,6 +6,7 @@ use App\Models\Okr\KeyResult;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricRegistry;
 use App\Services\Okr\MetricValue;
+use Carbon\CarbonImmutable;
 use Database\Seeders\OkrSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use InvalidArgumentException;
@@ -58,6 +59,11 @@ class MetricRegistryTest extends TestCase
 class FakeMetric implements Metric
 {
     public function compute(string $range): MetricValue
+    {
+        return new MetricValue(current: 42, unit: '%');
+    }
+
+    public function computeAsOf(CarbonImmutable $date): MetricValue
     {
         return new MetricValue(current: 42, unit: '%');
     }
