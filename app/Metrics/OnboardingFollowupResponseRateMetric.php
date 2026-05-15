@@ -8,6 +8,8 @@ use App\Models\Like;
 use App\Models\OnboardingEmailLog;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
+use BadMethodCallException;
+use Carbon\CarbonImmutable;
 
 class OnboardingFollowupResponseRateMetric implements Metric
 {
@@ -87,5 +89,10 @@ class OnboardingFollowupResponseRateMetric implements Metric
         }
 
         return new MetricValue(current: (int) round($responded / $sentCount * 100), unit: '%');
+    }
+
+    public function computeAsOf(CarbonImmutable $date): MetricValue
+    {
+        throw new BadMethodCallException(static::class.'::computeAsOf not yet implemented.');
     }
 }

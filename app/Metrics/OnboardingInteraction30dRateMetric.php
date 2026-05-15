@@ -7,6 +7,8 @@ use App\Models\Like;
 use App\Models\User;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
+use BadMethodCallException;
+use Carbon\CarbonImmutable;
 
 class OnboardingInteraction30dRateMetric implements Metric
 {
@@ -81,5 +83,10 @@ class OnboardingInteraction30dRateMetric implements Metric
             unit: '%',
             lowData: $cohortCount > 0 && $cohortCount < 5,
         );
+    }
+
+    public function computeAsOf(CarbonImmutable $date): MetricValue
+    {
+        throw new BadMethodCallException(static::class.'::computeAsOf not yet implemented.');
     }
 }

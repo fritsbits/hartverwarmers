@@ -5,6 +5,8 @@ namespace App\Metrics;
 use App\Models\OnboardingEmailLog;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
+use BadMethodCallException;
+use Carbon\CarbonImmutable;
 
 class NewsletterActivationRateMetric implements Metric
 {
@@ -51,5 +53,10 @@ class NewsletterActivationRateMetric implements Metric
             unit: '%',
             lowData: $sent > 0 && $sent < 5,
         );
+    }
+
+    public function computeAsOf(CarbonImmutable $date): MetricValue
+    {
+        throw new BadMethodCallException(static::class.'::computeAsOf not yet implemented.');
     }
 }

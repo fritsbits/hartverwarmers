@@ -2,6 +2,7 @@
 
 namespace App\Services\Okr;
 
+use Carbon\CarbonImmutable;
 use InvalidArgumentException;
 
 class MetricRegistry
@@ -18,5 +19,14 @@ class MetricRegistry
         }
 
         return app($this->metrics[$key])->compute($range);
+    }
+
+    public function computeAsOf(string $key, CarbonImmutable $date): MetricValue
+    {
+        if (! isset($this->metrics[$key])) {
+            throw new InvalidArgumentException("Unknown metric: {$key}");
+        }
+
+        return app($this->metrics[$key])->computeAsOf($date);
     }
 }

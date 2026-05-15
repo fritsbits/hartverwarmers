@@ -5,6 +5,8 @@ namespace App\Metrics;
 use App\Models\User;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
+use BadMethodCallException;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
 class OnboardingVerificationRateMetric implements Metric
@@ -29,6 +31,11 @@ class OnboardingVerificationRateMetric implements Metric
             unit: '%',
             lowData: $cohortCount > 0 && $cohortCount < 5,
         );
+    }
+
+    public function computeAsOf(CarbonImmutable $date): MetricValue
+    {
+        throw new BadMethodCallException(static::class.'::computeAsOf not yet implemented.');
     }
 
     /** @return Builder<User> */

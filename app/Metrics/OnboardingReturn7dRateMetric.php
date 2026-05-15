@@ -5,6 +5,8 @@ namespace App\Metrics;
 use App\Models\User;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
+use BadMethodCallException;
+use Carbon\CarbonImmutable;
 
 class OnboardingReturn7dRateMetric implements Metric
 {
@@ -28,5 +30,10 @@ class OnboardingReturn7dRateMetric implements Metric
         $rate = $total > 0 ? (int) round($returned / $total * 100) : 0;
 
         return new MetricValue(current: $rate, unit: '%', lowData: $total > 0 && $total < 5);
+    }
+
+    public function computeAsOf(CarbonImmutable $date): MetricValue
+    {
+        throw new BadMethodCallException(static::class.'::computeAsOf not yet implemented.');
     }
 }

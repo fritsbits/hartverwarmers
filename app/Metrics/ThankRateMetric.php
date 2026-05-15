@@ -8,6 +8,8 @@ use App\Models\Like;
 use App\Models\UserInteraction;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
+use BadMethodCallException;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -48,6 +50,11 @@ class ThankRateMetric implements Metric
             unit: '%',
             lowData: $currentDownloads > 0 && $currentDownloads < 5,
         );
+    }
+
+    public function computeAsOf(CarbonImmutable $date): MetricValue
+    {
+        throw new BadMethodCallException(static::class.'::computeAsOf not yet implemented.');
     }
 
     /**

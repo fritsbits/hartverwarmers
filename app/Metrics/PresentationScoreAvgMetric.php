@@ -5,6 +5,8 @@ namespace App\Metrics;
 use App\Models\Fiche;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
+use BadMethodCallException;
+use Carbon\CarbonImmutable;
 
 class PresentationScoreAvgMetric implements Metric
 {
@@ -20,5 +22,10 @@ class PresentationScoreAvgMetric implements Metric
         }
 
         return new MetricValue(current: (int) round($avg), unit: '');
+    }
+
+    public function computeAsOf(CarbonImmutable $date): MetricValue
+    {
+        throw new BadMethodCallException(static::class.'::computeAsOf not yet implemented.');
     }
 }
