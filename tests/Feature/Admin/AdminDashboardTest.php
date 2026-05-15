@@ -1582,5 +1582,13 @@ class AdminDashboardTest extends TestCase
         foreach (['presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief'] as $slug) {
             $response->assertSee('?tab='.$slug.'&amp;range=quarter', escape: false);
         }
+
+        // Initiatives render as compact rows that deep-link into their objective tab…
+        $response->assertSee('Bedankflow na download');
+        $response->assertSee('?tab=bedankjes&amp;init=bedankflow-na-download', escape: false);
+        // …and NOT as the old per-KR detail cards (these exact strings live only
+        // in okr-kr-impact.blade.php, which the overview no longer renders).
+        $response->assertDontSee('sinds de start');
+        $response->assertDontSee('Nog geen meting beschikbaar.');
     }
 }

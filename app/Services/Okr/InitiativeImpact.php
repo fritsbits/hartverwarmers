@@ -21,7 +21,20 @@ class InitiativeImpact
         return new InitiativeImpactSummary($initiative, $krImpacts);
     }
 
-    private function buildKrImpact(Initiative $initiative, KeyResult $kr): InitiativeKrImpact
+    public function headlineImpact(Initiative $initiative): ?InitiativeKrImpact
+    {
+        $initiative->loadMissing(['objective.keyResults', 'baselines']);
+
+        $kr = $initiative->objective->keyResults->first();
+
+        if ($kr === null) {
+            return null;
+        }
+
+        return $this->buildKrImpact($initiative, $kr, withSparkline: false);
+    }
+
+    private function buildKrImpact(Initiative $initiative, KeyResult $kr, bool $withSparkline = true): InitiativeKrImpact
     {
         $baseline = $initiative->baselines->firstWhere('key_result_id', $kr->id);
         $current = $kr->metric_key
@@ -39,8 +52,8 @@ class InitiativeImpact
             $delta = (floor($rawDelta) == $rawDelta) ? (int) $rawDelta : round($rawDelta, 2);
         }
 
-        $sparkline = $this->sparkline($kr->metric_key, $initiative->started_at);
-        $markerIndex = $this->markerIndex($sparkline);
+        $sparkline = $withSparkline ? $this->sparkline($kr->metric_key, $initiative->started_at) : [];
+        $markerIndex = $withSparkline ? $this->markerIndex($sparkline) : 0;
 
         return new InitiativeKrImpact(
             krId: $kr->id,

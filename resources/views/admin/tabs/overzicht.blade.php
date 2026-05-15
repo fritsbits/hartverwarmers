@@ -15,9 +15,9 @@
         </p>
     </flux:card>
 @else
-    <div class="grid gap-4">
+    <div class="bg-white rounded-xl border border-[var(--color-border-light)] divide-y divide-[var(--color-border-light)]">
         @foreach($initiativeSummaries as $entry)
-            @include('admin.partials.initiative-card', ['initiative' => $entry['initiative'], 'summary' => $entry['summary']])
+            @include('admin.partials.initiative-row', ['initiative' => $entry['initiative'], 'headline' => $entry['headline']])
         @endforeach
     </div>
 
