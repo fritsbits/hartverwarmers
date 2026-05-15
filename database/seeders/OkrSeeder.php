@@ -58,6 +58,9 @@ class OkrSeeder extends Seeder
             'onboarding' => [
                 ['slug' => 'onboarding-emails', 'label' => 'Onboarding-e-mails'],
             ],
+            'bedankjes' => [
+                ['slug' => 'bedankflow-na-download', 'label' => 'Bedankflow na download', 'started_at' => '2026-05-11'],
+            ],
             'nieuwsbrief' => [
                 ['slug' => 'nieuwsbrief-systeem', 'label' => 'Nieuwsbrief-systeem'],
             ],

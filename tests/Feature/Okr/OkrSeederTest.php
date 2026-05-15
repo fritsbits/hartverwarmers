@@ -23,6 +23,25 @@ class OkrSeederTest extends TestCase
         );
     }
 
+    public function test_seeder_creates_bedankflow_na_download_initiative_under_bedankjes(): void
+    {
+        $this->seed(OkrSeeder::class);
+
+        $bedankjes = Objective::where('slug', 'bedankjes')->firstOrFail();
+
+        $this->assertSame(
+            ['bedankflow-na-download'],
+            $bedankjes->initiatives->pluck('slug')->all(),
+        );
+        $initiative = $bedankjes->initiatives->firstWhere('slug', 'bedankflow-na-download');
+
+        $this->assertSame('Bedankflow na download', $initiative->label);
+        $this->assertSame('2026-05-11', $initiative->started_at->toDateString());
+        // Seeder sets started_at, so the model's saved hook captures the baseline
+        // for the bedankjes objective's thank_rate KR — no backfill migration needed.
+        $this->assertGreaterThanOrEqual(1, $initiative->baselines()->count());
+    }
+
     public function test_onboarding_has_five_key_results_in_funnel_order(): void
     {
         $this->seed(OkrSeeder::class);
@@ -56,7 +75,7 @@ class OkrSeederTest extends TestCase
 
         $this->assertSame(4, Objective::count());
         $this->assertSame(8, KeyResult::count());
-        $this->assertSame(3, Initiative::count());
+        $this->assertSame(4, Initiative::count());
     }
 
     public function test_reseeding_overwrites_label_edits(): void
