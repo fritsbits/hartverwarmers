@@ -41,6 +41,11 @@
                     <flux:chart.axis.tick />
                 </flux:chart.axis>
             </flux:chart.svg>
+
+            <flux:chart.tooltip>
+                <flux:chart.tooltip.heading field="label" />
+                <flux:chart.tooltip.value field="value" label="{{ $impact->krLabel }}" suffix="{{ $impact->unit }}" />
+            </flux:chart.tooltip>
         </flux:chart>
 
         @if($startLabel)
