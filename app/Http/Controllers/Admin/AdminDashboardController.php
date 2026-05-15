@@ -114,6 +114,13 @@ class AdminDashboardController extends Controller
                 'initiative' => $i,
                 'summary' => $impact->forInitiative($i),
             ]);
+        } elseif ($currentObjective !== null) {
+            $currentObjective->load(['initiatives.baselines', 'initiatives.objective.keyResults']);
+            $impact = app(InitiativeImpact::class);
+            $initiativeSummaries = $currentObjective->initiatives->map(fn ($i) => [
+                'initiative' => $i,
+                'summary' => $impact->forInitiative($i),
+            ]);
         }
 
         return view('admin.dashboard', [
