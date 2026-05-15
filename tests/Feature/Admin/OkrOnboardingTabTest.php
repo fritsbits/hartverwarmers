@@ -20,7 +20,7 @@ class OkrOnboardingTabTest extends TestCase
 
     public function test_renders_onboarding_emails_initiative_section(): void
     {
-        $obj = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Onboarding']);
+        $obj = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Activatie']);
         KeyResult::factory()->create([
             'objective_id' => $obj->id,
             'metric_key' => 'onboarding_signup_count',
@@ -46,7 +46,7 @@ class OkrOnboardingTabTest extends TestCase
 
     public function test_tab_without_initiatives_shows_empty_state(): void
     {
-        $obj = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Onboarding']);
+        $obj = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Activatie']);
         KeyResult::factory()->create(['objective_id' => $obj->id, 'metric_key' => 'onboarding_signup_count', 'label' => 'Aanmeldingen']);
 
         $response = $this->actingAs($this->admin())->get('/admin?tab=onboarding');

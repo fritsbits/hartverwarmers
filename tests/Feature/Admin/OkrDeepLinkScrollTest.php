@@ -20,7 +20,7 @@ class OkrDeepLinkScrollTest extends TestCase
 
     public function test_init_param_renders_scroll_alpine_block(): void
     {
-        $obj = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Onboarding']);
+        $obj = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Activatie']);
         KeyResult::factory()->create(['objective_id' => $obj->id, 'metric_key' => 'onboarding_signup_count', 'label' => 'Aanmeldingen']);
         Initiative::create([
             'objective_id' => $obj->id, 'slug' => 'onboarding-emails', 'label' => 'Onboarding-e-mails',
@@ -35,7 +35,7 @@ class OkrDeepLinkScrollTest extends TestCase
 
     public function test_no_init_param_renders_no_scroll_block(): void
     {
-        $obj = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Onboarding']);
+        $obj = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Activatie']);
         KeyResult::factory()->create(['objective_id' => $obj->id, 'metric_key' => 'onboarding_signup_count', 'label' => 'Aanmeldingen']);
 
         $response = $this->actingAs($this->admin())->get('/admin?tab=onboarding');

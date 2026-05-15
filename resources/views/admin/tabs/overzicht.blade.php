@@ -1,3 +1,13 @@
+@if(($objectiveStats ?? collect())->isNotEmpty())
+    <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-3">Objectieven</p>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        @foreach($objectiveStats as $stat)
+            @include('admin.partials.objective-stat-card', ['stat' => $stat, 'range' => $range])
+        @endforeach
+    </div>
+@endif
+
+<p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-3">Initiatieven</p>
 @if($initiativeSummaries->isEmpty() && $plannedInitiatives->isEmpty())
     <flux:card>
         <p class="text-sm text-[var(--color-text-secondary)]">

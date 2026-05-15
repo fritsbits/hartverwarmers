@@ -12,6 +12,7 @@ use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Models\UserInteraction;
 use App\Services\Okr\InitiativeImpact;
+use App\Services\Okr\ObjectiveStatBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -83,13 +84,17 @@ class AdminDashboardController extends Controller
         $signupTrend = $tab === 'onboarding' ? $this->signupTrend($range) : [];
         $signupStats = $tab === 'onboarding' ? $this->signupStats($range) : [];
 
-        $objectives = Objective::orderBy('position')->get();
+        $objectives = Objective::with('keyResults')->orderBy('position')->get();
+
+        $objectiveStats = $tab === 'overzicht'
+            ? app(ObjectiveStatBuilder::class)->build($objectives, $range)
+            : collect();
 
         $currentObjective = null;
         if ($tab !== 'overzicht') {
             $currentObjective = $objectives->firstWhere('slug', $tab);
             if ($currentObjective) {
-                $currentObjective->load(['keyResults', 'initiatives']);
+                $currentObjective->load(['initiatives.baselines', 'initiatives.objective.keyResults']);
             }
         }
 
@@ -115,7 +120,6 @@ class AdminDashboardController extends Controller
                 'summary' => $impact->forInitiative($i),
             ]);
         } elseif ($currentObjective !== null) {
-            $currentObjective->load(['initiatives.baselines', 'initiatives.objective.keyResults']);
             $impact = app(InitiativeImpact::class);
             $initiativeSummaries = $currentObjective->initiatives->map(fn ($i) => [
                 'initiative' => $i,
@@ -127,6 +131,7 @@ class AdminDashboardController extends Controller
             'tab' => $tab,
             'range' => $range,
             'objectives' => $objectives,
+            'objectiveStats' => $objectiveStats,
             'currentObjective' => $currentObjective,
             'rangeLabel' => $rangeLabel,
             'weeklyTrend' => $weeklyTrend,

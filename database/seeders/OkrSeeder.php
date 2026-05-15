@@ -12,10 +12,10 @@ class OkrSeeder extends Seeder
     public function run(): void
     {
         $objectives = [
-            ['slug' => 'presentatiekwaliteit', 'title' => 'Presentatiekwaliteit', 'position' => 1],
-            ['slug' => 'onboarding', 'title' => 'Onboarding', 'position' => 2],
-            ['slug' => 'bedankjes', 'title' => 'Bedankjes', 'position' => 3],
-            ['slug' => 'nieuwsbrief', 'title' => 'Nieuwsbrief', 'position' => 4],
+            ['slug' => 'presentatiekwaliteit', 'title' => 'Fichekwaliteit', 'position' => 1],
+            ['slug' => 'onboarding', 'title' => 'Activatie', 'position' => 2],
+            ['slug' => 'bedankjes', 'title' => 'Interactie', 'position' => 3],
+            ['slug' => 'nieuwsbrief', 'title' => 'Retentie', 'position' => 4],
         ];
 
         foreach ($objectives as $data) {

@@ -529,10 +529,10 @@ class AdminDashboardTest extends TestCase
 
         $response->assertOk();
         // 'aanmeldingen' is no longer in the valid tab list → falls back to overzicht.
-        // The overview shows all 4 objectives as cards; 'Bedankjes' is unique to that view
+        // The overview shows all 4 objectives as cards; 'Interactie' is unique to that view
         // and would NOT appear if we somehow rendered an old aanmeldingen tab content.
-        $response->assertSee('Bedankjes');
-        $response->assertSee('Nieuwsbrief');
+        $response->assertSee('Interactie');
+        $response->assertSee('Retentie');
     }
 
     public function test_default_tab_defaults_to_month_range(): void
@@ -1563,5 +1563,24 @@ class AdminDashboardTest extends TestCase
         $this->assertEquals(50, $stats['currentRate']);
         $this->assertEquals(25, $stats['previousRate']);
         $this->assertEquals(25, $stats['delta']);
+    }
+
+    public function test_overzicht_renders_four_objective_stat_cards_with_range_preserving_links(): void
+    {
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)
+            ->get(route('admin.dashboard', ['tab' => 'overzicht', 'range' => 'quarter']));
+
+        $response->assertOk();
+        $response->assertSee('Objectieven');
+        $response->assertSee('Initiatieven');
+        foreach (['Fichekwaliteit', 'Activatie', 'Interactie', 'Retentie'] as $title) {
+            $response->assertSee($title);
+        }
+        foreach (['presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief'] as $slug) {
+            $response->assertSee('?tab='.$slug.'&amp;range=quarter', escape: false);
+        }
     }
 }

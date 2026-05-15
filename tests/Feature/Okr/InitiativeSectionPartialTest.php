@@ -15,7 +15,7 @@ class InitiativeSectionPartialTest extends TestCase
 
     public function test_section_renders_anchor_header_impact_and_context(): void
     {
-        $objective = Objective::factory()->create(['slug' => 'presentatiekwaliteit', 'title' => 'Presentatiekwaliteit']);
+        $objective = Objective::factory()->create(['slug' => 'presentatiekwaliteit', 'title' => 'Fichekwaliteit']);
         KeyResult::factory()->create([
             'objective_id' => $objective->id,
             'metric_key' => 'presentation_score_avg',
@@ -49,7 +49,7 @@ class InitiativeSectionPartialTest extends TestCase
 
     public function test_section_without_context_view_renders_no_context_block(): void
     {
-        $objective = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Bedankjes']);
+        $objective = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Interactie']);
         KeyResult::factory()->create(['objective_id' => $objective->id, 'metric_key' => 'thank_rate', 'label' => 'Bedankratio']);
         $initiative = Initiative::create([
             'objective_id' => $objective->id,
@@ -73,7 +73,7 @@ class InitiativeSectionPartialTest extends TestCase
 
     public function test_weeks_live_renders_as_whole_number_not_float(): void
     {
-        $objective = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Onboarding']);
+        $objective = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Activatie']);
         KeyResult::factory()->create([
             'objective_id' => $objective->id,
             'metric_key' => 'onboarding_signup_count',

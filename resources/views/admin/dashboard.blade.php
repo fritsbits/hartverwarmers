@@ -28,7 +28,7 @@
     </div>
 
     @if($tab === 'overzicht')
-        @include('admin.tabs.overzicht', ['objectives' => $objectives, 'range' => $range])
+        @include('admin.tabs.overzicht', ['objectives' => $objectives, 'range' => $range, 'objectiveStats' => $objectiveStats])
     @elseif(view()->exists('admin.tabs.' . $tab))
         @include('admin.tabs.' . $tab)
     @endif

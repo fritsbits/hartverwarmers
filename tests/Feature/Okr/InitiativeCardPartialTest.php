@@ -15,7 +15,7 @@ class InitiativeCardPartialTest extends TestCase
 
     public function test_card_renders_initiative_title_objective_chip_and_deep_link(): void
     {
-        $objective = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Onboarding']);
+        $objective = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Activatie']);
         KeyResult::factory()->create([
             'objective_id' => $objective->id,
             'metric_key' => 'onboarding_signup_count',
@@ -40,7 +40,7 @@ class InitiativeCardPartialTest extends TestCase
 
         $this->assertStringContainsString('Onboarding-e-mails', $html);
         $this->assertStringContainsString('Drip campagne', $html);
-        $this->assertStringContainsString('Onboarding', $html); // objective chip
+        $this->assertStringContainsString('Activatie', $html); // objective chip
         $this->assertStringContainsString('?tab=onboarding&amp;init=onboarding-emails', $html);
         $this->assertStringContainsString('Aanmeldingen', $html); // KR impact rendered
         $this->assertStringContainsString('Live sinds', $html);
@@ -48,7 +48,7 @@ class InitiativeCardPartialTest extends TestCase
 
     public function test_weeks_live_renders_as_whole_number_not_float(): void
     {
-        $objective = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Onboarding']);
+        $objective = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Activatie']);
         KeyResult::factory()->create([
             'objective_id' => $objective->id,
             'metric_key' => 'onboarding_signup_count',

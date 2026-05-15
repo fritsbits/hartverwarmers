@@ -20,7 +20,7 @@ class OkrPresentatiekwaliteitTabTest extends TestCase
 
     public function test_renders_initiative_section_with_anchor_and_impact(): void
     {
-        $obj = Objective::factory()->create(['slug' => 'presentatiekwaliteit', 'title' => 'Presentatiekwaliteit']);
+        $obj = Objective::factory()->create(['slug' => 'presentatiekwaliteit', 'title' => 'Fichekwaliteit']);
         KeyResult::factory()->create([
             'objective_id' => $obj->id,
             'metric_key' => 'presentation_score_avg',
@@ -46,7 +46,7 @@ class OkrPresentatiekwaliteitTabTest extends TestCase
 
     public function test_tab_without_initiatives_shows_empty_state(): void
     {
-        $obj = Objective::factory()->create(['slug' => 'presentatiekwaliteit', 'title' => 'Presentatiekwaliteit']);
+        $obj = Objective::factory()->create(['slug' => 'presentatiekwaliteit', 'title' => 'Fichekwaliteit']);
         KeyResult::factory()->create(['objective_id' => $obj->id, 'metric_key' => 'presentation_score_avg', 'label' => 'Score']);
 
         $response = $this->actingAs($this->admin())->get('/admin?tab=presentatiekwaliteit');

@@ -69,7 +69,7 @@ class OkrSeederTest extends TestCase
 
         $this->seed(OkrSeeder::class);
 
-        $this->assertSame('Bedankjes', Objective::where('slug', 'bedankjes')->value('title'));
+        $this->assertSame('Interactie', Objective::where('slug', 'bedankjes')->value('title'));
         $this->assertSame('Bedankratio', KeyResult::where('metric_key', 'thank_rate')->value('label'));
         $this->assertSame('AI-suggesties', Initiative::where('slug', 'ai-suggesties')->value('label'));
     }

@@ -20,7 +20,7 @@ class OkrNieuwsbriefTabTest extends TestCase
 
     public function test_renders_nieuwsbrief_systeem_initiative_section_with_context(): void
     {
-        $obj = Objective::factory()->create(['slug' => 'nieuwsbrief', 'title' => 'Nieuwsbrief']);
+        $obj = Objective::factory()->create(['slug' => 'nieuwsbrief', 'title' => 'Retentie']);
         KeyResult::factory()->create([
             'objective_id' => $obj->id,
             'metric_key' => 'newsletter_activation_rate',
@@ -46,7 +46,7 @@ class OkrNieuwsbriefTabTest extends TestCase
 
     public function test_tab_without_initiatives_shows_empty_state(): void
     {
-        $obj = Objective::factory()->create(['slug' => 'nieuwsbrief', 'title' => 'Nieuwsbrief']);
+        $obj = Objective::factory()->create(['slug' => 'nieuwsbrief', 'title' => 'Retentie']);
         KeyResult::factory()->create(['objective_id' => $obj->id, 'metric_key' => 'newsletter_activation_rate', 'label' => 'Activatie na nieuwsbrief']);
 
         $response = $this->actingAs($this->admin())->get('/admin?tab=nieuwsbrief');

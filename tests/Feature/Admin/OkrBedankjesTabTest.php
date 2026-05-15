@@ -20,7 +20,7 @@ class OkrBedankjesTabTest extends TestCase
 
     public function test_renders_empty_state_and_keeps_tab_level_context_when_no_initiative(): void
     {
-        $obj = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Bedankjes']);
+        $obj = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Interactie']);
         KeyResult::factory()->create([
             'objective_id' => $obj->id,
             'metric_key' => 'thank_rate',
@@ -37,7 +37,7 @@ class OkrBedankjesTabTest extends TestCase
 
     public function test_renders_initiative_section_when_one_exists(): void
     {
-        $obj = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Bedankjes']);
+        $obj = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Interactie']);
         KeyResult::factory()->create(['objective_id' => $obj->id, 'metric_key' => 'thank_rate', 'label' => 'Bedankratio']);
         Initiative::create([
             'objective_id' => $obj->id,
