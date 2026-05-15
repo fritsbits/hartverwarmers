@@ -5,7 +5,6 @@ namespace App\Metrics;
 use App\Models\User;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
-use BadMethodCallException;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -36,7 +35,15 @@ class OnboardingSignupCountMetric implements Metric
 
     public function computeAsOf(CarbonImmutable $date): MetricValue
     {
-        throw new BadMethodCallException(static::class.'::computeAsOf not yet implemented.');
+        $count = $this->signupCohortQuery()
+            ->where('created_at', '>=', $date->subDays(29)->startOfDay())
+            ->where('created_at', '<=', $date)
+            ->count();
+
+        return new MetricValue(
+            current: $count,
+            lowData: $count > 0 && $count < 5,
+        );
     }
 
     /** @return Builder<User> */
