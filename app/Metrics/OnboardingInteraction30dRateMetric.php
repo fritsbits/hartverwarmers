@@ -7,7 +7,6 @@ use App\Models\Like;
 use App\Models\User;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
-use BadMethodCallException;
 use Carbon\CarbonImmutable;
 
 class OnboardingInteraction30dRateMetric implements Metric
@@ -87,6 +86,67 @@ class OnboardingInteraction30dRateMetric implements Metric
 
     public function computeAsOf(CarbonImmutable $date): MetricValue
     {
-        throw new BadMethodCallException(static::class.'::computeAsOf not yet implemented.');
+        $cohort = User::query()
+            ->whereNotNull('email_verified_at')
+            ->where('email_verified_at', '<=', $date)
+            ->where('role', '!=', 'admin')
+            ->where('created_at', '>=', $date->subDays(29)->startOfDay())
+            ->where('created_at', '<=', $date)
+            ->get(['id', 'email_verified_at']);
+
+        $cohortCount = $cohort->count();
+
+        if ($cohortCount === 0) {
+            return new MetricValue(current: 0, unit: '%');
+        }
+
+        $userIds = $cohort->pluck('id');
+        $usersById = $cohort->keyBy('id');
+
+        $usersWithKudos = Like::query()
+            ->whereIn('user_id', $userIds)
+            ->where('type', 'kudos')
+            ->where('created_at', '<=', $date)
+            ->get(['user_id', 'created_at'])
+            ->filter(function ($like) use ($usersById) {
+                $user = $usersById->get($like->user_id);
+
+                if (! $user) {
+                    return false;
+                }
+
+                $diff = $like->created_at->diffInDays($user->email_verified_at);
+
+                return $diff >= -30 && $diff <= 0;
+            })
+            ->pluck('user_id')
+            ->unique();
+
+        $usersWithComment = Comment::query()
+            ->whereIn('user_id', $userIds)
+            ->where('created_at', '<=', $date)
+            ->get(['user_id', 'created_at'])
+            ->filter(function ($comment) use ($usersById) {
+                $user = $usersById->get($comment->user_id);
+
+                if (! $user) {
+                    return false;
+                }
+
+                $diff = $comment->created_at->diffInDays($user->email_verified_at);
+
+                return $diff >= -30 && $diff <= 0;
+            })
+            ->pluck('user_id')
+            ->unique();
+
+        $interactorCount = $usersWithKudos->merge($usersWithComment)->unique()->count();
+        $rate = (int) round($interactorCount / $cohortCount * 100);
+
+        return new MetricValue(
+            current: $rate,
+            unit: '%',
+            lowData: $cohortCount > 0 && $cohortCount < 5,
+        );
     }
 }
