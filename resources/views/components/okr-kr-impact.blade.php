@@ -36,6 +36,10 @@
                 <flux:chart.axis axis="x" field="label">
                     <flux:chart.axis.tick />
                 </flux:chart.axis>
+                <flux:chart.axis axis="y">
+                    <flux:chart.axis.grid class="stroke-[var(--color-border-light)]" />
+                    <flux:chart.axis.tick />
+                </flux:chart.axis>
             </flux:chart.svg>
         </flux:chart>
 
