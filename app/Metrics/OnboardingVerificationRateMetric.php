@@ -5,6 +5,7 @@ namespace App\Metrics;
 use App\Models\User;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 
 class OnboardingVerificationRateMetric implements Metric
@@ -22,6 +23,27 @@ class OnboardingVerificationRateMetric implements Metric
 
         $cohortCount = (clone $cohort)->count();
         $verifiedCount = (clone $cohort)->whereNotNull('email_verified_at')->count();
+        $rate = $cohortCount > 0 ? (int) round($verifiedCount / $cohortCount * 100) : 0;
+
+        return new MetricValue(
+            current: $rate,
+            unit: '%',
+            lowData: $cohortCount > 0 && $cohortCount < 5,
+        );
+    }
+
+    public function computeAsOf(CarbonImmutable $date): MetricValue
+    {
+        $base = $this->signupCohortQuery()
+            ->where('created_at', '>=', $date->subDays(29)->startOfDay())
+            ->where('created_at', '<=', $date);
+
+        $cohortCount = (clone $base)->count();
+        $verifiedCount = (clone $base)
+            ->whereNotNull('email_verified_at')
+            ->where('email_verified_at', '<=', $date)
+            ->count();
+
         $rate = $cohortCount > 0 ? (int) round($verifiedCount / $cohortCount * 100) : 0;
 
         return new MetricValue(

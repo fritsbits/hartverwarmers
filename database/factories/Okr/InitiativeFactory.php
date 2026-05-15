@@ -24,7 +24,15 @@ class InitiativeFactory extends Factory
             'label' => ucfirst($label),
             'status' => 'in_progress',
             'description' => null,
+            'started_at' => null,
             'position' => 0,
         ];
+    }
+
+    public function started(?string $date = null): self
+    {
+        return $this->state(fn () => [
+            'started_at' => $date ?? '2026-05-01',
+        ]);
     }
 }

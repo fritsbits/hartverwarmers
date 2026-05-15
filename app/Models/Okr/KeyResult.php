@@ -6,6 +6,7 @@ use Database\Factories\Okr\KeyResultFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class KeyResult extends Model
 {
@@ -38,5 +39,10 @@ class KeyResult extends Model
     public function objective(): BelongsTo
     {
         return $this->belongsTo(Objective::class, 'objective_id');
+    }
+
+    public function baselines(): HasMany
+    {
+        return $this->hasMany(InitiativeBaseline::class, 'key_result_id');
     }
 }

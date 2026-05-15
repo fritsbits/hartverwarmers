@@ -8,6 +8,7 @@ use App\Models\Like;
 use App\Models\UserInteraction;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricValue;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -50,15 +51,32 @@ class ThankRateMetric implements Metric
         );
     }
 
+    public function computeAsOf(CarbonImmutable $date): MetricValue
+    {
+        $since = $date->subDays(29)->startOfDay();
+        $rows = $this->thankedRows(Carbon::instance($since), Carbon::instance($date));
+
+        $downloads = $rows->count();
+        $thanked = $rows->filter(fn ($row) => $row['is_thanked'])->count();
+        $rate = $downloads > 0 ? (int) round($thanked / $downloads * 100) : 0;
+
+        return new MetricValue(
+            current: $rate,
+            unit: '%',
+            lowData: $downloads > 0 && $downloads < 5,
+        );
+    }
+
     /**
      * @return Collection<int, array{user_id:int, fiche_id:int, downloaded_at: Carbon, is_thanked: bool}>
      */
-    private function thankedRows(?Carbon $since): Collection
+    private function thankedRows(?Carbon $since, ?Carbon $until = null): Collection
     {
         $downloads = UserInteraction::query()
             ->where('interactable_type', Fiche::class)
             ->where('type', 'download')
             ->when($since !== null, fn ($q) => $q->where('created_at', '>=', $since))
+            ->when($until !== null, fn ($q) => $q->where('created_at', '<=', $until))
             ->get(['user_id', 'interactable_id', 'created_at']);
 
         if ($downloads->isEmpty()) {
@@ -74,6 +92,7 @@ class ThankRateMetric implements Metric
             ->where('likeable_type', Fiche::class)
             ->where('type', 'kudos')
             ->where('count', '>', 0)
+            ->when($until !== null, fn ($q) => $q->where('created_at', '<=', $until))
             ->get(['user_id', 'likeable_id', 'created_at'])
             ->groupBy(fn ($row) => $row->user_id.':'.$row->likeable_id)
             ->map(fn ($rows) => $rows->min('created_at'));
@@ -82,6 +101,7 @@ class ThankRateMetric implements Metric
             ->whereIn('user_id', $userIds)
             ->whereIn('commentable_id', $ficheIds)
             ->where('commentable_type', Fiche::class)
+            ->when($until !== null, fn ($q) => $q->where('created_at', '<=', $until))
             ->get(['user_id', 'commentable_id', 'created_at'])
             ->groupBy(fn ($row) => $row->user_id.':'.$row->commentable_id)
             ->map(fn ($rows) => $rows->min('created_at'));

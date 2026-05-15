@@ -33,4 +33,24 @@
         @include('admin.tabs.' . $tab)
     @endif
 
+    @php
+        $initParam = preg_replace('/[^a-z0-9\-]/i', '', (string) request()->query('init'));
+    @endphp
+
+    @if($initParam !== '')
+        <div
+            x-data
+            x-init="
+                $nextTick(() => {
+                    const target = document.getElementById('initiative-{{ $initParam }}');
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        target.classList.add('ring-2', 'ring-[var(--color-primary)]', 'rounded-xl');
+                        setTimeout(() => target.classList.remove('ring-2', 'ring-[var(--color-primary)]', 'rounded-xl'), 1500);
+                    }
+                })
+            "
+        ></div>
+    @endif
+
 </x-sidebar-layout>
