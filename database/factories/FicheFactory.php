@@ -37,6 +37,7 @@ class FicheFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'published' => true,
+            'published_at' => now(),
         ]);
     }
 
