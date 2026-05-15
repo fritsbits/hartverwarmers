@@ -32,3 +32,4 @@ Schedule::command('newsletter:send-monthly-cohort')
 Schedule::command('onboarding:send-emails')
     ->dailyAt('11:30')
     ->timezone('Europe/Brussels');
+Schedule::command('okr:warm-metrics')->hourly()->withoutOverlapping();

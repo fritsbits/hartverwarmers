@@ -9,12 +9,21 @@ use App\Services\Okr\MetricValue;
 use Carbon\CarbonImmutable;
 use Database\Seeders\OkrSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use InvalidArgumentException;
 use Tests\TestCase;
 
 class MetricRegistryTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // array cache driver in tests → flush is process-isolated and safe
+        Cache::flush();
+        CountingMetric::$calls = 0;
+    }
 
     public function test_compute_dispatches_to_registered_class(): void
     {
@@ -77,7 +86,7 @@ class MetricRegistryTest extends TestCase
         $this->assertSame(1, CountingMetric::$calls, 'A fully-elapsed week is immutable and must only be computed once.');
     }
 
-    public function test_in_progress_week_is_not_persisted(): void
+    public function test_in_progress_week_is_cached_with_short_ttl(): void
     {
         CountingMetric::$calls = 0;
         $future = CarbonImmutable::now()->addWeek()->endOfWeek();
@@ -85,7 +94,29 @@ class MetricRegistryTest extends TestCase
         (new MetricRegistry(['counter' => CountingMetric::class]))->computeAsOf('counter', $future);
         (new MetricRegistry(['counter' => CountingMetric::class]))->computeAsOf('counter', $future);
 
-        $this->assertSame(2, CountingMetric::$calls, 'An in-progress week is still accumulating data and must not be cached.');
+        $this->assertSame(1, CountingMetric::$calls, 'An in-progress week is cached with a short TTL; the warm command re-primes hourly.');
+    }
+
+    public function test_compute_is_cached_across_instances(): void
+    {
+        CountingMetric::$calls = 0;
+
+        (new MetricRegistry(['counter' => CountingMetric::class]))->compute('counter', 'month');
+        (new MetricRegistry(['counter' => CountingMetric::class]))->compute('counter', 'month');
+
+        $this->assertSame(1, CountingMetric::$calls, 'compute() must be cached across requests, not only memoized per instance.');
+    }
+
+    public function test_current_week_as_of_is_cached_across_instances(): void
+    {
+        CountingMetric::$calls = 0;
+        // A non-past date exercises the previously-live cachedAsOf() branch.
+        $notPast = CarbonImmutable::now()->addDay();
+
+        (new MetricRegistry(['counter' => CountingMetric::class]))->computeAsOf('counter', $notPast);
+        (new MetricRegistry(['counter' => CountingMetric::class]))->computeAsOf('counter', $notPast);
+
+        $this->assertSame(1, CountingMetric::$calls, 'The in-progress / non-past week must now be cached too.');
     }
 }
 

@@ -16,6 +16,15 @@ class MetricRegistry
     private const HISTORICAL_TTL_DAYS = 30;
 
     /**
+     * compute() and the in-progress-week computeAsOf are display-only — no
+     * write/decision path reads them (BaselineCapturer uses
+     * computeAsOf($started_at), a fixed date). Freshness is irrelevant for
+     * the admin-only OKR dashboard; the hourly okr:warm-metrics command
+     * re-primes well inside this window.
+     */
+    private const COMPUTE_TTL_HOURS = 12;
+
+    /**
      * Request-scoped memo. The registry is bound as a singleton, so a given
      * (key, range) / (key, date) is computed at most once per request. This
      * collapses the duplication where multiple initiatives sharing an
@@ -32,7 +41,11 @@ class MetricRegistry
 
     public function compute(string $key, string $range): MetricValue
     {
-        return $this->memo['c|'.$key.'|'.$range] ??= $this->resolve($key)->compute($range);
+        return $this->memo['c|'.$key.'|'.$range] ??= Cache::remember(
+            'okr.compute.'.$key.'.'.$range,
+            now()->addHours(self::COMPUTE_TTL_HOURS),
+            fn () => $this->resolve($key)->compute($range),
+        );
     }
 
     public function computeAsOf(string $key, CarbonImmutable $date): MetricValue
@@ -42,16 +55,16 @@ class MetricRegistry
 
     private function cachedAsOf(string $key, CarbonImmutable $date): MetricValue
     {
-        // The in-progress week is still accumulating data — only persist
-        // cutoffs whose week has fully ended (the sparkline's dominant cost,
-        // and the part that otherwise grows unbounded as initiatives age).
-        if (! $date->isPast()) {
-            return $this->resolve($key)->computeAsOf($date);
-        }
+        // A fully-elapsed past week is immutable → long TTL. The in-progress
+        // week still accumulates, but freshness is irrelevant here and the
+        // warm command re-primes hourly → cache it with the short TTL too.
+        $ttl = $date->isPast()
+            ? now()->addDays(self::HISTORICAL_TTL_DAYS)
+            : now()->addHours(self::COMPUTE_TTL_HOURS);
 
         return Cache::remember(
             'okr.asof.'.$key.'.'.$date->format('Y-m-d'),
-            now()->addDays(self::HISTORICAL_TTL_DAYS),
+            $ttl,
             fn () => $this->resolve($key)->computeAsOf($date),
         );
     }
