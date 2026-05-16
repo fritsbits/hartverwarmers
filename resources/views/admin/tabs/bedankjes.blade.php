@@ -4,7 +4,7 @@
             @foreach($currentObjective->keyResults as $kr)
                 <x-okr-kr :kr="$kr" :range="$range">
                     @if($kr->metric_key === 'thank_rate')
-                        @include('admin.partials.fragments.thank-rate-trend')
+                        @include('admin.partials.fragments.thank-rate-trend', ['kr' => $kr])
                     @endif
                 </x-okr-kr>
             @endforeach

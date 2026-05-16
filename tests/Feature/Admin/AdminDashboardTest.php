@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Models\Comment;
 use App\Models\Fiche;
 use App\Models\Like;
+use App\Models\Okr\KeyResult;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Models\UserInteraction;
@@ -213,6 +214,36 @@ class AdminDashboardTest extends TestCase
 
         $response->assertOk();
         $this->assertEquals(40, $response->viewData('trendDelta'));
+    }
+
+    public function test_presentation_trend_labels_completed_vs_in_progress_period_with_target(): void
+    {
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        KeyResult::query()
+            ->where('metric_key', 'presentation_score_avg')
+            ->update(['target_value' => 50]);
+
+        // Two fully-elapsed months + the in-progress current month.
+        Fiche::factory()->published()->withPresentationScore(60)->create([
+            'quality_assessed_at' => now()->subMonths(2)->startOfMonth()->addDays(5),
+        ]);
+        Fiche::factory()->published()->withPresentationScore(40)->create([
+            'quality_assessed_at' => now()->subMonth()->startOfMonth()->addDays(5),
+        ]);
+        Fiche::factory()->published()->withPresentationScore(10)->create([
+            'quality_assessed_at' => now()->startOfMonth()->addDay(),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard').'?tab=presentatiekwaliteit&range=alltime');
+
+        $response->assertOk();
+        $response->assertSee('Laatste volledige maand');           // P2/P3: completed period reported
+        $response->assertSee('Lopende maand');                      // P3: in-progress period flagged
+        $response->assertSee('Stippellijn = doel');                 // P1: target line explained
+        $response->assertSee('Doel');                               // P1: KR header target
+        $response->assertDontSee('huidige maand');                  // old telegraphic copy gone
     }
 
     public function test_empty_trend_when_no_scored_fiches(): void
@@ -1114,7 +1145,7 @@ class AdminDashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee('Bedankratio');
         $response->assertSee('Hoe bedanken mensen');
-        $response->assertSee('Aandeel downloads door leden dat bedankt werd', false);
+        $response->assertSee('Aandeel van de downloads dat een bedankje terugstuurde', false);
     }
 
     public function test_nieuwsbrief_tab_is_accessible(): void

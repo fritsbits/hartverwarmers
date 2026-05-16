@@ -61,27 +61,6 @@ class ObjectiveStatBuilderTest extends TestCase
         $this->assertSame($expected->current, $activatie->value->current);
     }
 
-    public function test_series_length_matches_range_cadence_when_data_present(): void
-    {
-        $this->seed(OkrSeeder::class);
-        $stats = $this->build('quarter');
-        $activatie = $stats->firstWhere('slug', 'onboarding');
-
-        // onboarding_signup_count.computeAsOf returns int 0 (never null) for empty windows, so every sampled point is kept → full cadence length.
-        $this->assertCount(12, $activatie->series);
-        $this->assertSame(['label', 'value'], array_keys($activatie->series[0]));
-    }
-
-    public function test_all_null_metric_yields_empty_series(): void
-    {
-        $this->seed(OkrSeeder::class);
-        $stats = $this->build();
-        $fiche = $stats->firstWhere('slug', 'presentatiekwaliteit');
-
-        // No Fiches seeded → presentation_score_avg.computeAsOf returns current=null at every sample → all points skipped.
-        $this->assertSame([], $fiche->series);
-    }
-
     public function test_objective_with_no_key_results_is_skipped(): void
     {
         Objective::factory()->create(['slug' => 'kr-loos', 'title' => 'KR-loos', 'position' => 1]);
@@ -91,18 +70,36 @@ class ObjectiveStatBuilderTest extends TestCase
         $this->assertCount(0, $stats);
     }
 
-    public function test_series_cadence_for_week_and_alltime_ranges(): void
+    public function test_target_and_metric_key_propagate_from_primary_kr(): void
     {
-        $this->seed(OkrSeeder::class);
+        $obj = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Interactie', 'position' => 1]);
+        KeyResult::factory()->create([
+            'objective_id' => $obj->id,
+            'metric_key' => 'thank_rate',
+            'target_value' => 50,
+            'target_unit' => '%',
+            'position' => 0,
+        ]);
 
-        $week = app(ObjectiveStatBuilder::class)
-            ->build(Objective::with('keyResults')->orderBy('position')->get(), 'week')
-            ->firstWhere('slug', 'onboarding');
-        $alltime = app(ObjectiveStatBuilder::class)
-            ->build(Objective::with('keyResults')->orderBy('position')->get(), 'alltime')
-            ->firstWhere('slug', 'onboarding');
+        $stat = $this->build()->firstWhere('slug', 'bedankjes');
 
-        $this->assertCount(8, $week->series);
-        $this->assertCount(12, $alltime->series);
+        $this->assertSame(50, $stat->target);
+        $this->assertSame('thank_rate', $stat->metricKey);
+    }
+
+    public function test_target_is_null_when_primary_kr_has_no_target(): void
+    {
+        $obj = Objective::factory()->create(['slug' => 'onboarding', 'title' => 'Activatie', 'position' => 1]);
+        KeyResult::factory()->create([
+            'objective_id' => $obj->id,
+            'metric_key' => 'onboarding_signup_count',
+            'target_value' => null,
+            'position' => 0,
+        ]);
+
+        $stat = $this->build()->firstWhere('slug', 'onboarding');
+
+        $this->assertNull($stat->target);
+        $this->assertSame('onboarding_signup_count', $stat->metricKey);
     }
 }

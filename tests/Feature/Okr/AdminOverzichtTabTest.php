@@ -131,6 +131,22 @@ class AdminOverzichtTabTest extends TestCase
         $response->assertSee('Aankomende sends');          // Context heading
     }
 
+    public function test_overzicht_cards_show_target_or_no_target_state(): void
+    {
+        $this->seed(OkrSeeder::class);
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Give the Fichekwaliteit primary KR a target; the others stay target-less.
+        $obj = Objective::where('slug', 'presentatiekwaliteit')->firstOrFail();
+        $obj->keyResults()->where('metric_key', 'presentation_score_avg')->update(['target_value' => 50]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard', ['tab' => 'overzicht']));
+
+        $response->assertOk();
+        $response->assertSee('Doel');                    // the card with a target
+        $response->assertSee('Nog geen doel ingesteld');  // the cards without one
+    }
+
     public function test_kr_with_null_metric_key_renders_without_crashing(): void
     {
         // Spec allows nullable metric_key for future manual KRs. The okr-kr component must not

@@ -9,6 +9,7 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../../app/Services/Okr/KrHealth.php';
 
 /* ==========================================================================
    Hartverwarmers Design System - CSS Custom Properties

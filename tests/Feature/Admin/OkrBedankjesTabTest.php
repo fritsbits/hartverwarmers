@@ -35,6 +35,42 @@ class OkrBedankjesTabTest extends TestCase
         $response->assertSee('Hoe bedanken mensen');      // tab-level context PRESERVED
     }
 
+    public function test_kr_header_shows_target_when_set(): void
+    {
+        $obj = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Interactie']);
+        KeyResult::factory()->create([
+            'objective_id' => $obj->id,
+            'metric_key' => 'thank_rate',
+            'label' => 'Bedankratio',
+            'target_value' => 50,
+            'target_unit' => '%',
+        ]);
+
+        $response = $this->actingAs($this->admin())->get('/admin?tab=bedankjes');
+
+        $response->assertOk();
+        $response->assertSee('Huidig');
+        $response->assertSee('Doel');
+        $response->assertSee('50%');
+        $response->assertDontSee('Nog geen doel ingesteld');
+    }
+
+    public function test_kr_header_states_when_no_target_is_set(): void
+    {
+        $obj = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Interactie']);
+        KeyResult::factory()->create([
+            'objective_id' => $obj->id,
+            'metric_key' => 'thank_rate',
+            'label' => 'Bedankratio',
+            'target_value' => null,
+        ]);
+
+        $response = $this->actingAs($this->admin())->get('/admin?tab=bedankjes');
+
+        $response->assertOk();
+        $response->assertSee('Nog geen doel ingesteld');
+    }
+
     public function test_renders_initiative_section_when_one_exists(): void
     {
         $obj = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Interactie']);

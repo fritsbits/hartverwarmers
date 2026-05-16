@@ -1,24 +1,46 @@
 @php
-    $normalizedTrend = collect($weeklyTrend)
-        ->map(fn ($w) => [...$w, 'avg_score' => $w['avg_score'] ?? 0])
-        ->values()
-        ->all();
+    $series = collect($weeklyTrend)->values();
+    $lastIndex = $series->count() - 1;
+    $hasTarget = ($kr->target_value ?? null) !== null;
 
-    $scored = collect($normalizedTrend)->filter(fn ($w) => $w['avg_score'] > 0);
-    $currentScore = $scored->last()['avg_score'] ?? null;
-    $currentLabel = match ($range) {
-        'week' => 'meest recent',
-        'alltime' => 'huidige maand',
-        default => 'huidige week',
+    $periodWord = match ($range ?? 'month') {
+        'week' => 'dag',
+        'alltime' => 'maand',
+        default => 'week',
     };
+
+    $points = $series->map(fn ($w, $i) => [
+        'week_label' => $w['week_label'],
+        'value' => $i < $lastIndex ? $w['avg_score'] : null,
+        'pending' => $i === $lastIndex ? $w['avg_score'] : null,
+        'target' => $hasTarget ? $kr->target_value : null,
+    ])->all();
+
+    $completed = $series->take($lastIndex < 0 ? 0 : $lastIndex)
+        ->filter(fn ($w) => $w['avg_score'] !== null)
+        ->values();
+    $lastCompleted = $completed->last()['avg_score'] ?? null;
+    $completedDelta = $completed->count() >= 2
+        ? $completed->last()['avg_score'] - $completed->first()['avg_score']
+        : null;
+
+    $inProgress = $series->last();
+    $inProgressScore = $inProgress['avg_score'] ?? null;
+
+    $anyScored = $series->contains(fn ($w) => $w['avg_score'] !== null);
+    $hasEmptyPeriod = $series->take(max($lastIndex, 0))->contains(fn ($w) => $w['avg_score'] === null);
 @endphp
 
-@if($scored->isEmpty())
+@if(! $anyScored)
     <p class="text-sm text-[var(--color-text-secondary)] mt-3">Nog geen beoordeelde fiches.</p>
 @else
-    <flux:chart :value="$normalizedTrend" class="aspect-[6/1] mt-3">
+    <flux:chart :value="$points" class="aspect-[6/1] mt-3">
         <flux:chart.svg>
-            <flux:chart.bar field="avg_score" class="text-[var(--color-primary)]" />
+            <flux:chart.bar field="value" class="text-[var(--color-primary)]" />
+            <flux:chart.bar field="pending" class="text-[var(--color-primary)]/30" />
+            @if($hasTarget)
+                <flux:chart.line field="target" class="text-[var(--color-text-secondary)] [stroke-dasharray:6_5]" />
+            @endif
             <flux:chart.axis axis="x" field="week_label">
                 <flux:chart.axis.tick />
             </flux:chart.axis>
@@ -27,16 +49,33 @@
                 <flux:chart.axis.tick />
             </flux:chart.axis>
         </flux:chart.svg>
+
+        <flux:chart.tooltip>
+            <flux:chart.tooltip.heading field="week_label" />
+            <flux:chart.tooltip.value field="value" label="Score" />
+            <flux:chart.tooltip.value field="pending" label="Score (lopend)" />
+        </flux:chart.tooltip>
     </flux:chart>
 
-    @if($currentScore !== null)
-        <p class="text-xs text-[var(--color-text-tertiary)] mt-3 tabular-nums">
-            {{ $currentScore }} {{ $currentLabel }}
-            @if($trendDelta !== null && $trendDelta !== 0)
-                <span class="font-semibold {{ $trendDelta >= 0 ? 'text-green-600' : 'text-red-500' }}">
-                    {{ $trendDelta >= 0 ? '+' : '' }}{{ $trendDelta }}
-                </span>
-            @endif
-        </p>
-    @endif
+    <div class="text-xs text-[var(--color-text-tertiary)] mt-3 space-y-1 tabular-nums">
+        @if($lastCompleted !== null)
+            <p>
+                Laatste volledige {{ $periodWord }}: <span class="font-semibold text-[var(--color-text-secondary)]">{{ $lastCompleted }}</span>
+                @if($completedDelta !== null && $completedDelta !== 0)
+                    <span class="font-semibold {{ $completedDelta > 0 ? 'text-green-600' : 'text-red-500' }}">
+                        ({{ $completedDelta > 0 ? '+' : '' }}{{ $completedDelta }} sinds de start)
+                    </span>
+                @endif
+            </p>
+        @endif
+        @if($inProgressScore !== null)
+            <p>Lopende {{ $periodWord }}: {{ $inProgressScore }} &mdash; nog niet volledig, telt niet mee.</p>
+        @endif
+        @if($hasTarget)
+            <p>Stippellijn = doel ({{ $kr->target_value }}{{ $kr->target_unit }}).</p>
+        @endif
+        @if($hasEmptyPeriod)
+            <p>Een lege {{ $periodWord }} = geen beoordeelde fiches in die periode.</p>
+        @endif
+    </div>
 @endif
