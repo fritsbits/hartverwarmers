@@ -48,7 +48,8 @@ class SupportContactFormTest extends TestCase
             ->call('send')
             ->assertSet('sent', true)
             ->assertSeeHtml('Bedankt, Marie!')
-            ->assertSee('binnen een paar dagen');
+            ->assertSee('Je bericht is verstuurd')
+            ->assertSee('marie@example.be');
 
         Mail::assertQueued(SupportMessage::class);
     }
