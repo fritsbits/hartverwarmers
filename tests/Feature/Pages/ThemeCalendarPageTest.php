@@ -140,9 +140,13 @@ class ThemeCalendarPageTest extends TestCase
 
     public function test_prev_and_next_month_links_present(): void
     {
+        Carbon::setTestNow('2026-05-12 12:00:00');
+
         $response = $this->get(route('themes.index', ['maand' => '2026-06']));
         $response->assertSee(route('themes.index', ['maand' => '2026-05']));
         $response->assertSee(route('themes.index', ['maand' => '2026-07']));
+
+        Carbon::setTestNow();
     }
 
     public function test_theme_anchor_id_present(): void
@@ -218,17 +222,25 @@ class ThemeCalendarPageTest extends TestCase
 
     public function test_top_month_nav_hides_prev_when_entirely_past(): void
     {
-        // Today is the project's fixed date (2026-05-12). April 2026 is entirely past.
+        // Pin today so the nav logic is deterministic. April 2026 is entirely past.
+        Carbon::setTestNow('2026-05-12 12:00:00');
+
         $response = $this->get(route('themes.index', ['maand' => '2026-05']));
 
         $response->assertViewHas('showPrev', false);
+
+        Carbon::setTestNow();
     }
 
     public function test_top_month_nav_shows_prev_when_overlaps_today(): void
     {
-        // Viewing June; previous month (May) contains today, so prev is shown.
+        // Pin today to May so viewing June still shows prev (May contains today).
+        Carbon::setTestNow('2026-05-12 12:00:00');
+
         $response = $this->get(route('themes.index', ['maand' => '2026-06']));
 
         $response->assertViewHas('showPrev', true);
+
+        Carbon::setTestNow();
     }
 }
