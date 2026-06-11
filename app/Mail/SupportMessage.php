@@ -22,7 +22,7 @@ class SupportMessage extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            to: [config('mail.support_address')],
+            to: [config('mail.support_address') ?: config('mail.from.address')],
             replyTo: [$this->senderEmail],
             subject: "Steunbericht via Hartverwarmers — {$this->senderName}",
         );

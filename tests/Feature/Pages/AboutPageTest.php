@@ -38,6 +38,20 @@ class AboutPageTest extends TestCase
         $mailable->assertHasReplyTo('jan@example.com');
     }
 
+    public function test_support_message_falls_back_to_from_address_when_support_address_missing(): void
+    {
+        config(['mail.support_address' => null]);
+
+        $mailable = new SupportMessage(
+            senderName: 'Jan Janssen',
+            senderEmail: 'jan@example.com',
+            senderMessage: 'Ik wil graag bijdragen.',
+        );
+
+        $mailable->assertTo(config('mail.from.address'));
+        $mailable->assertHasReplyTo('jan@example.com');
+    }
+
     public function test_about_page_shows_dynamic_stats(): void
     {
         $user = User::factory()->create(['organisation' => 'WZC Test']);

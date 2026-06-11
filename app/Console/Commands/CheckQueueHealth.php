@@ -49,7 +49,7 @@ class CheckQueueHealth extends Command
         Mail::raw(
             "De queue worker lijkt niet meer te werken.\n\nLaatste heartbeat: {$lastBeatFormatted}\n\nControleer de queue worker in Forge.",
             function ($message) {
-                $message->to(config('mail.admin_address'))
+                $message->to(config('mail.admin_address') ?: config('mail.from.address'))
                     ->subject('Hartverwarmers — Queue worker probleem');
             }
         );
