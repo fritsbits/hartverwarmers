@@ -27,6 +27,12 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    @production
+    <!-- Fathom - beautiful, simple website analytics -->
+    <script src="https://cdn.usefathom.com/script.js" data-site="HMZIPWGI" defer></script>
+    <!-- / Fathom -->
+    @endproduction
+
 </head>
 <body class="font-body antialiased min-h-screen bg-[var(--color-bg-cream)]">
     <flux:toast position="top end" />
