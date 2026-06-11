@@ -3,7 +3,7 @@ Hoi {{ $notifiable->first_name }}!
 
 Goed nieuws: iemand heeft je fiche **{{ $fiche->title }}** bewaard. Ze willen het gebruiken met hun bewoners.
 
-@component('mail::button', ['url' => route('fiches.show', [$fiche->initiative, $fiche])])
+@component('mail::button', ['url' => \App\Support\EmailLink::to(route('fiches.show', [$fiche->initiative, $fiche]), 'onboarding-first-bookmark', 'lifecycle')])
 Bekijk je fiche
 @endcomponent
 

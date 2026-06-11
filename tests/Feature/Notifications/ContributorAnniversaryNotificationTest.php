@@ -101,6 +101,25 @@ class ContributorAnniversaryNotificationTest extends TestCase
         $this->assertStringContainsString('type=kudos', $html);
     }
 
+    public function test_spotlight_cta_carries_utm(): void
+    {
+        $user = User::factory()->create();
+        $spotlight = Fiche::factory()->create(['title' => 'Geurtjes-bingo']);
+        $payload = new Payload(
+            totalFiches: 4,
+            totalBookmarks: 27,
+            totalComments: 6,
+            spotlightFiche: $spotlight->load('initiative'),
+            spotlightBookmarkCount: 15,
+        );
+
+        $html = (new ContributorAnniversaryNotification($payload, year: 1))->toMail($user)->render();
+
+        $this->assertStringContainsString('utm_campaign=anniversary', $html);
+        $this->assertStringContainsString('utm_source=lifecycle', $html);
+        $this->assertStringContainsString('utm_medium=email', $html);
+    }
+
     private function emptyPayload(): Payload
     {
         return new Payload(

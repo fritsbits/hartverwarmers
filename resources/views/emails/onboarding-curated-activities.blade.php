@@ -5,18 +5,18 @@ We hebben voor Hartverwarmers een kleine selectie fiches samengesteld die ons é
 
 @foreach($fiches as $fiche)
 @component('mail::panel')
-**[{{ $fiche->title }}]({{ route('fiches.show', [$fiche->initiative, $fiche]) }})**
+**[{{ $fiche->title }}]({{ \App\Support\EmailLink::to(route('fiches.show', [$fiche->initiative, $fiche]), 'onboarding-curated', 'lifecycle', 'fiche') }})**
 
 *Door {{ $fiche->user?->full_name ?? 'een animator' }}*
 
 {{ str(strip_tags($fiche->description ?? ''))->limit(120) }}
 
-[Bekijk deze fiche]({{ route('fiches.show', [$fiche->initiative, $fiche]) }})
+[Bekijk deze fiche]({{ \App\Support\EmailLink::to(route('fiches.show', [$fiche->initiative, $fiche]), 'onboarding-curated', 'lifecycle', 'fiche') }})
 @endcomponent
 
 @endforeach
 
-@component('mail::button', ['url' => url('/diamantjes')])
+@component('mail::button', ['url' => \App\Support\EmailLink::to(url('/diamantjes'), 'onboarding-curated', 'lifecycle', 'diamantjes')])
 Bekijk alle diamantjes
 @endcomponent
 

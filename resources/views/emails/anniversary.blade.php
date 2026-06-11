@@ -11,7 +11,7 @@ Sindsdien:
 @if($payload->spotlightFiche)
 Jouw meest geliefde fiche is **{{ $payload->spotlightFiche->title }}** — opgeslagen door {{ $payload->spotlightBookmarkCount }} collega's.
 
-@component('mail::button', ['url' => route('fiches.show', [$payload->spotlightFiche->initiative, $payload->spotlightFiche])])
+@component('mail::button', ['url' => \App\Support\EmailLink::to(route('fiches.show', [$payload->spotlightFiche->initiative, $payload->spotlightFiche]), 'anniversary', 'lifecycle')])
 Bekijk je fiche
 @endcomponent
 @endif

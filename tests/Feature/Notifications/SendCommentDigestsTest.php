@@ -73,6 +73,26 @@ class SendCommentDigestsTest extends TestCase
         $this->assertStringContainsString('Uitschrijven', $html);
     }
 
+    public function test_digest_links_carry_utm(): void
+    {
+        $user = User::factory()->create(['first_name' => 'Frederik']);
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'user_id' => $user->id,
+            'initiative_id' => $initiative->id,
+            'title' => 'Voorleesnamiddag',
+        ]);
+
+        $html = (new FicheCommentDigestMail($user, $fiche, [
+            ['comment_id' => 1, 'body_excerpt' => 'Geweldig!', 'commenter_name' => 'Anna', 'comment_url' => 'https://example.com/c/1'],
+        ]))->render();
+
+        $this->assertStringContainsString('utm_campaign=comment-digest', $html);
+        $this->assertStringContainsString('utm_source=transactional', $html);
+        $this->assertStringContainsString('utm_content=comment', $html);
+        $this->assertStringContainsString('utm_content=fiche', $html);
+    }
+
     private function makePendingNotification(User $user, Fiche $fiche): void
     {
         PendingNotification::create([

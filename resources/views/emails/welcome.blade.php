@@ -15,7 +15,7 @@ Al {{ number_format($ficheCount) }} fiches gedeeld door animatoren uit heel Vlaa
 
 **Wat kan je doen?** Blader rustig door de initiatieven. Sla op wat je aanspreekt met de bladwijzer, zodat je het later makkelijk terugvindt. Geef een hartje als iets je raakt — bijdragers vinden het fijn te weten dat hun werk wordt gezien. En reageer gerust op een fiche als je er iets over kwijt wil.
 
-@component('mail::button', ['url' => url('/initiatieven')])
+@component('mail::button', ['url' => \App\Support\EmailLink::to(url('/initiatieven'), 'welcome', 'lifecycle')])
 Ontdek initiatieven
 @endcomponent
 
