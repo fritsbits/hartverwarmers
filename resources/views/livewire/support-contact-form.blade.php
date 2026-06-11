@@ -1,8 +1,14 @@
 <div>
     @if ($sent)
-        <div class="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-            <p class="text-lg font-semibold text-green-800">Bedankt voor je bericht!</p>
-            <p class="text-green-700 mt-1">Frederik neemt zo snel mogelijk contact met je op.</p>
+        <div class="text-center py-6">
+            <figure class="photo-polaroid inline-block mb-5" style="transform: rotate(-2deg)">
+                <img src="/img/about/frederik-vincx.webp" alt="Frederik Vincx" width="112" height="112" loading="lazy" class="w-28 aspect-square object-cover object-top">
+                <figcaption><strong class="text-[var(--color-text-primary)]">Frederik</strong></figcaption>
+            </figure>
+            <p class="text-xl font-heading font-bold text-[var(--color-text-primary)]">Bedankt, {{ str($name)->trim()->before(' ') }}!</p>
+            <p class="mt-2 text-[var(--color-text-secondary)] max-w-sm mx-auto" style="font-weight: var(--font-weight-light);">
+                Je bericht is bij mij terecht. Ik lees alles zelf en antwoord meestal binnen een paar dagen — soms iets later, want Hartverwarmers is een vrijwillig project.
+            </p>
         </div>
     @else
         @php($messagePlaceholder = $reason === 'feedback' ? 'Wat vind je nu al fijn? En wat zou je graag beter zien?' : 'Waarmee kunnen we je helpen?')

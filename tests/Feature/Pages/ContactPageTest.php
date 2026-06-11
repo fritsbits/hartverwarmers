@@ -15,8 +15,18 @@ class ContactPageTest extends TestCase
         $response = $this->get('/contact');
 
         $response->assertOk();
-        $response->assertSeeText('Laat van je horen');
+        $response->assertSeeText('Praat met Frederik');
         $response->assertSeeText('Waarover gaat het?');
+    }
+
+    public function test_contact_page_introduces_frederik_as_the_recipient(): void
+    {
+        $response = $this->get('/contact');
+
+        $response->assertOk();
+        $response->assertSeeText('Frederik Vincx');
+        $response->assertSee('/img/about/frederik-vincx.webp');
+        $response->assertSeeText('binnen een paar dagen');
     }
 
     public function test_contact_page_preselects_reason_from_query(): void
