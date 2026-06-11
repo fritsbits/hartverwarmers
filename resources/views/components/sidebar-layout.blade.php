@@ -1,7 +1,7 @@
 @props(['title', 'heading' => null, 'description' => null, 'sectionLabel' => null])
 
 
-<x-layout :title="$title" bg-class="bg-[var(--color-bg-cream)]">
+<x-layout :title="$title" bg-class="bg-[var(--color-bg-cream)]" :hide-feedback-button="true">
 
     <div class="py-8 sm:py-12">
         <div class="flex flex-col lg:flex-row gap-8 lg:gap-12">

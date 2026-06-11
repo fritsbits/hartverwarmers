@@ -1,4 +1,4 @@
-@props(['title' => null, 'description' => null, 'ogImage' => null, 'fullWidth' => false, 'bgClass' => null, 'hideFooter' => false])
+@props(['title' => null, 'description' => null, 'ogImage' => null, 'fullWidth' => false, 'bgClass' => null, 'hideFooter' => false, 'hideFeedbackButton' => false])
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -77,6 +77,10 @@
         @endif
     </main>
 
+    @unless($hideFeedbackButton)
+        <x-feedback-button />
+    @endunless
+
     <!-- Footer -->
     <footer class="bg-[var(--color-bg-cream)] border-t border-[var(--color-border-light)]" @if($hideFooter) hidden @endif>
         <div class="max-w-6xl mx-auto px-6 pt-16 pb-8">
@@ -148,6 +152,7 @@
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[var(--color-text-secondary)]">
                     <span>&copy; {{ date('Y') }} Hartverwarmers</span>
                     <div class="flex items-center gap-6">
+                        <a href="{{ route('contact') }}" class="hover:text-[var(--color-primary)] transition-colors">Contact</a>
                         <a href="{{ route('about') }}" class="hover:text-[var(--color-primary)] transition-colors">Over ons</a>
                         <a href="{{ route('legal.privacy') }}" class="hover:text-[var(--color-primary)] transition-colors">Privacybeleid</a>
                         <a href="{{ route('legal.terms') }}" class="hover:text-[var(--color-primary)] transition-colors">Gebruiksvoorwaarden</a>

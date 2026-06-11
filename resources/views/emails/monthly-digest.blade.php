@@ -139,6 +139,21 @@
                     </td>
                 </tr>
 
+                {{-- Feedback invite --}}
+                <tr>
+                    <td style="padding:0 0 28px 0">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FDF3EE;border:1px solid #EBE4DE;border-radius:10px">
+                            <tr>
+                                <td style="padding:18px 20px;line-height:1.6;font-size:14px;color:#231E1A">
+                                    <strong>Mis je iets, of heb je een idee?</strong><br>
+                                    We bouwen Hartverwarmers verder op wat jij ons vertelt.
+                                    <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, url('/contact?reden=feedback')) }}" style="color:#E8764B;font-weight:600;text-decoration:none;white-space:nowrap">Geef feedback &rarr;</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
                 {{-- Footer --}}
                 <tr>
                     <td style="padding:24px 0 0 0;border-top:1px solid #EBE4DE;text-align:center;color:#756C65;font-size:12px;line-height:1.6">

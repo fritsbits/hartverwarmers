@@ -1262,6 +1262,13 @@ dialog[data-modal="search"]::backdrop {
   @keyframes takeoverContentEnter {
     0%, 100% { opacity: 1; transform: translateY(0); }
   }
+
+  /* Floating feedback button: instant toggle, no grow/fade */
+  .feedback-fab *,
+  .feedback-fab {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 /* Checkmark draw-in animation */

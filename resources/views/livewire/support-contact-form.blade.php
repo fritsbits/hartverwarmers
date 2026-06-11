@@ -5,12 +5,23 @@
             <p class="text-green-700 mt-1">Frederik neemt zo snel mogelijk contact met je op.</p>
         </div>
     @else
+        @php($messagePlaceholder = $reason === 'feedback' ? 'Wat vind je nu al fijn? En wat zou je graag beter zien?' : 'Waarmee kunnen we je helpen?')
         <form wire:submit="send" class="space-y-4 mt-6">
             @error('throttle')
                 <div class="bg-red-50 border border-red-200 rounded-xl p-4">
                     <p class="text-red-700 text-sm">{{ $message }}</p>
                 </div>
             @enderror
+
+            <flux:field>
+                <flux:label>Waarover gaat het?</flux:label>
+                <flux:select wire:model.live="reason" placeholder="Maak een keuze">
+                    @foreach (\App\Livewire\SupportContactForm::REASONS as $slug => $label)
+                        <flux:select.option value="{{ $slug }}">{{ $label }}</flux:select.option>
+                    @endforeach
+                </flux:select>
+                <flux:error name="reason" />
+            </flux:field>
 
             <flux:field>
                 <flux:label>Naam</flux:label>
@@ -26,7 +37,7 @@
 
             <flux:field>
                 <flux:label>Bericht</flux:label>
-                <flux:textarea wire:model="message" placeholder="Hoe wil je Hartverwarmers steunen?" rows="4" />
+                <flux:textarea wire:model="message" placeholder="{{ $messagePlaceholder }}" rows="5" />
                 <flux:error name="message" />
             </flux:field>
 

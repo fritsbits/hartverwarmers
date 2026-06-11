@@ -100,17 +100,14 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
                 {{-- Left: primary CTA --}}
-                <div class="lg:col-span-2" x-data="{ open: false }">
+                <div class="lg:col-span-2">
                     <span class="section-label">Steun Hartverwarmers</span>
                     <h2 class="mt-1 mb-4">Doe een gift</h2>
                     <p class="text-[var(--color-text-secondary)] max-w-2xl" style="font-weight: var(--font-weight-light);">
                         Hartverwarmers is een vrijwillig project. Alle kosten om het platform in de lucht te houden worden persoonlijk gedragen, en al het ontwerp en de ontwikkeling gebeurt in vrije uren — onbetaald. Wil je bijdragen of een samenwerking verkennen? Laat het weten.
                     </p>
-                    <div class="mt-6" x-show="!open">
-                        <button @click="open = true" class="btn-pill">Neem contact op</button>
-                    </div>
-                    <div x-show="open" x-collapse x-cloak class="mt-6 max-w-lg">
-                        <livewire:support-contact-form />
+                    <div class="mt-6">
+                        <a href="{{ route('contact', ['reden' => 'samenwerking']) }}" class="btn-pill">Neem contact op</a>
                     </div>
                 </div>
 

@@ -1,6 +1,7 @@
 <x-mail::message>
-# Steunbericht van {{ $senderName }}
+# Nieuw bericht via Hartverwarmers
 
+**Onderwerp:** {{ $reasonLabel }}
 **Van:** {{ $senderName }} ({{ $senderEmail }})
 
 ---
@@ -9,5 +10,5 @@
 
 ---
 
-*Dit bericht is verstuurd via het contactformulier op de over-pagina van Hartverwarmers.*
+*Dit bericht is verstuurd via het contactformulier op Hartverwarmers.*
 </x-mail::message>

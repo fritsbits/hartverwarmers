@@ -21,6 +21,7 @@ class RecoverFailedSupportMessagesTest extends TestCase
             senderName: $name,
             senderEmail: $email,
             senderMessage: $message,
+            reasonLabel: 'Idee of feedback',
         ));
 
         DB::table('failed_jobs')->insert([

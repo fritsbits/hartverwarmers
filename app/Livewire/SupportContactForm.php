@@ -5,11 +5,23 @@ namespace App\Livewire;
 use App\Mail\SupportMessage;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\View\View;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class SupportContactForm extends Component
 {
+    /** @var array<string, string> */
+    public const REASONS = [
+        'feedback' => 'Idee of feedback',
+        'vraag' => 'Vraag of probleem',
+        'samenwerking' => 'Samenwerking of steun',
+        'anders' => 'Iets anders',
+    ];
+
+    #[Validate('required|in:feedback,vraag,samenwerking,anders', message: ['required' => 'Kies waarover je bericht gaat.', 'in' => 'Kies een geldige reden.'])]
+    public string $reason = '';
+
     #[Validate('required', message: ['required' => 'Vul je naam in.'])]
     public string $name = '';
 
@@ -20,6 +32,15 @@ class SupportContactForm extends Component
     public string $message = '';
 
     public bool $sent = false;
+
+    public function mount(?string $reason = null): void
+    {
+        // Livewire pre-assigns a matching mount param to $this->reason, so a valid
+        // slug is already set here — we only need to discard an unknown value.
+        if ($reason !== null && ! array_key_exists($reason, self::REASONS)) {
+            $this->reason = '';
+        }
+    }
 
     public function send(): void
     {
@@ -39,12 +60,13 @@ class SupportContactForm extends Component
             senderName: $this->name,
             senderEmail: $this->email,
             senderMessage: $this->message,
+            reasonLabel: self::REASONS[$this->reason],
         ));
 
         $this->sent = true;
     }
 
-    public function render(): \Illuminate\View\View
+    public function render(): View
     {
         return view('livewire.support-contact-form');
     }

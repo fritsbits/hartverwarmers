@@ -59,6 +59,20 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringContainsString('Hoi Marleen', $html);
     }
 
+    public function test_rendered_html_contains_feedback_invite(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->emptyPayload();
+
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        $this->assertStringContainsString('Mis je iets, of heb je een idee?', $html);
+        // The feedback CTA must be a tracked newsletter click link (like the footer share CTA),
+        // so an empty-payload digest now has at least 2 tracked click URLs: footer share + feedback.
+        $count = substr_count($html, '/n/'.$user->id.'/click');
+        $this->assertGreaterThanOrEqual(2, $count, "Expected the feedback invite to add a tracked click URL; found {$count}.");
+    }
+
     public function test_rendered_html_contains_logo_img(): void
     {
         $user = User::factory()->create();

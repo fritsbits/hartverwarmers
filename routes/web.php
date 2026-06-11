@@ -28,6 +28,7 @@ use App\Http\Controllers\ToolsInspirationController;
 use App\Models\User;
 use App\Notifications\MonthlyDigestNotification;
 use App\Services\MonthlyDigest\Composer;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
 
@@ -138,6 +139,11 @@ Route::view('/wat-is-er-nieuw', 'wat-is-er-nieuw')->name('whats-new');
 
 // About
 Route::view('/over-ons', 'about')->name('about');
+
+// Contact
+Route::get('/contact', function (Request $request) {
+    return view('contact', ['reason' => $request->query('reden')]);
+})->name('contact');
 
 // Legal pages
 Route::view('/privacybeleid', 'legal.privacy')->name('legal.privacy');

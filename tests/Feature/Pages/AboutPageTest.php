@@ -23,6 +23,8 @@ class AboutPageTest extends TestCase
         $response->assertSeeText('Meer tijd voor wat écht telt');
         $response->assertSee('Deel Hartverwarmers')
             ->assertSee('Doe een gift');
+        $response->assertSee(route('contact', ['reden' => 'samenwerking']));
+        $response->assertDontSee('wire:submit="send"', false);
     }
 
     public function test_support_message_mailable_has_correct_envelope(): void
@@ -31,9 +33,10 @@ class AboutPageTest extends TestCase
             senderName: 'Jan Janssen',
             senderEmail: 'jan@example.com',
             senderMessage: 'Ik wil graag bijdragen.',
+            reasonLabel: 'Samenwerking of steun',
         );
 
-        $mailable->assertHasSubject('Steunbericht via Hartverwarmers — Jan Janssen');
+        $mailable->assertHasSubject('[Samenwerking of steun] Bericht via Hartverwarmers — Jan Janssen');
         $mailable->assertTo(config('mail.support_address'));
         $mailable->assertHasReplyTo('jan@example.com');
     }
@@ -46,9 +49,11 @@ class AboutPageTest extends TestCase
             senderName: 'Jan Janssen',
             senderEmail: 'jan@example.com',
             senderMessage: 'Ik wil graag bijdragen.',
+            reasonLabel: 'Idee of feedback',
         );
 
         $mailable->assertTo(config('mail.from.address'));
+        $mailable->assertHasSubject('[Idee of feedback] Bericht via Hartverwarmers — Jan Janssen');
         $mailable->assertHasReplyTo('jan@example.com');
     }
 
@@ -72,12 +77,13 @@ class AboutPageTest extends TestCase
     {
         Livewire::test(SupportContactForm::class)
             ->call('send')
-            ->assertHasErrors(['name' => 'required', 'email' => 'required', 'message' => 'required']);
+            ->assertHasErrors(['reason' => 'required', 'name' => 'required', 'email' => 'required', 'message' => 'required']);
     }
 
     public function test_support_form_validates_email_format(): void
     {
         Livewire::test(SupportContactForm::class)
+            ->set('reason', 'feedback')
             ->set('name', 'Jan')
             ->set('email', 'not-an-email')
             ->set('message', 'Test bericht')
@@ -90,6 +96,7 @@ class AboutPageTest extends TestCase
         Mail::fake();
 
         Livewire::test(SupportContactForm::class)
+            ->set('reason', 'samenwerking')
             ->set('name', 'Jan Janssen')
             ->set('email', 'jan@example.com')
             ->set('message', 'Ik wil graag bijdragen aan het platform.')
@@ -100,6 +107,7 @@ class AboutPageTest extends TestCase
         Mail::assertQueued(SupportMessage::class, function (SupportMessage $mail) {
             return $mail->senderName === 'Jan Janssen'
                 && $mail->senderEmail === 'jan@example.com'
+                && $mail->reasonLabel === 'Samenwerking of steun'
                 && $mail->hasTo(config('mail.support_address'));
         });
     }
@@ -112,6 +120,7 @@ class AboutPageTest extends TestCase
 
         for ($i = 0; $i < 3; $i++) {
             $component
+                ->set('reason', 'feedback')
                 ->set('name', 'Jan')
                 ->set('email', 'jan@example.com')
                 ->set('message', "Bericht $i")
@@ -131,5 +140,17 @@ class AboutPageTest extends TestCase
             ->assertHasErrors(['throttle']);
 
         Mail::assertQueued(SupportMessage::class, 3);
+    }
+
+    public function test_support_form_preselects_valid_reason_from_mount(): void
+    {
+        Livewire::test(SupportContactForm::class, ['reason' => 'feedback'])
+            ->assertSet('reason', 'feedback');
+    }
+
+    public function test_support_form_ignores_unknown_reason_from_mount(): void
+    {
+        Livewire::test(SupportContactForm::class, ['reason' => 'bogus'])
+            ->assertSet('reason', '');
     }
 }
