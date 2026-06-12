@@ -36,6 +36,19 @@ class FicheDiamondAwardedNotificationTest extends TestCase
         $this->assertStringContainsString('Frederik & Maite van Hartverwarmers', $html);
     }
 
+    public function test_links_carry_utm_with_content(): void
+    {
+        $fiche = Fiche::factory()->create(['title' => 'Geurtjes-bingo']);
+        $user = User::factory()->create(['first_name' => 'Marleen']);
+
+        $html = (new FicheDiamondAwardedNotification($fiche))->toMail($user)->render();
+
+        $this->assertStringContainsString('utm_campaign=diamond-awarded', $html);
+        $this->assertStringContainsString('utm_source=transactional', $html);
+        $this->assertStringContainsString('utm_content=fiche', $html);
+        $this->assertStringContainsString('utm_content=diamantjes', $html);
+    }
+
     public function test_rendered_html_uses_kudos_unsubscribe_footer(): void
     {
         $fiche = Fiche::factory()->create();

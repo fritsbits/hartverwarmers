@@ -7,7 +7,7 @@ Nu een vraag: heb jij activiteiten die goed werken bij jouw bewoners? Dingen die
 
 Het hoeft niet perfect te zijn. Een paar zinnen over wat je doet, voor wie het werkt, en hoe je het aanpakt. Dat is genoeg.
 
-@component('mail::button', ['url' => url('/fiches/nieuw')])
+@component('mail::button', ['url' => \App\Support\EmailLink::to(url('/fiches/nieuw'), 'onboarding-contribute', 'lifecycle')])
 Deel je eerste activiteit
 @endcomponent
 

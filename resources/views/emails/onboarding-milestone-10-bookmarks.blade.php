@@ -9,12 +9,12 @@ Je fiches werden al **{{ $bookmarkCount }} keer** bewaard door andere animatoren
 Er zijn initiatieven op Hartverwarmers die nog maar weinig fiches hebben. Misschien heb jij daar iets voor in de la?
 
 @foreach($sparseInitiatives as $initiative)
-- [{{ $initiative->title }}]({{ route('initiatives.show', $initiative) }}) — {{ $initiative->published_fiches_count }} {{ $initiative->published_fiches_count === 1 ? 'fiche' : 'fiches' }}
+- [{{ $initiative->title }}]({{ \App\Support\EmailLink::to(route('initiatives.show', $initiative), 'onboarding-10-bookmarks', 'lifecycle', 'initiative') }}) — {{ $initiative->published_fiches_count }} {{ $initiative->published_fiches_count === 1 ? 'fiche' : 'fiches' }}
 @endforeach
 
 @endif
 
-@component('mail::button', ['url' => url('/fiches/nieuw')])
+@component('mail::button', ['url' => \App\Support\EmailLink::to(url('/fiches/nieuw'), 'onboarding-10-bookmarks', 'lifecycle', 'create-fiche')])
 Deel nog een fiche
 @endcomponent
 

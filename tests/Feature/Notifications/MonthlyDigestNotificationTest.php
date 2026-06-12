@@ -353,6 +353,47 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertGreaterThanOrEqual(4, $count, "Expected 4+ tracked click URLs (one per primary link site), found {$count}.");
     }
 
+    public function test_tracked_destinations_carry_monthly_digest_utm(): void
+    {
+        $theme = Theme::factory()->create(['title' => 'Moederdag']);
+        $occurrence = ThemeOccurrence::factory()->for($theme)->create();
+
+        $diamond = Fiche::factory()->published()->create(['has_diamond' => true]);
+        $recentFiche = Fiche::factory()->published()->create();
+
+        $payload = new Payload(
+            themes: new Collection([$occurrence]),
+            diamond: $diamond->fresh(['user', 'initiative']),
+            recentFiches: (new Collection([$recentFiche]))->load(['user', 'initiative']),
+            upcomingThemeCount: 1,
+            newFicheCount: 1,
+            sentAt: now(),
+        );
+
+        $user = User::factory()->create();
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        preg_match_all('/[?&]to=([A-Za-z0-9%]+)/', $html, $matches);
+        $this->assertNotEmpty($matches[1], 'expected tracked links with a to= param');
+
+        $decodedDestinations = array_map(
+            fn (string $encoded): string => base64_decode(urldecode($encoded), true) ?: '',
+            $matches[1],
+        );
+
+        $taggedDestinations = array_filter(
+            $decodedDestinations,
+            fn (string $url): bool => str_contains($url, 'utm_medium=email'),
+        );
+
+        $this->assertNotEmpty($taggedDestinations, 'expected at least one UTM-tagged destination');
+
+        foreach ($taggedDestinations as $url) {
+            $this->assertStringContainsString('utm_source=newsletter', $url);
+            $this->assertStringContainsString('utm_campaign=monthly-digest', $url);
+        }
+    }
+
     public function test_unsubscribe_and_manage_links_are_not_tracked(): void
     {
         $user = User::factory()->create();

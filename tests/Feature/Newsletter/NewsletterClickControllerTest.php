@@ -62,4 +62,17 @@ class NewsletterClickControllerTest extends TestCase
 
         $this->get($url)->assertRedirect(route('home'));
     }
+
+    public function test_redirect_preserves_utm_parameters_on_destination(): void
+    {
+        $user = User::factory()->create();
+        $destination = url('/initiatieven').'?utm_source=newsletter&utm_medium=email&utm_campaign=monthly-digest';
+
+        $url = URL::signedRoute('newsletter.click', [
+            'user' => $user->id,
+            'to' => base64_encode($destination),
+        ]);
+
+        $this->get($url)->assertRedirect($destination);
+    }
 }
