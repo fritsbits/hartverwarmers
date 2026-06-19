@@ -39,6 +39,16 @@ class FicheWizardTest extends TestCase
             ->assertSee('Nieuwe fiche');
     }
 
+    public function test_feedback_button_is_hidden_on_the_wizard(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get(route('fiches.create'))
+            ->assertStatus(200)
+            ->assertDontSeeText('Help je ons beter worden?');
+    }
+
     public function test_step1_allows_continuing_without_files(): void
     {
         $user = User::factory()->create();

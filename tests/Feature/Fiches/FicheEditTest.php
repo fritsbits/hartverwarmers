@@ -36,6 +36,17 @@ class FicheEditTest extends TestCase
             ->assertSee('Fiche bewerken');
     }
 
+    public function test_feedback_button_is_hidden_on_edit_page(): void
+    {
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)
+            ->get(route('fiches.edit', $fiche))
+            ->assertStatus(200)
+            ->assertDontSeeText('Help je ons beter worden?');
+    }
+
     public function test_admin_can_access_edit_page(): void
     {
         $admin = User::factory()->admin()->create();

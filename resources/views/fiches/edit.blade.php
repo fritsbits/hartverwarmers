@@ -1,4 +1,4 @@
-<x-layout title="Fiche bewerken" :full-width="true" :hide-footer="true">
+<x-layout title="Fiche bewerken" :full-width="true" :hide-footer="true" :hide-feedback-button="true">
     {{-- Hero — cream background --}}
     <section class="bg-[var(--color-bg-cream)]">
         <div class="max-w-6xl mx-auto px-6 pt-8 pb-12">
