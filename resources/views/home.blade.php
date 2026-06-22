@@ -274,9 +274,9 @@
                     </div>
                     <p class="text-sm text-[var(--color-text-secondary)] mt-4 text-center max-w-80">
                         @if(config('hartverwarmers.show_nadine_praet'))
-                            Ontwikkeld door Maite Mallentjer (AP Hogeschool) en Nadine Praet (Arteveldehogeschool Gent).
+                            Ontwikkeld door Maite Mallentjer (Studio Bomma) en Nadine Praet (Arteveldehogeschool Gent).
                         @else
-                            Ontwikkeld door Maite Mallentjer (AP Hogeschool).
+                            Ontwikkeld door Maite Mallentjer (Studio Bomma).
                         @endif
                     </p>
                 </div>

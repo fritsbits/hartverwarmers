@@ -14,7 +14,7 @@ return [
             'ik_wil' => 'Bewoners doen zelf mee, zijn actief, niet alleen toeschouwer.',
             'description' => 'De D van Doen staat voor activerend werken — bewoners zelf laten doen, in kleine stapjes, zodat ze vertrouwen opbouwen en het plezier van het bezig zijn zelf ervaren.',
             'author_name' => 'Maite Mallentjer',
-            'author_role' => 'pedagoog dagbesteding',
+            'author_role' => 'ouderenpsycholoog en host van Studio Bomma',
             'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Bewoners motiveren die aangeven "niets meer te kunnen".',
@@ -34,7 +34,7 @@ return [
             ],
             'reflection_subtitle' => 'Niet als test, maar als spiegel.',
             'reflection_questions' => [
-                'Laat bewoners zelf doen — ook als het langzamer gaat. Eén handeling volstaat.',
+                'Laat bewoners zelf doen, ook als het langzamer gaat. Zelfs één handeling is al een succes.',
                 'Bouw activiteiten op in kleine stapjes die succeservaringen opleveren.',
                 'Geef expliciet waardering voor elke bijdrage, hoe klein ook.',
                 'Pas materiaal of omgeving aan zodat zelf doen mogelijk blijft.',
@@ -64,9 +64,9 @@ return [
             'quote' => 'Niet: deze bewoner kan niet meedoen. Maar: hoe kan deze persoon op zijn manier deelnemen?',
 
             'ik_wil' => 'Iedereen is welkom — diversiteit in cognitie, mobiliteit, achtergrond.',
-            'description' => 'De I van Inclusief benadrukt dat iedereen welkom is en moet kunnen deelnemen — ongeacht cognitie, mobiliteit of achtergrond. Inclusief werken betekent activiteiten zo ontwerpen dat ze toegankelijk zijn voor alle bewoners, met oog voor diversiteit in mogelijkheden.',
+            'description' => 'Diversiteit is een rijkdom — verschillende achtergronden, overtuigingen, talenten en ervaringen maken een gemeenschap sterker. Inclusief werken betekent dat iedereen kan deelnemen, ongeacht cognitie, mobiliteit of achtergrond, en dat niemand zich buitengesloten voelt. Want uitsluiting raakt niet alleen wie wordt uitgesloten: ook anderen voelen zich daardoor minder veilig.',
             'author_name' => 'Maite Mallentjer',
-            'author_role' => 'pedagoog dagbesteding',
+            'author_role' => 'ouderenpsycholoog en host van Studio Bomma',
             'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Activiteiten differentiëren voor bewoners met dementie.',
@@ -90,6 +90,7 @@ return [
                 'Ga actief langs bij kamerbewoners, mannen en mensen met dementie.',
                 'Check bij elke activiteit de drempels: fysiek, zintuiglijk, taal, schaamte.',
                 'Nodig ook familie, vrijwilligers en buren uit — niet alleen bewoners.',
+                'Besef dat uitsluiting niet alleen de bewoner raakt die buiten valt — ook anderen voelen zich dan minder veilig.',
             ],
             'tip_title' => 'Bied meerdere manieren aan',
             'tip_text' => 'Eén activiteit, meerdere manieren om mee te doen. Luisteren, kijken, voelen, bewegen — het zijn allemaal geldige vormen van participatie. Bekijk bestaande initiatieven en vraag je af: wie sluit ik onbedoeld uit?',
@@ -116,9 +117,9 @@ return [
             'quote' => 'Niet: wij weten wat het beste is. Maar: wat kiest deze persoon zelf?',
 
             'ik_wil' => 'Bewoners hebben keuze, bepalen (mee) wat er gebeurt.',
-            'description' => 'De eerste A van DIAMANT staat voor Autonomie: bewoners hebben keuze en bepalen mee wat er gebeurt. Ook in een zorgomgeving willen bewoners regie houden — over wat ze doen, wanneer, en met wie.',
+            'description' => 'Bewoners staan aan het stuur van hun eigen leven. Een woonzorgcentrum is hun thuis: respecteer hun keuzes, gewoontes en manier van leven, en laat hen zoveel mogelijk hun eigen baas blijven. Autonomie gaat niet om het aanbieden van keuzes door medewerkers, maar om zelfbeschikking en volwassenheid.',
             'author_name' => 'Maite Mallentjer',
-            'author_role' => 'pedagoog dagbesteding',
+            'author_role' => 'ouderenpsycholoog en host van Studio Bomma',
             'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Keuzevrijheid bieden binnen de structuur van een dagprogramma.',
@@ -138,13 +139,13 @@ return [
             ],
             'reflection_subtitle' => 'Durven loslaten begint bij jezelf.',
             'reflection_questions' => [
-                'Bied twee concrete opties aan in plaats van te beslissen voor de bewoner.',
+                'Vertrek vanuit zelfbeschikking: laat bewoners hun eigen keuzes, gewoontes en ritme behouden.',
                 'Ontwerp activiteiten die bewoners ook (deels) zelfstandig kunnen uitvoeren.',
                 'Respecteer een "nee" zonder aan te dringen — en bied later opnieuw aan.',
                 'Ondersteun waar nodig, maar neem niet over wat iemand zelf nog kan.',
             ],
-            'tip_title' => 'Geef twee opties',
-            'tip_text' => 'Twee opties zijn vaak genoeg. "Wil je meedoen met de wandeling of liever hier iets lezen?" geeft regie zonder te overweldigen. Bekijk initiatieven die keuzevrijheid inbouwen.',
+            'tip_title' => 'Laat de regie waar ze hoort',
+            'tip_text' => 'Autonomie gaat niet over het aanbieden van keuzes, maar over zelfbeschikking. Een bewoner is een volwassene die zijn eigen leven leidt. Ondersteun waar nodig, maar neem niet over wat iemand zelf nog kan.',
 
             'adaptations_question' => 'Wat als een bewoner niet meer zelf kan kiezen?',
             'adaptations' => [
@@ -168,9 +169,9 @@ return [
             'quote' => 'Niet: wat is het zorgprofiel? Maar: wie is deze mens?',
 
             'ik_wil' => 'Vertrekken vanuit levensverhaal en identiteit van de persoon.',
-            'description' => 'De M van Mensgericht gaat over vertrekken vanuit het levensverhaal en de identiteit van de persoon. Een activiteit is pas waardevol als ze aansluit bij wie de bewoner is, wat die heeft meegemaakt en waar die van houdt. Het draait om de mens achter de zorgvraag.',
+            'description' => 'De M van Mensgericht gaat over vertrekken vanuit het levensverhaal en de identiteit van de persoon. Een activiteit is pas waardevol als ze aansluit bij wie de bewoner is, wat die heeft meegemaakt en waar die van houdt. Vertrek niet vanuit activiteiten, maar vanuit mensen — activiteiten zouden de identiteit van bewoners moeten versterken.',
             'author_name' => 'Maite Mallentjer',
-            'author_role' => 'pedagoog dagbesteding',
+            'author_role' => 'ouderenpsycholoog en host van Studio Bomma',
             'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Ontdekken wat voor elke individuele bewoner belangrijk is.',
@@ -190,8 +191,8 @@ return [
             ],
             'reflection_subtitle' => 'Ken ik de mens achter de bewoner?',
             'reflection_questions' => [
-                'Voer een kort gesprek met familie over wie deze persoon is en was.',
-                'Vertrek vanuit het levensverhaal bij het kiezen van activiteiten.',
+                'Doe alles wat je kan om deze persoon echt te leren kennen: wie is hij, wat typeert haar, wat geeft betekenis, plezier, trots of troost?',
+                'Kies activiteiten die de identiteit van bewoners versterken — die aansluiten bij wie ze zijn en wat voor hen betekenis heeft.',
                 'Maak persoonlijke interesses en waarden zichtbaar in de leefomgeving.',
                 'Behandel bewoners als volwaardige gesprekspartners, niet als zorgdossier.',
             ],
@@ -222,7 +223,7 @@ return [
             'ik_wil' => 'Sociale verbinding en wederkerigheid — niet naast maar met elkaar.',
             'description' => 'De tweede A van DIAMANT staat voor Anderen: sociale verbinding en wederkerigheid met medebewoners, medewerkers, familie en de buitenwereld. Het gaat om niet naast maar met elkaar bezig zijn — echte interactie, niet alleen fysieke nabijheid.',
             'author_name' => 'Maite Mallentjer',
-            'author_role' => 'pedagoog dagbesteding',
+            'author_role' => 'ouderenpsycholoog en host van Studio Bomma',
             'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Echte verbinding creëren, niet alleen fysieke nabijheid.',
@@ -271,10 +272,10 @@ return [
             'subtitle' => 'Het leven voelt vertrouwd. Huiselijk, gewoon, thuis.',
             'quote' => 'Niet: het is tijd voor de activiteit. Maar: het is gewoon een mooie dag.',
 
-            'ik_wil' => 'Aansluiten bij het gewone leven — huiselijk, niet schools.',
-            'description' => 'De N van Normalisatie draait om aansluiten bij het gewone leven — huiselijk, niet schools. Activiteiten mogen niet kunstmatig aanvoelen. Het gaat om een herkenbare sfeer, vertrouwde bezigheden en een normaal dagritme — zo dicht mogelijk bij hoe het leven buiten het woonzorgcentrum eruitziet.',
+            'ik_wil' => 'Aansluiten bij hoe mensen thuis zouden leven — vertrouwd en herkenbaar.',
+            'description' => 'Een woonzorgcentrum is geen ziekenhuis, geen hotel en geen instelling — het is in de eerste plaats de thuis van de bewoners. Normalisatie betekent dat het dagelijkse leven zoveel mogelijk aansluit bij hoe mensen thuis zouden leven: huiselijk, vertrouwd en herkenbaar. Activiteiten mogen niet kunstmatig aanvoelen — het gaat om een normaal dagritme en vertrouwde bezigheden.',
             'author_name' => 'Maite Mallentjer',
-            'author_role' => 'pedagoog dagbesteding',
+            'author_role' => 'ouderenpsycholoog en host van Studio Bomma',
             'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Activiteiten organiseren die niet als "les" of "therapie" aanvoelen.',
@@ -294,10 +295,11 @@ return [
             ],
             'reflection_subtitle' => 'Voelt het hier aan als thuis?',
             'reflection_questions' => [
-                'Verplaats activiteiten naar huiselijke plekken: de keuken, de tuin, de huiskamer.',
-                'Gebruik vertrouwde bezigheden: samen koken, de tafel dekken, de krant lezen.',
-                'Laat bewoners spontaan aansluiten in plaats van iedereen tegelijk op te halen.',
-                'Kies activiteiten die passen bij de generatie en cultuur van je bewoners.',
+                'Zou dit ook zo kunnen in een gewone thuis?',
+                'Kunnen bewoners hun eigen gewoontes behouden?',
+                'Is de omgeving persoonlijk en herkenbaar?',
+                'Zijn er gewone, dagelijkse bezigheden zichtbaar?',
+                'Wordt het leven georganiseerd rond mensen of rond systemen?',
             ],
             'tip_title' => 'Maak het herkenbaar',
             'tip_text' => 'De beste activiteiten zijn soms geen activiteiten. Samen koken, de tafel dekken, de was opvouwen — het zijn herkenbare handelingen die structuur en zinvolheid geven.',
@@ -326,7 +328,7 @@ return [
             'ik_wil' => 'Focussen op wat iemand wél kan, krachten benutten.',
             'description' => 'De T van Talent draait om vertrekken vanuit krachten in plaats van beperkingen — ontdekken wat iemand nog wél kan en meebrengt, en dat zichtbaar maken en waarderen.',
             'author_name' => 'Maite Mallentjer',
-            'author_role' => 'pedagoog dagbesteding',
+            'author_role' => 'ouderenpsycholoog en host van Studio Bomma',
             'author_image' => '/img/wonen-en-leven/maitemallentjer.jpg',
             'challenges' => [
                 'Talenten ontdekken bij bewoners die zichzelf onderschatten.',

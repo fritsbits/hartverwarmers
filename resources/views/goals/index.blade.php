@@ -11,7 +11,8 @@
                 <span class="section-label section-label-hero">Het DIAMANT-model</span>
                 <h1 class="mt-1">Zeven doelen om bewoners te laten schitteren</h1>
                 <p class="text-2xl text-[var(--color-text-secondary)] mt-4" style="font-weight: var(--font-weight-light);">Het DIAMANT-model biedt activiteitenbegeleiders in de ouderenzorg een helder kader: zeven doelstellingen die samen beschrijven wat een deugddoende activiteit kenmerkt. Niet als afvinklijst, maar als kompas.</p>
-                
+
+                <p class="text-[var(--color-text-secondary)] mt-6">Het DIAMANT-model is ontstaan vanuit de praktijk. Het biedt houvast om naar complexe situaties te kijken en er samen het gesprek over aan te gaan. Het is geen wetenschappelijk gevalideerd onderzoeksmodel, maar een praktisch hulpmiddel.</p>
             </div>
         </div>
     </section>
@@ -52,11 +53,7 @@
                         <div class="flex gap-5 mt-4 justify-center">
                             <figure class="photo-polaroid" style="transform: rotate(-3deg)">
                                 <img src="/img/wonen-en-leven/maitemallentjer.jpg" alt="Maite Mallentjer" class="w-36 aspect-square object-cover">
-                                <figcaption><strong class="text-[var(--color-text-primary)]">Maite Mallentjer</strong><br><small>Pedagoog dagbesteding</small></figcaption>
-                            </figure>
-                            <figure class="photo-polaroid -mt-2" style="transform: rotate(2.5deg)">
-                                <img src="/img/wonen-en-leven/nadinepraet.jpg" alt="Nadine Praet" class="w-36 aspect-square object-cover">
-                                <figcaption><strong class="text-[var(--color-text-primary)]">Nadine Praet</strong><br><small>Onderzoeker ouderenzorg</small></figcaption>
+                                <figcaption><strong class="text-[var(--color-text-primary)]">Maite Mallentjer</strong><br><small>Ouderenpsycholoog en host van Studio Bomma</small></figcaption>
                             </figure>
                         </div>
                     </div>

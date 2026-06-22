@@ -60,9 +60,8 @@ class GoalTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Maite Mallentjer');
-        $response->assertSee('Nadine Praet');
-        $response->assertSee('Pedagoog dagbesteding');
-        $response->assertSee('Onderzoeker ouderenzorg');
+        $response->assertSee('Ouderenpsycholoog en host van Studio Bomma');
+        $response->assertDontSee('Nadine Praet');
         $response->assertDontSee('FEBI-congres 2025');
     }
 

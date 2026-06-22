@@ -83,7 +83,7 @@
 
                     <figure class="photo-polaroid mt-8 inline-block" style="transform: rotate(-1.5deg)">
                         <img src="/img/wonen-en-leven/maitemallentjer.jpg" alt="Maite Mallentjer" class="w-full aspect-square object-cover">
-                        <figcaption><strong class="text-[var(--color-text-primary)]">Maite Mallentjer</strong><br><small>Pedagoog dagbesteding</small></figcaption>
+                        <figcaption><strong class="text-[var(--color-text-primary)]">Maite Mallentjer</strong><br><small>Ouderenpsycholoog en host van Studio Bomma</small></figcaption>
                     </figure>
                     <p class="text-[var(--color-text-secondary)] mt-3" style="font-weight: var(--font-weight-light);">Hielp Hartverwarmers mee vormgeven bij de lancering in 2020. Brengt in 2026 haar expertise in via het <a href="{{ route('goals.index') }}" class="underline hover:text-[var(--color-primary)]">DIAMANT-model</a> — een kwaliteitskader dat ons helpt toe te werken naar betere activiteiten.</p>
                 </div>
