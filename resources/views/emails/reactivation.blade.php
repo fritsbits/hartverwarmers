@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Hartverwarmers · activiteiten voor je bewoners</title>
+    <style>
+        body { margin: 0; padding: 0; background: #FEF8F4; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #231E1A; }
+        a { color: #E8764B; }
+        .heading-serif { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; letter-spacing: -0.01em; }
+        .section-label { color: #E8764B; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+        .meta { color: #756C65; font-size: 13px; }
+        .card { background: #FFFFFF; border: 1px solid #EBE4DE; border-radius: 10px; }
+        .btn { display: inline-block; background: #E8764B; color: #FFFFFF !important; font-weight: 700; font-size: 15px; padding: 13px 28px; border-radius: 50px; text-decoration: none; }
+        @media (prefers-color-scheme: dark) {
+            body { background: #FEF8F4 !important; color: #231E1A !important; }
+            a { color: #E8764B !important; }
+            .meta { color: #756C65 !important; }
+        }
+    </style>
+</head>
+<body style="margin:0;padding:0;background:#FEF8F4">
+
+<div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden">{{ $content->fichesCount }} kant-en-klare activiteiten van collega's, klaar voor je bewoners.</div>
+
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#FEF8F4">
+    <tr>
+        <td align="center" style="padding:32px 16px">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%">
+
+                {{-- Header --}}
+                <tr>
+                    <td align="center" style="padding:8px 0 32px 0">
+                        <img src="{{ asset('img/hartverwarmers-logo-email.png') }}" alt="Hartverwarmers" width="40" height="40" style="display:block;border:0;margin:0 auto 8px auto">
+                        <div class="heading-serif" style="font-size:26px;color:#231E1A;line-height:1.1">Hartverwarmers</div>
+                        <div style="color:#756C65;font-size:12px;margin-top:6px">voor en door animatoren in de zorg</div>
+                    </td>
+                </tr>
+
+                {{-- Intro --}}
+                <tr>
+                    <td style="padding:0 0 24px 0;line-height:1.65;font-size:15px">
+                        <p style="margin:0 0 14px 0"><strong>Hoi {{ $notifiable->first_name }},</strong></p>
+                        <p style="margin:0 0 14px 0">Op Hartverwarmers delen honderden animatoren uit woonzorgcentra hun activiteiten met elkaar. Elke week komen er nieuwe bij.</p>
+                        <p style="margin:0">Je maakte ooit een account, maar bent nog niet echt komen rondkijken. Zonde, want hier vind je honderden kant-en-klare activiteiten die je zo bij je bewoners kan gebruiken.</p>
+                    </td>
+                </tr>
+
+                {{-- Early CTA --}}
+                <tr>
+                    <td style="padding:8px 0 32px 0;text-align:center">
+                        <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, \App\Support\EmailLink::to(route('themes.index'), 'reactivatie-2026-06', 'newsletter', 'themakalender')) }}" class="btn" style="display:inline-block;background:#E8764B;color:#FFFFFF;font-weight:700;font-size:15px;padding:13px 28px;border-radius:50px;text-decoration:none">Ontdek de activiteiten &rarr;</a>
+                    </td>
+                </tr>
+
+                {{-- Hero stat band --}}
+                <tr>
+                    <td style="padding:0 0 36px 0">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#FDF3EE;border:1px solid #EBE4DE;border-radius:12px">
+                            <tr>
+                                <td style="padding:28px 24px;text-align:center">
+                                    <div class="heading-serif" style="font-size:48px;color:#E8764B;line-height:1">{{ $content->fichesCount }}+</div>
+                                    <div style="font-size:15px;color:#231E1A;margin-top:8px;line-height:1.5">kant-en-klare activiteiten van collega's, klaar om morgen bij je bewoners te gebruiken</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                {{-- Themakalender section --}}
+                <tr>
+                    <td style="padding:0 0 36px 0">
+                        <div class="section-label" style="margin-bottom:14px">Nieuw &middot; de themakalender is terug</div>
+                        <div class="heading-serif" style="font-size:22px;color:#231E1A;margin-bottom:10px">Elke maand een thema, met de activiteiten erbij</div>
+                        <p style="margin:0 0 18px 0;font-size:15px;color:#231E1A;line-height:1.6">Elke maand inspiratie rond een thema, met de bijhorende activiteiten er meteen aan gekoppeld. Zo vind je in een handomdraai een kant-en-klare activiteit voor wat er die maand leeft.</p>
+
+                        @if ($content->themes->isNotEmpty())
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FFFFFF;border:1px solid #EBE4DE;border-radius:10px;margin-bottom:18px">
+                            @foreach ($content->themes as $occurrence)
+                                <tr>
+                                    <td style="padding:14px 16px;{{ ! $loop->last ? 'border-bottom:1px solid #EBE4DE;' : '' }}">
+                                        <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, \App\Support\EmailLink::to(url('/themas#thema-'.$occurrence->theme->slug), 'reactivatie-2026-06', 'newsletter', 'thema')) }}" style="text-decoration:none;color:inherit;display:block">
+                                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                                <tr>
+                                                    <td width="80" valign="middle" style="padding-right:14px">
+                                                        <div class="heading-serif" style="background:#FDF3EE;color:#E8764B;font-size:12px;padding:6px 10px;border-radius:6px;text-align:center;white-space:nowrap">{{ $occurrence->start_date->locale('nl_BE')->isoFormat('D MMM') }}</div>
+                                                    </td>
+                                                    <td valign="middle">
+                                                        <div style="font-weight:600;font-size:14px">{{ $occurrence->theme->title }}</div>
+                                                        <div class="meta">{{ $occurrence->theme->fiches_count ?? 0 }} activiteiten</div>
+                                                    </td>
+                                                    <td valign="middle" width="20" align="right" style="color:#E8764B;font-size:18px">&rarr;</td>
+                                                </tr>
+                                            </table>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </table>
+                        @endif
+                    </td>
+                </tr>
+
+                {{-- Single CTA --}}
+                <tr>
+                    <td style="padding:0 0 40px 0;text-align:center">
+                        <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, \App\Support\EmailLink::to(route('themes.index'), 'reactivatie-2026-06', 'newsletter', 'themakalender')) }}" class="btn" style="display:inline-block;background:#E8764B;color:#FFFFFF;font-weight:700;font-size:15px;padding:13px 28px;border-radius:50px;text-decoration:none">Ontdek de activiteiten &rarr;</a>
+                    </td>
+                </tr>
+
+                {{-- Signoff --}}
+                <tr>
+                    <td style="padding:0 0 24px 0;line-height:1.6;font-size:15px;color:#231E1A">
+                        <p style="margin:0">Tot snel!<br>Het Hartverwarmers-team</p>
+                    </td>
+                </tr>
+
+                {{-- Footer --}}
+                <tr>
+                    <td style="padding:24px 0 0 0;border-top:1px solid #EBE4DE;text-align:center;color:#756C65;font-size:12px;line-height:1.6">
+                        <p style="margin:0 0 8px 0">Hartverwarmers · voor en door animatoren in de zorg</p>
+                        <p style="margin:0">Je krijgt deze e-mail omdat je een account hebt op Hartverwarmers.<br>
+                            <a href="{{ route('profile.notifications') }}" style="color:#756C65;text-decoration:underline">Meldingen beheren</a>
+                            &middot;
+                            <a href="{{ \Illuminate\Support\Facades\URL::signedRoute('newsletter.unsubscribe', ['user' => $notifiable->id]) }}" style="color:#756C65;text-decoration:underline">Uitschrijven</a>
+                        </p>
+                        <p style="margin:8px 0 0 0;font-size:11px">Hartverwarmers · {{ config('mail.from.postal_address') }}</p>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

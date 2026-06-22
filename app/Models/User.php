@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -156,6 +157,19 @@ class User extends Authenticatable
     public function hasCompletedContributorOnboarding(): bool
     {
         return $this->contributor_onboarded_at !== null;
+    }
+
+    public function scopeReactivationCohort(Builder $query): Builder
+    {
+        return $query
+            ->whereNotNull('email_verified_at')
+            ->whereNull('newsletter_unsubscribed_at')
+            ->whereNull('last_visited_at')
+            ->where('created_at', '<', now()->subDays(90))
+            ->whereDoesntHave('onboardingEmailLogs', function (Builder $log): void {
+                $log->where('mail_key', config('newsletter.reactivation_mail_key'));
+            })
+            ->orderByDesc('created_at');
     }
 
     public function newFicheCommentsCount(): int

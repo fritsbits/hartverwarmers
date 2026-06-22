@@ -136,4 +136,14 @@ class MailPreviewTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    public function test_reactivation_email_preview_renders(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)
+            ->get('/admin/mails/reactivation/preview')
+            ->assertOk()
+            ->assertSee('themakalender', false);
+    }
 }

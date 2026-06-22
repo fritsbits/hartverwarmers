@@ -13,9 +13,11 @@ use App\Notifications\OnboardingFirstBookmarkNotification;
 use App\Notifications\OnboardingMilestone10BookmarksNotification;
 use App\Notifications\OnboardingMilestone50BookmarksNotification;
 use App\Notifications\OnboardingTopFiveNotification;
+use App\Notifications\ReactivationNotification;
 use App\Notifications\WelcomeNotification;
 use App\Services\ContributorAnniversary\Composer as AnniversaryComposer;
 use App\Services\MonthlyDigest\Composer;
+use App\Support\Reactivation\ReactivationContent;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\Request;
@@ -69,6 +71,12 @@ class MailPreviewController extends Controller
             'description' => 'Cohort-gebaseerde maandelijkse update: themadagen, diamantje, recente fiches.',
             'category' => 'newsletter',
             'trigger' => 'Maandelijks (cohort, 08:00)',
+        ],
+        'reactivation' => [
+            'label' => 'Reactivatie',
+            'description' => 'Eenmalige reactivatiecampagne voor slapende contacten — waardegedreven, met de themakalender als blikvanger.',
+            'category' => 'newsletter',
+            'trigger' => 'Dagelijkse batch (eenmalige campagne, 10:00)',
         ],
         'welcome' => [
             'label' => 'Welkomstmail',
@@ -211,8 +219,14 @@ class MailPreviewController extends Controller
             'onboarding-milestone-50-bookmarks' => (new OnboardingMilestone50BookmarksNotification(50))->toMail($user),
             'diamond-awarded' => $this->buildDiamondAwardedMail($user),
             'anniversary' => $this->buildAnniversaryMail($user),
+            'reactivation' => $this->buildReactivationMail($user),
             default => throw new \InvalidArgumentException("Unknown email key: {$email}"),
         };
+    }
+
+    private function buildReactivationMail(mixed $user): MailMessage
+    {
+        return (new ReactivationNotification(ReactivationContent::build()))->toMail($user);
     }
 
     private function buildOnboardingFirstBookmarkMailMessage(mixed $user): MailMessage
