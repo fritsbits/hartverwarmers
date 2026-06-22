@@ -78,6 +78,7 @@ class ReactivationNotificationTest extends TestCase
         $themeLink = collect($destinations)->first(fn (string $d): bool => str_contains($d, '#thema-'.$theme->slug));
 
         $this->assertNotNull($themeLink, 'each theme row should be a tracked link to the theme anchor');
+        $this->assertStringContainsString('maand='.$occurrence->start_date->format('Y-m'), $themeLink, "the link must target the theme's month so the #thema- anchor is on the loaded page");
         $this->assertStringContainsString('utm_campaign=reactivatie-2026-06', $themeLink);
         $this->assertStringContainsString('utm_source=newsletter', $themeLink);
         $this->assertStringContainsString('utm_content=thema', $themeLink);

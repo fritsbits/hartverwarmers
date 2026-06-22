@@ -80,7 +80,7 @@
                             @foreach ($content->themes as $occurrence)
                                 <tr>
                                     <td style="padding:14px 16px;{{ ! $loop->last ? 'border-bottom:1px solid #EBE4DE;' : '' }}">
-                                        <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, \App\Support\EmailLink::to(url('/themas#thema-'.$occurrence->theme->slug), 'reactivatie-2026-06', 'newsletter', 'thema')) }}" style="text-decoration:none;color:inherit;display:block">
+                                        <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, \App\Support\EmailLink::to(route('themes.index', ['maand' => $occurrence->start_date->format('Y-m')]).'#thema-'.$occurrence->theme->slug, 'reactivatie-2026-06', 'newsletter', 'thema')) }}" style="text-decoration:none;color:inherit;display:block">
                                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                                                 <tr>
                                                     <td width="80" valign="middle" style="padding-right:14px">
