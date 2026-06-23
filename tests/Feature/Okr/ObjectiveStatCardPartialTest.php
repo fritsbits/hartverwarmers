@@ -36,6 +36,39 @@ class ObjectiveStatCardPartialTest extends TestCase
         $this->assertStringContainsString('Doel', $html);
     }
 
+    public function test_renders_caption_describing_what_is_measured(): void
+    {
+        $stat = new ObjectiveStat(
+            title: 'Activatie',
+            slug: 'onboarding',
+            value: new MetricValue(current: 51, previous: 50, unit: ''),
+            target: 60,
+            metricKey: 'onboarding_signup_count',
+            caption: 'nieuwe aanmeldingen · laatste 30 dagen',
+        );
+
+        $html = $this->render($stat);
+
+        $this->assertStringContainsString('nieuwe aanmeldingen · laatste 30 dagen', $html);
+    }
+
+    public function test_score_value_and_goal_render_as_fraction_out_of_max(): void
+    {
+        $stat = new ObjectiveStat(
+            title: 'Fichekwaliteit',
+            slug: 'presentatiekwaliteit',
+            value: new MetricValue(current: 37, unit: '', outOf: 100),
+            target: 45,
+            metricKey: 'presentation_score_avg',
+            caption: 'gemiddelde over alle gepubliceerde fiches',
+        );
+
+        $html = $this->render($stat);
+
+        $this->assertStringContainsString('37/100', $html);
+        $this->assertStringContainsString('45/100', $html);
+    }
+
     public function test_no_progress_bar_without_target_and_no_sparkline(): void
     {
         $stat = new ObjectiveStat(

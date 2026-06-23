@@ -4,6 +4,7 @@ namespace App\Metrics;
 
 use App\Models\OnboardingEmailLog;
 use App\Services\Okr\Metric;
+use App\Services\Okr\MetricPeriod;
 use App\Services\Okr\MetricValue;
 use Carbon\CarbonImmutable;
 
@@ -52,6 +53,11 @@ class NewsletterActivationRateMetric implements Metric
             unit: '%',
             lowData: $sent > 0 && $sent < 5,
         );
+    }
+
+    public function caption(string $range): string
+    {
+        return 'van lezers kwam terug binnen 7 dagen · '.MetricPeriod::label($range);
     }
 
     public function computeAsOf(CarbonImmutable $date): MetricValue

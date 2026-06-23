@@ -7,6 +7,7 @@ use App\Models\Fiche;
 use App\Models\Like;
 use App\Models\UserInteraction;
 use App\Services\Okr\Metric;
+use App\Services\Okr\MetricPeriod;
 use App\Services\Okr\MetricValue;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Carbon;
@@ -49,6 +50,11 @@ class ThankRateMetric implements Metric
             unit: '%',
             lowData: $currentDownloads > 0 && $currentDownloads < 5,
         );
+    }
+
+    public function caption(string $range): string
+    {
+        return 'van downloads kreeg een bedankje · '.MetricPeriod::label($range);
     }
 
     public function computeAsOf(CarbonImmutable $date): MetricValue

@@ -48,6 +48,11 @@ class MetricRegistry
         );
     }
 
+    public function caption(string $key, string $range): string
+    {
+        return $this->resolve($key)->caption($range);
+    }
+
     public function computeAsOf(string $key, CarbonImmutable $date): MetricValue
     {
         return $this->memo['a|'.$key.'|'.$date->toIso8601String()] ??= $this->cachedAsOf($key, $date);

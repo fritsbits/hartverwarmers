@@ -41,6 +41,7 @@ final class ObjectiveStatBuilder
             value: $this->registry->compute($metricKey, $range),
             target: $primaryKr->target_value,
             metricKey: $metricKey,
+            caption: $this->registry->caption($metricKey, $range),
         );
     }
 }

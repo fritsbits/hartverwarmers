@@ -9,6 +9,7 @@ final class MetricValue
         public readonly int|float|null $previous = null,
         public readonly string $unit = '',
         public readonly bool $lowData = false,
+        public readonly ?int $outOf = null,
     ) {}
 
     public function delta(): int|float|null
@@ -24,6 +25,10 @@ final class MetricValue
     {
         if ($this->current === null) {
             return '—';
+        }
+
+        if ($this->outOf !== null) {
+            return "{$this->current}/{$this->outOf}";
         }
 
         return "{$this->current}{$this->unit}";

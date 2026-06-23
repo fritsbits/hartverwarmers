@@ -7,6 +7,7 @@ use App\Models\Fiche;
 use App\Models\Like;
 use App\Models\OnboardingEmailLog;
 use App\Services\Okr\Metric;
+use App\Services\Okr\MetricPeriod;
 use App\Services\Okr\MetricValue;
 use Carbon\CarbonImmutable;
 
@@ -88,6 +89,11 @@ class OnboardingFollowupResponseRateMetric implements Metric
         }
 
         return new MetricValue(current: (int) round($responded / $sentCount * 100), unit: '%');
+    }
+
+    public function caption(string $range): string
+    {
+        return 'reageerde op de opvolgmail · '.MetricPeriod::label($range);
     }
 
     public function computeAsOf(CarbonImmutable $date): MetricValue

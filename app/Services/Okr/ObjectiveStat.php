@@ -10,5 +10,6 @@ final class ObjectiveStat
         public readonly MetricValue $value,
         public readonly ?int $target = null,
         public readonly ?string $metricKey = null,
+        public readonly ?string $caption = null,
     ) {}
 }

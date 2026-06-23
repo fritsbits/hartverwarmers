@@ -20,7 +20,12 @@ class PresentationScoreAvgMetric implements Metric
             return new MetricValue(current: null, lowData: true);
         }
 
-        return new MetricValue(current: (int) round($avg), unit: '');
+        return new MetricValue(current: (int) round($avg), unit: '', outOf: 100);
+    }
+
+    public function caption(string $range): string
+    {
+        return 'gemiddelde over alle gepubliceerde fiches';
     }
 
     public function computeAsOf(CarbonImmutable $date): MetricValue
@@ -38,6 +43,6 @@ class PresentationScoreAvgMetric implements Metric
             return new MetricValue(current: null, lowData: true);
         }
 
-        return new MetricValue(current: (int) round($avg), unit: '');
+        return new MetricValue(current: (int) round($avg), unit: '', outOf: 100);
     }
 }

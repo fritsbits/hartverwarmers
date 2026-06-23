@@ -4,6 +4,7 @@ namespace App\Metrics;
 
 use App\Models\User;
 use App\Services\Okr\Metric;
+use App\Services\Okr\MetricPeriod;
 use App\Services\Okr\MetricValue;
 use Carbon\CarbonImmutable;
 
@@ -29,6 +30,11 @@ class OnboardingReturn7dRateMetric implements Metric
         $rate = $total > 0 ? (int) round($returned / $total * 100) : 0;
 
         return new MetricValue(current: $rate, unit: '%', lowData: $total > 0 && $total < 5);
+    }
+
+    public function caption(string $range): string
+    {
+        return 'kwam terug binnen 7 dagen · '.MetricPeriod::label($range);
     }
 
     public function computeAsOf(CarbonImmutable $date): MetricValue

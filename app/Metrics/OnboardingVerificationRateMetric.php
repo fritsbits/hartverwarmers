@@ -4,6 +4,7 @@ namespace App\Metrics;
 
 use App\Models\User;
 use App\Services\Okr\Metric;
+use App\Services\Okr\MetricPeriod;
 use App\Services\Okr\MetricValue;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,6 +31,11 @@ class OnboardingVerificationRateMetric implements Metric
             unit: '%',
             lowData: $cohortCount > 0 && $cohortCount < 5,
         );
+    }
+
+    public function caption(string $range): string
+    {
+        return 'bevestigde het e-mailadres · '.MetricPeriod::label($range);
     }
 
     public function computeAsOf(CarbonImmutable $date): MetricValue

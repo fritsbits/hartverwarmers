@@ -39,6 +39,29 @@ class ObjectiveStatBuilderTest extends TestCase
         );
     }
 
+    public function test_caption_propagates_from_metric_and_reflects_range(): void
+    {
+        $this->seed(OkrSeeder::class);
+
+        $activatieMonth = $this->build('month')->firstWhere('slug', 'onboarding');
+        $this->assertStringContainsString('nieuwe aanmeldingen', $activatieMonth->caption);
+        $this->assertStringContainsString('laatste 30 dagen', $activatieMonth->caption);
+
+        $activatieWeek = $this->build('week')->firstWhere('slug', 'onboarding');
+        $this->assertStringContainsString('laatste 7 dagen', $activatieWeek->caption);
+    }
+
+    public function test_presentation_score_caption_is_range_independent(): void
+    {
+        $this->seed(OkrSeeder::class);
+
+        $week = $this->build('week')->firstWhere('slug', 'presentatiekwaliteit');
+        $quarter = $this->build('quarter')->firstWhere('slug', 'presentatiekwaliteit');
+
+        $this->assertSame('gemiddelde over alle gepubliceerde fiches', $week->caption);
+        $this->assertSame($week->caption, $quarter->caption);
+    }
+
     public function test_objective_without_a_metric_keyed_kr_is_skipped(): void
     {
         $obj = Objective::factory()->create(['slug' => 'leeg', 'title' => 'Leeg', 'position' => 1]);

@@ -20,11 +20,16 @@
             @endif
         </flux:heading>
 
+        @if($stat->caption)
+            <p class="text-xs text-[var(--color-text-secondary)] mt-1 leading-snug">{{ $stat->caption }}</p>
+        @endif
+
+        @php $targetSuffix = $stat->value->outOf !== null ? '/'.$stat->value->outOf : $stat->value->unit; @endphp
         <p class="text-[11px] tabular-nums text-[var(--color-text-tertiary)] mt-1">
             @if($stat->value->current === null)
                 Nog niet gemeten
             @elseif($stat->target !== null)
-                <span class="uppercase tracking-wide">Doel</span> {{ $stat->target }}{{ $stat->value->unit }}
+                <span class="uppercase tracking-wide">Doel</span> {{ $stat->target }}{{ $targetSuffix }}
             @else
                 Nog geen doel ingesteld
             @endif

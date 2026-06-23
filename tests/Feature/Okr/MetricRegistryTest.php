@@ -131,6 +131,11 @@ class FakeMetric implements Metric
     {
         return new MetricValue(current: 42, unit: '%');
     }
+
+    public function caption(string $range): string
+    {
+        return 'fake';
+    }
 }
 
 class CountingMetric implements Metric
@@ -149,5 +154,10 @@ class CountingMetric implements Metric
         self::$calls++;
 
         return new MetricValue(current: 1, unit: '%');
+    }
+
+    public function caption(string $range): string
+    {
+        return 'counter';
     }
 }

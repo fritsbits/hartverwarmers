@@ -6,6 +6,7 @@ use App\Models\Comment;
 use App\Models\Like;
 use App\Models\User;
 use App\Services\Okr\Metric;
+use App\Services\Okr\MetricPeriod;
 use App\Services\Okr\MetricValue;
 use Carbon\CarbonImmutable;
 
@@ -82,6 +83,11 @@ class OnboardingInteraction30dRateMetric implements Metric
             unit: '%',
             lowData: $cohortCount > 0 && $cohortCount < 5,
         );
+    }
+
+    public function caption(string $range): string
+    {
+        return 'was actief in de eerste 30 dagen · '.MetricPeriod::label($range);
     }
 
     public function computeAsOf(CarbonImmutable $date): MetricValue

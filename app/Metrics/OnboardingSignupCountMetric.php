@@ -4,6 +4,7 @@ namespace App\Metrics;
 
 use App\Models\User;
 use App\Services\Okr\Metric;
+use App\Services\Okr\MetricPeriod;
 use App\Services\Okr\MetricValue;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,6 +32,11 @@ class OnboardingSignupCountMetric implements Metric
             ->count();
 
         return new MetricValue(current: $current, previous: $previous);
+    }
+
+    public function caption(string $range): string
+    {
+        return 'nieuwe aanmeldingen · '.MetricPeriod::label($range);
     }
 
     public function computeAsOf(CarbonImmutable $date): MetricValue
