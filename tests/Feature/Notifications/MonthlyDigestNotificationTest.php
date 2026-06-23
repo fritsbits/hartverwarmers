@@ -142,6 +142,55 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringContainsString("Thema's om alvast in te plannen", $html);
     }
 
+    public function test_theme_links_target_each_occurrences_own_month(): void
+    {
+        $juneTheme = Theme::factory()->create(['title' => 'Dag van de mantelzorger', 'slug' => 'dag-van-de-mantelzorger']);
+        $julyTheme = Theme::factory()->create(['title' => 'Vlaamse feestdag', 'slug' => 'vlaamse-feestdag']);
+
+        $payload = new Payload(
+            themes: new Collection([
+                ThemeOccurrence::factory()->for($juneTheme)->create(['start_date' => '2026-06-23']),
+                ThemeOccurrence::factory()->for($julyTheme)->create(['start_date' => '2026-07-11']),
+            ]),
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 2,
+            newFicheCount: 0,
+            sentAt: now(),
+        );
+
+        $user = User::factory()->create();
+        $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
+
+        preg_match_all('/[?&]to=([A-Za-z0-9%]+)/', $html, $matches);
+        $destinations = array_map(
+            fn (string $encoded): string => base64_decode(urldecode($encoded), true) ?: '',
+            $matches[1],
+        );
+
+        $juneLink = $this->firstDestinationContaining($destinations, '#thema-dag-van-de-mantelzorger');
+        $this->assertNotNull($juneLink, 'expected a tracked link to the mantelzorger anchor');
+        $this->assertStringContainsString('maand=2026-06', $juneLink);
+
+        $julyLink = $this->firstDestinationContaining($destinations, '#thema-vlaamse-feestdag');
+        $this->assertNotNull($julyLink, 'expected a tracked link to the vlaamse-feestdag anchor');
+        $this->assertStringContainsString('maand=2026-07', $julyLink);
+    }
+
+    /**
+     * @param  array<int, string>  $destinations
+     */
+    private function firstDestinationContaining(array $destinations, string $needle): ?string
+    {
+        foreach ($destinations as $destination) {
+            if (str_contains($destination, $needle)) {
+                return $destination;
+            }
+        }
+
+        return null;
+    }
+
     public function test_themes_section_hidden_when_zero_themes(): void
     {
         $user = User::factory()->create();
