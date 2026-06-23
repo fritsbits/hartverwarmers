@@ -26,7 +26,7 @@ class AdminDashboardController extends Controller
     public function __invoke(): View
     {
         $tab = request()->get('tab', 'overzicht');
-        if (! in_array($tab, ['overzicht', 'presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief'], true)) {
+        if (! in_array($tab, ['overzicht', 'presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief', 'reactivatie'], true)) {
             $tab = 'overzicht';
         }
 

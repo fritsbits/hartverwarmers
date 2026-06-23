@@ -18,6 +18,7 @@
         'onboarding_followup_response_rate' => 'Aandeel downloaders dat reageerde op de automatische follow-up e-mail.',
         'thank_rate' => 'Aandeel van de downloads dat een bedankje terugstuurde (0–100%).',
         'newsletter_activation_rate' => 'Aandeel nieuwsbrief-ontvangers dat daarna opnieuw actief werd op de site.',
+        'reactivation_rate' => 'Aandeel aangeschreven slapers dat na de reactivatie-mail opnieuw actief werd op de site.',
         default => null,
     };
 @endphp
