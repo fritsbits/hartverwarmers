@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Notifications;
 
-use App\Models\Fiche;
 use App\Models\User;
 use App\Notifications\ContributorAnniversaryNotification;
 use App\Services\ContributorAnniversary\Payload;
@@ -34,50 +33,37 @@ class ContributorAnniversaryNotificationTest extends TestCase
         $this->assertStringContainsString('3 jaar', $mail->subject);
     }
 
-    public function test_rendered_html_includes_all_three_totals(): void
+    public function test_rendered_html_includes_first_fiche_title_and_theme(): void
     {
         $user = User::factory()->create();
-        $payload = new Payload(
-            totalFiches: 4,
-            totalBookmarks: 27,
-            totalComments: 6,
-            spotlightFiche: null,
-            spotlightBookmarkCount: null,
-        );
+        $payload = $this->payload(title: 'Geurtjes-bingo', theme: 'samen koken');
 
-        $html = (new ContributorAnniversaryNotification($payload, year: 1))->toMail($user)->render();
-
-        $this->assertStringContainsString('4 fiches', $html);
-        $this->assertStringContainsString('27', $html);
-        $this->assertStringContainsString('6 reacties', $html);
-    }
-
-    public function test_rendered_html_includes_spotlight_when_payload_has_one(): void
-    {
-        $user = User::factory()->create();
-        $spotlight = Fiche::factory()->create(['title' => 'Geurtjes-bingo']);
-        $payload = new Payload(
-            totalFiches: 4,
-            totalBookmarks: 27,
-            totalComments: 6,
-            spotlightFiche: $spotlight->load('initiative'),
-            spotlightBookmarkCount: 15,
-        );
-
-        $html = (new ContributorAnniversaryNotification($payload, year: 1))->toMail($user)->render();
+        $html = (new ContributorAnniversaryNotification($payload, year: 5))->toMail($user)->render();
 
         $this->assertStringContainsString('Geurtjes-bingo', $html);
-        $this->assertStringContainsString('15', $html);
+        $this->assertStringContainsString('Een idee over samen koken', $html);
     }
 
-    public function test_rendered_html_omits_spotlight_when_payload_has_none(): void
+    public function test_rendered_html_includes_title_without_theme(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->payload(title: 'Geurtjes-bingo', theme: null);
+
+        $html = (new ContributorAnniversaryNotification($payload, year: 5))->toMail($user)->render();
+
+        $this->assertStringContainsString('Geurtjes-bingo', $html);
+        $this->assertStringNotContainsString('Een idee over', $html);
+    }
+
+    public function test_rendered_html_omits_title_when_first_fiche_missing(): void
     {
         $user = User::factory()->create();
         $payload = $this->emptyPayload();
 
-        $html = (new ContributorAnniversaryNotification($payload, year: 1))->toMail($user)->render();
+        $html = (new ContributorAnniversaryNotification($payload, year: 5))->toMail($user)->render();
 
-        $this->assertStringNotContainsString('Jouw meest geliefde fiche', $html);
+        $this->assertStringNotContainsString('Een idee over', $html);
+        $this->assertStringContainsString('eerste fiche op Hartverwarmers', $html);
     }
 
     public function test_signoff_present(): void
@@ -101,33 +87,55 @@ class ContributorAnniversaryNotificationTest extends TestCase
         $this->assertStringContainsString('type=kudos', $html);
     }
 
-    public function test_spotlight_cta_carries_utm(): void
+    public function test_primary_cta_carries_utm(): void
     {
         $user = User::factory()->create();
-        $spotlight = Fiche::factory()->create(['title' => 'Geurtjes-bingo']);
-        $payload = new Payload(
-            totalFiches: 4,
-            totalBookmarks: 27,
-            totalComments: 6,
-            spotlightFiche: $spotlight->load('initiative'),
-            spotlightBookmarkCount: 15,
-        );
+        $payload = $this->payload(title: 'Geurtjes-bingo', theme: 'samen koken');
 
-        $html = (new ContributorAnniversaryNotification($payload, year: 1))->toMail($user)->render();
+        $html = (new ContributorAnniversaryNotification($payload, year: 5))->toMail($user)->render();
 
+        $this->assertStringContainsString('Deel je volgende fiche', $html);
         $this->assertStringContainsString('utm_campaign=anniversary', $html);
         $this->assertStringContainsString('utm_source=lifecycle', $html);
         $this->assertStringContainsString('utm_medium=email', $html);
+        $this->assertStringContainsString('utm_content=primary', $html);
+    }
+
+    public function test_secondary_cta_links_to_initiative_with_utm(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->payload(title: 'Geurtjes-bingo', theme: 'samen koken', initiativeName: 'Samen koken', initiativeSlug: 'samen-koken');
+
+        $html = (new ContributorAnniversaryNotification($payload, year: 5))->toMail($user)->render();
+
+        $this->assertStringContainsString('andere uitwerkingen rond Samen koken', $html);
+        $this->assertStringContainsString('initiatieven/samen-koken', $html);
+        $this->assertStringContainsString('utm_content=secondary', $html);
+    }
+
+    public function test_secondary_cta_omitted_when_no_initiative(): void
+    {
+        $user = User::factory()->create();
+        $payload = $this->payload(title: 'Geurtjes-bingo', theme: 'samen koken', initiativeName: null, initiativeSlug: null);
+
+        $html = (new ContributorAnniversaryNotification($payload, year: 5))->toMail($user)->render();
+
+        $this->assertStringNotContainsString('andere uitwerkingen', $html);
+        $this->assertStringNotContainsString('utm_content=secondary', $html);
+    }
+
+    private function payload(?string $title = null, ?string $theme = null, ?string $initiativeName = null, ?string $initiativeSlug = null): Payload
+    {
+        return new Payload(
+            firstFicheTitle: $title,
+            firstFicheTheme: $theme,
+            firstFicheInitiativeName: $initiativeName,
+            firstFicheInitiativeSlug: $initiativeSlug,
+        );
     }
 
     private function emptyPayload(): Payload
     {
-        return new Payload(
-            totalFiches: 0,
-            totalBookmarks: 0,
-            totalComments: 0,
-            spotlightFiche: null,
-            spotlightBookmarkCount: null,
-        );
+        return $this->payload();
     }
 }
