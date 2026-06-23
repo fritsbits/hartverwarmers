@@ -7,6 +7,7 @@ use App\Metrics\OnboardingReturn7dRateMetric;
 use App\Metrics\OnboardingSignupCountMetric;
 use App\Metrics\OnboardingVerificationRateMetric;
 use App\Metrics\PresentationScoreAvgMetric;
+use App\Metrics\ReactivationRateMetric;
 use App\Metrics\ThankRateMetric;
 
 /*
@@ -23,4 +24,5 @@ return [
     'onboarding_followup_response_rate' => OnboardingFollowupResponseRateMetric::class,
     'thank_rate' => ThankRateMetric::class,
     'newsletter_activation_rate' => NewsletterActivationRateMetric::class,
+    'reactivation_rate' => ReactivationRateMetric::class,
 ];
