@@ -23,7 +23,9 @@ composer run dev
 # Build frontend assets
 npm run build
 
-# Run all tests (parallel required — sequential OOMs at ~500 tests)
+# Run all tests (parallel required — sequential OOMs at ~500 tests, ~6x slower)
+# `composer test` is also wired to --parallel. Never pipe test output through
+# tail/head — it buffers until EOF and looks hung for minutes; redirect to a file.
 php artisan test --parallel --compact
 
 # Run a specific test file
@@ -31,6 +33,14 @@ php artisan test --compact tests/Feature/GoalTest.php
 
 # Run a specific test method
 php artisan test --compact --filter=testName
+
+# Regenerate the sqlite test schema dump (tests load database/schema/sqlite-schema.sql
+# instead of replaying all migrations per worker). Optional — new migrations still run
+# on top of the dump, so a stale dump stays correct; refresh it occasionally to keep it
+# lean. Build from a throwaway sqlite file so the curated MySQL/sqlite data is untouched:
+TMP=$(mktemp -d)/s.sqlite; touch "$TMP"
+DB_CONNECTION=sqlite DB_DATABASE="$TMP" php artisan migrate --force
+DB_CONNECTION=sqlite DB_DATABASE="$TMP" php artisan schema:dump --database=sqlite
 
 # Format PHP code (run after any PHP changes)
 vendor/bin/pint --dirty --format agent
