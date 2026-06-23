@@ -21,12 +21,12 @@ class WarmOkrMetricsCommandTest extends TestCase
     {
         $this->seed(OkrSeeder::class);
 
-        $this->assertFalse(Cache::has('okr.compute.onboarding_signup_count.month'));
+        $this->assertFalse(Cache::has('okr.compute.v2.onboarding_signup_count.month'));
 
         $this->artisan('okr:warm-metrics')->assertSuccessful();
 
-        $this->assertTrue(Cache::has('okr.compute.onboarding_signup_count.month'));
-        $this->assertTrue(Cache::has('okr.compute.thank_rate.alltime'));
+        $this->assertTrue(Cache::has('okr.compute.v2.onboarding_signup_count.month'));
+        $this->assertTrue(Cache::has('okr.compute.v2.thank_rate.alltime'));
     }
 
     public function test_command_is_idempotent(): void
@@ -34,10 +34,10 @@ class WarmOkrMetricsCommandTest extends TestCase
         $this->seed(OkrSeeder::class);
 
         $this->artisan('okr:warm-metrics')->assertSuccessful();
-        $first = Cache::get('okr.compute.onboarding_signup_count.month');
+        $first = Cache::get('okr.compute.v2.onboarding_signup_count.month');
 
         $this->artisan('okr:warm-metrics')->assertSuccessful();
 
-        $this->assertEquals($first, Cache::get('okr.compute.onboarding_signup_count.month'));
+        $this->assertEquals($first, Cache::get('okr.compute.v2.onboarding_signup_count.month'));
     }
 }

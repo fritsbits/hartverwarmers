@@ -25,6 +25,15 @@ class MetricRegistry
     private const COMPUTE_TTL_HOURS = 12;
 
     /**
+     * Cached values are serialized MetricValue objects. Adding or removing a
+     * typed property on MetricValue makes older payloads deserialize with an
+     * uninitialized property (fatal on access). Bump this whenever MetricValue's
+     * shape changes so stale payloads are abandoned and a deploy self-heals
+     * without a manual cache flush.
+     */
+    private const CACHE_VERSION = 'v2';
+
+    /**
      * Request-scoped memo. The registry is bound as a singleton, so a given
      * (key, range) / (key, date) is computed at most once per request. This
      * collapses the duplication where multiple initiatives sharing an
@@ -42,7 +51,7 @@ class MetricRegistry
     public function compute(string $key, string $range): MetricValue
     {
         return $this->memo['c|'.$key.'|'.$range] ??= Cache::remember(
-            'okr.compute.'.$key.'.'.$range,
+            'okr.compute.'.self::CACHE_VERSION.'.'.$key.'.'.$range,
             now()->addHours(self::COMPUTE_TTL_HOURS),
             fn () => $this->resolve($key)->compute($range),
         );
@@ -68,7 +77,7 @@ class MetricRegistry
             : now()->addHours(self::COMPUTE_TTL_HOURS);
 
         return Cache::remember(
-            'okr.asof.'.$key.'.'.$date->format('Y-m-d'),
+            'okr.asof.'.self::CACHE_VERSION.'.'.$key.'.'.$date->format('Y-m-d'),
             $ttl,
             fn () => $this->resolve($key)->computeAsOf($date),
         );

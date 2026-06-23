@@ -107,6 +107,19 @@ class MetricRegistryTest extends TestCase
         $this->assertSame(1, CountingMetric::$calls, 'compute() must be cached across requests, not only memoized per instance.');
     }
 
+    public function test_stale_unversioned_cache_payload_is_abandoned(): void
+    {
+        CountingMetric::$calls = 0;
+        // Simulate a MetricValue serialized under the pre-version-bump key shape
+        // (the real-world cause: a payload missing a later-added typed property).
+        Cache::put('okr.compute.counter.month', new MetricValue(current: 999, unit: '%'), now()->addHour());
+
+        $value = (new MetricRegistry(['counter' => CountingMetric::class]))->compute('counter', 'month');
+
+        $this->assertSame(1, $value->current, 'Stale unversioned cache payload must be ignored.');
+        $this->assertSame(1, CountingMetric::$calls, 'A fresh value must be computed under the versioned key.');
+    }
+
     public function test_current_week_as_of_is_cached_across_instances(): void
     {
         CountingMetric::$calls = 0;
