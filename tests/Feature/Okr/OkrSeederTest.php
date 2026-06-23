@@ -13,12 +13,12 @@ class OkrSeederTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_seeder_creates_four_objectives(): void
+    public function test_seeder_creates_five_objectives(): void
     {
         $this->seed(OkrSeeder::class);
 
         $this->assertSame(
-            ['presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief'],
+            ['presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief', 'reactivatie'],
             Objective::orderBy('position')->pluck('slug')->all(),
         );
     }
@@ -57,14 +57,19 @@ class OkrSeederTest extends TestCase
         ], $onboarding->keyResults->pluck('metric_key')->all());
     }
 
-    public function test_seeder_does_not_set_target_values(): void
+    public function test_seeder_only_sets_target_for_reactivation(): void
     {
         $this->seed(OkrSeeder::class);
 
+        // Enkel de reactivatie-KR krijgt een target; alle andere blijven target-loos.
         $this->assertSame(
-            0,
+            1,
             KeyResult::whereNotNull('target_value')->count(),
-            'Seeder must not set target_value — strategic data lives in DB only after admin tinkers.',
+            'Alleen reactivation_rate mag een geseed target hebben.',
+        );
+        $this->assertSame(
+            5,
+            KeyResult::where('metric_key', 'reactivation_rate')->value('target_value'),
         );
     }
 
@@ -73,9 +78,31 @@ class OkrSeederTest extends TestCase
         $this->seed(OkrSeeder::class);
         $this->seed(OkrSeeder::class);
 
-        $this->assertSame(4, Objective::count());
-        $this->assertSame(8, KeyResult::count());
-        $this->assertSame(4, Initiative::count());
+        $this->assertSame(5, Objective::count());
+        $this->assertSame(9, KeyResult::count());
+        $this->assertSame(5, Initiative::count());
+    }
+
+    public function test_seeder_creates_reactivatie_objective_with_kr_and_initiative(): void
+    {
+        $this->seed(OkrSeeder::class);
+
+        $objective = Objective::where('slug', 'reactivatie')->firstOrFail();
+        $this->assertSame('Reactivatie', $objective->title);
+        $this->assertSame(5, $objective->position);
+
+        $kr = $objective->keyResults->firstWhere('metric_key', 'reactivation_rate');
+        $this->assertNotNull($kr);
+        $this->assertSame('Slapers terug actief', $kr->label);
+        $this->assertSame(5, $kr->target_value);
+        $this->assertSame('%', $kr->target_unit);
+
+        $initiative = $objective->initiatives->firstWhere('slug', 'reactivatie-campagne');
+        $this->assertNotNull($initiative);
+        $this->assertSame('Reactivatie-campagne', $initiative->label);
+        $this->assertSame('2026-06-23', $initiative->started_at->toDateString());
+        // started_at gezet -> saved-hook legt een baseline vast voor de reactivation_rate KR
+        $this->assertGreaterThanOrEqual(1, $initiative->baselines()->count());
     }
 
     public function test_reseeding_overwrites_label_edits(): void

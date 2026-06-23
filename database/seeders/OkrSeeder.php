@@ -16,6 +16,7 @@ class OkrSeeder extends Seeder
             ['slug' => 'onboarding', 'title' => 'Activatie', 'position' => 2],
             ['slug' => 'bedankjes', 'title' => 'Interactie', 'position' => 3],
             ['slug' => 'nieuwsbrief', 'title' => 'Retentie', 'position' => 4],
+            ['slug' => 'reactivatie', 'title' => 'Reactivatie', 'position' => 5],
         ];
 
         foreach ($objectives as $data) {
@@ -38,6 +39,9 @@ class OkrSeeder extends Seeder
             ],
             'nieuwsbrief' => [
                 ['label' => 'Activatie na nieuwsbrief', 'metric_key' => 'newsletter_activation_rate', 'target_unit' => '%'],
+            ],
+            'reactivatie' => [
+                ['label' => 'Slapers terug actief', 'metric_key' => 'reactivation_rate', 'target_value' => 5, 'target_unit' => '%'],
             ],
         ];
 
@@ -63,6 +67,9 @@ class OkrSeeder extends Seeder
             ],
             'nieuwsbrief' => [
                 ['slug' => 'nieuwsbrief-systeem', 'label' => 'Nieuwsbrief-systeem'],
+            ],
+            'reactivatie' => [
+                ['slug' => 'reactivatie-campagne', 'label' => 'Reactivatie-campagne', 'started_at' => '2026-06-23'],
             ],
         ];
 
