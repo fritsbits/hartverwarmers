@@ -3,57 +3,65 @@
 @php
     /** @var \App\Services\Okr\InitiativeKrImpact $impact */
     $hasNumbers = $impact->baselineValue !== null && $impact->currentValue !== null;
-    $deltaSign = $impact->delta === null ? '' : ($impact->delta > 0 ? '+' : '');
-    $deltaColor = $impact->delta === null
-        ? 'text-[var(--color-text-tertiary)]'
-        : ($impact->delta > 0
-            ? 'text-green-700'
-            : ($impact->delta < 0 ? 'text-red-600' : 'text-[var(--color-text-tertiary)]'));
-    $deltaUnit = $impact->unit === '%' ? 'pp' : $impact->unit;
-    $startLabel = ! empty($impact->sparkline) ? ($impact->sparkline[$impact->markerIndex]['label'] ?? null) : null;
+    $unit = $impact->unit;
+    $isPercent = $unit === '%';
+
+    $delta = $impact->delta;
+    $hasChange = $delta !== null && $delta != 0;
+    $up = $delta !== null && $delta > 0;
+
+    $changeColor = ! $hasChange
+        ? 'text-[var(--color-text-secondary)]'
+        : ($up ? 'text-green-700' : 'text-red-600');
+
+    // A change in a percentage is expressed in "procentpunt", not "%": going
+    // from 0% to 8% is +8 procentpunt. Counts just go up or down by a number.
+    $changeNoun = $isPercent ? ' procentpunt' : ($unit !== '' ? $unit : '');
+    $changeWord = $isPercent ? ($up ? 'hoger' : 'lager') : ($up ? 'meer' : 'minder');
+
+    // Bar heights, scaled to the larger of the two values so the taller bar
+    // fills the chart. A zero value shows no bar — just its label.
+    $base = (float) ($impact->baselineValue ?? 0);
+    $current = (float) ($impact->currentValue ?? 0);
+    $scale = max($base, $current, 1);
+    $baseHeight = $base <= 0 ? 0 : max(6, round($base / $scale * 100));
+    $currentHeight = $current <= 0 ? 0 : max(6, round($current / $scale * 100));
 @endphp
 
-<div class="space-y-2 rounded-lg border border-[var(--color-border-light)] bg-white p-4">
+<div class="space-y-3 rounded-lg border border-[var(--color-border-light)] bg-white p-4">
     <p class="text-sm font-semibold text-[var(--color-text-primary)]">{{ $impact->krLabel }}</p>
 
     @if($hasNumbers)
-        <div class="flex items-baseline gap-2">
-            @if($impact->delta !== null && $impact->delta != 0)
-                <span class="text-2xl font-bold tabular-nums {{ $deltaColor }}">{{ $deltaSign }}{{ $impact->delta }}{{ $deltaUnit }}</span>
-                <span class="text-sm text-[var(--color-text-secondary)] tabular-nums">sinds de start</span>
+        <p class="text-sm text-[var(--color-text-secondary)]">
+            Van <span class="font-semibold tabular-nums text-[var(--color-text-primary)]">{{ $impact->baselineValue }}{{ $unit }}</span> bij de start
+            naar <span class="font-semibold tabular-nums text-[var(--color-text-primary)]">{{ $impact->currentValue }}{{ $unit }}</span> nu
+            @if($hasChange)
+                &mdash; <span class="font-bold tabular-nums {{ $changeColor }}">{!! $up ? '&uarr;' : '&darr;' !!} {{ abs($delta) }}{{ $changeNoun }} {{ $changeWord }}</span>.
             @else
-                <span class="text-sm font-semibold text-[var(--color-text-secondary)]">Nog geen verschil sinds de start</span>
+                &mdash; nog geen verschil sinds de start.
             @endif
-        </div>
-        <p class="text-xs text-[var(--color-text-secondary)] tabular-nums">
-            {{ $impact->baselineValue }}{{ $impact->unit }} &rarr; {{ $impact->currentValue }}{{ $impact->unit }}
         </p>
+
+        {{-- Before → after: two bars, "bij de start" (muted) versus "nu" (orange). --}}
+        <div>
+            <div class="flex items-end justify-around gap-6 h-24" role="img"
+                 aria-label="Bij de start {{ $impact->baselineValue }}{{ $unit }}, nu {{ $impact->currentValue }}{{ $unit }}">
+                <div class="flex flex-1 flex-col items-center justify-end h-full">
+                    <span class="mb-1 text-sm font-bold tabular-nums text-[var(--color-text-secondary)]">{{ $impact->baselineValue }}{{ $unit }}</span>
+                    <div class="w-full max-w-12 rounded-t bg-[var(--color-text-tertiary)]" style="height: {{ $baseHeight }}%"></div>
+                </div>
+                <div class="flex flex-1 flex-col items-center justify-end h-full">
+                    <span class="mb-1 text-sm font-bold tabular-nums text-[var(--color-primary)]">{{ $impact->currentValue }}{{ $unit }}</span>
+                    <div class="w-full max-w-12 rounded-t bg-[var(--color-primary)]" style="height: {{ $currentHeight }}%"></div>
+                </div>
+            </div>
+            <div class="flex justify-around gap-6 mt-1.5 text-[11px] text-[var(--color-text-tertiary)]">
+                <span class="flex-1 text-center">Bij de start</span>
+                <span class="flex-1 text-center">Nu</span>
+            </div>
+        </div>
     @else
         <p class="text-sm text-[var(--color-text-secondary)]">Nog geen meting beschikbaar.</p>
-    @endif
-
-    @if(! empty($impact->sparkline))
-        <flux:chart :value="$impact->sparkline" class="aspect-[6/1] mt-1">
-            <flux:chart.svg>
-                <flux:chart.bar field="value" class="text-[var(--color-primary)]" />
-                <flux:chart.axis axis="x" field="label">
-                    <flux:chart.axis.tick />
-                </flux:chart.axis>
-                <flux:chart.axis axis="y">
-                    <flux:chart.axis.grid class="stroke-[var(--color-border-light)]" />
-                    <flux:chart.axis.tick />
-                </flux:chart.axis>
-            </flux:chart.svg>
-
-            <flux:chart.tooltip>
-                <flux:chart.tooltip.heading field="label" />
-                <flux:chart.tooltip.value field="value" label="{{ $impact->krLabel }}" suffix="{{ $impact->unit }}" />
-            </flux:chart.tooltip>
-        </flux:chart>
-
-        @if($startLabel)
-            <p class="mt-1 text-[11px] text-[var(--color-text-tertiary)]">Gestart: {{ $startLabel }}</p>
-        @endif
     @endif
 
     @if($impact->baselineLowData || $impact->currentLowData)

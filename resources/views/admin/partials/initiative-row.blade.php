@@ -13,9 +13,7 @@
     $hasNumbers = $headline !== null
         && $headline->baselineValue !== null
         && $headline->currentValue !== null;
-    $deltaUnit = $headline !== null
-        ? ($headline->unit === '%' ? 'pp' : $headline->unit)
-        : '';
+    $unit = $headline?->unit ?? '';
     $deltaColor = $delta === null || $delta == 0
         ? 'text-[var(--color-text-tertiary)]'
         : ($delta > 0 ? 'text-green-700' : 'text-red-600');
@@ -30,9 +28,9 @@
     </div>
 
     <div class="flex items-center gap-4 whitespace-nowrap">
-        <span class="text-sm {{ $deltaColor }}">
+        <span class="text-sm">
             @if($hasNumbers && $delta !== null && $delta != 0)
-                <span class="tabular-nums">{{ $delta > 0 ? '+' : '' }}{{ $delta }}{{ $deltaUnit }}</span>
+                <span class="tabular-nums {{ $deltaColor }}">{{ $headline->baselineValue }}{{ $unit }} &rarr; {{ $headline->currentValue }}{{ $unit }}</span>
                 <span class="text-[var(--color-text-secondary)]">sinds start</span>
             @elseif($hasNumbers)
                 <span class="text-[var(--color-text-secondary)]">Nog geen verschil sinds start</span>

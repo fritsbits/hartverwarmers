@@ -92,7 +92,7 @@ class InitiativeRowPartialTest extends TestCase
         $this->assertStringContainsString('Nog geen meting', $html);
     }
 
-    public function test_positive_delta_renders_green_with_sign_and_pp_unit(): void
+    public function test_positive_delta_renders_green_before_after(): void
     {
         $objective = Objective::factory()->create(['slug' => 'bedankjes', 'title' => 'Interactie']);
         $initiative = Initiative::create([
@@ -119,9 +119,10 @@ class InitiativeRowPartialTest extends TestCase
 
         $html = $this->render($initiative, $headline);
 
-        $this->assertStringContainsString('+12pp', $html);
+        $this->assertStringContainsString('30% &rarr; 42%', $html);
         $this->assertStringContainsString('sinds start', $html);
         $this->assertStringContainsString('text-green-700', $html);
+        $this->assertStringNotContainsString('12pp', $html);
         $this->assertStringNotContainsString('Nog geen meting', $html);
     }
 
@@ -152,7 +153,7 @@ class InitiativeRowPartialTest extends TestCase
 
         $html = $this->render($initiative, $headline);
 
-        $this->assertStringContainsString('-9pp', $html);
+        $this->assertStringContainsString('50% &rarr; 41%', $html);
         $this->assertStringContainsString('text-red-600', $html);
     }
 }
