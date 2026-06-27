@@ -3,57 +3,112 @@
 @php
     /** @var \App\Services\Okr\InitiativeKrImpact $impact */
     $hasNumbers = $impact->baselineValue !== null && $impact->currentValue !== null;
-    $deltaSign = $impact->delta === null ? '' : ($impact->delta > 0 ? '+' : '');
-    $deltaColor = $impact->delta === null
-        ? 'text-[var(--color-text-tertiary)]'
-        : ($impact->delta > 0
-            ? 'text-green-700'
-            : ($impact->delta < 0 ? 'text-red-600' : 'text-[var(--color-text-tertiary)]'));
-    $deltaUnit = $impact->unit === '%' ? 'pp' : $impact->unit;
-    $startLabel = ! empty($impact->sparkline) ? ($impact->sparkline[$impact->markerIndex]['label'] ?? null) : null;
+    $unit = $impact->unit;
+    $isPercent = $unit === '%';
+
+    $delta = $impact->delta;
+    $hasChange = $delta !== null && $delta != 0;
+    $up = $delta !== null && $delta > 0;
+
+    $changeColor = ! $hasChange
+        ? 'text-[var(--color-text-secondary)]'
+        : ($up ? 'text-green-700' : 'text-red-600');
+
+    // A change in a percentage is expressed in "procentpunt", not "%": going
+    // from 0% to 8% is +8 procentpunt. Counts just go up or down by a number.
+    $changeNoun = $isPercent ? ' procentpunt' : ($unit !== '' ? $unit : '');
+    $changeWord = $isPercent ? ($up ? 'hoger' : 'lager') : ($up ? 'meer' : 'minder');
+
+    // The sparkline holds the metric value per bucket (per day for young
+    // initiatives, per week once they have run for weeks — $periodWord says
+    // which) from before launch through now; $markerIndex is the launch bucket.
+    // Split it into two series so the "before" context (grey) reads differently
+    // from the period the initiative has been live (orange), with the colour
+    // change marking launch.
+    $spark = $impact->sparkline;
+    $markerIndex = $impact->markerIndex;
+    $periodAdjective = $impact->periodWord === 'week' ? 'Wekelijkse' : 'Dagelijkse';
+    $periodPlural = $impact->periodWord === 'week' ? 'weken' : 'dagen';
+    $hasBaselineLine = $impact->baselineValue !== null && (float) $impact->baselineValue > 0;
+    $points = collect($spark)->map(fn ($p, $i) => [
+        'label' => $p['label'],
+        'before' => $i < $markerIndex ? $p['value'] : null,
+        'after' => $i >= $markerIndex ? $p['value'] : null,
+        'baseline' => $hasBaselineLine ? $impact->baselineValue : null,
+    ])->values()->all();
+    // Many buckets turn the x-labels into an unreadable diagonal smear; past
+    // ~16 we drop them and state the span in the caption instead.
+    $dense = count($spark) > 16;
 @endphp
 
-<div class="space-y-2 rounded-lg border border-[var(--color-border-light)] bg-white p-4">
+<div class="space-y-3 rounded-lg border border-[var(--color-border-light)] bg-white p-4">
     <p class="text-sm font-semibold text-[var(--color-text-primary)]">{{ $impact->krLabel }}</p>
 
     @if($hasNumbers)
-        <div class="flex items-baseline gap-2">
-            @if($impact->delta !== null && $impact->delta != 0)
-                <span class="text-2xl font-bold tabular-nums {{ $deltaColor }}">{{ $deltaSign }}{{ $impact->delta }}{{ $deltaUnit }}</span>
-                <span class="text-sm text-[var(--color-text-secondary)] tabular-nums">sinds de start</span>
+        <p class="text-sm text-[var(--color-text-secondary)]">
+            Van <span class="font-semibold tabular-nums text-[var(--color-text-primary)]">{{ $impact->baselineValue }}{{ $unit }}</span> bij de start
+            naar <span class="font-semibold tabular-nums text-[var(--color-text-primary)]">{{ $impact->currentValue }}{{ $unit }}</span> nu
+            @if($hasChange)
+                &mdash; <span class="font-bold tabular-nums {{ $changeColor }}">{!! $up ? '&uarr;' : '&darr;' !!} {{ abs($delta) }}{{ $changeNoun }} {{ $changeWord }}</span>.
             @else
-                <span class="text-sm font-semibold text-[var(--color-text-secondary)]">Nog geen verschil sinds de start</span>
+                &mdash; nog geen verschil sinds de start.
             @endif
-        </div>
-        <p class="text-xs text-[var(--color-text-secondary)] tabular-nums">
-            {{ $impact->baselineValue }}{{ $impact->unit }} &rarr; {{ $impact->currentValue }}{{ $impact->unit }}
         </p>
     @else
         <p class="text-sm text-[var(--color-text-secondary)]">Nog geen meting beschikbaar.</p>
     @endif
 
-    @if(! empty($impact->sparkline))
-        <flux:chart :value="$impact->sparkline" class="aspect-[6/1] mt-1">
-            <flux:chart.svg>
-                <flux:chart.bar field="value" class="text-[var(--color-primary)]" />
-                <flux:chart.axis axis="x" field="label">
-                    <flux:chart.axis.tick />
-                </flux:chart.axis>
-                <flux:chart.axis axis="y">
-                    <flux:chart.axis.grid class="stroke-[var(--color-border-light)]" />
-                    <flux:chart.axis.tick />
-                </flux:chart.axis>
-            </flux:chart.svg>
+    @if(! empty($points))
+        <div>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[var(--color-text-secondary)]">
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[var(--color-text-tertiary)]"></span>
+                    Vóór de start
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[var(--color-primary)]"></span>
+                    Sinds de start
+                </span>
+                @if($hasBaselineLine)
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="inline-block w-3 border-t-2 border-dashed border-[var(--color-text-secondary)]"></span>
+                        Waarde bij de start
+                    </span>
+                @endif
+            </div>
 
-            <flux:chart.tooltip>
-                <flux:chart.tooltip.heading field="label" />
-                <flux:chart.tooltip.value field="value" label="{{ $impact->krLabel }}" suffix="{{ $impact->unit }}" />
-            </flux:chart.tooltip>
-        </flux:chart>
+            <flux:chart :value="$points" class="aspect-[3/1] mt-2">
+                <flux:chart.svg>
+                    <flux:chart.bar field="before" class="text-[var(--color-text-tertiary)]" />
+                    <flux:chart.bar field="after" class="text-[var(--color-primary)]" />
+                    @if($hasBaselineLine)
+                        <flux:chart.line field="baseline" class="text-[var(--color-text-secondary)] [stroke-dasharray:6_5]" />
+                    @endif
+                    @unless($dense)
+                        <flux:chart.axis axis="x" field="label">
+                            <flux:chart.axis.tick />
+                        </flux:chart.axis>
+                    @endunless
+                    <flux:chart.axis axis="y">
+                        <flux:chart.axis.grid class="stroke-[var(--color-border-light)]" />
+                        <flux:chart.axis.tick />
+                    </flux:chart.axis>
+                </flux:chart.svg>
 
-        @if($startLabel)
-            <p class="mt-1 text-[11px] text-[var(--color-text-tertiary)]">Gestart: {{ $startLabel }}</p>
-        @endif
+                <flux:chart.tooltip>
+                    <flux:chart.tooltip.heading field="label" />
+                    <flux:chart.tooltip.value field="before" label="Vóór de start" suffix="{{ $unit }}" />
+                    <flux:chart.tooltip.value field="after" label="Sinds de start" suffix="{{ $unit }}" />
+                </flux:chart.tooltip>
+            </flux:chart>
+
+            <p class="mt-2 text-[11px] text-[var(--color-text-tertiary)]">
+                {{ $periodAdjective }} waarde van deze metriek. De grijze balken tonen de {{ $periodPlural }} vóór het initiatief live ging, ter vergelijking.
+                @if($dense)
+                    Periode: {{ $spark[0]['label'] ?? '' }} &ndash; {{ $spark[count($spark) - 1]['label'] ?? '' }} (beweeg over een balk voor de {{ $impact->periodWord }}).
+                @endif
+            </p>
+        </div>
     @endif
 
     @if($impact->baselineLowData || $impact->currentLowData)

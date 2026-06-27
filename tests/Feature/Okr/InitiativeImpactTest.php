@@ -54,6 +54,56 @@ class InitiativeImpactTest extends TestCase
         $this->assertSame(2, $signupImpact->delta);
     }
 
+    public function test_recent_initiative_uses_a_daily_trajectory(): void
+    {
+        $objective = Objective::factory()->create();
+        KeyResult::factory()->create([
+            'objective_id' => $objective->id,
+            'metric_key' => 'onboarding_signup_count',
+        ]);
+
+        $initiative = Initiative::create([
+            'objective_id' => $objective->id,
+            'slug' => 'recent',
+            'label' => 'Recent',
+            'status' => 'in_progress',
+            'started_at' => now()->subDays(4)->toDateString(),
+            'position' => 1,
+        ]);
+
+        $impact = app(InitiativeImpact::class)->forInitiative($initiative->fresh())->krImpacts->first();
+
+        $this->assertSame('dag', $impact->periodWord);
+        // 7 lead days + 4 since launch + today ≈ 12 daily buckets, well above
+        // the ~5 a weekly trajectory of the same span would produce.
+        $this->assertGreaterThan(8, count($impact->sparkline));
+    }
+
+    public function test_long_running_initiative_falls_back_to_weekly_trajectory(): void
+    {
+        $objective = Objective::factory()->create();
+        KeyResult::factory()->create([
+            'objective_id' => $objective->id,
+            'metric_key' => 'onboarding_signup_count',
+        ]);
+
+        $initiative = Initiative::create([
+            'objective_id' => $objective->id,
+            'slug' => 'oud',
+            'label' => 'Oud',
+            'status' => 'in_progress',
+            'started_at' => now()->subDays(60)->toDateString(),
+            'position' => 1,
+        ]);
+
+        $impact = app(InitiativeImpact::class)->forInitiative($initiative->fresh())->krImpacts->first();
+
+        $this->assertSame('week', $impact->periodWord);
+        // 60 days as weekly buckets is well under what a daily trajectory
+        // (~67 buckets) would produce.
+        $this->assertLessThan(20, count($impact->sparkline));
+    }
+
     public function test_summary_marker_index_falls_within_sparkline(): void
     {
         $objective = Objective::factory()->create();
