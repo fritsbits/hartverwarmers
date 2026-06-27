@@ -18,5 +18,6 @@ final class InitiativeKrImpact
         public readonly bool $currentLowData,
         public readonly array $sparkline,
         public readonly int $markerIndex,
+        public readonly string $periodWord = 'dag',
     ) {}
 }

@@ -19,12 +19,16 @@
     $changeNoun = $isPercent ? ' procentpunt' : ($unit !== '' ? $unit : '');
     $changeWord = $isPercent ? ($up ? 'hoger' : 'lager') : ($up ? 'meer' : 'minder');
 
-    // The sparkline holds the weekly metric value from 4 weeks before launch
-    // through now; $markerIndex is the launch week. Split it into two series so
-    // the "before" context (grey) reads differently from the period the
-    // initiative has been live (orange), with the colour change marking launch.
+    // The sparkline holds the metric value per bucket (per day for young
+    // initiatives, per week once they have run for weeks — $periodWord says
+    // which) from before launch through now; $markerIndex is the launch bucket.
+    // Split it into two series so the "before" context (grey) reads differently
+    // from the period the initiative has been live (orange), with the colour
+    // change marking launch.
     $spark = $impact->sparkline;
     $markerIndex = $impact->markerIndex;
+    $periodAdjective = $impact->periodWord === 'week' ? 'Wekelijkse' : 'Dagelijkse';
+    $periodPlural = $impact->periodWord === 'week' ? 'weken' : 'dagen';
     $hasBaselineLine = $impact->baselineValue !== null && (float) $impact->baselineValue > 0;
     $points = collect($spark)->map(fn ($p, $i) => [
         'label' => $p['label'],
@@ -32,9 +36,9 @@
         'after' => $i >= $markerIndex ? $p['value'] : null,
         'baseline' => $hasBaselineLine ? $impact->baselineValue : null,
     ])->values()->all();
-    // A long history turns per-week x-labels into an unreadable diagonal smear;
-    // past ~14 weeks we drop them and state the span in the caption instead.
-    $dense = count($spark) > 14;
+    // Many buckets turn the x-labels into an unreadable diagonal smear; past
+    // ~16 we drop them and state the span in the caption instead.
+    $dense = count($spark) > 16;
 @endphp
 
 <div class="space-y-3 rounded-lg border border-[var(--color-border-light)] bg-white p-4">
@@ -99,9 +103,9 @@
             </flux:chart>
 
             <p class="mt-2 text-[11px] text-[var(--color-text-tertiary)]">
-                Wekelijkse waarde van deze metriek. De grijze balken tonen de weken vóór het initiatief live ging, ter vergelijking.
+                {{ $periodAdjective }} waarde van deze metriek. De grijze balken tonen de {{ $periodPlural }} vóór het initiatief live ging, ter vergelijking.
                 @if($dense)
-                    Periode: {{ $spark[0]['label'] ?? '' }} &ndash; {{ $spark[count($spark) - 1]['label'] ?? '' }} (beweeg over een balk voor de week).
+                    Periode: {{ $spark[0]['label'] ?? '' }} &ndash; {{ $spark[count($spark) - 1]['label'] ?? '' }} (beweeg over een balk voor de {{ $impact->periodWord }}).
                 @endif
             </p>
         </div>
