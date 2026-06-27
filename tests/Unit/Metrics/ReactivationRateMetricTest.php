@@ -132,4 +132,38 @@ class ReactivationRateMetricTest extends TestCase
 
         $this->assertEquals(100, $result->current);
     }
+
+    public function test_activity_by_day_counts_effort_and_result_per_day(): void
+    {
+        // Day -3: 2 mails sent, 1 recipient came back afterwards.
+        $back = User::factory()->create(['last_visited_at' => now()->subDays(1)]);
+        $never = User::factory()->create(['last_visited_at' => null]);
+        $this->logSend($back, now()->subDays(3));
+        $this->logSend($never, now()->subDays(3));
+
+        // Day -1: 1 mail sent, recipient visited before the send → not a result.
+        $early = User::factory()->create(['last_visited_at' => now()->subDays(5)]);
+        $this->logSend($early, now()->subDays(1));
+
+        $rows = (new ReactivationRateMetric)->activityByDay(
+            CarbonImmutable::now()->subDays(3)->startOfDay(),
+            CarbonImmutable::now()->endOfDay(),
+        );
+
+        // 4 days in range (-3, -2, -1, 0), zero-filled and oldest first.
+        $this->assertCount(4, $rows);
+        $this->assertSame(2, $rows[0]['effort']);
+        $this->assertSame(1, $rows[0]['result']);
+        $this->assertSame(0, $rows[1]['effort']);
+        $this->assertSame(1, $rows[2]['effort']);
+        $this->assertSame(0, $rows[2]['result']);
+    }
+
+    public function test_activity_labels_are_plain_language(): void
+    {
+        $metric = new ReactivationRateMetric;
+
+        $this->assertSame('verstuurde mails', $metric->effortLabel());
+        $this->assertSame('opnieuw actief', $metric->resultLabel());
+    }
 }

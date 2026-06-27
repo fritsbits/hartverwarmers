@@ -5,6 +5,7 @@ namespace Tests\Feature\Okr;
 use App\Models\Okr\Initiative;
 use App\Models\Okr\KeyResult;
 use App\Models\Okr\Objective;
+use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Services\Okr\InitiativeImpact;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -52,6 +53,68 @@ class InitiativeImpactTest extends TestCase
         $this->assertSame(1.0, (float) $signupImpact->baselineValue);
         $this->assertSame(3, $signupImpact->currentValue);
         $this->assertSame(2, $signupImpact->delta);
+    }
+
+    public function test_reactivation_initiative_exposes_daily_effort_result_breakdown(): void
+    {
+        $objective = Objective::factory()->create(['slug' => 'reactivatie', 'title' => 'Reactivatie']);
+        KeyResult::factory()->create([
+            'objective_id' => $objective->id,
+            'metric_key' => 'reactivation_rate',
+            'label' => 'Slapers terug actief',
+        ]);
+
+        $initiative = Initiative::create([
+            'objective_id' => $objective->id,
+            'slug' => 'reactivatie-campagne',
+            'label' => 'Reactivatie-campagne',
+            'status' => 'in_progress',
+            'started_at' => now()->subDays(2)->toDateString(),
+            'position' => 1,
+        ]);
+
+        $back = User::factory()->create(['last_visited_at' => now()]);
+        $never = User::factory()->create(['last_visited_at' => null]);
+        foreach ([$back, $never] as $user) {
+            OnboardingEmailLog::create([
+                'user_id' => $user->id,
+                'mail_key' => config('newsletter.reactivation_mail_key'),
+                'sent_at' => now()->subDay(),
+            ]);
+        }
+
+        $impact = app(InitiativeImpact::class)->forInitiative($initiative->fresh())->krImpacts->first();
+
+        // Concrete breakdown is present; the abstract rate trajectory is not.
+        $this->assertSame('verstuurde mails', $impact->effortLabel);
+        $this->assertSame('opnieuw actief', $impact->resultLabel);
+        $this->assertSame([], $impact->sparkline);
+        $this->assertNotEmpty($impact->breakdown);
+        $this->assertSame(2, array_sum(array_column($impact->breakdown, 'effort')));
+        $this->assertSame(1, array_sum(array_column($impact->breakdown, 'result')));
+    }
+
+    public function test_metric_without_breakdown_uses_rate_trajectory(): void
+    {
+        $objective = Objective::factory()->create();
+        KeyResult::factory()->create([
+            'objective_id' => $objective->id,
+            'metric_key' => 'onboarding_signup_count',
+        ]);
+        $initiative = Initiative::create([
+            'objective_id' => $objective->id,
+            'slug' => 'geen-breakdown',
+            'label' => 'Geen breakdown',
+            'status' => 'in_progress',
+            'started_at' => now()->subDays(3)->toDateString(),
+            'position' => 1,
+        ]);
+
+        $impact = app(InitiativeImpact::class)->forInitiative($initiative->fresh())->krImpacts->first();
+
+        $this->assertNull($impact->effortLabel);
+        $this->assertSame([], $impact->breakdown);
+        $this->assertNotEmpty($impact->sparkline);
     }
 
     public function test_recent_initiative_uses_a_daily_trajectory(): void
