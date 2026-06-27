@@ -34,9 +34,6 @@
     <!-- Onboarding Banner (new users only) -->
     <livewire:onboarding-banner />
 
-    <!-- Whats-new Banner (returning users only, white zone) -->
-    <x-whats-new-banner />
-
     <!-- Featured Initiatives -->
     @if($initiatives->isNotEmpty())
         <section class="bg-[var(--color-bg-base)]" x-data="{

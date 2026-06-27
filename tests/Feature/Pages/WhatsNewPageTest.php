@@ -25,15 +25,15 @@ class WhatsNewPageTest extends TestCase
         $response->assertSee('Een nieuwe Hartverwarmers');
     }
 
-    public function test_guest_sees_whats_new_banner_on_homepage(): void
+    public function test_guest_does_not_see_whats_new_banner_on_homepage(): void
     {
         $response = $this->get('/');
 
-        $response->assertSee('Hartverwarmers is volledig vernieuwd');
-        $response->assertSee('Ontdek wat er nieuw is');
+        $response->assertDontSee('Hartverwarmers is volledig vernieuwd');
+        $response->assertDontSee('Ontdek wat er nieuw is');
     }
 
-    public function test_existing_user_sees_whats_new_banner(): void
+    public function test_existing_user_does_not_see_whats_new_banner(): void
     {
         $user = User::factory()->create([
             'created_at' => Carbon::parse(config('hartverwarmers.launch_date'))->subDay(),
@@ -41,7 +41,7 @@ class WhatsNewPageTest extends TestCase
 
         $response = $this->actingAs($user)->get('/');
 
-        $response->assertSee('Hartverwarmers is volledig vernieuwd');
+        $response->assertDontSee('Hartverwarmers is volledig vernieuwd');
     }
 
     public function test_new_user_does_not_see_whats_new_banner(): void
