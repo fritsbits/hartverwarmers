@@ -28,14 +28,44 @@ class OkrKrImpactComponentTest extends TestCase
         $rendered = $this->blade('<x-okr-kr-impact :impact="$impact" />', ['impact' => $impact]);
 
         $rendered->assertSee('Aanmeldingen');
-        $rendered->assertSee('Bij de start');
-        $rendered->assertSee('Nu');
+        $rendered->assertSee('bij de start');
         $rendered->assertSee('10');
         $rendered->assertSee('14');
         // Counts read as "meer/minder", never as percentage points.
         $rendered->assertSee('4 meer');
         $rendered->assertDontSee('procentpunt');
         $rendered->assertDontSee('pp');
+    }
+
+    public function test_trend_splits_before_and_since_launch_with_legend(): void
+    {
+        $impact = new InitiativeKrImpact(
+            krId: 1,
+            krLabel: 'Slapers terug actief',
+            baselineValue: 0,
+            currentValue: 8,
+            delta: 8,
+            unit: '%',
+            baselineLowData: false,
+            currentLowData: false,
+            sparkline: [
+                ['label' => '25 May', 'value' => 0],
+                ['label' => '01 Jun', 'value' => 0],
+                ['label' => '08 Jun', 'value' => 0],
+                ['label' => '15 Jun', 'value' => 0],
+                ['label' => '22 Jun', 'value' => 8],
+            ],
+            markerIndex: 4,
+        );
+
+        $rendered = $this->blade('<x-okr-kr-impact :impact="$impact" />', ['impact' => $impact]);
+
+        // The chart legend names the two phases so the colour split is readable.
+        $rendered->assertSee('Vóór de start');
+        $rendered->assertSee('Sinds de start');
+        // The weekly axis labels still render.
+        $rendered->assertSee('22 Jun');
+        $rendered->assertSee('8 procentpunt hoger');
     }
 
     public function test_percentage_change_is_labelled_procentpunt_not_pp(): void

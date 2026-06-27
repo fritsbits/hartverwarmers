@@ -19,13 +19,22 @@
     $changeNoun = $isPercent ? ' procentpunt' : ($unit !== '' ? $unit : '');
     $changeWord = $isPercent ? ($up ? 'hoger' : 'lager') : ($up ? 'meer' : 'minder');
 
-    // Bar heights, scaled to the larger of the two values so the taller bar
-    // fills the chart. A zero value shows no bar — just its label.
-    $base = (float) ($impact->baselineValue ?? 0);
-    $current = (float) ($impact->currentValue ?? 0);
-    $scale = max($base, $current, 1);
-    $baseHeight = $base <= 0 ? 0 : max(6, round($base / $scale * 100));
-    $currentHeight = $current <= 0 ? 0 : max(6, round($current / $scale * 100));
+    // The sparkline holds the weekly metric value from 4 weeks before launch
+    // through now; $markerIndex is the launch week. Split it into two series so
+    // the "before" context (grey) reads differently from the period the
+    // initiative has been live (orange), with the colour change marking launch.
+    $spark = $impact->sparkline;
+    $markerIndex = $impact->markerIndex;
+    $hasBaselineLine = $impact->baselineValue !== null && (float) $impact->baselineValue > 0;
+    $points = collect($spark)->map(fn ($p, $i) => [
+        'label' => $p['label'],
+        'before' => $i < $markerIndex ? $p['value'] : null,
+        'after' => $i >= $markerIndex ? $p['value'] : null,
+        'baseline' => $hasBaselineLine ? $impact->baselineValue : null,
+    ])->values()->all();
+    // A long history turns per-week x-labels into an unreadable diagonal smear;
+    // past ~14 weeks we drop them and state the span in the caption instead.
+    $dense = count($spark) > 14;
 @endphp
 
 <div class="space-y-3 rounded-lg border border-[var(--color-border-light)] bg-white p-4">
@@ -41,27 +50,61 @@
                 &mdash; nog geen verschil sinds de start.
             @endif
         </p>
-
-        {{-- Before → after: two bars, "bij de start" (muted) versus "nu" (orange). --}}
-        <div>
-            <div class="flex items-end justify-around gap-6 h-24" role="img"
-                 aria-label="Bij de start {{ $impact->baselineValue }}{{ $unit }}, nu {{ $impact->currentValue }}{{ $unit }}">
-                <div class="flex flex-1 flex-col items-center justify-end h-full">
-                    <span class="mb-1 text-sm font-bold tabular-nums text-[var(--color-text-secondary)]">{{ $impact->baselineValue }}{{ $unit }}</span>
-                    <div class="w-full max-w-12 rounded-t bg-[var(--color-text-tertiary)]" style="height: {{ $baseHeight }}%"></div>
-                </div>
-                <div class="flex flex-1 flex-col items-center justify-end h-full">
-                    <span class="mb-1 text-sm font-bold tabular-nums text-[var(--color-primary)]">{{ $impact->currentValue }}{{ $unit }}</span>
-                    <div class="w-full max-w-12 rounded-t bg-[var(--color-primary)]" style="height: {{ $currentHeight }}%"></div>
-                </div>
-            </div>
-            <div class="flex justify-around gap-6 mt-1.5 text-[11px] text-[var(--color-text-tertiary)]">
-                <span class="flex-1 text-center">Bij de start</span>
-                <span class="flex-1 text-center">Nu</span>
-            </div>
-        </div>
     @else
         <p class="text-sm text-[var(--color-text-secondary)]">Nog geen meting beschikbaar.</p>
+    @endif
+
+    @if(! empty($points))
+        <div>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[var(--color-text-secondary)]">
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[var(--color-text-tertiary)]"></span>
+                    Vóór de start
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[var(--color-primary)]"></span>
+                    Sinds de start
+                </span>
+                @if($hasBaselineLine)
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="inline-block w-3 border-t-2 border-dashed border-[var(--color-text-secondary)]"></span>
+                        Waarde bij de start
+                    </span>
+                @endif
+            </div>
+
+            <flux:chart :value="$points" class="aspect-[3/1] mt-2">
+                <flux:chart.svg>
+                    <flux:chart.bar field="before" class="text-[var(--color-text-tertiary)]" />
+                    <flux:chart.bar field="after" class="text-[var(--color-primary)]" />
+                    @if($hasBaselineLine)
+                        <flux:chart.line field="baseline" class="text-[var(--color-text-secondary)] [stroke-dasharray:6_5]" />
+                    @endif
+                    @unless($dense)
+                        <flux:chart.axis axis="x" field="label">
+                            <flux:chart.axis.tick />
+                        </flux:chart.axis>
+                    @endunless
+                    <flux:chart.axis axis="y">
+                        <flux:chart.axis.grid class="stroke-[var(--color-border-light)]" />
+                        <flux:chart.axis.tick />
+                    </flux:chart.axis>
+                </flux:chart.svg>
+
+                <flux:chart.tooltip>
+                    <flux:chart.tooltip.heading field="label" />
+                    <flux:chart.tooltip.value field="before" label="Vóór de start" suffix="{{ $unit }}" />
+                    <flux:chart.tooltip.value field="after" label="Sinds de start" suffix="{{ $unit }}" />
+                </flux:chart.tooltip>
+            </flux:chart>
+
+            <p class="mt-2 text-[11px] text-[var(--color-text-tertiary)]">
+                Wekelijkse waarde van deze metriek. De grijze balken tonen de weken vóór het initiatief live ging, ter vergelijking.
+                @if($dense)
+                    Periode: {{ $spark[0]['label'] ?? '' }} &ndash; {{ $spark[count($spark) - 1]['label'] ?? '' }} (beweeg over een balk voor de week).
+                @endif
+            </p>
+        </div>
     @endif
 
     @if($impact->baselineLowData || $impact->currentLowData)
