@@ -19,12 +19,26 @@
             window.location.href = '?tab=' + val + '&range=' + r;
         }
     }" x-init="$watch('tab', val => navigate(val))" class="mb-6">
-        <flux:tabs x-model="tab" variant="segmented">
-            <flux:tab name="overzicht">Overzicht</flux:tab>
-            @foreach($objectives as $obj)
-                <flux:tab name="{{ $obj->slug }}">{{ $obj->title }}</flux:tab>
-            @endforeach
-        </flux:tabs>
+        {{-- Contain the segmented tabs in a full-bleed horizontal scroll strip so the row
+             never pushes the page wider than the viewport on small screens. --}}
+        <div class="relative -mx-6 px-6 sm:mx-0 sm:px-0">
+            <div
+                class="overflow-x-auto scrollbar-hide pr-6 sm:pr-0"
+                x-init="$nextTick(() => {
+                    const active = $el.querySelector('[aria-selected=\'true\'], [data-selected]');
+                    if (active) { active.scrollIntoView({ inline: 'center', block: 'nearest' }); }
+                })"
+            >
+                <flux:tabs x-model="tab" variant="segmented" class="min-w-max">
+                    <flux:tab name="overzicht">Overzicht</flux:tab>
+                    @foreach($objectives as $obj)
+                        <flux:tab name="{{ $obj->slug }}">{{ $obj->title }}</flux:tab>
+                    @endforeach
+                </flux:tabs>
+            </div>
+            {{-- Fade hint that more tabs exist; only relevant while the strip scrolls (mobile). --}}
+            <div class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[var(--color-bg-cream)] to-transparent sm:hidden"></div>
+        </div>
     </div>
 
     @if($tab === 'overzicht')
