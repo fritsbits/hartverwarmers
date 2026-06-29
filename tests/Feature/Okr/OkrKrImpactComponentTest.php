@@ -91,6 +91,39 @@ class OkrKrImpactComponentTest extends TestCase
         $rendered->assertDontSee('pp');
     }
 
+    public function test_breakdown_shows_concrete_effort_and_result_counts(): void
+    {
+        $impact = new InitiativeKrImpact(
+            krId: 1,
+            krLabel: 'Slapers terug actief',
+            baselineValue: 0,
+            currentValue: 8,
+            delta: 8,
+            unit: '%',
+            baselineLowData: false,
+            currentLowData: false,
+            sparkline: [],
+            markerIndex: 0,
+            breakdown: [
+                ['label' => '23 Jun', 'effort' => 40, 'result' => 3],
+                ['label' => '24 Jun', 'effort' => 50, 'result' => 5],
+            ],
+            effortLabel: 'verstuurde mails',
+            resultLabel: 'opnieuw actief',
+        );
+
+        $rendered = $this->blade('<x-okr-kr-impact :impact="$impact" />', ['impact' => $impact]);
+
+        // Concrete totals replace the abstract percentage as the chart's story.
+        // assertSeeText strips the <span> wrappers around the numbers.
+        $rendered->assertSeeText('Van de 90 verstuurde mails');
+        $rendered->assertSeeText('werden er 8 opnieuw actief');
+        $rendered->assertSee('Verstuurde mails');
+        $rendered->assertSee('Opnieuw actief');
+        // The rate-trajectory legend should not appear in breakdown mode.
+        $rendered->assertDontSee('Vóór de start');
+    }
+
     public function test_renders_no_difference_message_when_delta_zero(): void
     {
         $impact = new InitiativeKrImpact(

@@ -71,7 +71,14 @@ class InitiativeImpact
             $delta = (floor($rawDelta) == $rawDelta) ? (int) $rawDelta : round($rawDelta, 2);
         }
 
-        $trajectory = $withSparkline
+        // Prefer a concrete daily effort/result breakdown (e.g. mails sent vs
+        // recipients who returned) over an abstract rate trajectory — it shows
+        // the real quantities the percentage is built from.
+        $breakdown = $withSparkline
+            ? $this->breakdown($kr->metric_key, $initiative->started_at)
+            : null;
+
+        $trajectory = ($withSparkline && $breakdown === null)
             ? $this->trajectory($kr->metric_key, $initiative->started_at)
             : ['points' => [], 'markerIndex' => 0, 'periodWord' => 'dag'];
 
@@ -87,6 +94,28 @@ class InitiativeImpact
             sparkline: $trajectory['points'],
             markerIndex: $trajectory['markerIndex'],
             periodWord: $trajectory['periodWord'],
+            breakdown: $breakdown['rows'] ?? [],
+            effortLabel: $breakdown['effortLabel'] ?? null,
+            resultLabel: $breakdown['resultLabel'] ?? null,
+        );
+    }
+
+    /**
+     * The metric's daily effort/result counts from launch through today, or
+     * null when the metric exposes no such breakdown.
+     *
+     * @return array{rows: array<int, array{label: string, effort: int, result: int}>, effortLabel: string, resultLabel: string}|null
+     */
+    private function breakdown(?string $metricKey, ?\DateTimeInterface $startedAt): ?array
+    {
+        if ($metricKey === null || $startedAt === null) {
+            return null;
+        }
+
+        return $this->registry->activityBreakdown(
+            $metricKey,
+            from: CarbonImmutable::instance($startedAt)->startOfDay(),
+            to: CarbonImmutable::now()->endOfDay(),
         );
     }
 

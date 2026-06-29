@@ -19,12 +19,18 @@
     $changeNoun = $isPercent ? ' procentpunt' : ($unit !== '' ? $unit : '');
     $changeWord = $isPercent ? ($up ? 'hoger' : 'lager') : ($up ? 'meer' : 'minder');
 
-    // The sparkline holds the metric value per bucket (per day for young
-    // initiatives, per week once they have run for weeks — $periodWord says
-    // which) from before launch through now; $markerIndex is the launch bucket.
-    // Split it into two series so the "before" context (grey) reads differently
-    // from the period the initiative has been live (orange), with the colour
-    // change marking launch.
+    // Concrete daily breakdown (e.g. mails sent vs recipients who returned).
+    // When present it replaces the abstract rate chart: real quantities make
+    // the percentage self-explanatory.
+    $breakdown = $impact->breakdown;
+    $hasBreakdown = ! empty($breakdown);
+    $maxEffort = $hasBreakdown ? max(array_column($breakdown, 'effort')) : 0;
+    $totalEffort = $hasBreakdown ? array_sum(array_column($breakdown, 'effort')) : 0;
+    $totalResult = $hasBreakdown ? array_sum(array_column($breakdown, 'result')) : 0;
+    $breakdownDense = count($breakdown) > 16;
+
+    // Rate trajectory (fallback for metrics without a breakdown): the metric
+    // value per bucket, split grey (before launch) / orange (since launch).
     $spark = $impact->sparkline;
     $markerIndex = $impact->markerIndex;
     $periodAdjective = $impact->periodWord === 'week' ? 'Wekelijkse' : 'Dagelijkse';
@@ -58,7 +64,59 @@
         <p class="text-sm text-[var(--color-text-secondary)]">Nog geen meting beschikbaar.</p>
     @endif
 
-    @if(! empty($points))
+    @if($hasBreakdown && $maxEffort > 0)
+        <div>
+            <p class="text-sm text-[var(--color-text-secondary)]">
+                Van de <span class="font-semibold tabular-nums text-[var(--color-text-primary)]">{{ $totalEffort }}</span> {{ $impact->effortLabel }}
+                {{ $totalResult === 1 ? 'werd' : 'werden' }} er <span class="font-semibold tabular-nums text-[var(--color-text-primary)]">{{ $totalResult }}</span> {{ $impact->resultLabel }}.
+            </p>
+
+            <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[var(--color-text-secondary)]">
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[var(--color-text-tertiary)]/40"></span>
+                    {{ ucfirst($impact->effortLabel) }}
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="inline-block w-2.5 h-2.5 rounded-sm bg-[var(--color-primary)]"></span>
+                    {{ ucfirst($impact->resultLabel) }}
+                </span>
+            </div>
+
+            <x-chart-tooltip>
+                <div class="mt-2 flex items-end gap-1.5 h-28">
+                    @foreach($breakdown as $row)
+                        @php
+                            $effortHeight = $row['effort'] > 0 ? max(4, round($row['effort'] / $maxEffort * 100)) : 0;
+                            $resultHeight = $row['result'] > 0 ? max(4, round($row['result'] / $maxEffort * 100)) : 0;
+                        @endphp
+                        <div class="flex-1 h-full flex items-end justify-center"
+                             data-tip-label="{{ $row['label'] }}"
+                             data-tip-value="{{ $row['result'] }} / {{ $row['effort'] }} {{ $impact->resultLabel }}">
+                            <div class="relative w-full max-w-8 h-full">
+                                <div class="absolute inset-x-0 bottom-0 rounded-t bg-[var(--color-text-tertiary)]/40" style="height: {{ $effortHeight }}%"></div>
+                                <div class="absolute inset-x-0 bottom-0 rounded-t bg-[var(--color-primary)]" style="height: {{ $resultHeight }}%"></div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </x-chart-tooltip>
+
+            @unless($breakdownDense)
+                <div class="flex gap-1.5">
+                    @foreach($breakdown as $row)
+                        <span class="flex-1 text-center text-[10px] text-[var(--color-text-tertiary)] tabular-nums">{{ $row['label'] }}</span>
+                    @endforeach
+                </div>
+            @endunless
+
+            <p class="mt-2 text-[11px] text-[var(--color-text-tertiary)]">
+                Per dag: het aantal {{ $impact->effortLabel }} (grijs) en hoeveel van die ontvangers daarna {{ $impact->resultLabel }} werden op de site (oranje).
+                @if($breakdownDense)
+                    Periode: {{ $breakdown[0]['label'] ?? '' }} &ndash; {{ $breakdown[count($breakdown) - 1]['label'] ?? '' }} (beweeg over een balk voor de dag).
+                @endif
+            </p>
+        </div>
+    @elseif(! empty($points))
         <div>
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[var(--color-text-secondary)]">
                 <span class="inline-flex items-center gap-1.5">

@@ -6,10 +6,11 @@ use App\Models\OnboardingEmailLog;
 use App\Services\Okr\Metric;
 use App\Services\Okr\MetricPeriod;
 use App\Services\Okr\MetricValue;
+use App\Services\Okr\ProvidesActivityBreakdown;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 
-class ReactivationRateMetric implements Metric
+class ReactivationRateMetric implements Metric, ProvidesActivityBreakdown
 {
     public function compute(string $range): MetricValue
     {
@@ -50,6 +51,50 @@ class ReactivationRateMetric implements Metric
             fn ($lastVisited, $send): bool => $lastVisited->greaterThanOrEqualTo($send->sent_at)
                 && $lastVisited->lessThanOrEqualTo($date),
         );
+    }
+
+    public function activityByDay(CarbonImmutable $from, CarbonImmutable $to): array
+    {
+        $sends = OnboardingEmailLog::query()
+            ->where('mail_key', config('newsletter.reactivation_mail_key'))
+            ->whereBetween('sent_at', [$from, $to])
+            ->with('user:id,last_visited_at')
+            ->get(['user_id', 'sent_at']);
+
+        $byDay = [];
+        foreach ($sends as $send) {
+            $key = $send->sent_at->format('Y-m-d');
+            $byDay[$key]['effort'] = ($byDay[$key]['effort'] ?? 0) + 1;
+
+            $lastVisited = $send->user?->last_visited_at;
+            $returned = $lastVisited && $lastVisited->greaterThanOrEqualTo($send->sent_at);
+            $byDay[$key]['result'] = ($byDay[$key]['result'] ?? 0) + ($returned ? 1 : 0);
+        }
+
+        $rows = [];
+        $cursor = $from->startOfDay();
+        $end = $to->startOfDay();
+        while ($cursor <= $end) {
+            $key = $cursor->format('Y-m-d');
+            $rows[] = [
+                'label' => $cursor->format('d M'),
+                'effort' => $byDay[$key]['effort'] ?? 0,
+                'result' => $byDay[$key]['result'] ?? 0,
+            ];
+            $cursor = $cursor->addDay();
+        }
+
+        return $rows;
+    }
+
+    public function effortLabel(): string
+    {
+        return 'verstuurde mails';
+    }
+
+    public function resultLabel(): string
+    {
+        return 'opnieuw actief';
     }
 
     /**

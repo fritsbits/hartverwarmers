@@ -6,6 +6,7 @@ final class InitiativeKrImpact
 {
     /**
      * @param  array<int, array{label: string, value: int|float|null}>  $sparkline
+     * @param  array<int, array{label: string, effort: int, result: int}>  $breakdown
      */
     public function __construct(
         public readonly int $krId,
@@ -19,5 +20,8 @@ final class InitiativeKrImpact
         public readonly array $sparkline,
         public readonly int $markerIndex,
         public readonly string $periodWord = 'dag',
+        public readonly array $breakdown = [],
+        public readonly ?string $effortLabel = null,
+        public readonly ?string $resultLabel = null,
     ) {}
 }

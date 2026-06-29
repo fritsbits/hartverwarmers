@@ -83,6 +83,28 @@ class MetricRegistry
         );
     }
 
+    /**
+     * The metric's daily effort/result breakdown, or null when the metric does
+     * not expose one. Uncached: it is a single range query, computed only when
+     * an initiative chart renders it.
+     *
+     * @return array{rows: array<int, array{label: string, effort: int, result: int}>, effortLabel: string, resultLabel: string}|null
+     */
+    public function activityBreakdown(string $key, CarbonImmutable $from, CarbonImmutable $to): ?array
+    {
+        $metric = $this->resolve($key);
+
+        if (! $metric instanceof ProvidesActivityBreakdown) {
+            return null;
+        }
+
+        return [
+            'rows' => $metric->activityByDay($from, $to),
+            'effortLabel' => $metric->effortLabel(),
+            'resultLabel' => $metric->resultLabel(),
+        ];
+    }
+
     private function resolve(string $key): Metric
     {
         if (! isset($this->metrics[$key])) {
