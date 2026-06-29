@@ -72,6 +72,13 @@
 
 <x-sidebar-layout title="Gezondheid" section-label="Beheer" description="Serverstatus en systeemgezondheid.">
 
+    @if(session('status'))
+        <div class="flex items-center gap-3 rounded-xl px-4 py-3 mb-6 bg-green-50 text-green-800">
+            <flux:icon name="check-circle" class="size-5 shrink-0" />
+            <strong>{{ session('status') }}</strong>
+        </div>
+    @endif
+
     {{-- Page header with AI button --}}
     <div class="flex items-center justify-between -mt-6 mb-6">
         <div></div>
@@ -241,6 +248,58 @@
         </flux:card>
 
     </div>
+
+    {{-- Failed jobs card (full width) --}}
+    @if($queue['failed'] > 0)
+        <flux:card class="mt-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <flux:heading size="lg" class="font-heading font-bold">Mislukte taken</flux:heading>
+                <form method="POST" action="{{ route('admin.health.flush-failed') }}"
+                      onsubmit="return confirm('Alle {{ number_format($queue['failed']) }} mislukte taken definitief verwijderen?');">
+                    @csrf
+                    @method('DELETE')
+                    <flux:button type="submit" variant="danger" size="sm" icon="trash">Wis alle mislukte taken</flux:button>
+                </form>
+            </div>
+
+            <p class="text-sm text-[var(--color-text-secondary)] mb-4">
+                Dit zijn taken die in het verleden zijn mislukt. Ze blokkeren de wachtrij niet, maar stapelen zich op tot je ze wist.
+                Is de recentste fout lang geleden? Dan is dit oude ballast die je veilig kan wissen.
+            </p>
+
+            <div class="divide-y divide-[var(--color-border-light)]">
+                @foreach($failedSummary as $group)
+                    <div class="flex items-center justify-between gap-3 py-2 text-sm">
+                        <span class="text-[var(--color-text-secondary)] truncate">{{ $group['label'] }}</span>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <span class="text-[var(--color-text-tertiary)] tabular-nums">
+                                @php($firstSeen = \Illuminate\Support\Carbon::parse($group['first_seen']))
+                                @php($lastSeen = \Illuminate\Support\Carbon::parse($group['last_seen']))
+                                {{ $firstSeen->translatedFormat('j M Y') }}
+                                @unless($firstSeen->isSameDay($lastSeen))
+                                    – {{ $lastSeen->translatedFormat('j M Y') }}
+                                @endunless
+                            </span>
+                            <span class="text-xs font-semibold text-red-700 bg-red-50 px-1.5 py-0.5 rounded-full tabular-nums">{{ number_format($group['count']) }}</span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            @if($latestFailed)
+                <details class="mt-4 pt-3 border-t border-[var(--color-border-light)]">
+                    <summary class="text-sm text-[var(--color-text-tertiary)] cursor-pointer hover:text-[var(--color-text-secondary)]">
+                        Recentste mislukte taak ({{ $latestFailed['relative_time'] }})
+                    </summary>
+                    <div class="mt-2 space-y-1">
+                        <p class="text-sm"><span class="text-[var(--color-text-secondary)]">Taak:</span> <span class="font-medium">{{ $latestFailed['job'] }}</span></p>
+                        <p class="text-sm text-[var(--color-text-tertiary)] tabular-nums">{{ $latestFailed['failed_at'] }}</p>
+                        <pre class="mt-1 text-xs text-[var(--color-text-secondary)] bg-[var(--color-bg-subtle)] rounded-lg p-3 overflow-x-auto whitespace-pre-wrap">{{ $latestFailed['exception'] }}</pre>
+                    </div>
+                </details>
+            @endif
+        </flux:card>
+    @endif
 
     {{-- Errors card (full width) --}}
     <flux:card class="mt-6">

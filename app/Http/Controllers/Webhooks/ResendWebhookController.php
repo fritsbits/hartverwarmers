@@ -7,6 +7,7 @@ use App\Models\EmailBounce;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class ResendWebhookController extends Controller
 {
@@ -51,7 +52,11 @@ class ResendWebhookController extends Controller
     {
         EmailBounce::updateOrCreate(
             ['email' => $email],
-            ['type' => $type, 'reason' => $reason, 'bounced_at' => Carbon::now()],
+            [
+                'type' => $type,
+                'reason' => $reason !== null ? Str::limit($reason, 2000, '') : null,
+                'bounced_at' => Carbon::now(),
+            ],
         );
     }
 

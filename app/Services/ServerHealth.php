@@ -82,6 +82,51 @@ class ServerHealth
     }
 
     /**
+     * Failed queue jobs grouped by exception, largest group first.
+     *
+     * @return Collection<int, array{label: string, count: int, first_seen: string, last_seen: string, relative_time: string}>
+     */
+    public static function failedJobsSummary(int $limit = 8): Collection
+    {
+        return DB::table('failed_jobs')
+            ->selectRaw('substr(exception, 1, 120) as snippet, count(*) as total, min(failed_at) as first_failed, max(failed_at) as last_failed')
+            ->groupBy('snippet')
+            ->orderByDesc('total')
+            ->limit($limit)
+            ->get()
+            ->map(fn ($row): array => [
+                'label' => self::cleanExceptionSnippet((string) $row->snippet),
+                'count' => (int) $row->total,
+                'first_seen' => (string) $row->first_failed,
+                'last_seen' => (string) $row->last_failed,
+                'relative_time' => self::relativeTime((string) $row->last_failed),
+            ]);
+    }
+
+    /**
+     * The single most-recent failed job, decoded for inspection.
+     *
+     * @return array{job: string, exception: string, failed_at: string, relative_time: string}|null
+     */
+    public static function latestFailedJob(): ?array
+    {
+        $row = DB::table('failed_jobs')->orderByDesc('failed_at')->first();
+
+        if (! $row) {
+            return null;
+        }
+
+        $payload = json_decode((string) $row->payload, true) ?? [];
+
+        return [
+            'job' => $payload['displayName'] ?? ($payload['job'] ?? 'Onbekende taak'),
+            'exception' => str((string) $row->exception)->limit(800)->toString(),
+            'failed_at' => (string) $row->failed_at,
+            'relative_time' => self::relativeTime((string) $row->failed_at),
+        ];
+    }
+
+    /**
      * Recent ERROR-level entries from the active log file, grouped by message.
      *
      * @return Collection<int, array{date: string, level: string, message: string, count: int, relative_time: string}>
@@ -203,6 +248,17 @@ class ServerHealth
         $message = preg_replace('/^[\w\\\\]+\\\\(\w+)/', '$1', $message);
 
         return str($message)->limit(200)->toString();
+    }
+
+    /**
+     * Reduce a stored exception snippet to "ClassName: message…" for display.
+     */
+    private static function cleanExceptionSnippet(string $snippet): string
+    {
+        $line = trim((string) strtok($snippet, "\n"));
+        $line = preg_replace('/^[\w\\\\]+\\\\(\w+)/', '$1', $line) ?? $line;
+
+        return str($line)->limit(100)->toString();
     }
 
     /**

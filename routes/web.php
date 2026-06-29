@@ -112,7 +112,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/impersonate/{user}', [ImpersonateController::class, 'start'])
             ->where('user', '[0-9]+')
             ->name('admin.impersonate.start');
-        Route::get('/admin/gezondheid', HealthController::class)->name('admin.health');
+        Route::get('/admin/gezondheid', [HealthController::class, 'index'])->name('admin.health');
+        Route::delete('/admin/gezondheid/mislukte-taken', [HealthController::class, 'flushFailedJobs'])->name('admin.health.flush-failed');
     });
 });
 

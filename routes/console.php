@@ -13,6 +13,7 @@ Schedule::command('fiches:assign-icons')->everyFiveMinutes();
 Schedule::command('fiches:assess-quality --limit=20')->hourly()->withoutOverlapping();
 Schedule::command('file:cleanup-orphans')->daily()->at('03:00');
 Schedule::command('queue:heartbeat')->everyFiveMinutes();
+Schedule::command('queue:prune-failed --hours=168')->daily();
 Schedule::command('server:health-check')->everyFiveMinutes();
 // Engagement emails are staggered across the morning so they don't pile
 // into the 08:00 inbox flood. Ordering also serves the 24h cap: rarest

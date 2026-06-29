@@ -146,6 +146,25 @@ class ResendWebhookTest extends TestCase
         $this->assertTrue($sent[0]->is($deliverable));
     }
 
+    public function test_long_bounce_message_is_truncated_and_recorded(): void
+    {
+        $longMessage = str_repeat('SMTP 550 5.1.1 the email account does not exist; ', 100); // ~4800 chars
+
+        $this->postWebhook([
+            'type' => 'email.bounced',
+            'data' => [
+                'to' => ['dood@zorgcentrum.be'],
+                'bounce' => ['type' => 'Permanent', 'message' => $longMessage],
+            ],
+        ])->assertOk();
+
+        $bounce = EmailBounce::firstWhere('email', 'dood@zorgcentrum.be');
+
+        $this->assertNotNull($bounce);
+        $this->assertLessThanOrEqual(2000, mb_strlen((string) $bounce->reason));
+        $this->assertStringStartsWith('SMTP 550', (string) $bounce->reason);
+    }
+
     /**
      * @param  array<string, mixed>  $payload
      */

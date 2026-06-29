@@ -27,6 +27,11 @@ class ScheduledCommandsTest extends TestCase
         $this->assertCommandIsScheduled('fiches:assess-quality');
     }
 
+    public function test_failed_jobs_prune_is_scheduled(): void
+    {
+        $this->assertCommandIsScheduled('queue:prune-failed');
+    }
+
     private function assertCommandIsScheduled(string $command): void
     {
         $schedule = $this->app->make(Schedule::class);
