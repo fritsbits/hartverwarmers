@@ -10,6 +10,7 @@ Artisan::command('inspire', function () {
 
 Schedule::command('themes:rollover')->daily()->at('00:05');
 Schedule::command('fiches:assign-icons')->everyFiveMinutes();
+Schedule::command('fiches:assess-quality --limit=20')->hourly()->withoutOverlapping();
 Schedule::command('file:cleanup-orphans')->daily()->at('03:00');
 Schedule::command('queue:heartbeat')->everyFiveMinutes();
 Schedule::command('server:health-check')->everyFiveMinutes();

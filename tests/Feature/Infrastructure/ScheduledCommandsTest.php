@@ -22,6 +22,11 @@ class ScheduledCommandsTest extends TestCase
         $this->assertCommandIsScheduled('themes:rollover');
     }
 
+    public function test_quality_assessment_is_scheduled(): void
+    {
+        $this->assertCommandIsScheduled('fiches:assess-quality');
+    }
+
     private function assertCommandIsScheduled(string $command): void
     {
         $schedule = $this->app->make(Schedule::class);
