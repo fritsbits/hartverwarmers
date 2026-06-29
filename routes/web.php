@@ -25,6 +25,7 @@ use App\Http\Controllers\ProfileController as HvProfileController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\ToolsInspirationController;
+use App\Http\Controllers\Webhooks\ResendWebhookController;
 use App\Models\User;
 use App\Notifications\MonthlyDigestNotification;
 use App\Services\MonthlyDigest\Composer;
@@ -165,6 +166,12 @@ Route::get('/n/{user}/click', NewsletterClickController::class)
     ->name('newsletter.click')
     ->middleware('signed')
     ->withTrashed();
+
+// Resend delivery webhook — records hard bounces and complaints so campaigns
+// stop emailing dead addresses. Signature-verified inside the controller;
+// CSRF is excluded for this path in bootstrap/app.php.
+Route::post('/webhooks/resend', ResendWebhookController::class)
+    ->name('webhooks.resend');
 
 // Dev-only newsletter preview (local environment only, runtime-gated)
 Route::get('/dev/newsletter-preview/{user}', function (User $user, Composer $composer) {

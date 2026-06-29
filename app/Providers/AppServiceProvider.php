@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Events\CommentPosted;
 use App\Listeners\SendFicheCommentNotification;
 use App\Listeners\SendWelcomeNotification;
+use App\Models\User;
 use App\Notifications\QueueJobFailedNotification;
 use App\View\Composers\AboutComposer;
 use App\View\Composers\FooterComposer;
@@ -12,6 +13,7 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Event;
@@ -56,7 +58,25 @@ class AppServiceProvider extends ServiceProvider
 
         $this->customizeMailNotifications();
 
+        $this->suppressMailToBouncedAddresses();
+
         $this->registerRateLimiters();
+    }
+
+    /**
+     * Cancel any mail-channel notification to an address Resend flagged as a
+     * permanent bounce or complaint. Keyed on the email string, so changing a
+     * user's address self-heals delivery without clearing the bounce record.
+     */
+    private function suppressMailToBouncedAddresses(): void
+    {
+        Event::listen(function (NotificationSending $event): ?bool {
+            if ($event->channel !== 'mail' || ! $event->notifiable instanceof User) {
+                return null;
+            }
+
+            return $event->notifiable->emailBounces()->exists() ? false : null;
+        });
     }
 
     private function listenForFailedJobs(): void

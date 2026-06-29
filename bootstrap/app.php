@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prepend(RedirectTrailingSlash::class);
+        $middleware->validateCsrfTokens(except: ['webhooks/resend']);
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
             'curator' => EnsureUserIsCurator::class,

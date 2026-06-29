@@ -119,6 +119,15 @@ class User extends Authenticatable
         return $this->hasMany(OnboardingEmailLog::class);
     }
 
+    /**
+     * Hard-bounce / complaint records for this user's address, keyed on email
+     * rather than id (the Resend webhook only knows the address).
+     */
+    public function emailBounces(): HasMany
+    {
+        return $this->hasMany(EmailBounce::class, 'email', 'email');
+    }
+
     public function pendingNotifications(): HasMany
     {
         return $this->hasMany(PendingNotification::class);
@@ -159,6 +168,15 @@ class User extends Authenticatable
         return $this->contributor_onboarded_at !== null;
     }
 
+    /**
+     * Exclude users whose address has hard-bounced or filed a spam complaint,
+     * so campaigns don't keep targeting dead inboxes.
+     */
+    public function scopeWhereDeliverable(Builder $query): Builder
+    {
+        return $query->whereDoesntHave('emailBounces');
+    }
+
     public function scopeReactivationCohort(Builder $query): Builder
     {
         return $query
@@ -166,6 +184,7 @@ class User extends Authenticatable
             ->whereNull('newsletter_unsubscribed_at')
             ->whereNull('last_visited_at')
             ->where('created_at', '<', now()->subDays(90))
+            ->whereDeliverable()
             ->whereDoesntHave('onboardingEmailLogs', function (Builder $log): void {
                 $log->where('mail_key', config('newsletter.reactivation_mail_key'));
             })
