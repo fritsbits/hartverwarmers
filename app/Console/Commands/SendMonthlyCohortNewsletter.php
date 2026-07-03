@@ -45,7 +45,13 @@ class SendMonthlyCohortNewsletter extends Command
 
                     $cycle = $user->currentDigestCycleNumber();
 
-                    $user->notify(new MonthlyDigestNotification($payload, cycle: $cycle));
+                    $userPayload = $payload->forUser($user);
+
+                    $user->notify(new MonthlyDigestNotification($userPayload, cycle: $cycle));
+
+                    if ($userPayload->diamond) {
+                        $user->forceFill(['last_digest_diamond_fiche_id' => $userPayload->diamond->id])->saveQuietly();
+                    }
 
                     OnboardingEmailLog::create([
                         'user_id' => $user->id,

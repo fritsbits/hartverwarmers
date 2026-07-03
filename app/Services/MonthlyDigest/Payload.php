@@ -4,6 +4,7 @@ namespace App\Services\MonthlyDigest;
 
 use App\Models\Fiche;
 use App\Models\ThemeOccurrence;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -25,5 +26,22 @@ class Payload
     public function isEmpty(): bool
     {
         return $this->upcomingThemeCount === 0 && $this->newFicheCount === 0;
+    }
+
+    /**
+     * A user must never see the same diamond in two consecutive digests.
+     * When the current diamond is the one from their previous digest, the
+     * section is dropped for them rather than repeated.
+     */
+    public function forUser(User $user): self
+    {
+        if ($this->diamond && $this->diamond->id === $user->last_digest_diamond_fiche_id) {
+            $personalised = clone $this;
+            $personalised->diamond = null;
+
+            return $personalised;
+        }
+
+        return $this;
     }
 }

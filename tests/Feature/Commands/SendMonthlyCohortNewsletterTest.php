@@ -152,4 +152,46 @@ class SendMonthlyCohortNewsletterTest extends TestCase
             'mail_key' => 'newsletter-cycle-2',
         ]);
     }
+
+    public function test_diamond_is_never_repeated_for_a_user_in_consecutive_digests(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        $diamond = Fiche::factory()->published()->withDiamond()->create();
+        Fiche::factory()->published()->create();
+
+        $sawItLastCycle = User::factory()->create(['created_at' => now()->subDays(30)]);
+        $sawItLastCycle->forceFill(['last_digest_diamond_fiche_id' => $diamond->id])->saveQuietly();
+
+        $neverSawIt = User::factory()->create(['created_at' => now()->subDays(60)]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        Notification::assertSentTo(
+            $sawItLastCycle,
+            MonthlyDigestNotification::class,
+            fn (MonthlyDigestNotification $notification) => $notification->payload->diamond === null
+        );
+        Notification::assertSentTo(
+            $neverSawIt,
+            MonthlyDigestNotification::class,
+            fn (MonthlyDigestNotification $notification) => $notification->payload->diamond?->id === $diamond->id
+        );
+    }
+
+    public function test_shown_diamond_is_recorded_on_the_user(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        $diamond = Fiche::factory()->published()->withDiamond()->create();
+        Fiche::factory()->published()->create();
+
+        $user = User::factory()->create(['created_at' => now()->subDays(30)]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        $this->assertSame($diamond->id, $user->fresh()->last_digest_diamond_fiche_id);
+    }
 }
