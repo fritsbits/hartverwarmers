@@ -38,3 +38,13 @@ Schedule::command('onboarding:send-emails')
     ->dailyAt('11:30')
     ->timezone('Europe/Brussels');
 Schedule::command('okr:warm-metrics')->hourly()->withoutOverlapping();
+
+// Diamantje van de maand: suggestion mail to the admin a few days ahead,
+// automatic award on the 1st — before the 10:30 digest batch, so no digest
+// ever goes out with a stale diamond.
+Schedule::command('diamonds:send-rotation-suggestion')
+    ->monthlyOn(27, '09:00')
+    ->timezone('Europe/Brussels');
+Schedule::command('diamonds:rotate')
+    ->monthlyOn(1, '06:00')
+    ->timezone('Europe/Brussels');

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\DiamondRotationSuggestionMail;
 use App\Mail\FicheCommentDigestMail;
+use App\Models\DiamondRotation;
 use App\Models\Fiche;
 use App\Notifications\ContributorAnniversaryNotification;
 use App\Notifications\FicheDiamondAwardedNotification;
@@ -16,6 +18,7 @@ use App\Notifications\OnboardingTopFiveNotification;
 use App\Notifications\ReactivationNotification;
 use App\Notifications\WelcomeNotification;
 use App\Services\ContributorAnniversary\Composer as AnniversaryComposer;
+use App\Services\DiamondRotation\CandidateFinder;
 use App\Services\MonthlyDigest\Composer;
 use App\Support\Reactivation\ReactivationContent;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -71,6 +74,12 @@ class MailPreviewController extends Controller
             'description' => 'Cohort-gebaseerde maandelijkse update: themadagen, diamantje, recente fiches.',
             'category' => 'newsletter',
             'trigger' => 'Maandelijks (cohort, 08:00)',
+        ],
+        'diamond-rotation-suggestion' => [
+            'label' => 'Diamantje-suggestie (admin)',
+            'description' => 'Suggestie voor het diamantje van volgende maand, met één-tik keuzelinks. Gaat enkel naar de beheerder; zonder reactie wordt de eerste suggestie op de 1e automatisch toegekend.',
+            'category' => 'newsletter',
+            'trigger' => 'Maandelijks op de 27e (09:00)',
         ],
         'reactivation' => [
             'label' => 'Reactivatie',
@@ -218,6 +227,7 @@ class MailPreviewController extends Controller
             'onboarding-milestone-10-bookmarks' => (new OnboardingMilestone10BookmarksNotification(10))->toMail($user),
             'onboarding-milestone-50-bookmarks' => (new OnboardingMilestone50BookmarksNotification(50))->toMail($user),
             'diamond-awarded' => $this->buildDiamondAwardedMail($user),
+            'diamond-rotation-suggestion' => $this->buildDiamondRotationSuggestionMail(),
             'anniversary' => $this->buildAnniversaryMail($user),
             'reactivation' => $this->buildReactivationMail($user),
             default => throw new \InvalidArgumentException("Unknown email key: {$email}"),
@@ -242,6 +252,30 @@ class MailPreviewController extends Controller
         $cycle = $user->currentDigestCycleNumber();
 
         return (new MonthlyDigestNotification($payload, cycle: $cycle))->toMail($user);
+    }
+
+    private function buildDiamondRotationSuggestionMail(): Mailable
+    {
+        $candidates = app(CandidateFinder::class)->candidates(4);
+
+        if ($candidates->isEmpty()) {
+            $candidates = Fiche::published()
+                ->with(['user', 'initiative'])
+                ->withCount(['likes', 'comments'])
+                ->limit(4)
+                ->get();
+        }
+
+        abort_if($candidates->isEmpty(), 404, 'Geen fiches om te tonen.');
+
+        $rotation = DiamondRotation::forMonth(now()->addMonth())->first()
+            ?? DiamondRotation::make([
+                'month' => now()->addMonth()->startOfMonth()->toDateString(),
+                'fiche_id' => $candidates->first()->id,
+                'suggested_fiche_ids' => $candidates->pluck('id')->all(),
+            ])->forceFill(['id' => 0]);
+
+        return new DiamondRotationSuggestionMail($rotation, $candidates);
     }
 
     private function buildDiamondAwardedMail(mixed $user): MailMessage

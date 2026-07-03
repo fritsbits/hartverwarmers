@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminDiamondRotationController;
 use App\Http\Controllers\Admin\AdminFicheController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\HealthController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\ContentController;
 use App\Http\Controllers\ContributorController;
 use App\Http\Controllers\DesignSystemController;
 use App\Http\Controllers\DiamantjesController;
+use App\Http\Controllers\DiamondRotationChoiceController;
 use App\Http\Controllers\DownloadsAndBookmarksController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\FicheController;
@@ -65,6 +67,14 @@ Route::get('/bijdragers/{user}', [ContributorController::class, 'show'])->name('
 // Diamantjes
 Route::get('/diamantjes', DiamantjesController::class)->name('diamantjes.index');
 
+// Maandelijkse diamantje-rotatie: keuze uit de suggestiemail (signed, no auth required)
+Route::get('/diamantjes/wissel/{rotation}/{fiche}', [DiamondRotationChoiceController::class, 'show'])
+    ->name('diamond-rotation.choose')
+    ->middleware('signed');
+Route::post('/diamantjes/wissel/{rotation}/{fiche}', [DiamondRotationChoiceController::class, 'store'])
+    ->name('diamond-rotation.confirm')
+    ->middleware('signed');
+
 // Favorieten & downloads
 Route::get('/favorieten', DownloadsAndBookmarksController::class)->name('bookmarks.index');
 
@@ -104,6 +114,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/design-systeem', [DesignSystemController::class, 'index'])->name('admin.design-system');
         Route::get('/admin/features', [FeatureController::class, 'index'])->name('admin.features');
         Route::post('/admin/features/{feature}/toggle', [FeatureController::class, 'toggle'])->name('admin.features.toggle');
+        Route::get('/admin/diamantjes', [AdminDiamondRotationController::class, 'index'])->name('admin.diamond-rotations');
+        Route::post('/admin/diamantjes/keuze', [AdminDiamondRotationController::class, 'choose'])->name('admin.diamond-rotations.choose');
+        Route::post('/admin/diamantjes/suggestiemail', [AdminDiamondRotationController::class, 'sendSuggestionMail'])->name('admin.diamond-rotations.send-suggestion');
         Route::get('/admin/mails', [MailPreviewController::class, 'index'])->name('admin.mails');
         Route::get('/admin/mails/{email}', [MailPreviewController::class, 'show'])->name('admin.mails.show');
         Route::get('/admin/mails/{email}/preview', [MailPreviewController::class, 'preview'])->name('admin.mails.preview');
