@@ -59,6 +59,7 @@ Route::get('/initiatieven/{initiative:slug}/{fiche:slug}/download', [FicheContro
 
 // Themes (placeholder)
 Route::get('/themas', [ThemeController::class, 'index'])->name('themes.index');
+Route::get('/themas/print', [ThemeController::class, 'print'])->name('themes.print');
 
 // Contributors
 Route::get('/bijdragers', [ContributorController::class, 'index'])->name('contributors.index');

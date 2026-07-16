@@ -6,6 +6,7 @@ use App\Models\Theme;
 use App\Services\JsonContent;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -15,19 +16,7 @@ class ThemeController extends Controller
     {
         $month = $this->parseMonth($request->query('maand'));
 
-        $themes = Cache::remember(
-            'themes:index:'.$month->format('Y-m'),
-            now()->addMinutes(15),
-            fn () => Theme::query()
-                ->forMonth($month->year, $month->month)
-                ->with([
-                    'occurrences' => fn ($q) => $q->where('year', $month->year),
-                    'fiches' => fn ($q) => $q->published()->with('initiative', 'user')->withCount('comments'),
-                ])
-                ->get()
-                ->sortBy(fn (Theme $t) => optional($t->occurrences->first())->start_date)
-                ->values()
-        );
+        $themes = $this->themesForMonth($month);
 
         [$seasonThemes, $dayThemes] = $themes->partition(fn (Theme $t) => $t->is_month);
 
@@ -53,6 +42,39 @@ class ThemeController extends Controller
             'themesByDate' => $themesByDate,
             'showPrev' => $showPrev,
         ]);
+    }
+
+    public function print(Request $request): View
+    {
+        $month = $this->parseMonth($request->query('maand'));
+
+        $themes = $this->themesForMonth($month);
+
+        [$seasonThemes, $dayThemes] = $themes->partition(fn (Theme $t) => $t->is_month);
+
+        return view('themes.print', [
+            'month' => $month,
+            'monthIntro' => $this->loadMonthIntro($month->month),
+            'seasonThemes' => $seasonThemes->values(),
+            'dayThemes' => $dayThemes->values(),
+        ]);
+    }
+
+    private function themesForMonth(CarbonImmutable $month): Collection
+    {
+        return Cache::remember(
+            'themes:index:'.$month->format('Y-m'),
+            now()->addMinutes(15),
+            fn () => Theme::query()
+                ->forMonth($month->year, $month->month)
+                ->with([
+                    'occurrences' => fn ($q) => $q->where('year', $month->year),
+                    'fiches' => fn ($q) => $q->published()->with('initiative', 'user')->withCount('comments'),
+                ])
+                ->get()
+                ->sortBy(fn (Theme $t) => optional($t->occurrences->first())->start_date)
+                ->values()
+        );
     }
 
     /**

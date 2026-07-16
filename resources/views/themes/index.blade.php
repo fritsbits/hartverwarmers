@@ -34,8 +34,13 @@
                         </p>
                     @endif
                 </div>
-                <div class="hidden lg:flex justify-center">
+                <div class="hidden lg:flex flex-col items-center gap-5">
                     <x-theme-month-overview :month="$month" :themes-by-date="$themesByDate" />
+                    <a href="{{ route('themes.print', ['maand' => $month->format('Y-m')]) }}" target="_blank"
+                       class="cta-link text-sm">
+                        <flux:icon.printer variant="micro" class="text-[var(--color-primary)]" />
+                        Print deze kalender
+                    </a>
                 </div>
             </div>
         </div>
