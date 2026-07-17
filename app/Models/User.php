@@ -256,4 +256,14 @@ class User extends Authenticatable
             ->where('sent_at', '>', now()->subDay())
             ->exists();
     }
+
+    public function productUpdateSends(): HasMany
+    {
+        return $this->hasMany(ProductUpdateSend::class);
+    }
+
+    public function hasSeenProductUpdate(string $updateUid): bool
+    {
+        return $this->productUpdateSends()->where('update_uid', $updateUid)->exists();
+    }
 }

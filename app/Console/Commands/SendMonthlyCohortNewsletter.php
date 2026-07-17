@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\OnboardingEmailLog;
+use App\Models\ProductUpdateSend;
 use App\Models\User;
 use App\Notifications\MonthlyDigestNotification;
 use App\Services\MonthlyDigest\Composer;
@@ -51,6 +52,15 @@ class SendMonthlyCohortNewsletter extends Command
 
                     if ($userPayload->diamond) {
                         $user->forceFill(['last_digest_diamond_fiche_id' => $userPayload->diamond->id])->saveQuietly();
+                    }
+
+                    if ($userPayload->productUpdate) {
+                        ProductUpdateSend::firstOrCreate([
+                            'user_id' => $user->id,
+                            'update_uid' => $userPayload->productUpdate['uid'],
+                        ], [
+                            'sent_at' => now(),
+                        ]);
                     }
 
                     OnboardingEmailLog::create([

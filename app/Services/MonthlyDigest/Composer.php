@@ -4,6 +4,7 @@ namespace App\Services\MonthlyDigest;
 
 use App\Models\Fiche;
 use App\Models\ThemeOccurrence;
+use App\Services\ProductUpdates;
 use Illuminate\Support\Carbon;
 
 class Composer
@@ -53,6 +54,7 @@ class Composer
             upcomingThemeCount: $upcomingThemeCount,
             newFicheCount: $newFicheCount,
             sentAt: $now,
+            productUpdate: ProductUpdates::latestFresh($now),
         );
     }
 }

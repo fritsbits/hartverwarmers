@@ -132,6 +132,27 @@
                     </td>
                 </tr>
                 @endif
+                @if ($payload->productUpdate)
+                <tr>
+                    <td style="padding:0 0 36px 0">
+                        <div class="section-label" style="margin-bottom:14px">Nieuw op Hartverwarmers</div>
+
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FFFFFF;border:1px solid #EBE4DE;border-radius:10px">
+                            <tr>
+                                <td style="padding:22px">
+                                    <div class="heading-serif" style="font-size:21px;line-height:1.25;margin-bottom:10px">{{ $payload->productUpdate['title'] }}</div>
+                                    <p style="margin:0;color:#231E1A;font-size:14px;line-height:1.6">{{ $payload->productUpdate['body'] }}</p>
+                                    @isset ($payload->productUpdate['link'])
+                                        <div style="margin-top:16px">
+                                            <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, \App\Support\EmailLink::to(url($payload->productUpdate['link']['url']), 'monthly-digest', 'newsletter', 'product-update')) }}" style="color:#E8764B;font-weight:600;font-size:14px;text-decoration:none">{{ $payload->productUpdate['link']['label'] }} &rarr;</a>
+                                        </div>
+                                    @endisset
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                @endif
                 {{-- Signoff --}}
                 <tr>
                     <td style="padding:0 0 24px 0;line-height:1.6;font-size:15px;color:#231E1A">

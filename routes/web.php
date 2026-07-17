@@ -28,6 +28,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\ToolsInspirationController;
 use App\Http\Controllers\Webhooks\ResendWebhookController;
+use App\Http\Controllers\WhatsNewController;
 use App\Models\User;
 use App\Notifications\MonthlyDigestNotification;
 use App\Services\MonthlyDigest\Composer;
@@ -150,8 +151,8 @@ Route::get('/{slug}', [ContentController::class, 'content'])
     ->where('slug', '(lessenreeks|wonen-en-leven).*')
     ->name('content');
 
-// What's new (launch communication)
-Route::view('/wat-is-er-nieuw', 'wat-is-er-nieuw')->name('whats-new');
+// What's new (product updates)
+Route::get('/wat-is-er-nieuw', [WhatsNewController::class, 'index'])->name('whats-new');
 
 // About
 Route::view('/over-ons', 'about')->name('about');

@@ -114,6 +114,7 @@
                         <li><a href="{{ route('themes.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Themakalender</a></li>
                         <li><a href="{{ route('contributors.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Bijdragers</a></li>
                         <li><a href="{{ route('diamantjes.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Diamantjes – Sterke fiches</a></li>
+                        <li><a href="{{ route('whats-new') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Wat is er nieuw</a></li>
                     </ul>
                 </div>
 

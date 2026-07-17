@@ -21,6 +21,7 @@ class Payload
         public int $upcomingThemeCount,
         public int $newFicheCount,
         public Carbon $sentAt,
+        public ?array $productUpdate = null,
     ) {}
 
     public function isEmpty(): bool
@@ -29,19 +30,29 @@ class Payload
     }
 
     /**
-     * A user must never see the same diamond in two consecutive digests.
-     * When the current diamond is the one from their previous digest, the
-     * section is dropped for them rather than repeated.
+     * Personalise the shared payload for one recipient. A user never sees
+     * the same diamond in two consecutive digests, and never receives the
+     * same product update twice.
      */
     public function forUser(User $user): self
     {
-        if ($this->diamond && $this->diamond->id === $user->last_digest_diamond_fiche_id) {
-            $personalised = clone $this;
-            $personalised->diamond = null;
+        $dropDiamond = $this->diamond && $this->diamond->id === $user->last_digest_diamond_fiche_id;
+        $dropUpdate = $this->productUpdate && $user->hasSeenProductUpdate($this->productUpdate['uid']);
 
-            return $personalised;
+        if (! $dropDiamond && ! $dropUpdate) {
+            return $this;
         }
 
-        return $this;
+        $personalised = clone $this;
+
+        if ($dropDiamond) {
+            $personalised->diamond = null;
+        }
+
+        if ($dropUpdate) {
+            $personalised->productUpdate = null;
+        }
+
+        return $personalised;
     }
 }

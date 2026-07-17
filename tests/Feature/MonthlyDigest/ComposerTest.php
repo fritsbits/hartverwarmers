@@ -8,6 +8,7 @@ use App\Models\ThemeOccurrence;
 use App\Services\MonthlyDigest\Composer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ComposerTest extends TestCase
@@ -108,5 +109,35 @@ class ComposerTest extends TestCase
 
         $this->assertCount(5, $payload->themes, 'themes collection should be capped at 5');
         $this->assertSame(7, $payload->upcomingThemeCount, 'upcomingThemeCount should reflect the true total');
+    }
+
+    public function test_compose_includes_latest_fresh_product_update(): void
+    {
+        Storage::fake('content');
+        Storage::disk('content')->put('updates/2026-05-vers.json', json_encode([
+            'uid' => '2026-05-vers',
+            'published_at' => '2026-05-01',
+            'title' => 'Verse update',
+            'body' => 'Korte tekst.',
+        ]));
+
+        $payload = app(Composer::class)->compose(Carbon::parse('2026-05-13 08:00:00'));
+
+        $this->assertSame('2026-05-vers', $payload->productUpdate['uid']);
+    }
+
+    public function test_compose_leaves_product_update_null_when_newest_is_stale(): void
+    {
+        Storage::fake('content');
+        Storage::disk('content')->put('updates/2026-01-oud.json', json_encode([
+            'uid' => '2026-01-oud',
+            'published_at' => '2026-01-01',
+            'title' => 'Oude update',
+            'body' => 'Korte tekst.',
+        ]));
+
+        $payload = app(Composer::class)->compose(Carbon::parse('2026-05-13 08:00:00'));
+
+        $this->assertNull($payload->productUpdate);
     }
 }

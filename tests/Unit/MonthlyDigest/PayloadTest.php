@@ -22,6 +22,7 @@ class PayloadTest extends TestCase
             upcomingThemeCount: 5,
             newFicheCount: 12,
             sentAt: Carbon::parse('2026-05-13 08:00:00'),
+            productUpdate: ['uid' => '2026-05-test', 'published_at' => '2026-05-01', 'title' => 'Test', 'body' => 'Tekst.'],
         );
 
         $this->assertSame(5, $payload->upcomingThemeCount);
@@ -30,6 +31,22 @@ class PayloadTest extends TestCase
         $this->assertSame($themes, $payload->themes);
         $this->assertNull($payload->diamond);
         $this->assertSame($fiches, $payload->recentFiches);
+        $this->assertSame('2026-05-test', $payload->productUpdate['uid']);
+    }
+
+    public function test_is_empty_ignores_product_update(): void
+    {
+        $payload = new Payload(
+            themes: new Collection,
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 0,
+            newFicheCount: 0,
+            sentAt: Carbon::now(),
+            productUpdate: ['uid' => '2026-05-test', 'published_at' => '2026-05-01', 'title' => 'Test', 'body' => 'Tekst.'],
+        );
+
+        $this->assertTrue($payload->isEmpty());
     }
 
     public function test_is_empty_when_no_themes_and_no_fiches(): void

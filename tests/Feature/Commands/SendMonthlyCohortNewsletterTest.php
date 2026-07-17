@@ -4,12 +4,14 @@ namespace Tests\Feature\Commands;
 
 use App\Models\Fiche;
 use App\Models\OnboardingEmailLog;
+use App\Models\ProductUpdateSend;
 use App\Models\User;
 use App\Notifications\MonthlyDigestNotification;
 use App\Services\MonthlyDigest\Composer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Mime\Email;
 use Tests\TestCase;
 
@@ -193,5 +195,120 @@ class SendMonthlyCohortNewsletterTest extends TestCase
         $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
 
         $this->assertSame($diamond->id, $user->fresh()->last_digest_diamond_fiche_id);
+    }
+
+    private function putProductUpdate(string $uid, string $publishedAt): void
+    {
+        Storage::disk('content')->put("updates/{$uid}.json", json_encode([
+            'uid' => $uid,
+            'published_at' => $publishedAt,
+            'title' => "Titel {$uid}",
+            'body' => 'Korte tekst.',
+            'link' => ['url' => '/themas', 'label' => 'Bekijk de themakalender'],
+        ]));
+    }
+
+    public function test_product_update_is_included_and_recorded_for_a_user_who_never_saw_it(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2026-05-13 08:00:00');
+        Storage::fake('content');
+        $this->putProductUpdate('2026-05-vers', '2026-05-01');
+
+        Fiche::factory()->published()->create();
+        $user = User::factory()->create(['created_at' => now()->subDays(30)]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        Notification::assertSentTo(
+            $user,
+            MonthlyDigestNotification::class,
+            fn (MonthlyDigestNotification $notification) => $notification->payload->productUpdate['uid'] === '2026-05-vers'
+        );
+        $this->assertDatabaseHas('product_update_sends', [
+            'user_id' => $user->id,
+            'update_uid' => '2026-05-vers',
+        ]);
+    }
+
+    public function test_product_update_is_never_sent_twice_to_the_same_user(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2026-05-13 08:00:00');
+        Storage::fake('content');
+        $this->putProductUpdate('2026-05-vers', '2026-05-01');
+
+        Fiche::factory()->published()->create();
+        $user = User::factory()->create(['created_at' => now()->subDays(60)]);
+        ProductUpdateSend::create(['user_id' => $user->id, 'update_uid' => '2026-05-vers', 'sent_at' => now()->subDays(30)]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        Notification::assertSentTo(
+            $user,
+            MonthlyDigestNotification::class,
+            fn (MonthlyDigestNotification $notification) => $notification->payload->productUpdate === null
+        );
+        $this->assertDatabaseCount('product_update_sends', 1);
+    }
+
+    public function test_user_who_saw_update_a_receives_update_b_in_a_later_cycle(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2026-05-13 08:00:00');
+        Storage::fake('content');
+        $this->putProductUpdate('2026-04-update-a', '2026-04-01');
+        $this->putProductUpdate('2026-05-update-b', '2026-05-01');
+
+        Fiche::factory()->published()->create();
+        $user = User::factory()->create(['created_at' => now()->subDays(60)]);
+        ProductUpdateSend::create(['user_id' => $user->id, 'update_uid' => '2026-04-update-a', 'sent_at' => now()->subDays(30)]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        Notification::assertSentTo(
+            $user,
+            MonthlyDigestNotification::class,
+            fn (MonthlyDigestNotification $notification) => $notification->payload->productUpdate['uid'] === '2026-05-update-b'
+        );
+    }
+
+    public function test_digest_still_sends_when_no_fresh_product_update_exists(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2026-05-13 08:00:00');
+        Storage::fake('content');
+
+        Fiche::factory()->published()->create();
+        $user = User::factory()->create(['created_at' => now()->subDays(30)]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        Notification::assertSentTo(
+            $user,
+            MonthlyDigestNotification::class,
+            fn (MonthlyDigestNotification $notification) => $notification->payload->productUpdate === null
+        );
+        $this->assertDatabaseCount('product_update_sends', 0);
+    }
+
+    public function test_email_renders_product_update_section(): void
+    {
+        Carbon::setTestNow('2026-05-13 08:00:00');
+        Storage::fake('content');
+        $this->putProductUpdate('2026-05-vers', '2026-05-01');
+
+        $user = User::factory()->create();
+        $payload = app(Composer::class)->compose(now());
+
+        $html = view('emails.monthly-digest', [
+            'payload' => $payload,
+            'notifiable' => $user,
+            'previewText' => 'test',
+        ])->render();
+
+        $this->assertStringContainsString('Nieuw op Hartverwarmers', $html);
+        $this->assertStringContainsString('Titel 2026-05-vers', $html);
+        $this->assertStringContainsString('Bekijk de themakalender', $html);
     }
 }
