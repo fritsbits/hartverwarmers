@@ -70,6 +70,20 @@ class FicheShowTest extends TestCase
         $response->assertSee('6-8 personen');
     }
 
+    public function test_fiche_show_title_wraps_long_words(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'title' => 'Snoepenbingo met winnaarsbeloningen',
+        ]);
+
+        $response = $this->get(route('fiches.show', [$initiative, $fiche]));
+
+        $response->assertStatus(200);
+        $response->assertSee('<h1 class="text-5xl min-w-0 break-words hyphens-auto">Snoepenbingo met winnaarsbeloningen</h1>', false);
+    }
+
     public function test_fiche_show_displays_files(): void
     {
         $initiative = Initiative::factory()->published()->create();
