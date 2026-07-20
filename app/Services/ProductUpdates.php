@@ -82,6 +82,27 @@ class ProductUpdates
     }
 
     /**
+     * Write an update to the content disk as updates/{uid}.json.
+     *
+     * @param  array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}}  $update
+     */
+    public static function save(array $update): void
+    {
+        JsonContent::disk()->put(
+            "updates/{$update['uid']}.json",
+            json_encode($update, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+        );
+    }
+
+    /**
+     * Remove an update from the content disk.
+     */
+    public static function delete(string $uid): void
+    {
+        JsonContent::disk()->delete("updates/{$uid}.json");
+    }
+
+    /**
      * The update's long-form markdown rendered to HTML, or null when it has none.
      *
      * @param  array{content?: string}  $update

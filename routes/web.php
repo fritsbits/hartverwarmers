@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminDiamondRotationController;
 use App\Http\Controllers\Admin\AdminFicheController;
+use App\Http\Controllers\Admin\AdminProductUpdateController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\HealthController;
 use App\Http\Controllers\Admin\ImpersonateController;
@@ -119,6 +120,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/diamantjes', [AdminDiamondRotationController::class, 'index'])->name('admin.diamond-rotations');
         Route::post('/admin/diamantjes/keuze', [AdminDiamondRotationController::class, 'choose'])->name('admin.diamond-rotations.choose');
         Route::post('/admin/diamantjes/suggestiemail', [AdminDiamondRotationController::class, 'sendSuggestionMail'])->name('admin.diamond-rotations.send-suggestion');
+        Route::get('/admin/product-updates', [AdminProductUpdateController::class, 'index'])->name('admin.product-updates.index');
         Route::get('/admin/mails', [MailPreviewController::class, 'index'])->name('admin.mails');
         Route::get('/admin/mails/{email}', [MailPreviewController::class, 'show'])->name('admin.mails.show');
         Route::get('/admin/mails/{email}/preview', [MailPreviewController::class, 'preview'])->name('admin.mails.preview');

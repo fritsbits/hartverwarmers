@@ -52,6 +52,10 @@
                                     <flux:icon name="envelope" variant="mini" class="size-4" />
                                     E-mails
                                 </a>
+                                <a href="{{ route('admin.product-updates.index') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.product-updates.*') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
+                                    <flux:icon name="megaphone" variant="mini" class="size-4" />
+                                    Updates
+                                </a>
                                 <a href="{{ route('admin.diamond-rotations') }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors {{ request()->routeIs('admin.diamond-rotations*') ? 'bg-[var(--color-bg-accent-light)] text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-subtle)]' }}">
                                     <flux:icon name="sparkles" variant="mini" class="size-4" />
                                     Diamantjes
@@ -95,6 +99,7 @@
                                     <flux:navlist.item href="{{ route('admin.dashboard') }}" icon="chart-bar" :current="request()->routeIs('admin.dashboard')">OKR's</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.health') }}" icon="signal" :current="request()->routeIs('admin.health')">Gezondheid</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.mails') }}" icon="envelope" :current="request()->routeIs('admin.mails*')">E-mails</flux:navlist.item>
+                                    <flux:navlist.item href="{{ route('admin.product-updates.index') }}" icon="megaphone" :current="request()->routeIs('admin.product-updates.*')">Updates</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.diamond-rotations') }}" icon="sparkles" :current="request()->routeIs('admin.diamond-rotations*')">Diamantjes</flux:navlist.item>
                                     <flux:navlist.item href="{{ route('admin.features') }}" icon="flag" :current="request()->routeIs('admin.features')">Features</flux:navlist.item>
                                 </flux:navlist.group>
