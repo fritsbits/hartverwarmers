@@ -153,6 +153,7 @@ Route::get('/{slug}', [ContentController::class, 'content'])
 
 // What's new (product updates)
 Route::get('/wat-is-er-nieuw', [WhatsNewController::class, 'index'])->name('whats-new');
+Route::get('/wat-is-er-nieuw/{uid}', [WhatsNewController::class, 'show'])->name('whats-new.show');
 
 // About
 Route::view('/over-ons', 'about')->name('about');

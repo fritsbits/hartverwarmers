@@ -74,4 +74,67 @@ class ProductUpdatesTest extends TestCase
     {
         $this->assertNull(ProductUpdates::latestFresh(Carbon::parse('2026-07-16')));
     }
+
+    public function test_find_returns_the_matching_update(): void
+    {
+        $this->putUpdate('2026-07-nieuwste', '2026-07-16');
+        $this->putUpdate('2026-05-oudste', '2026-05-01');
+
+        $this->assertSame('Titel 2026-05-oudste', ProductUpdates::find('2026-05-oudste')['title']);
+    }
+
+    public function test_find_returns_null_for_an_unknown_uid(): void
+    {
+        $this->putUpdate('2026-07-nieuwste', '2026-07-16');
+
+        $this->assertNull(ProductUpdates::find('bestaat-niet'));
+    }
+
+    public function test_newer_and_older_walk_the_list_in_publication_order(): void
+    {
+        $this->putUpdate('2026-05-oudste', '2026-05-01');
+        $this->putUpdate('2026-06-middelste', '2026-06-10');
+        $this->putUpdate('2026-07-nieuwste', '2026-07-16');
+
+        $this->assertSame('2026-07-nieuwste', ProductUpdates::newerThan('2026-06-middelste')['uid']);
+        $this->assertSame('2026-05-oudste', ProductUpdates::olderThan('2026-06-middelste')['uid']);
+    }
+
+    public function test_newer_is_null_at_the_top_and_older_is_null_at_the_bottom(): void
+    {
+        $this->putUpdate('2026-05-oudste', '2026-05-01');
+        $this->putUpdate('2026-07-nieuwste', '2026-07-16');
+
+        $this->assertNull(ProductUpdates::newerThan('2026-07-nieuwste'));
+        $this->assertNull(ProductUpdates::olderThan('2026-05-oudste'));
+    }
+
+    public function test_neighbours_are_null_for_an_unknown_uid(): void
+    {
+        $this->putUpdate('2026-07-nieuwste', '2026-07-16');
+
+        $this->assertNull(ProductUpdates::newerThan('bestaat-niet'));
+        $this->assertNull(ProductUpdates::olderThan('bestaat-niet'));
+    }
+
+    public function test_render_content_turns_markdown_into_html(): void
+    {
+        $html = ProductUpdates::renderContent(['content' => "## Zo werkt het\n\nKlik op **Print**."]);
+
+        $this->assertStringContainsString('<h2>Zo werkt het</h2>', $html);
+        $this->assertStringContainsString('<strong>Print</strong>', $html);
+    }
+
+    public function test_render_content_strips_embedded_html(): void
+    {
+        $html = ProductUpdates::renderContent(['content' => 'Tekst <script>alert(1)</script> erna.']);
+
+        $this->assertStringNotContainsString('<script>', $html);
+    }
+
+    public function test_render_content_returns_null_when_there_is_no_content(): void
+    {
+        $this->assertNull(ProductUpdates::renderContent(['body' => 'Enkel een teaser.']));
+        $this->assertNull(ProductUpdates::renderContent(['content' => '   ']));
+    }
 }

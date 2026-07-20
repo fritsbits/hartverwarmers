@@ -41,6 +41,19 @@
         <priority>0.7</priority>
     </url>
     @endforeach
+    <url>
+        <loc>{{ route('whats-new') }}</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    @foreach ($updates as $update)
+    <url>
+        <loc>{{ route('whats-new.show', $update['uid']) }}</loc>
+        <lastmod>{{ \Illuminate\Support\Carbon::parse($update['published_at'])->toW3cString() }}</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+    @endforeach
     @foreach ($contributors as $contributor)
     <url>
         <loc>{{ route('contributors.show', $contributor) }}</loc>

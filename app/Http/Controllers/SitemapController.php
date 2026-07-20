@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Fiche;
 use App\Models\Initiative;
 use App\Models\User;
+use App\Services\ProductUpdates;
 use Illuminate\Http\Response;
 
 class SitemapController
@@ -27,7 +28,9 @@ class SitemapController
             ->select('id', 'updated_at')
             ->get();
 
-        $xml = view('sitemap', compact('initiatives', 'fiches', 'contributors'))->render();
+        $updates = ProductUpdates::all();
+
+        $xml = view('sitemap', compact('initiatives', 'fiches', 'contributors', 'updates'))->render();
 
         return response($xml, 200, ['Content-Type' => 'application/xml']);
     }

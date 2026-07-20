@@ -88,7 +88,7 @@
                 <div class="md:grid md:grid-cols-[5rem_1fr] md:gap-x-10 lg:gap-x-14 py-14 first:pt-0 last:pb-0">
                     {{-- Date stamp column --}}
                     <div class="mb-6 md:mb-0">
-                        <x-theme-date-stamp :date="$firstOcc->start_date" :badge="$firstOcc->relativeBadge()" />
+                        <x-date-stamp :date="$firstOcc->start_date" :badge="$firstOcc->relativeBadge()" />
                     </div>
 
                     {{-- Themes column --}}

@@ -6,10 +6,16 @@ description: "Use when the user asks to write a product update / productupdate /
 # Product update schrijven
 
 Eén product update = één JSON-bestand in `resources/content/updates/`. Het verschijnt
-automatisch op `/wat-is-er-nieuw` en wordt éénmalig per ontvanger opgenomen in de
-maandelijkse digest-mail (nieuwste update, max 60 dagen oud, max 1 per mail). Publiceren
-= committen + deployen. Er is geen redactie-stap achteraf: wat hier geschreven wordt,
-gaat zo naar duizenden animatoren.
+automatisch op drie plaatsen:
+
+- **de overzichtspagina** `/wat-is-er-nieuw` — datumstempel, titel en de `body`
+  (afgekapt na drie regels)
+- **een eigen detailpagina** `/wat-is-er-nieuw/{uid}` — de volledige `content`
+- **de maandelijkse digest-mail** — éénmalig per ontvanger, nieuwste update,
+  max 60 dagen oud, max 1 per mail; de mail toont enkel `title` + `body` + `link`
+
+Publiceren = committen + deployen. Er is geen redactie-stap achteraf: wat hier
+geschreven wordt, gaat zo naar duizenden animatoren.
 
 ## Workflow
 
@@ -34,10 +40,25 @@ publicatie). `published_at` is de dag van schrijven.
         "published_at": "2026-07-16",
         "title": "Druk de themakalender af",
         "body": "Twee tot vier zinnen. Concreet en warm.",
+        "content": "## Zo druk je het af\n\nGa naar de themakalender…\n\n- Puntje een\n- Puntje twee\n",
+        "image": {
+            "src": "/images/updates/themakalender-print.webp",
+            "alt": "Het afgedrukte A3-blad aan een prikbord"
+        },
         "link": { "url": "/themas", "label": "Bekijk de themakalender" }
     }
 
 `link` is optioneel maar bijna altijd gewenst; `url` is een relatief pad.
+
+`content` is optioneel maar zonder is de detailpagina bijna leeg — schrijf het dus
+bijna altijd. Het is **markdown**, enkel `##`/`###`, alinea's, lijstjes, `**vet**` en
+links. Ingebedde HTML wordt eruit gestript. De `body` staat al bovenaan de
+detailpagina als inleiding: **herhaal die niet** in `content`, ga verder waar de body
+stopt.
+
+`image` is optioneel: één schermafbeelding, in `public/images/updates/`, bij voorkeur
+`.webp` en ongeveer 4:3. Hij staat groot op de detailpagina en klein op het overzicht.
+`alt` beschrijft wat er te zien is (geen "schermafbeelding van").
 
 ## Schrijfregels
 
@@ -49,6 +70,11 @@ publicatie). `published_at` is de dag van schrijven.
 - **Body**: 2 tot 4 zinnen. Eerste zin = wat je er als animator aan hebt, niet wat wij
   gebouwd hebben. Geen feature-jargon ("PDF-conversiepijplijn"), wel het effect
   ("elk bestand opent voor iedereen").
+- **Content**: het verhaal achter de body. Drie tot vier korte `##`-secties werkt goed:
+  hoe je het gebruikt, wat het je oplevert, wat handig is om te weten. Schrijf alleen
+  wat je kan nakijken — klopt die knop, staat die echt daar? Verzin geen stappen.
+  Kopjes in de gebiedende wijs of als vraag, nooit als feature-naam
+  ("Zo druk je het af", niet "Printfunctionaliteit").
 - **Toon**: een warme collega die iets handigs komt tonen. Direct en hoopvol, nooit
   academisch of verkoperig.
 - **Linklabel**: gebiedende wijs ("Bekijk de themakalender", "Probeer het uit").

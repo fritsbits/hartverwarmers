@@ -254,6 +254,16 @@
     @apply translate-x-1;
   }
 
+  /* Lets a .cta-link inside a wrapping row link animate on the row's hover */
+  .group:hover .cta-link {
+    @apply gap-2;
+    color: var(--color-primary-hover);
+  }
+
+  .group:hover .cta-link::after {
+    @apply translate-x-1;
+  }
+
   /* Pill CTA button */
   .btn-pill {
     @apply inline-flex items-center justify-center px-6 py-2.5 font-semibold text-white transition-all;
@@ -686,6 +696,75 @@
   }
 
   .practical-content a:hover {
+    text-decoration-color: var(--color-primary);
+  }
+
+  /* Product update long-form body — rendered markdown from resources/content/updates */
+  .update-content {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-light);
+  }
+
+  .update-content > * + * {
+    margin-top: 1.25rem;
+  }
+
+  .update-content h2,
+  .update-content h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.25;
+    text-wrap: balance;
+    margin-top: 2.5rem;
+  }
+
+  .update-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .update-content h3 {
+    font-size: 1.25rem;
+  }
+
+  .update-content h2:first-child,
+  .update-content h3:first-child {
+    margin-top: 0;
+  }
+
+  .update-content ul,
+  .update-content ol {
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .update-content ul {
+    list-style: disc;
+  }
+
+  .update-content ol {
+    list-style: decimal;
+  }
+
+  .update-content li::marker {
+    color: var(--color-primary);
+  }
+
+  .update-content strong {
+    font-weight: 600;
+  }
+
+  .update-content a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+    text-underline-offset: 2px;
+  }
+
+  .update-content a:hover {
     text-decoration-color: var(--color-primary);
   }
 
