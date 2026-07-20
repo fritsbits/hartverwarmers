@@ -33,6 +33,12 @@
                             {{ $monthIntro['intro'] }}
                         </p>
                     @endif
+
+                    <a href="{{ route('themes.print', ['maand' => $month->format('Y-m')]) }}" target="_blank"
+                       class="cta-link text-sm mt-8 lg:hidden">
+                        <flux:icon.printer variant="micro" class="text-[var(--color-primary)]" />
+                        Print deze kalender
+                    </a>
                 </div>
                 <div class="hidden lg:flex flex-col items-center gap-5">
                     <x-theme-month-overview :month="$month" :themes-by-date="$themesByDate" />
