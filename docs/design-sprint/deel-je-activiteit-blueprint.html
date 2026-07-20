@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De "Deel je activiteit"-reis — Hartverwarmers blueprint</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:400,700|fira-sans:300,400,500,600,700" rel="stylesheet">
+<style>
+  :root{
+    --primary:#E8764B; --primary-hover:#D4683F; --teal:#4CB7C5; --yellow:#F4C44E; --purple:#B57BB3;
+    --text:#231E1A; --text-2:#756C65; --text-3:#C0B5AE;
+    --white:#FFF; --cream:#FEF8F4; --subtle:#F5F0EC; --accent-light:#FDF3EE;
+    --border:#EBE4DE; --border-hover:#DDD5CD;
+    --danger:#B4472E; --danger-bg:#FBEDE8; --good:#3E8A6E; --good-bg:#E9F3EE;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--cream); color:var(--text);
+    font-family:"Fira Sans",sans-serif; font-weight:400; line-height:1.55;
+    font-size:17px;
+    background-image:radial-gradient(var(--border) 0.5px, transparent 0.5px);
+    background-size:22px 22px;
+  }
+  .wrap{max-width:1060px; margin:0 auto; padding:clamp(1.5rem,4vw,4rem) clamp(1rem,4vw,2.5rem) 6rem;}
+  h1,h2,h3{font-family:"Aleo",serif; font-weight:700; line-height:1.12; letter-spacing:-0.01em;}
+  h1{font-size:clamp(2rem,5vw,3.1rem); margin:0 0 .4rem;}
+  .eyebrow{font-size:.78rem; letter-spacing:.18em; text-transform:uppercase; color:var(--primary); font-weight:600; margin-bottom:.9rem;}
+  .lede{font-size:1.18rem; color:var(--text-2); max-width:62ch; margin:.2rem 0 0;}
+
+  /* Tension box */
+  .tension{
+    margin:2.6rem 0 3rem; background:var(--white); border:1px solid var(--border);
+    border-left:5px solid var(--primary); border-radius:14px; padding:1.6rem 1.8rem;
+    box-shadow:0 1px 0 var(--border-hover), 0 18px 40px -28px rgba(35,30,26,.4);
+  }
+  .tension h2{font-size:1.35rem; margin:0 0 .5rem;}
+  .tension p{margin:.4rem 0 0; color:var(--text-2);}
+  .tension strong{color:var(--text);}
+
+  /* Flow ribbon */
+  .section-label{font-size:.78rem; letter-spacing:.18em; text-transform:uppercase; color:var(--primary); font-weight:600;}
+  h2.block{font-size:1.7rem; margin:.5rem 0 1.4rem;}
+  .ribbon{display:flex; flex-wrap:wrap; gap:.4rem; align-items:stretch; margin-bottom:1rem;}
+  .node{
+    flex:1 1 140px; min-width:140px; background:var(--white); border:1px solid var(--border);
+    border-radius:12px; padding:.85rem .9rem; position:relative;
+    box-shadow:0 8px 20px -18px rgba(35,30,26,.5);
+  }
+  .node .n{font-family:"Aleo",serif; font-weight:700; font-size:.85rem; color:var(--text-3);}
+  .node .t{font-weight:600; font-size:.96rem; margin-top:.15rem; line-height:1.2;}
+  .node .s{font-size:.8rem; color:var(--text-2); margin-top:.3rem;}
+  .node.friction{border-color:#E7BCAE; background:var(--danger-bg);}
+  .node.friction .n{color:var(--danger);}
+  .node.good{border-color:#BEDDCE; background:var(--good-bg);}
+  .node.good .n{color:var(--good);}
+  .arrow{align-self:center; color:var(--text-3); font-size:1.1rem; padding:0 .1rem;}
+  @media (max-width:720px){ .arrow{transform:rotate(90deg)} .ribbon{flex-direction:column} .node{min-width:0} }
+
+  .legend{display:flex; flex-wrap:wrap; gap:1.2rem; margin:.9rem 0 0; font-size:.85rem; color:var(--text-2);}
+  .legend span{display:inline-flex; align-items:center; gap:.4rem;}
+  .dot{width:.7rem; height:.7rem; border-radius:50%; display:inline-block;}
+
+  /* Stage timeline */
+  .stages{margin-top:1rem; position:relative;}
+  .stage{
+    display:grid; grid-template-columns:64px 1fr; gap:1.1rem; padding:1.4rem 0;
+    border-bottom:1px dashed var(--border-hover);
+  }
+  .stage:last-child{border-bottom:0;}
+  .badge{
+    width:54px; height:54px; border-radius:50%; background:var(--accent-light); color:var(--primary);
+    display:flex; align-items:center; justify-content:center; font-family:"Aleo",serif; font-weight:700;
+    font-size:1.4rem; border:1.5px solid #F2D2C2;
+  }
+  .stage h3{font-size:1.28rem; margin:.1rem 0 .2rem;}
+  .stage .who{font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-3); font-weight:600;}
+  .lanes{display:grid; grid-template-columns:repeat(3,1fr); gap:.8rem; margin:.9rem 0 0;}
+  @media (max-width:680px){ .lanes{grid-template-columns:1fr} }
+  .lane{background:var(--white); border:1px solid var(--border); border-radius:11px; padding:.75rem .85rem;}
+  .lane .h{font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; font-weight:600; color:var(--text-3); margin-bottom:.35rem;}
+  .lane p{margin:0; font-size:.92rem; color:var(--text-2);}
+  .lane code{font-family:"Fira Sans"; font-weight:600; color:var(--text); background:var(--subtle); padding:.05em .35em; border-radius:5px; font-size:.86em;}
+  .emo{display:inline-flex; align-items:center; gap:.45rem; margin-top:.9rem; font-size:.9rem; font-weight:500;}
+  .emo .face{font-size:1.15rem;}
+  .flag{
+    margin-top:.85rem; display:flex; gap:.6rem; align-items:flex-start; font-size:.92rem;
+    background:var(--danger-bg); border:1px solid #E7BCAE; border-radius:10px; padding:.65rem .8rem; color:#7E3320;
+  }
+  .flag.tip{background:#FBF3DD; border-color:#EAD79A; color:#6E5A1C;}
+  .flag.win{background:var(--good-bg); border-color:#BEDDCE; color:#23624C;}
+  .flag b{font-weight:700;}
+
+  /* Analysis */
+  .analysis{margin-top:3.2rem;}
+  .cards3{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-top:1.2rem;}
+  @media (max-width:780px){ .cards3{grid-template-columns:1fr} }
+  .acard{background:var(--white); border:1px solid var(--border); border-radius:14px; padding:1.2rem 1.3rem; box-shadow:0 14px 30px -26px rgba(35,30,26,.5);}
+  .acard h3{font-size:1.12rem; margin:0 0 .7rem; display:flex; align-items:center; gap:.5rem;}
+  .acard ul{margin:0; padding-left:1.1rem;}
+  .acard li{margin:.5rem 0; font-size:.93rem; color:var(--text-2);}
+  .acard li strong{color:var(--text);}
+  .acard.broken{border-top:4px solid var(--danger);}
+  .acard.crucial{border-top:4px solid var(--teal);}
+  .acard.better{border-top:4px solid var(--good);}
+
+  footer{margin-top:3.5rem; font-size:.82rem; color:var(--text-3); border-top:1px solid var(--border); padding-top:1.2rem;}
+  .kbd{font-weight:600; color:var(--text-2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Service blueprint · Hartverwarmers</div>
+  <h1>De&nbsp;“Deel&nbsp;je&nbsp;activiteit”-reis</h1>
+  <p class="lede">Hoe een bezoeker vandaag een eigen fiche toevoegt — van de eerste klik tot een gepubliceerde activiteit. En waar het haakt.</p>
+
+  <div class="tension">
+    <h2>De kern: een kip-en-ei-probleem</h2>
+    <p>Je vermoeden klopt. <strong>Een uitgelogde bezoeker krijgt nergens op de publieke site een directe “Deel jouw activiteit”-knop te zien</strong> — alleen “Registreren / Inloggen”. Élke deel-knop zit achter <code>@auth</code> verstopt.</p>
+    <p style="margin-top:.7rem">Het gevolg: <strong>je moet al weten én geloven dat bijdragen kan</strong> vóór je een account maakt — maar je ziet pas ná het account aanmaken dát en hóe je kan bijdragen. De motivatie die mensen over de registratiedrempel tilt, wordt verstopt achter diezelfde drempel.</p>
+  </div>
+
+  <div class="section-label">De huidige route</div>
+  <h2 class="block">Wat er nu gebeurt, in 6 stappen</h2>
+
+  <div class="ribbon">
+    <div class="node"><div class="n">01</div><div class="t">Landt &amp; bladert</div><div class="s">fiches, initiatieven</div></div>
+    <div class="arrow">→</div>
+    <div class="node friction"><div class="n">02</div><div class="t">Geen deel-CTA</div><div class="s">ziet enkel “Registreren”</div></div>
+    <div class="arrow">→</div>
+    <div class="node friction"><div class="n">03</div><div class="t">Botst op de muur</div><div class="s">kale loginpagina</div></div>
+    <div class="arrow">→</div>
+    <div class="node good"><div class="n">04</div><div class="t">Registreert</div><div class="s">open, meteen ingelogd</div></div>
+    <div class="arrow">→</div>
+    <div class="node"><div class="n">05</div><div class="t">FicheWizard</div><div class="s">4 stappen + AI</div></div>
+    <div class="arrow">→</div>
+    <div class="node good"><div class="n">06</div><div class="t">Publiceert</div><div class="s">meteen live</div></div>
+  </div>
+  <div class="legend">
+    <span><span class="dot" style="background:var(--white);border:1px solid var(--border-hover)"></span> Vlot</span>
+    <span><span class="dot" style="background:var(--danger-bg);border:1px solid #E7BCAE"></span> Wrijving / breekpunt</span>
+    <span><span class="dot" style="background:var(--good-bg);border:1px solid #BEDDCE"></span> Werkt goed</span>
+  </div>
+
+  <div class="stages">
+
+    <!-- 1 -->
+    <div class="stage">
+      <div class="badge">1</div>
+      <div>
+        <div class="who">Ontdekken</div>
+        <h3>Bezoeker landt &amp; bladert rond</h3>
+        <div class="lanes">
+          <div class="lane"><div class="h">Doet</div><p>Komt via Google of een mail, bekijkt fiches en initiatieven, leest een paar mooie voorbeelden.</p></div>
+          <div class="lane"><div class="h">Ziet</div><p>Inspirerende content. Homepage toont géén bijdrage-oproep — de <code>onboarding-banner</code> stopt direct voor gasten.</p></div>
+          <div class="lane"><div class="h">Systeem</div><p>Volledig publiek. Geen account nodig om te lezen.</p></div>
+        </div>
+        <div class="emo"><span class="face">🙂</span> Nieuwsgierig, geïnspireerd — “wat een fijn platform”.</div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="stage">
+      <div class="badge">2</div>
+      <div>
+        <div class="who">De (ontbrekende) nudge</div>
+        <h3>Niets zegt: “dit kan jij ook delen”</h3>
+        <div class="lanes">
+          <div class="lane"><div class="h">Doet</div><p>Denkt misschien “ik heb zelf ook een leuke activiteit” — maar krijgt geen aanknopingspunt.</p></div>
+          <div class="lane"><div class="h">Ziet</div><p>In nav &amp; footer enkel <code>Inloggen</code> / <code>Registreren</code>. Alle “Schrijf een fiche”-knoppen zitten achter <code>@auth</code>.</p></div>
+          <div class="lane"><div class="h">Systeem</div><p>CTA’s naar <code>fiches.create</code> worden voor gasten niet gerenderd.</p></div>
+        </div>
+        <div class="emo"><span class="face">😐</span> Passief — bijdragen voelt als iets voor “de mensen die er al bij horen”.</div>
+        <div class="flag"><span>⚠️</span><div><b>Breekpunt.</b> Het waardevoorstel “deel jouw expertise” is onzichtbaar precies bij wie nog overtuigd moet worden.</div></div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="stage">
+      <div class="badge">3</div>
+      <div>
+        <div class="who">De muur</div>
+        <h3>Wie tóch op /fiches/nieuw belandt, botst</h3>
+        <div class="lanes">
+          <div class="lane"><div class="h">Doet</div><p>Klikt een deel-link uit een e-mail, of typt de URL — verwacht een formulier.</p></div>
+          <div class="lane"><div class="h">Ziet</div><p>Een <b>kale Breeze-loginpagina</b>. Geen uitleg, geen “maak een account om te delen”, geen waarom.</p></div>
+          <div class="lane"><div class="h">Systeem</div><p><code>auth</code>-middleware → standaard redirect naar <code>login</code> (intended URL bewaard).</p></div>
+        </div>
+        <div class="emo"><span class="face">😕</span> Verrast, afgeremd — “waarom moet ik nu inloggen?”</div>
+        <div class="flag"><span>⚠️</span><div><b>Inconsistent.</b> De fiche-<i>download</i> stuurt gasten net wél naar <code>register</code> mét context. De <i>create</i>-flow dropt je op een naakte login.</div></div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="stage">
+      <div class="badge">4</div>
+      <div>
+        <div class="who">Drempel over</div>
+        <h3>Registreren — verrassend vlot</h3>
+        <div class="lanes">
+          <div class="lane"><div class="h">Doet</div><p>Vult naam, e-mail, wachtwoord, akkoord. Klaar.</p></div>
+          <div class="lane"><div class="h">Ziet</div><p>Welkom-toast, meteen ingelogd, terug naar waar hij heen wou (<code>intended()</code>).</p></div>
+          <div class="lane"><div class="h">Systeem</div><p>Open &amp; self-service. Geen goedkeuring, geen verplichte e-mailverificatie. Rol = <code>member</code>.</p></div>
+        </div>
+        <div class="emo"><span class="face">🙂</span> Opgelucht — “oké, dat ging snel”.</div>
+        <div class="flag win"><span>✅</span><div><b>Sterk.</b> Geen invite-muur, geen verificatie-blokkade. Wrijvingsloos zodra je de beslissing nam.</div></div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="stage">
+      <div class="badge">5</div>
+      <div>
+        <div class="who">Maken</div>
+        <h3>De FicheWizard — 4 stappen met AI</h3>
+        <div class="lanes">
+          <div class="lane"><div class="h">Doet</div><p>1 Upload → 2 Kerngegevens → 3 Uitwerken (met AI-suggesties) → 4 Resultaat.</p></div>
+          <div class="lane"><div class="h">Ziet</div><p>Een begeleide wizard die uit een PDF/PPT zelf titel, thema’s en DIAMANT-doelen voorstelt.</p></div>
+          <div class="lane"><div class="h">Systeem</div><p>Queued jobs extraheren tekst &amp; matchen een initiatief. Verplicht: titel, beschrijving, gekoppeld initiatief.</p></div>
+        </div>
+        <div class="emo"><span class="face">😀</span> Verrast door het gemak — de AI doet het zware werk.</div>
+        <div class="flag tip"><span>💡</span><div><b>Kans.</b> Dit is het beste argument om bij te dragen — en niemand ziet het vóór registratie. Toon dit gemak vooraf.</div></div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="stage">
+      <div class="badge">6</div>
+      <div>
+        <div class="who">Publiceren</div>
+        <h3>Meteen live — en stilletjes bijdrager</h3>
+        <div class="lanes">
+          <div class="lane"><div class="h">Doet</div><p>Klikt “Publiceren”. Krijgt een viering en wordt na 5s naar zijn fiche geleid.</p></div>
+          <div class="lane"><div class="h">Ziet</div><p>Zijn activiteit staat publiek online. Geen wachtrij, geen review.</p></div>
+          <div class="lane"><div class="h">Systeem</div><p><code>published = true</code> direct. <code>member → contributor</code> als neveneffect van publiceren.</p></div>
+        </div>
+        <div class="emo"><span class="face">🥳</span> Trots — “mijn werk staat erop”.</div>
+        <div class="flag tip"><span>💡</span><div><b>Let op.</b> Geen moderatie (laagdrempelig, maar kwaliteitsrisico). De rol-upgrade blijft onzichtbaar — een gemiste “je bent nu bijdrager”-moment.</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="analysis">
+    <div class="section-label">De analyse</div>
+    <h2 class="block">Cruciale momenten, breekpunten &amp; verbeteringen</h2>
+    <div class="cards3">
+
+      <div class="acard crucial">
+        <h3>🔑 Cruciale momenten</h3>
+        <ul>
+          <li><strong>Stap 2 — de stille nudge.</strong> Hier wint of verliest je elke potentiële bijdrager. Nu: leeg.</li>
+          <li><strong>Stap 3 — de gate.</strong> Het moment van “waarom inloggen?”. De toon hier bepaalt of iemand doorzet of afhaakt.</li>
+          <li><strong>Stap 5 — de AHA.</strong> De AI-wizard is je sterkste verkoopargument. Het komt te laat in de reis.</li>
+          <li><strong>Stap 6 — de trots.</strong> Het emotionele hoogtepunt (“ik hoor erbij”). Onderbenut om de volgende bijdrage te vragen.</li>
+        </ul>
+      </div>
+
+      <div class="acard broken">
+        <h3>⚠️ Wat voelt stuk</h3>
+        <ul>
+          <li><strong>Onzichtbare bijdrage.</strong> Gasten zien nooit een “deel jouw activiteit”-pad — alleen een account-muur.</li>
+          <li><strong>Kale login-bots.</strong> <code>/fiches/nieuw</code> → generieke login zonder enige context of waarom.</li>
+          <li><strong>Inconsistente gates.</strong> Download → <code>register</code> mét context; create → naakte <code>login</code>. Twee maten.</li>
+          <li><strong>Geen waarde vóór de drempel.</strong> Het gemak van de wizard, de community, de impact — niets is zichtbaar pre-registratie.</li>
+        </ul>
+      </div>
+
+      <div class="acard better">
+        <h3>💡 Wat kan beter</h3>
+        <ul>
+          <li><strong>Toon gasten wél een “Deel jouw activiteit”-CTA</strong> die naar een waarde-eerst pagina leidt (niet recht naar login).</li>
+          <li><strong>Maak de gate contextueel:</strong> “Maak gratis een account om je activiteit te delen” + voorbeeld + sociale proof. Hergebruik het download-gate-patroon (→ register).</li>
+          <li><strong>Een publieke “Zo deel je een fiche”-pagina</strong> die de AI-wizard toont vóór de drempel — zaai de intentie vroeg.</li>
+          <li><strong>Laat gasten starten:</strong> upload/stap 1 als gast, account pas bij opslaan — verlaag de afhaak.</li>
+          <li><strong>Vier de rol-upgrade expliciet</strong> (“Je bent nu bijdrager”) en nodig uit voor fiche #2.</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    Blueprint gemaakt op basis van de huidige code (routes <span class="kbd">/fiches/nieuw</span> · <span class="kbd">FicheWizard</span> · Breeze-registratie). Open dit bestand in je browser. · Hartverwarmers · 23 juni 2026
+  </footer>
+
+</div>
+</body>
+</html>

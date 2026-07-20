@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Een klassieker laten schitteren — 4 routes · Design-verkenning #2</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:400,400i,700,700i|fira-sans:300,300i,400,400i,500,600,700" rel="stylesheet">
+<style>
+:root {
+  --orange: #E8764B;
+  --orange-hover: #D4683F;
+  --orange-deep: #C25A33;
+  --teal: #4CB7C5;
+  --teal-deep: #2E8D9A;
+  --yellow: #F4C44E;
+  --yellow-deep: #B8860B;
+  --purple: #B57BB3;
+  --purple-deep: #8E5A8C;
+  --green: #7BA05B;
+  --green-deep: #5C7D40;
+
+  --ink: #231E1A;
+  --ink-soft: #756C65;
+  --ink-faint: #C0B5AE;
+
+  --cream: #FEF8F4;
+  --white: #FFFEFC;
+  --subtle: #F5F0EC;
+  --accent-light: #FDF3EE;
+
+  --border: #EBE4DE;
+  --border-hover: #DDD5CD;
+
+  --heading: 'Aleo', serif;
+  --body: 'Fira Sans', sans-serif;
+
+  --shadow-card: 0 1px 3px rgba(35,30,26,.06), 0 6px 20px rgba(35,30,26,.05);
+  --shadow-mock: 0 2px 6px rgba(35,30,26,.08), 0 18px 40px rgba(35,30,26,.10);
+  --shadow-paper: 0 1px 2px rgba(35,30,26,.10), 0 10px 24px rgba(35,30,26,.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+
+body {
+  font-family: var(--body);
+  font-weight: 300;
+  color: var(--ink);
+  background: var(--cream);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { font-family: var(--heading); font-weight: 700; line-height: 1.15; }
+
+::selection { background: var(--yellow); color: var(--ink); }
+
+/* ---------- top nav ---------- */
+nav.deck-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  background: rgba(254,248,244,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 4px;
+  padding: 10px clamp(16px, 4vw, 48px);
+  font-size: 13px; font-weight: 500;
+}
+nav.deck-nav .brand {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--heading); font-weight: 700; font-size: 15px;
+  margin-right: auto; color: var(--ink); text-decoration: none;
+}
+nav.deck-nav a.navlink {
+  color: var(--ink-soft); text-decoration: none;
+  padding: 5px 11px; border-radius: 999px; transition: all .15s ease;
+  white-space: nowrap;
+}
+nav.deck-nav a.navlink:hover { background: var(--accent-light); color: var(--orange-deep); }
+nav.deck-nav a.navlink.num { font-weight: 600; }
+
+/* ---------- gem ---------- */
+.gem {
+  display: inline-flex; align-items: center; justify-content: center;
+  clip-path: polygon(30% 0, 70% 0, 100% 35%, 50% 100%, 0 35%);
+  background: var(--orange);
+  color: #fff; font-family: var(--heading); font-weight: 700;
+  flex-shrink: 0;
+  padding-bottom: 12%;
+}
+.gem.idle { background: var(--subtle); color: var(--ink-faint); }
+
+/* ---------- sections ---------- */
+section.slide { padding: clamp(64px, 9vw, 120px) clamp(20px, 6vw, 72px); }
+.wrap { max-width: 1180px; margin: 0 auto; }
+.bg-white { background: var(--white); }
+.bg-subtle { background: var(--subtle); }
+
+.section-label {
+  font-family: var(--body); font-weight: 600; font-size: 15px;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--orange);
+  margin-bottom: 14px;
+}
+
+.split { display: grid; gap: clamp(28px, 5vw, 64px); grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 900px) { .split { grid-template-columns: 1.1fr .9fr; } }
+
+.slide h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); margin-bottom: 20px; max-width: 26ch; }
+.lead { font-size: 1.12rem; color: var(--ink-soft); max-width: 58ch; }
+.lead strong, p strong { font-weight: 600; color: var(--ink); }
+.slide p + p { margin-top: 14px; }
+
+/* ---------- cover ---------- */
+header.cover {
+  min-height: 92vh; display: flex; align-items: center;
+  padding: 120px clamp(20px, 6vw, 72px) 80px;
+  position: relative; overflow: hidden;
+}
+.cover-inner { max-width: 1180px; margin: 0 auto; width: 100%; position: relative; }
+.cover h1 {
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  max-width: 14ch; margin: 18px 0 26px;
+}
+.cover h1 em { font-style: normal; color: var(--orange); }
+.cover .sub { font-size: clamp(1.05rem, 1.6vw, 1.3rem); color: var(--ink-soft); max-width: 54ch; }
+.cover .meta-strip {
+  margin-top: 44px; display: flex; flex-wrap: wrap; gap: 10px 28px;
+  font-size: 14px; color: var(--ink-soft); font-weight: 400;
+}
+.cover .meta-strip span strong { font-weight: 600; color: var(--ink); }
+
+.disclaimer {
+  display: inline-block; margin-bottom: 8px;
+  background: var(--yellow); color: var(--ink);
+  font-size: 13px; font-weight: 600; padding: 4px 14px; border-radius: 999px;
+  transform: rotate(-1deg);
+}
+
+/* bingokaart op de cover */
+.cover-bingo {
+  position: absolute; right: clamp(-30px, 2vw, 40px); top: 50%;
+  transform: translateY(-50%) rotate(3deg); display: none;
+  background: var(--white); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: var(--shadow-paper); padding: 18px 20px 22px; width: 250px;
+}
+@media (min-width: 1100px) { .cover-bingo { display: block; } }
+.cover-bingo .bh { font-family: var(--heading); font-weight: 700; font-size: 19px; text-align: center; letter-spacing: .26em; color: var(--orange-deep); margin-bottom: 12px; }
+.cover-bingo .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+.cover-bingo .grid i {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-style: normal; font-size: 13px; font-weight: 500;
+  border: 1px solid var(--border); border-radius: 6px; color: var(--ink-soft);
+}
+.cover-bingo .grid i.hit { background: var(--accent-light); border-color: var(--orange); color: var(--orange-deep); font-weight: 700; }
+.cover-bingo .grid i.gemcell { border: none; }
+.cover-bingo .bnote {
+  font-family: var(--heading); font-style: italic; font-size: 12.5px; color: var(--ink-soft);
+  text-align: center; margin-top: 12px;
+}
+
+/* ---------- assen (omslag-sectie) ---------- */
+.axes { display: grid; gap: 16px; grid-template-columns: 1fr; margin-top: 40px; }
+@media (min-width: 860px) { .axes { grid-template-columns: repeat(3, 1fr); } }
+.axis {
+  background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+  padding: 22px 24px; box-shadow: var(--shadow-card);
+}
+.axis .a-lbl { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--orange-deep); margin-bottom: 6px; }
+.axis h3 { font-size: 1.15rem; margin-bottom: 8px; }
+.axis p { font-size: .9rem; color: var(--ink-soft); font-weight: 400; }
+.axis .opts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.axis .opts span {
+  font-size: 11.5px; font-weight: 600; border: 1px solid var(--border-hover);
+  border-radius: 999px; padding: 3px 11px; color: var(--ink-soft); background: var(--cream);
+}
+.axis .opts span.hot { border-color: var(--orange); color: var(--orange-deep); background: var(--accent-light); }
+
+/* route-overzichtskaartjes */
+.route-index { display: grid; gap: 14px; grid-template-columns: 1fr; margin-top: 44px; }
+@media (min-width: 860px) { .route-index { grid-template-columns: repeat(4, 1fr); } }
+a.route-tile {
+  display: block; text-decoration: none; color: inherit;
+  background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+  padding: 20px 20px 18px; box-shadow: var(--shadow-card);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+a.route-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-mock); }
+.route-tile .r-num { font-family: var(--heading); font-weight: 700; font-size: 2rem; line-height: 1; }
+.route-tile h3 { font-size: 1.05rem; margin: 8px 0 6px; }
+.route-tile p { font-size: .85rem; color: var(--ink-soft); font-weight: 400; }
+
+/* ---------- route-koppen ---------- */
+.piste-head { display: flex; align-items: flex-start; gap: clamp(18px, 3vw, 36px); margin-bottom: 16px; }
+.piste-num {
+  font-family: var(--heading); font-weight: 700;
+  font-size: clamp(4.5rem, 9vw, 7.5rem); line-height: .85;
+  -webkit-text-stroke: 2px currentColor; color: transparent;
+  opacity: .85; flex-shrink: 0; margin-top: 6px;
+}
+.piste-head .titles { padding-top: clamp(4px, 1vw, 18px); }
+.piste-kicker {
+  font-size: 14px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.piste-head h2 { margin-bottom: 10px; }
+.piste-oneliner { font-size: 1.15rem; color: var(--ink-soft); max-width: 56ch; }
+
+/* as-pillen per route — vervangen de AI-pill van verkenning #1 */
+.axis-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.axis-pills .ap {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; font-weight: 600;
+  border: 1.5px solid currentColor; border-radius: 999px;
+  padding: 4px 13px;
+}
+.axis-pills .ap b { font-weight: 400; opacity: .75; }
+
+/* flow */
+.flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; margin: 36px 0 14px; }
+.flow-step {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 16px; font-size: .88rem; font-weight: 400;
+  flex: 1 1 150px; max-width: 230px; position: relative;
+  box-shadow: 0 1px 2px rgba(35,30,26,.04);
+}
+.flow-step .n {
+  font-family: var(--heading); font-weight: 700; font-size: .8rem;
+  display: block; margin-bottom: 3px;
+}
+.flow-arrow { align-self: center; color: var(--ink-faint); font-size: 18px; flex: 0 0 auto; }
+
+/* mock screens */
+.mocks {
+  display: flex; flex-wrap: wrap; gap: clamp(20px, 3vw, 36px);
+  margin: 40px 0 8px; align-items: flex-start; justify-content: flex-start;
+}
+.mock { flex: 1 1 320px; max-width: 430px; }
+.mock-frame {
+  background: var(--white); border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: var(--shadow-mock); overflow: hidden;
+}
+.mock-chrome {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--subtle); border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+}
+.mock-chrome .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border-hover); }
+.mock-chrome .url {
+  margin-left: 8px; background: var(--white); border-radius: 999px;
+  font-size: 10px; color: var(--ink-faint); padding: 2px 12px; font-weight: 400;
+  flex: 1; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.mock-body { padding: 18px 18px 20px; font-size: 13px; line-height: 1.5; }
+.mock-caption { font-size: .85rem; color: var(--ink-soft); margin-top: 12px; padding: 0 4px; }
+.mock-caption strong { font-weight: 600; color: var(--ink); }
+
+/* elementen binnen mocks */
+.m-sitehead {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--heading); font-weight: 700; font-size: 12.5px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 14px;
+  color: var(--ink);
+}
+.m-sitehead .gem { width: 15px; height: 15px; }
+.m-sitehead .navdots { margin-left: auto; display: flex; gap: 10px; }
+.m-sitehead .navdots i { width: 26px; height: 5px; border-radius: 3px; background: var(--subtle); }
+
+.m-h { font-family: var(--heading); font-weight: 700; font-size: 16px; line-height: 1.25; margin-bottom: 6px; }
+.m-sub { color: var(--ink-soft); font-size: 11.5px; }
+.m-progress { display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--ink-faint); font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.m-progress .gem { width: 13px; height: 13px; font-size: 7px; }
+
+.m-btn {
+  display: inline-block; background: var(--orange); color: #fff;
+  font-weight: 600; font-size: 12px; border-radius: 999px; padding: 7px 18px;
+}
+.m-btn.ghost { background: transparent; color: var(--ink-soft); border: 1px solid var(--border-hover); }
+.m-btn.tiny { font-size: 11px; padding: 5px 13px; }
+.m-link { color: var(--orange-deep); font-weight: 600; font-size: 11.5px; }
+
+.m-quote {
+  font-family: var(--heading); font-style: italic; font-size: 13.5px;
+  color: var(--ink); border-left: 3px solid var(--yellow);
+  padding: 2px 0 2px 12px; margin: 10px 0 12px;
+}
+
+/* spraak-invoer (route 1) */
+.m-voice {
+  border: 1.5px dashed var(--border-hover); border-radius: 14px;
+  padding: 16px 14px; text-align: center; background: var(--cream);
+}
+.m-voice .mic {
+  width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 10px;
+  background: var(--orange); color: #fff; font-size: 22px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 8px rgba(232,118,75,.14), 0 0 0 16px rgba(232,118,75,.06);
+}
+.m-voice .wave { display: flex; gap: 3px; justify-content: center; align-items: flex-end; height: 18px; margin: 8px 0 4px; }
+.m-voice .wave i { width: 3px; border-radius: 2px; background: var(--orange); opacity: .65; }
+.m-voice .wave i:nth-child(1){height:6px} .m-voice .wave i:nth-child(2){height:13px}
+.m-voice .wave i:nth-child(3){height:18px} .m-voice .wave i:nth-child(4){height:9px}
+.m-voice .wave i:nth-child(5){height:15px} .m-voice .wave i:nth-child(6){height:5px}
+.m-voice .wave i:nth-child(7){height:11px} .m-voice .wave i:nth-child(8){height:16px}
+.m-voice .wave i:nth-child(9){height:7px}
+
+/* spiegelkaart: wat het systeem terugzegt */
+.m-mirror {
+  border: 1.5px solid var(--teal); border-radius: 14px; background: #FBFEFF;
+  padding: 13px 14px;
+}
+.m-mirror .who { display: flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 600; color: var(--teal-deep); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 7px; }
+.m-mirror .who .gem { width: 15px; height: 15px; background: var(--teal); }
+.m-trait {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  background: var(--white); border: 1px solid var(--border-hover); border-radius: 999px;
+  padding: 3px 10px; margin: 2px 3px 2px 0; color: var(--ink-soft);
+}
+
+/* twee versies naast elkaar (route 1, contrastparen) */
+.m-versions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 10px 0; }
+.m-version {
+  border: 1.5px solid var(--border); border-radius: 12px; padding: 11px 12px;
+  font-size: 11.5px; background: var(--white); position: relative;
+}
+.m-version.picked { border-color: var(--orange); background: var(--accent-light); }
+.m-version .v-tag {
+  display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--ink-faint); margin-bottom: 5px;
+}
+.m-version.picked .v-tag { color: var(--orange-deep); }
+.m-version .v-check {
+  position: absolute; top: -8px; right: -8px; width: 20px; height: 20px;
+  background: var(--orange); color: #fff; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+}
+
+/* spiekkaart (route 1, output) */
+.m-pocketcard {
+  width: 220px; margin: 0 auto;
+  background: var(--white); border: 1.5px solid var(--orange); border-radius: 12px;
+  box-shadow: var(--shadow-paper); padding: 13px 15px 14px;
+  transform: rotate(-1.4deg);
+}
+.m-pocketcard .pc-head { display: flex; align-items: center; gap: 7px; font-family: var(--heading); font-weight: 700; font-size: 12px; padding-bottom: 8px; border-bottom: 1px dashed var(--border-hover); margin-bottom: 9px; }
+.m-pocketcard .pc-head .gem { width: 16px; height: 16px; font-size: 8px; }
+.m-pocketcard ul { list-style: none; }
+.m-pocketcard li { font-size: 11px; margin-bottom: 7px; padding-left: 16px; position: relative; font-weight: 400; }
+.m-pocketcard li::before { content: '◻'; position: absolute; left: 0; color: var(--orange); }
+.m-pocketcard .pc-foot { font-size: 9px; color: var(--ink-faint); margin-top: 9px; text-align: center; letter-spacing: .06em; text-transform: uppercase; font-weight: 600; }
+
+/* bewonerskaart (route 2) */
+.m-personcard {
+  display: flex; gap: 12px; align-items: flex-start;
+  border: 1.5px solid var(--border); border-radius: 14px; background: var(--white);
+  padding: 13px 14px; box-shadow: var(--shadow-card);
+}
+.m-personcard .avatar {
+  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #F0D9B5, #E8A87C);
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.m-personcard .pname { font-family: var(--heading); font-weight: 700; font-size: 13.5px; }
+.m-personcard .prole { font-size: 10.5px; color: var(--ink-soft); }
+
+/* chat (route 2 — oefenen met Maria) */
+.m-chat-msg { display: flex; gap: 9px; margin-bottom: 10px; }
+.m-chat-msg .gem { width: 24px; height: 24px; font-size: 11px; margin-top: 2px; }
+.m-chat-msg .face {
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;
+  background: linear-gradient(135deg, #F0D9B5, #E8A87C);
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
+}
+.m-chat-bubble {
+  background: var(--subtle); border-radius: 3px 14px 14px 14px;
+  padding: 9px 12px; font-size: 11.5px; max-width: 88%;
+}
+.m-chat-msg.user { justify-content: flex-end; }
+.m-chat-msg.user .m-chat-bubble {
+  background: var(--accent-light); border-radius: 14px 3px 14px 14px;
+  border: 1px solid #F4D7C8;
+}
+.m-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.m-chip {
+  border: 1.5px solid var(--orange); color: var(--orange-deep);
+  font-size: 11px; font-weight: 600; border-radius: 999px; padding: 4px 12px;
+  background: var(--white);
+}
+.m-chip.idle { border-color: var(--border-hover); color: var(--ink-soft); }
+.m-input {
+  border: 1px solid var(--border); border-radius: 999px; padding: 7px 14px;
+  font-size: 11px; color: var(--ink-faint); background: var(--white);
+}
+
+/* logboek (route 3) */
+.m-logbook { position: relative; padding-left: 22px; }
+.m-logbook::before { content: ''; position: absolute; left: 6px; top: 4px; bottom: 4px; width: 2px; background: var(--border); border-radius: 2px; }
+.m-logentry { position: relative; margin-bottom: 13px; }
+.m-logentry::before {
+  content: ''; position: absolute; left: -21px; top: 4px; width: 9px; height: 9px;
+  border-radius: 50%; background: var(--orange); border: 2px solid var(--cream);
+}
+.m-logentry .ld { font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); }
+.m-logentry p { font-size: 11.5px; font-weight: 400; }
+.m-logentry .lf { display: inline-block; font-size: 9.5px; font-weight: 600; background: var(--accent-light); color: var(--orange-deep); border-radius: 999px; padding: 1px 8px; margin-top: 3px; }
+
+/* weekbanner (route 3) */
+.m-weekbanner {
+  background: linear-gradient(120deg, var(--orange), var(--orange-hover));
+  border-radius: 14px; color: #fff; padding: 15px 16px; position: relative; overflow: hidden;
+}
+.m-weekbanner::after {
+  content: ''; position: absolute; right: -22px; top: -22px; width: 90px; height: 90px;
+  background: rgba(255,255,255,.12); clip-path: polygon(30% 0, 70% 0, 100% 35%, 50% 100%, 0 35%);
+}
+.m-weekbanner .wk { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+.m-weekbanner .wt { font-family: var(--heading); font-weight: 700; font-size: 16px; margin: 3px 0 6px; }
+.m-weekbanner p { font-size: 11.5px; opacity: .94; }
+
+/* post-its & prikbord */
+.m-sticky {
+  background: #FFF6D9; border-radius: 3px;
+  box-shadow: 0 2px 5px rgba(35,30,26,.12);
+  padding: 9px 11px; font-size: 11px; line-height: 1.45;
+  margin-bottom: 8px; position: relative;
+}
+.m-sticky.alt { background: #FDEDE4; }
+.m-sticky.teal { background: #E3F4F6; }
+.m-sticky .add { display: block; margin-top: 5px; font-weight: 600; font-size: 10.5px; color: var(--orange-deep); }
+.m-sticky.r1 { transform: rotate(-1.2deg); }
+.m-sticky.r2 { transform: rotate(.9deg); }
+.m-sticky.r3 { transform: rotate(-.6deg); }
+
+.m-board {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(232,118,75,.06), transparent 40%),
+    #F8F1EA;
+  border: 1px solid var(--border); border-radius: 12px; padding: 14px;
+}
+.m-board .polaroid {
+  background: #fff; padding: 6px 6px 16px; width: 110px;
+  box-shadow: 0 3px 8px rgba(35,30,26,.15); transform: rotate(-2.5deg);
+  font-size: 9px; text-align: center; font-weight: 500;
+  margin-bottom: 10px;
+}
+.m-board .polaroid .ph { height: 52px; border-radius: 2px;
+  background: linear-gradient(135deg, #F0D9B5, #E8A87C);
+  display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 6px; }
+
+/* papier / checklist */
+.m-paper {
+  background:
+    repeating-linear-gradient(transparent, transparent 21px, rgba(76,183,197,.14) 21px, rgba(76,183,197,.14) 22px),
+    #FFFDF9;
+  border: 1px solid var(--border); border-radius: 4px;
+  box-shadow: var(--shadow-paper);
+  padding: 16px 16px 18px; position: relative;
+}
+.m-paper::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 5px;
+  background: linear-gradient(90deg, var(--orange), var(--yellow), var(--teal), var(--purple));
+  border-radius: 4px 4px 0 0;
+}
+.m-paper .ph { font-family: var(--heading); font-weight: 700; font-size: 14px; margin: 6px 0 10px; }
+.m-paper ul { list-style: none; }
+.m-paper li { display: flex; gap: 8px; font-size: 11.5px; margin-bottom: 8px; align-items: flex-start; }
+.m-paper li .gem { width: 13px; height: 13px; font-size: 7px; margin-top: 2px; }
+.m-paper .sig { font-family: var(--heading); font-style: italic; font-size: 11px; color: var(--ink-soft); margin-top: 12px; text-align: right; }
+
+/* suggestiekaart (route 4) */
+.m-suggest {
+  border: 1.5px solid var(--teal); border-radius: 14px; background: #FBFEFF;
+  padding: 13px 14px; margin-bottom: 10px;
+}
+.m-suggest .who { display: flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 600; color: var(--teal-deep); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 7px; }
+.m-suggest .who .gem { width: 15px; height: 15px; background: var(--teal); }
+.m-suggest .acts { display: flex; gap: 7px; margin-top: 11px; align-items: center; }
+
+/* schittering-kaartjes (route 4) */
+.m-spark {
+  display: flex; gap: 10px; align-items: flex-start;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--white);
+  padding: 10px 12px; margin-bottom: 8px; font-size: 11.5px;
+}
+.m-spark .gem { width: 18px; height: 18px; font-size: 9px; margin-top: 1px; }
+.m-spark .by { display: block; font-size: 10px; color: var(--ink-faint); margin-top: 3px; }
+.m-spark .hearts { margin-left: auto; font-size: 10.5px; color: var(--orange-deep); font-weight: 600; white-space: nowrap; }
+
+/* canvas (sectie 7) */
+.canvas-sheet {
+  background: var(--white); border: 1px solid var(--border); border-radius: 6px;
+  box-shadow: var(--shadow-paper); padding: clamp(16px, 2.5vw, 28px);
+  position: relative;
+}
+.canvas-sheet::before {
+  content: 'A3 · liggend'; position: absolute; top: 10px; right: 14px;
+  font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint);
+}
+.canvas-grid { display: grid; gap: 10px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 760px) { .canvas-grid { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, auto); } }
+.canvas-cell {
+  border: 1.5px dashed var(--border-hover); border-radius: 10px; padding: 12px 13px;
+  min-height: 130px; background: var(--cream); position: relative;
+}
+.canvas-cell .c-head { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
+.canvas-cell .c-head .gem { width: 20px; height: 20px; font-size: 10px; }
+.canvas-cell .c-head b { font-family: var(--heading); font-size: 12.5px; }
+.canvas-cell .c-q { font-size: 10.5px; color: var(--ink-soft); font-style: italic; line-height: 1.4; }
+.canvas-cell.center {
+  border: 2px solid var(--orange); background: var(--accent-light);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+}
+@media (min-width: 760px) { .canvas-cell.center { grid-column: 2 / 4; grid-row: 1; } }
+.canvas-cell.center .c-lbl { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--orange-deep); }
+.canvas-cell.center .c-title { font-family: var(--heading); font-weight: 700; font-size: 17px; margin-top: 4px; }
+.canvas-cell .mini-sticky {
+  background: #FFF6D9; border-radius: 2px; box-shadow: 0 1px 3px rgba(35,30,26,.14);
+  font-size: 9.5px; padding: 5px 7px; margin-top: 7px; transform: rotate(-1deg);
+  line-height: 1.35; font-weight: 400;
+}
+.canvas-cell .mini-sticky.alt { background: #FDEDE4; transform: rotate(1.1deg); }
+
+/* analyse-rij per route */
+.piste-analysis {
+  display: grid; gap: 18px; margin-top: 44px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 860px) { .piste-analysis { grid-template-columns: 1fr 1fr 1.1fr; } }
+.an-col h3 { font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.an-col ul { list-style: none; }
+.an-col li { font-size: .92rem; padding-left: 22px; position: relative; margin-bottom: 9px; color: var(--ink-soft); font-weight: 400; }
+.an-col li strong { color: var(--ink); font-weight: 600; }
+.an-col.pro li::before { content: '✓'; position: absolute; left: 0; color: var(--green-deep); font-weight: 700; }
+.an-col.con li::before { content: '〜'; position: absolute; left: 0; color: var(--orange-deep); font-weight: 700; }
+
+.maite-card {
+  background: #FFF6D9;
+  border-radius: 4px; padding: 18px 20px 16px;
+  box-shadow: 0 2px 6px rgba(35,30,26,.10);
+  transform: rotate(-.7deg);
+  font-size: .95rem;
+}
+.maite-card .lbl {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--yellow-deep); margin-bottom: 8px; display: block;
+}
+.maite-card p { font-family: var(--heading); font-style: italic; font-size: 1.05rem; line-height: 1.45; }
+
+.groep-note {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--white); border: 1px dashed var(--border-hover); border-radius: 14px;
+  padding: 16px 20px; margin-top: 26px; font-size: .95rem; color: var(--ink-soft);
+}
+.groep-note .ico { font-size: 22px; line-height: 1.2; }
+.groep-note strong { color: var(--ink); font-weight: 600; }
+
+/* ---------- vergelijking ---------- */
+table.compare {
+  width: 100%; border-collapse: collapse; margin-top: 36px;
+  background: var(--white); border-radius: 16px; overflow: hidden;
+  box-shadow: var(--shadow-card); font-size: .92rem;
+}
+table.compare th, table.compare td { padding: 13px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+table.compare thead th {
+  font-family: var(--heading); font-size: .95rem; background: var(--subtle);
+  vertical-align: bottom;
+}
+table.compare thead th small { display: block; font-family: var(--body); font-weight: 400; font-size: .75rem; color: var(--ink-soft); }
+table.compare tbody th { font-weight: 600; font-size: .88rem; color: var(--ink-soft); width: 190px; }
+table.compare td { font-weight: 400; }
+table.compare tbody tr:last-child th, table.compare tbody tr:last-child td { border-bottom: none; }
+
+/* ---------- advies ---------- */
+.advice-grid { display: grid; gap: 24px; grid-template-columns: 1fr; margin-top: 36px; }
+@media (min-width: 900px) { .advice-grid { grid-template-columns: 1.2fr .8fr; } }
+.advice-main {
+  background: var(--white); border: 1px solid var(--border); border-radius: 20px;
+  padding: clamp(24px, 4vw, 44px); box-shadow: var(--shadow-card);
+}
+.advice-main h3 { font-size: 1.5rem; margin-bottom: 14px; }
+.phases { margin-top: 24px; display: flex; flex-direction: column; gap: 0; }
+.phase { display: flex; gap: 16px; padding: 14px 0; border-top: 1px solid var(--border); font-size: .95rem; }
+.phase .p-num {
+  font-family: var(--heading); font-weight: 700; color: var(--orange);
+  flex-shrink: 0; width: 64px; font-size: .85rem; padding-top: 2px;
+}
+.phase strong { font-weight: 600; }
+.phase span.note { color: var(--ink-soft); font-weight: 300; }
+
+.agenda {
+  background: var(--ink); color: #F5EEE8; border-radius: 20px;
+  padding: clamp(24px, 4vw, 40px);
+}
+.agenda h3 { font-size: 1.3rem; margin-bottom: 18px; color: #fff; }
+.agenda ol { list-style: none; counter-reset: ag; }
+.agenda li {
+  counter-increment: ag; position: relative; padding-left: 40px;
+  margin-bottom: 16px; font-size: .92rem; font-weight: 300; color: #D8CEC6;
+}
+.agenda li::before {
+  content: counter(ag); position: absolute; left: 0; top: 0;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--orange); color: #fff;
+  font-family: var(--heading); font-weight: 700; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+}
+.agenda li strong { color: #fff; font-weight: 600; display: block; }
+.agenda li em { color: var(--yellow); font-style: normal; font-weight: 500; }
+
+footer.deck-foot {
+  padding: 40px clamp(20px, 6vw, 72px) 60px; text-align: center;
+  font-size: .85rem; color: var(--ink-faint);
+}
+footer.deck-foot .gem { width: 22px; height: 22px; margin-bottom: 10px; }
+
+/* accents per route */
+.r1-accent { color: var(--orange-deep); }
+.r2-accent { color: var(--purple-deep); }
+.r3-accent { color: var(--teal-deep); }
+.r4-accent { color: var(--green-deep); }
+.rc-accent { color: var(--yellow-deep); }
+</style>
+</head>
+<body>
+
+<nav class="deck-nav">
+  <a class="brand" href="#top">
+    <span class="gem" style="width:20px;height:20px;font-size:10px;">💎</span>
+    Klassieker laten schitteren · verkenning #2
+  </a>
+  <a class="navlink" href="#omslag">De omslag</a>
+  <a class="navlink num r1-accent" href="#route1">1</a>
+  <a class="navlink num r2-accent" href="#route2">2</a>
+  <a class="navlink num r3-accent" href="#route3">3</a>
+  <a class="navlink num r4-accent" href="#route4">4</a>
+  <a class="navlink rc-accent" href="#canvas">Canvas</a>
+  <a class="navlink" href="#vergelijking">Vergelijking</a>
+  <a class="navlink" href="#advies">Voorzet</a>
+</nav>
+
+<!-- ============ COVER ============ -->
+<header class="cover" id="top">
+  <div class="cover-inner">
+    <span class="disclaimer">Design-verkenning #2 · niets hiervan is gebouwd</span>
+    <div class="section-label" style="margin-top:18px;">Hartverwarmers · na verkenning #1</div>
+    <h1>Vier routes om <em>jouw klassieker</em> te laten schitteren</h1>
+    <p class="sub">
+      De bingo van elke dinsdag. De zangnamiddag. De kaartmiddag. Activiteiten die een
+      begeleidster al jaren doet — en die nergens op het platform staan. Hoe help je haar
+      om díé te herdenken met de DIAMANT-bril? Vier routes die variëren op de nieuwe assen:
+      <strong>waar de activiteit vandaan komt, wanneer het denken gebeurt, en met wie</strong>.
+    </p>
+    <div class="meta-strip">
+      <span><strong>Voor</strong> · overleg Frederik × Maite Mallentjer</span>
+      <span><strong>Voorbeeldklassieker</strong> · de dinsdagbingo van Els</span>
+      <span><strong>Naast</strong> · verkenning #1 (de 5 pistes op de AI-as)</span>
+    </div>
+  </div>
+  <div class="cover-bingo" aria-hidden="true">
+    <div class="bh">BINGO</div>
+    <div class="grid">
+      <i>4</i><i class="hit">17</i><i>22</i><i>38</i><i>61</i>
+      <i>9</i><i>23</i><i class="hit">31</i><i>44</i><i>70</i>
+      <i>2</i><i>19</i><i class="gemcell"><span class="gem" style="width:22px;height:22px;font-size:11px;">💎</span></i><i>52</i><i>66</i>
+      <i class="hit">11</i><i>28</i><i>36</i><i>49</i><i>74</i>
+      <i>7</i><i>15</i><i class="hit">33</i><i>57</i><i>68</i>
+    </div>
+    <div class="bnote">"Elke dinsdag, al negen jaar." — Els, begeleidster (fictief)</div>
+  </div>
+</header>
+
+<!-- ============ DE OMSLAG ============ -->
+<section class="slide bg-white" id="omslag">
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <div class="section-label">De omslag sinds verkenning #1</div>
+        <h2>De klassieker zit in haar hoofd — niet in een database</h2>
+        <p class="lead">
+          Verkenning #1 vertrok van een <strong>fiche op het platform</strong> en varieerde
+          vooral op <strong>hoeveel AI</strong>. Beide aannames laten we los.
+        </p>
+        <p>
+          Het nieuwe vertrekpunt: een activiteit die de begeleidster <strong>al jaren
+          doet</strong> en die nergens beschreven staat. Dat verandert alles — de eerste stap
+          van elke route is <strong>de activiteit naar buiten krijgen</strong>. Geen drempel,
+          maar een ontwerpkans: wie haar klassieker vertelt, denkt er al over na.
+        </p>
+        <p>
+          De vijf mechanieken uit verkenning #1 (keuzes, kaarten, suggesties, gesprek,
+          micro-moment) blijven geldige bouwstenen. Maar de spannende ontwerpvragen liggen
+          op drie andere assen — en dáárop contrasteren de vier routes hieronder.
+        </p>
+      </div>
+      <div>
+        <div class="m-board" style="padding:20px;">
+          <div class="m-sticky r1" style="font-size:12px;"><strong>Losgelaten:</strong> het vertrekpunt is een fiche van het platform.</div>
+          <div class="m-sticky alt r2" style="font-size:12px;"><strong>Losgelaten:</strong> de enige variatie-as is "hoeveel AI".</div>
+          <div class="m-sticky teal r3" style="font-size:12px;"><strong>Losgelaten:</strong> het gebeurt in één sessie van 5–15 minuten.</div>
+          <div class="m-sticky r2" style="font-size:12px;"><strong>Losgelaten:</strong> de output is iets tastbaars of printbaars.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="axes">
+      <div class="axis">
+        <div class="a-lbl">As één</div>
+        <h3>Waar komt de activiteit vandaan?</h3>
+        <p>Uit haar hoofd, van het platform, of uit een mens — het vertrekpunt bepaalt de hele vorm.</p>
+        <div class="opts">
+          <span class="hot">eigen klassieker</span>
+          <span class="hot">een bewoner</span>
+          <span>fiche van het platform</span>
+          <span>een observatie</span>
+        </div>
+      </div>
+      <div class="axis">
+        <div class="a-lbl">As twee</div>
+        <h3>Wanneer gebeurt het denken?</h3>
+        <p>Vooraf plannen is maar één moment — reflectie achteraf is pedagogisch vaak krachtiger.</p>
+        <div class="opts">
+          <span class="hot">vooraf</span>
+          <span>tijdens</span>
+          <span class="hot">achteraf</span>
+          <span class="hot">doorlopend ritme</span>
+        </div>
+      </div>
+      <div class="axis">
+        <div class="a-lbl">As drie</div>
+        <h3>Met wie?</h3>
+        <p>Alleen achter een scherm is maar één sociale vorm — en de bewoner laten meedenken ís Autonomie.</p>
+        <div class="opts">
+          <span class="hot">alleen</span>
+          <span class="hot">het team</span>
+          <span>groepssessie met Maite</span>
+          <span class="hot">mét bewoners</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="route-index">
+      <a class="route-tile" href="#route1">
+        <span class="r-num r1-accent">1</span>
+        <h3>De lichte route</h3>
+        <p>Vertel je klassieker, herken je versie, krijg een spiekkaart. Eén sessie, bijna geen typwerk.</p>
+      </a>
+      <a class="route-tile" href="#route2">
+        <span class="r-num r2-accent">2</span>
+        <h3>De Bewonersbril</h3>
+        <p>Vertrekt van een mens, niet een activiteit — zoals de beenhouwerij-fiche écht ontstond.</p>
+      </a>
+      <a class="route-tile" href="#route3">
+        <span class="r-num r3-accent">3</span>
+        <h3>Het ritme</h3>
+        <p>Geen flow maar een gewoonte: één vraag na de activiteit, één facet per week.</p>
+      </a>
+      <a class="route-tile" href="#route4">
+        <span class="r-num r4-accent">4</span>
+        <h3>De contributie-trechter</h3>
+        <p>Verrijken dat uitmondt in bijdragen: van klassieker tot fiche op het platform.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROUTE 1 ============ -->
+<section class="slide" id="route1">
+  <div class="wrap">
+    <div class="piste-head">
+      <div class="piste-num r1-accent">1</div>
+      <div class="titles">
+        <div class="piste-kicker r1-accent">Route één · vertel, herken, vertrek</div>
+        <h2>De lichte route</h2>
+        <p class="piste-oneliner">Je spreekt in twee zinnen in wat je al jaren doet. Het systeem
+        spiegelt terug wat het hoorde, toont per facet twee herkenbare versies van jóuw
+        activiteit — en je vertrekt met een spiekkaart voor in je broekzak. Eén sessie,
+        bijna geen typwerk.</p>
+        <div class="axis-pills r1-accent">
+          <span class="ap"><b>vertrekpunt</b> eigen klassieker</span>
+          <span class="ap"><b>moment</b> vooraf</span>
+          <span class="ap"><b>met wie</b> alleen</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step"><span class="n r1-accent">Stap 1</span>Vertel je klassieker — inspreken of typen, twee zinnen volstaan</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r1-accent">Stap 2</span>Het systeem spiegelt: "Dus: groot, wekelijks, competitief, zittend?"</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r1-accent">Stap 3</span>Per facet twee versies van jouw bingo — tik aan welke je herkent</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r1-accent">Stap 4</span>Drie zinnen op een spiekkaart — voor in de zak, dinsdag in de cafetaria</div>
+    </div>
+
+    <div class="mocks">
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">hartverwarmers.be/schitteren</span></div>
+          <div class="mock-body">
+            <div class="m-sitehead"><span class="gem">&nbsp;</span>Hartverwarmers<span class="navdots"><i></i><i></i><i></i></span></div>
+            <div class="m-h">Welke activiteit doe jij al jaren?</div>
+            <p class="m-sub" style="margin-bottom:12px;">De bingo, de zangnamiddag, het kaarten — vertel het zoals je het aan een collega zou vertellen.</p>
+            <div class="m-voice">
+              <div class="mic">🎙</div>
+              <div class="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <p style="font-size:11.5px;color:var(--ink-soft);font-style:italic;">"Elke dinsdag bingo met een grote groep in de cafetaria…"</p>
+            </div>
+            <div style="display:flex;justify-content:center;margin-top:10px;">
+              <span class="m-link">liever typen? Dat kan ook</span>
+            </div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Inspreken, niet invullen.</strong> Deze doelgroep praat
+        makkelijker dan ze typt — en wie haar klassieker vertelt, denkt er al over na.</p>
+      </div>
+
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">…/schitteren/spiegel</span></div>
+          <div class="mock-body">
+            <div class="m-mirror">
+              <div class="who"><span class="gem">&nbsp;</span> Dit hoorde ik</div>
+              <p style="font-size:12px;margin-bottom:8px;">Jouw klassieker, als ik het goed begrijp:</p>
+              <div>
+                <span class="m-trait">🗓 wekelijks</span>
+                <span class="m-trait">👥 grote groep</span>
+                <span class="m-trait">🏆 competitief</span>
+                <span class="m-trait">🪑 zittend</span>
+                <span class="m-trait">📍 cafetaria</span>
+              </div>
+              <p style="font-size:11.5px;color:var(--ink-soft);margin-top:9px;">Klopt dat — of vergeet ik iets?</p>
+            </div>
+            <div class="m-chips" style="margin-bottom:0;">
+              <span class="m-chip">Klopt helemaal</span>
+              <span class="m-chip idle">✎ Pas iets aan</span>
+            </div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>De spiegel.</strong> Geen formulier dat zij invult — het
+        systeem vat samen, zij bevestigt. De rollen zijn omgedraaid.</p>
+      </div>
+
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">…/schitteren/herken</span></div>
+          <div class="mock-body">
+            <div class="m-progress">
+              <span class="gem" style="background:var(--purple);">A</span>
+              <span style="margin-left:4px;">Facet 3 van 7 · Autonomie</span>
+            </div>
+            <div class="m-h" style="font-size:14px;">Twee bingo's — welke lijkt het meest op de jouwe?</div>
+            <div class="m-versions">
+              <div class="m-version picked">
+                <span class="v-check">✓</span>
+                <span class="v-tag">Versie A</span>
+                De begeleidster roept de nummers, deelt de kaarten uit en kiest de prijsjes. Iedereen wacht.
+              </div>
+              <div class="m-version">
+                <span class="v-tag">Versie B</span>
+                Maria roept vandaag de nummers — zij was marktkraamster. Eén tafel koos de prijsjes.
+              </div>
+            </div>
+            <div class="m-sticky alt r1" style="font-size:11px;">💡 Eén stap richting B: laat volgende week één bewoner de prijsjes kiezen — twee opties volstaan al.<span class="add">+ Zet op mijn spiekkaart</span></div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Herkennen, niet reflecteren.</strong> De contrastparen
+        uit het DIAMANT-model, herschreven voor háár activiteit. Geen oordeel — bij elke
+        herkenning hoort één idee om op te schuiven.</p>
+      </div>
+
+      <div class="mock" style="max-width:330px;">
+        <div class="mock-frame" style="background:var(--subtle);">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">…/schitteren/spiekkaart</span></div>
+          <div class="mock-body" style="padding:22px 18px;">
+            <div class="m-pocketcard">
+              <div class="pc-head"><span class="gem">💎</span>Dinsdag · bingo</div>
+              <ul>
+                <li>Vraag wie de nummers wil roepen — Maria eerst.</li>
+                <li>Eén tafel kiest de prijsjes van vandaag.</li>
+                <li>Wie niet meespeelt: vraag wie de winnaar wil feliciteren.</li>
+              </ul>
+              <div class="pc-foot">de spiekkaart van Els · 3 zinnen, geen meer</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:14px;justify-content:center;">
+              <span class="m-btn tiny">🖨 Print op kaartformaat</span>
+              <span class="m-link" style="align-self:center;">stuur naar mijn telefoon</span>
+            </div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>De spiekkaart.</strong> Drie zinnen voor in de zak —
+        het schittermoment gebeurt niet achter de computer maar in de cafetaria.</p>
+      </div>
+    </div>
+
+    <div class="groep-note">
+      <span class="ico">🪑</span>
+      <span><strong>In Maites groepssessie:</strong> iedereen brengt haar eigen klassieker mee
+      in het hoofd — meer voorbereiding is er niet. Eén deelnemer vertelt, de groep raadt welke
+      versie (A of B) bij haar woonzorgcentrum past, en discussieert over de opschuif-ideeën.
+      De contrastparen zijn Maites eigen vormingsmateriaal.</span>
+    </div>
+
+    <div class="piste-analysis">
+      <div class="an-col pro">
+        <h3>✓ Sterk</h3>
+        <ul>
+          <li><strong>Lost het kernprobleem op</strong>: de klassieker komt naar buiten met de laagst mogelijke drempel.</li>
+          <li>Herkennen is makkelijker dan reflecteren — voelt als een quiz zonder goed/fout.</li>
+          <li>De contrastparen bestaan al als <strong>gevalideerde content</strong> in het DIAMANT-model.</li>
+        </ul>
+      </div>
+      <div class="an-col con">
+        <h3>〜 Aandachtspunt</h3>
+        <ul>
+          <li>Vrije input vraagt AI om te begrijpen — zonder AI bestaat stap 1 en 3 niet.</li>
+          <li>De twee versies moeten <strong>per activiteitstype</strong> kloppen (bingo ≠ wandeling); generiek wordt het flauw.</li>
+          <li>Inspreken op de werkvloer kan gênant voelen — typen blijft een volwaardig alternatief.</li>
+        </ul>
+      </div>
+      <div class="maite-card">
+        <span class="lbl">Vraag voor Maite</span>
+        <p>"Werkt herkennen ('welke versie ben jij?') pedagogisch even goed als reflecteren —
+        of slaat het de verdieping over?"</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROUTE 2 ============ -->
+<section class="slide bg-white" id="route2">
+  <div class="wrap">
+    <div class="piste-head">
+      <div class="piste-num r2-accent">2</div>
+      <div class="titles">
+        <div class="piste-kicker r2-accent">Route twee · de persoon als startpunt</div>
+        <h2>De Bewonersbril</h2>
+        <p class="piste-oneliner">Het vertrekpunt is geen activiteit maar een mens. <em>Denk aan
+        één bewoner. Wie is die? Wat deed die vroeger graag?</em> — en pas dan: wat zou zíj in
+        jouw klassieker kunnen doen, kiezen, betekenen? Zo ontstond de beenhouwerij-fiche écht:
+        uit een levensverhaal-gesprek.</p>
+        <div class="axis-pills r2-accent">
+          <span class="ap"><b>vertrekpunt</b> een bewoner</span>
+          <span class="ap"><b>moment</b> vooraf</span>
+          <span class="ap"><b>met wie</b> alleen — of mét de bewoner</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step"><span class="n r2-accent">Stap 1</span>"Denk aan één bewoner" — wie verscheen er in je hoofd?</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r2-accent">Stap 2</span>Drie warme vragen over die ene mens — vroeger, trots, energie</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r2-accent">Stap 3</span>Leg je klassieker ernaast: wat kan zíj erin doen, kiezen, betekenen?</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r2-accent">Stap 4</span>Optioneel: oefen het gesprek vooraf — de AI speelt Maria</div>
+    </div>
+
+    <div class="mocks">
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">…/schitteren/bewonersbril</span></div>
+          <div class="mock-body">
+            <div class="m-h">Denk aan één bewoner</div>
+            <p class="m-sub" style="margin-bottom:12px;">Niet de hele leefgroep — één iemand. Misschien iemand die je zelden ziet stralen.</p>
+            <div class="m-personcard">
+              <div class="avatar">👩‍🦳</div>
+              <div>
+                <div class="pname">Maria · 84</div>
+                <div class="prole">vroeger marktkraamster — "ze kon roepen als de beste"</div>
+              </div>
+            </div>
+            <div class="m-quote" style="margin-top:12px;">"Wat deed Maria vroeger graag? Waar was ze goed in? Vraag het haar — of haar familie."</div>
+            <p style="font-size:10px;color:var(--ink-faint);">🔒 Dit blijft op jouw scherm. Er wordt niets opgeslagen.</p>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Eén mens, geen dossier.</strong> De vragen zijn die van
+        het facet Mensgericht — maar over een concrete persoon in plaats van een principe.</p>
+      </div>
+
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">…/schitteren/bewonersbril/bingo</span></div>
+          <div class="mock-body">
+            <div class="m-progress"><span class="gem" style="background:var(--purple);">M</span><span style="margin-left:4px;">Maria × jouw bingo</span></div>
+            <div class="m-h" style="font-size:14px;">Wat zou Maria in jouw bingo kunnen…</div>
+            <div class="m-sticky r1"><strong>… doen?</strong> De nummers roepen — met haar marktstem heeft ze het publiek zo mee.<span class="add">+ Op mijn plan</span></div>
+            <div class="m-sticky alt r2"><strong>… kiezen?</strong> De prijsjes van vandaag uitzoeken, zoals vroeger haar koopwaar.<span class="add">+ Op mijn plan</span></div>
+            <div class="m-sticky teal r3"><strong>… betekenen?</strong> Nieuwe bewoners wegwijs maken aan haar tafel — gastvrouw zijn.<span class="add">+ Op mijn plan</span></div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>De kruising.</strong> Persoon × klassieker. Doen, kiezen,
+        betekenen — drie werkwoorden die de facetten Doen, Autonomie en Anderen dragen zonder
+        ze te benoemen.</p>
+      </div>
+
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">…/schitteren/oefen-met-maria</span></div>
+          <div class="mock-body">
+            <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--purple-deep);margin-bottom:10px;">Oefenruimte · de AI speelt Maria (fictief archetype)</p>
+            <div class="m-chat-msg">
+              <span class="face">👩‍🦳</span>
+              <div class="m-chat-bubble">Bingo? Och kind, dat heb ik al honderd keer gedaan. Ga maar zonder mij.</div>
+            </div>
+            <div class="m-chat-msg user"><div class="m-chat-bubble">Eigenlijk kwam ik u iets vragen, Maria. Wie gaat er vandaag de nummers roepen, dacht ik…</div></div>
+            <div class="m-chat-msg">
+              <span class="face">👩‍🦳</span>
+              <div class="m-chat-bubble">… De nummers roepen? Dat deed ik vroeger op de markt hé. Awel, geef die microfoon maar.</div>
+            </div>
+            <div style="border-top:1px dashed var(--border);margin-top:12px;padding-top:9px;">
+              <p style="font-size:10.5px;color:var(--ink-soft);">💎 <strong>Zag je wat er gebeurde?</strong> Je vroeg niet of ze méédoet — je gaf haar een rol. Dat is Talent én Autonomie.</p>
+            </div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Oefenen met Maria.</strong> Het verlengstuk voor wie wil:
+        je vóélt het verschil tussen "kom je mee?" en een rol aanbieden — vóór dinsdag.</p>
+      </div>
+    </div>
+
+    <div class="groep-note">
+      <span class="ico">🎤</span>
+      <span><strong>In Maites groepssessie:</strong> de sterkste vorm voor opleidingen. Eén
+      deelnemer beschrijft (anoniem) een bewoner, de groep bedenkt samen doen/kiezen/betekenen —
+      en het oefengesprek op groot scherm wordt het discussiestuk van de sessie: <em>wat zou
+      jij tegen Maria zeggen?</em></span>
+    </div>
+
+    <div class="piste-analysis">
+      <div class="an-col pro">
+        <h3>✓ Sterk</h3>
+        <ul>
+          <li><strong>Dit is hoe Maites pedagogiek écht werkt</strong> — de beenhouwerij-fiche ontstond exact zo.</li>
+          <li>Mensgericht wordt het startpunt in plaats van facet 4 van 7.</li>
+          <li>De ervaringsgerichte oefening laat je het verschil <strong>voelen</strong> in plaats van erover lezen.</li>
+        </ul>
+      </div>
+      <div class="an-col con">
+        <h3>〜 Aandachtspunt</h3>
+        <ul>
+          <li><strong>Privacygevoelig</strong> zodra er namen worden ingetikt — eerste versie: niets opslaan, alles op het scherm.</li>
+          <li>Vraagt meer denkwerk vooraf dan "klik op je fiche".</li>
+          <li>Een ongeloofwaardige AI-Maria slaat de sfeer dood — tonaal het meest ambitieuze stuk.</li>
+        </ul>
+      </div>
+      <div class="maite-card">
+        <span class="lbl">Vraag voor Maite</span>
+        <p>"Zou jij een gespeelde bewoner durven inzetten in je vormingen — en wat mag
+        'Maria' nooit zeggen of doen?"</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROUTE 3 ============ -->
+<section class="slide" id="route3">
+  <div class="wrap">
+    <div class="piste-head">
+      <div class="piste-num r3-accent">3</div>
+      <div class="titles">
+        <div class="piste-kicker r3-accent">Route drie · geen flow maar een gewoonte</div>
+        <h2>Het ritme</h2>
+        <p class="piste-oneliner">Niet vóór maar ná de activiteit: drie kleine vragen dezelfde
+        avond, een logboek dat zich vult met schittermomenten, en een collectief weekfacet
+        waar heel Vlaanderen aan meedoet. De klassieker verandert niet in één sessie maar
+        over weken — en dat is precies de bedoeling.</p>
+        <div class="axis-pills r3-accent">
+          <span class="ap"><b>vertrekpunt</b> wat vandaag gebeurde</span>
+          <span class="ap"><b>moment</b> achteraf + doorlopend</span>
+          <span class="ap"><b>met wie</b> alleen — én heel de community</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step"><span class="n r3-accent">Dinsdagavond</span>Drie vragen na de bingo — twee minuten, op je telefoon</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r3-accent">Elke week</span>Je logboek groeit — je ziet je eigen klassieker veranderen</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r3-accent">Deze maand</span>De Week van Autonomie: één micro-uitdaging, samen met iedereen</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r3-accent">Na 7 weken</span>Zeven facetten gepasseerd — zonder dat het ooit een cursus werd</div>
+    </div>
+
+    <div class="mocks">
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">…/schitterlogboek/vandaag</span></div>
+          <div class="mock-body">
+            <p class="m-sub" style="margin-bottom:8px;">Dinsdag 21u04 · na de bingo</p>
+            <div class="m-h" style="font-size:15px;">Hoe was het vandaag, Els?</div>
+            <div class="m-quote">"Wat deed een bewoner vandaag zélf?"</div>
+            <div class="m-chips">
+              <span class="m-chip">Maria riep de nummers 🎙</span>
+              <span class="m-chip idle">iemand anders</span>
+              <span class="m-chip idle">vandaag niet gelukt — ook goed</span>
+            </div>
+            <p style="font-size:11px;color:var(--ink-soft);margin-top:6px;">Nog twee vraagjes — of stop hier, dit telt al.</p>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Dezelfde avond.</strong> Reflectie werkt het best met
+        iets concreets om op terug te kijken. "Niet gelukt" is een volwaardig antwoord —
+        nooit een gemiste dag-streak.</p>
+      </div>
+
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">…/schitterlogboek</span></div>
+          <div class="mock-body">
+            <div class="m-h" style="font-size:15px;">Jouw schittermomenten</div>
+            <p class="m-sub" style="margin-bottom:14px;">De dinsdagbingo, zes weken later — kijk eens wat er veranderd is.</p>
+            <div class="m-logbook">
+              <div class="m-logentry">
+                <span class="ld">Deze week</span>
+                <p>Maria riep de nummers. De halve cafetaria riep mee.</p>
+                <span class="lf">💎 Talent</span>
+              </div>
+              <div class="m-logentry">
+                <span class="ld">2 weken geleden</span>
+                <p>Tafel drie koos de prijsjes. Discussie van twintig minuten — heerlijk.</p>
+                <span class="lf">💎 Autonomie</span>
+              </div>
+              <div class="m-logentry">
+                <span class="ld">5 weken geleden</span>
+                <p>Willy wou niet meedoen. Hij kreeg koffie en keek toe — dat mag.</p>
+                <span class="lf">💎 Inclusief</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Het logboek.</strong> Geen score, geen voortgangsbalk —
+        een verzameling momenten. Over weken zie je je eigen klassieker veranderen.</p>
+      </div>
+
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">hartverwarmers.be/de-week-van</span></div>
+          <div class="mock-body">
+            <div class="m-weekbanner">
+              <span class="wk">Deze week · samen met heel Vlaanderen</span>
+              <div class="wt">De Week van Autonomie</div>
+              <p>Laat deze week bij één activiteit een bewoner iets kiezen. Twee opties volstaan al.</p>
+            </div>
+            <p style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin:12px 0 8px;">Gedeelde momenten · 23 deze week</p>
+            <div class="m-spark">
+              <span class="gem" style="background:var(--purple);">A</span>
+              <span>Georgette koos het eerste muzieknummer van de vrijdag. Dat moment is van haar.<span class="by">begeleidster, WZC De Linde (fictief)</span></span>
+              <span class="hearts">♥ 14</span>
+            </div>
+            <div class="m-spark">
+              <span class="gem" style="background:var(--purple);">A</span>
+              <span>Twee soepen op het menu gezet — bewoners kozen zelf. Klein, maar het werkte.<span class="by">animator, WZC Zonnehove (fictief)</span></span>
+              <span class="hearts">♥ 9</span>
+            </div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>De Week van…</strong> Eén facet, één micro-uitdaging,
+        één deelmuur. Maite cureert de weken; de community draagt ze. Belonging als motor.</p>
+      </div>
+    </div>
+
+    <div class="groep-note">
+      <span class="ico">📬</span>
+      <span><strong>In Maites groepssessie:</strong> de Week van… kan exact samenvallen met
+      haar vormingskalender — de week na een opleiding over Autonomie wordt platformbreed
+      de Week van Autonomie. Het logboek levert bovendien échte casussen voor de volgende
+      sessie: "wie wil haar moment van vorige week vertellen?"</span>
+    </div>
+
+    <div class="piste-analysis">
+      <div class="an-col pro">
+        <h3>✓ Sterk</h3>
+        <ul>
+          <li><strong>Reflectie achteraf is pedagogisch krachtiger</strong> dan plannen vooraf — je kijkt terug op iets concreets.</li>
+          <li>Maakt DIAMANT-denken een <strong>gewoonte</strong> in plaats van een eenmalige oefening.</li>
+          <li>Collectief ritme = belonging, de kernemotie van het merk. Geen AI nodig.</li>
+        </ul>
+      </div>
+      <div class="an-col con">
+        <h3>〜 Aandachtspunt</h3>
+        <ul>
+          <li><strong>Terugkerend gedrag is de moeilijkste vorm van engagement</strong> — heeft een trigger nodig (mail? papieren boekje?).</li>
+          <li>De Week van… werkt pas met genoeg actieve gebruikers — kip-en-ei bij een groeiend platform.</li>
+          <li>Eerder campagne + gewoonte dan product — moeilijker af te bakenen in een bouwronde van 1–2 weken.</li>
+        </ul>
+      </div>
+      <div class="maite-card">
+        <span class="lbl">Vraag voor Maite</span>
+        <p>"Zou jij de weekfacetten willen cureren, gekoppeld aan je vormingskalender —
+        en geloof je dat begeleidsters 's avonds twee minuten nemen voor drie vraagjes?"</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ROUTE 4 ============ -->
+<section class="slide bg-white" id="route4">
+  <div class="wrap">
+    <div class="piste-head">
+      <div class="piste-num r4-accent">4</div>
+      <div class="titles">
+        <div class="piste-kicker r4-accent">Route vier · verrijken wordt bijdragen</div>
+        <h2>De contributie-trechter</h2>
+        <p class="piste-oneliner">Je vertelt je klassieker en verrijkt hem facet per facet —
+        en op het einde zegt het systeem: <em>"Dit is eigenlijk een fiche. Zullen we hem samen
+        op het platform zetten?"</em> De helft van het invulwerk is dan al gebeurd. Wie daarna
+        iets kleins toevoegt aan andermans fiche, deelt een "schittering". De wizard wordt
+        geen feature naast het platform, maar een motor erváán.</p>
+        <div class="axis-pills r4-accent">
+          <span class="ap"><b>vertrekpunt</b> eigen klassieker</span>
+          <span class="ap"><b>moment</b> vooraf</span>
+          <span class="ap"><b>output</b> een bijdrage op het platform</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step"><span class="n r4-accent">Stap 1</span>Vertel je klassieker (zoals route 1)</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r4-accent">Stap 2</span>Verrijk facet per facet — jouw plan groeit</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r4-accent">Stap 3</span>"Dit is eigenlijk een fiche" — publiceren als uitnodiging, nooit als afsluiter</div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-step"><span class="n r4-accent">Stap 4</span>Anderen geven hartjes en delen hun schitteringen erbij</div>
+    </div>
+
+    <div class="mocks">
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">…/schitteren/klaar</span></div>
+          <div class="mock-body">
+            <div class="m-paper">
+              <div class="ph">💎 De dinsdagbingo van Els</div>
+              <ul>
+                <li><span class="gem" style="background:var(--teal);">T</span><span>Maria roept de nummers — zij was marktkraamster.</span></li>
+                <li><span class="gem" style="background:var(--purple);">A</span><span>Eén tafel kiest de prijsjes van de week.</span></li>
+                <li><span class="gem" style="background:var(--yellow);color:var(--ink);">I</span><span>Wie niet meespeelt, krijgt een rol aan de rand: koffie, felicitaties, muziek kiezen.</span></li>
+              </ul>
+              <div class="sig">het plan van Els · 12 juni</div>
+            </div>
+            <div class="m-suggest" style="margin-top:12px;border-style:dashed;">
+              <div class="who"><span class="gem">&nbsp;</span> Wist je dat…</div>
+              <p style="font-size:12px;">… dit eigenlijk al een fiche is? Jouw bingo, met deze drie
+              ideeën, kan andere begeleidsters in Vlaanderen inspireren. <strong>De helft is al
+              geschreven — door jou.</strong></p>
+              <div class="acts">
+                <span class="m-btn tiny">Maak er een fiche van</span>
+                <span class="m-link">nee bedankt — gewoon mijn plan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Het kantelmoment.</strong> Publiceren is een uitnodiging
+        op het moment van trots — nooit een verplichte laatste stap. "Nee" is één tik.</p>
+      </div>
+
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">hartverwarmers.be/fiches/de-dinsdagbingo</span></div>
+          <div class="mock-body">
+            <div class="m-sitehead"><span class="gem">&nbsp;</span>Hartverwarmers<span class="navdots"><i></i><i></i><i></i></span></div>
+            <div class="m-h">De dinsdagbingo — met rollen voor iedereen</div>
+            <p class="m-sub" style="margin-bottom:12px;">door Els · WZC De Boomgaard (fictief) · haar eerste fiche 🎉</p>
+            <p style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Schitteringen van collega's · 3</p>
+            <div class="m-spark">
+              <span class="gem" style="background:var(--teal);">T</span>
+              <span>Bij ons leest een bewoner met een mooie stem de prijsjes voor — benoem het als talent!<span class="by">begeleidster, Kortrijk (fictief)</span></span>
+              <span class="hearts">♥ 11</span>
+            </div>
+            <div class="m-spark">
+              <span class="gem" style="background:var(--yellow);color:var(--ink);">I</span>
+              <span>Wij drukken de bingokaarten extra groot af voor wie slecht ziet.<span class="by">animator, Gent (fictief)</span></span>
+              <span class="hearts">♥ 7</span>
+            </div>
+            <div style="margin-top:10px;"><span class="m-btn ghost tiny">+ Deel jouw schittering</span></div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>De sociale loop.</strong> Een schittering is een veel
+        kleinere bijdrage-drempel dan een volledige fiche — en de beste verschijnen bij de fiche.</p>
+      </div>
+
+      <div class="mock">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">hartverwarmers.be/profiel</span></div>
+          <div class="mock-body">
+            <div class="m-h" style="font-size:14px;">Goed bezig, Els 🧡</div>
+            <div class="m-board" style="margin-top:10px;">
+              <div style="display:flex;gap:12px;align-items:flex-start;">
+                <div class="polaroid"><div class="ph">🎱</div>de dinsdagbingo · mijn eerste fiche</div>
+                <div style="flex:1;">
+                  <div class="m-sticky r2">14 hartjes van collega's ♥</div>
+                  <div class="m-sticky teal r1">3 schitteringen van anderen bij jouw fiche</div>
+                  <div class="m-sticky alt r3">Volgende klassieker verrijken? De zangnamiddag wacht.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Trots, geen statistiek.</strong> Hartjes en schitteringen
+        als bevestiging — "ik draag bij aan iets dat groter is dan mijn woonzorgcentrum".</p>
+      </div>
+    </div>
+
+    <div class="groep-note">
+      <span class="ico">🌱</span>
+      <span><strong>In Maites groepssessie:</strong> de afsluiter van een vorming wordt:
+      "iedereen vertrekt vandaag met haar klassieker als conceptfiche". Tien deelnemers =
+      tien nieuwe fiches in de pijplijn. De vorming voedt het platform, het platform voedt
+      de volgende vorming.</span>
+    </div>
+
+    <div class="piste-analysis">
+      <div class="an-col pro">
+        <h3>✓ Sterk</h3>
+        <ul>
+          <li><strong>Verbindt het pedagogische doel met het platformdoel</strong> in één beweging: kwaliteit én meer bijdragers.</li>
+          <li>De helft van het fiche-invulwerk is al gebeurd op het moment van de uitnodiging.</li>
+          <li>Schitteringen geven ook níét-schrijvers een manier om bij te dragen.</li>
+        </ul>
+      </div>
+      <div class="an-col con">
+        <h3>〜 Aandachtspunt</h3>
+        <ul>
+          <li><strong>Twee doelen in één flow</strong> kan de eenvoud breken — publiceren moet uitnodiging blijven, nooit eindbaas.</li>
+          <li>Schitteringen vragen moderatie en kwaliteitsbewaking.</li>
+          <li>Veronderstelt dat de verrijk-flow er al is — dit is de verlenging, niet het begin.</li>
+        </ul>
+      </div>
+      <div class="maite-card">
+        <span class="lbl">Vraag voor Maite</span>
+        <p>"Voelt 'maak er een fiche van' als een beloning op het juiste moment — of als
+        een verkoopspraatje dat de reflectie vervuilt?"</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CANVAS ============ -->
+<section class="slide" id="canvas">
+  <div class="wrap">
+    <div class="section-label">Naast elke route · de analoge variant</div>
+    <h2>Het DIAMANT-canvas — voor het teamoverleg, zonder één scherm</h2>
+    <p class="lead">Eén werkvel, A3, in het midden de klassieker van het huis. Teams hebben al
+    overlegmomenten — dit kruipt in een bestaand ritueel in plaats van nieuw gedrag te vragen.
+    Twintig minuten, post-its, klaar. <strong>Maite kan dit morgen al printen.</strong></p>
+
+    <div class="canvas-sheet" style="margin-top:36px;">
+      <div class="canvas-grid">
+        <div class="canvas-cell">
+          <div class="c-head"><span class="gem">D</span><b>Doen</b></div>
+          <p class="c-q">"Doen je bewoners iets dat hen energie geeft — of vullen ze de dag zonder het te merken?"</p>
+          <div class="mini-sticky">kaarten zelf laten uitdelen</div>
+        </div>
+        <div class="canvas-cell center">
+          <span class="c-lbl">Jullie klassieker</span>
+          <span class="c-title">🎱 De dinsdagbingo</span>
+          <p class="c-q" style="margin-top:6px;">Schrijf hem in het midden. Vul de vakken errond — in eender welke volgorde, leeg laten mag.</p>
+        </div>
+        <div class="canvas-cell">
+          <div class="c-head"><span class="gem" style="background:var(--yellow);color:var(--ink);">I</span><b>Inclusief</b></div>
+          <p class="c-q">"Wie zit er niet aan tafel — en heb je je afgevraagd waarom?"</p>
+          <div class="mini-sticky alt">grote kaarten voor André</div>
+        </div>
+        <div class="canvas-cell">
+          <div class="c-head"><span class="gem" style="background:var(--purple);">A</span><b>Autonomie</b></div>
+          <p class="c-q">"Hebben je bewoners vandaag iets gekozen — of is alles voor hen beslist?"</p>
+          <div class="mini-sticky">tafel 3 kiest de prijsjes</div>
+        </div>
+        <div class="canvas-cell">
+          <div class="c-head"><span class="gem" style="background:var(--orange-deep);">M</span><b>Mensgericht</b></div>
+          <p class="c-q">"Ken je het levensverhaal van je bewoners — of werk je vanuit het activiteitenprogramma?"</p>
+        </div>
+        <div class="canvas-cell">
+          <div class="c-head"><span class="gem" style="background:var(--teal);">A</span><b>Anderen</b></div>
+          <p class="c-q">"Zitten je bewoners naast elkaar — of zijn ze echt met elkaar verbonden?"</p>
+          <div class="mini-sticky alt">duo-kaarten: samen spelen</div>
+        </div>
+        <div class="canvas-cell">
+          <div class="c-head"><span class="gem" style="background:var(--green);">N</span><b>Normalisatie</b></div>
+          <p class="c-q">"Voelt het hier aan als een thuis — of als een instelling met activiteiten?"</p>
+        </div>
+        <div class="canvas-cell">
+          <div class="c-head"><span class="gem" style="background:var(--teal-deep);">T</span><b>Talent</b></div>
+          <p class="c-q">"Zie je wat je bewoners nog wél kunnen — of focus je onbewust op wat niet meer lukt?"</p>
+          <div class="mini-sticky">Maria = marktstem 🎙</div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:.85rem;color:var(--ink-soft);margin-top:14px;">De zeven vragen zijn letterlijk
+    de kernvragen uit het DIAMANT-model — geen nieuwe content nodig. Digitaal kan hetzelfde vel later
+    slim worden: AI vult een eerste voorzet in, het team schrapt en vult aan.</p>
+
+    <div class="piste-analysis">
+      <div class="an-col pro">
+        <h3>✓ Sterk</h3>
+        <ul>
+          <li><strong>Kruipt in een bestaand ritueel</strong> — het teamoverleg bestaat al.</li>
+          <li>Direct bruikbaar in Maites opleidingen, zonder dat er één scherm aan te pas komt.</li>
+          <li>Goedkoopste experiment van allemaal: een PDF en een printer.</li>
+        </ul>
+      </div>
+      <div class="an-col con">
+        <h3>〜 Aandachtspunt</h3>
+        <ul>
+          <li>Zeven lege vakken kunnen <strong>verlammen</strong> — heeft een invulvolgorde en voorbeeldvellen nodig.</li>
+          <li>Zonder begeleiding (Maite, teamcoach) blijft het vel misschien leeg.</li>
+        </ul>
+      </div>
+      <div class="maite-card">
+        <span class="lbl">Vraag voor Maite</span>
+        <p>"Als we dít vel volgende week printen — met welke klassieker en welk team zou
+        jij het als eerste testen?"</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VERGELIJKING ============ -->
+<section class="slide bg-subtle" id="vergelijking">
+  <div class="wrap">
+    <div class="section-label">Naast elkaar</div>
+    <h2>Vier routes en een canvas, op de nieuwe assen</h2>
+    <p class="lead">Indicatief — bedoeld om het gesprek te voeren, niet om te beslissen.
+    De AI-vraag staat bewust onderaan: het is een gevolg van de keuze, niet de keuze zelf.</p>
+
+    <table class="compare">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="r1-accent">1 · Lichte route<small>vertel &amp; herken</small></th>
+          <th class="r2-accent">2 · Bewonersbril<small>persoon eerst</small></th>
+          <th class="r3-accent">3 · Het ritme<small>logboek &amp; weekfacet</small></th>
+          <th class="r4-accent">4 · Trechter<small>verrijken → bijdragen</small></th>
+          <th class="rc-accent">Canvas<small>A3 · team</small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Vertrekpunt</th>
+          <td>klassieker in je hoofd</td>
+          <td><strong>een mens</strong></td>
+          <td>wat vandaag gebeurde</td>
+          <td>klassieker in je hoofd</td>
+          <td>klassieker van het huis</td>
+        </tr>
+        <tr>
+          <th>Moment van denken</th>
+          <td>vooraf, één sessie</td>
+          <td>vooraf</td>
+          <td><strong>achteraf + ritme</strong></td>
+          <td>vooraf, één sessie</td>
+          <td>teamoverleg</td>
+        </tr>
+        <tr>
+          <th>Met wie</th>
+          <td>alleen</td>
+          <td>alleen / mét bewoner</td>
+          <td>alleen + community</td>
+          <td>alleen → community</td>
+          <td><strong>het team</strong></td>
+        </tr>
+        <tr>
+          <th>Tijdsverloop</th>
+          <td>± 5–10 min</td>
+          <td>± 10 min (+ oefenen)</td>
+          <td>2 min per avond, weken lang</td>
+          <td>± 10–15 min</td>
+          <td>20 min, één overleg</td>
+        </tr>
+        <tr>
+          <th>Output</th>
+          <td>spiekkaart op zak</td>
+          <td>plan voor één bewoner</td>
+          <td>logboek + gedeeld moment</td>
+          <td><strong>fiche op het platform</strong></td>
+          <td>ingevuld werkvel</td>
+        </tr>
+        <tr>
+          <th>Platformdoel (bijdragers)</th>
+          <td>onrechtstreeks</td>
+          <td>onrechtstreeks</td>
+          <td>schitteringen delen</td>
+          <td><strong>✓ rechtstreeks</strong></td>
+          <td>geen</td>
+        </tr>
+        <tr>
+          <th>Fit opleidingen Maite</th>
+          <td>goed</td>
+          <td><strong>uitstekend</strong></td>
+          <td>goed (kalenderkoppeling)</td>
+          <td>sterke afsluiter</td>
+          <td><strong>uitstekend — morgen al</strong></td>
+        </tr>
+        <tr>
+          <th>AI-rol</th>
+          <td>kern (verstaan + herschrijven)</td>
+          <td>licht (kruising) / vol (Maria)</td>
+          <td>geen nodig</td>
+          <td>kern (zoals route 1)</td>
+          <td>geen — later optioneel</td>
+        </tr>
+        <tr>
+          <th>Bouwtijd (indicatief)</th>
+          <td>1–2 weken</td>
+          <td>1 week (+ sim: 2+)</td>
+          <td>1 week + lange adem</td>
+          <td>route 1 + 1 week</td>
+          <td><strong>dagen</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ VOORZET ============ -->
+<section class="slide" id="advies">
+  <div class="wrap">
+    <div class="section-label">Voorzet voor het gesprek</div>
+    <h2>Mijn voorzet: licht beginnen, de trechter als horizon</h2>
+    <p class="lead">De routes sluiten elkaar niet uit — ze delen stap 1 (<strong>vertel je
+    klassieker</strong>) en verschillen vooral in wat erna komt. Dat maakt een gefaseerd pad
+    mogelijk waarin elke fase een afgewerkt product is.</p>
+
+    <div class="advice-grid">
+      <div class="advice-main">
+        <h3>💎 Route 1 als ruggengraat, met twee gratis voorsprongen</h3>
+        <p style="font-size:.97rem;color:var(--ink-soft);">De lichte route lost het kernprobleem
+        op (de klassieker naar buiten krijgen) binnen de appetite, en haar laatste scherm is
+        letterlijk het eerste scherm van de trechter. Het canvas en de Bewonersbril kosten bijna
+        niets om nu al te testen — op papier, in Maites eerstvolgende vorming.</p>
+        <div class="phases">
+          <div class="phase"><span class="p-num">Nu al</span><span><strong>Het canvas op papier.</strong>
+          A3 printen, één team, twintig minuten. <span class="note">Geen code — valideert de kernvragen
+          en de invulvolgorde vóór er iets gebouwd wordt.</span></span></div>
+          <div class="phase"><span class="p-num">Fase 1</span><span><strong>De lichte route.</strong>
+          Vertel (inspreken/typen) → spiegel → twee versies per facet → spiekkaart.
+          <span class="note">Bouwbaar in 1–2 weken; de contrastparen bestaan al als content.</span></span></div>
+          <div class="phase"><span class="p-num">Fase 2</span><span><strong>De trechter erachter.</strong>
+          Wie haar plan af heeft, krijgt de uitnodiging: "dit is eigenlijk een fiche."
+          <span class="note">Eén extra scherm + een voorgevulde conceptfiche — de motor voor KR2.</span></span></div>
+          <div class="phase"><span class="p-num">Spoor B</span><span><strong>De Bewonersbril in vormingen.</strong>
+          Eerst analoog met Maite (persoon × klassieker op papier), pas digitaal als het daar werkt.
+          <span class="note">De oefen-simulatie alleen bouwen als Maite ze in opleidingen wil inzetten.</span></span></div>
+          <div class="phase"><span class="p-num">Later</span><span><strong>Het ritme als verlenging.</strong>
+          Logboek en Week van… pas wanneer er genoeg gebruikers zijn om het collectieve gevoel waar te maken.
+          <span class="note">Tot dan: de weekvraag kan vandaag al in de nieuwsbrief.</span></span></div>
+        </div>
+      </div>
+
+      <div class="agenda">
+        <h3>Agenda voor het gesprek met Maite</h3>
+        <ol>
+          <li><strong>Klopt de omslag?</strong> Is "jouw klassieker" een sterker vertrekpunt dan "deze fiche" — ook in haar vormingen? <em>→ de omslag-sectie</em></li>
+          <li><strong>Herkennen of reflecteren?</strong> Zijn de twee-versies-schermen pedagogisch genoeg, of mist ze de open vraag? <em>→ route 1</em></li>
+          <li><strong>De persoon eerst?</strong> Wanneer kiest zij de Bewonersbril boven de activiteitsbril — en durft ze de gespeelde Maria aan? <em>→ route 2</em></li>
+          <li><strong>Vooraf of achteraf?</strong> Gelooft ze meer in het plan vooraf of de reflectie 's avonds? <em>→ route 1 vs. 3</em></li>
+          <li><strong>Publiceren als beloning?</strong> Mag de trechter aan het einde uitnodigen tot een fiche — of vervuilt dat de reflectie? <em>→ route 4</em></li>
+          <li><strong>Het canvas-experiment.</strong> Welk team, welke klassieker, welke week? <em>→ canvas — afspraak maken</em></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="deck-foot">
+  <div><span class="gem">&nbsp;</span></div>
+  Design-verkenning #2 · Een klassieker laten schitteren · Hartverwarmers · juni 2026<br>
+  Alle schermen zijn mock-ups; alle AI-teksten zijn illustratief en niet gegenereerd.
+  Namen van bewoners en gebruikers (Els, Maria, …) zijn fictief.
+</footer>
+
+</body>
+</html>
