@@ -17,12 +17,86 @@ class MonthlyDigestNotificationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_subject_is_static_inspiration_line(): void
+    public function test_subject_features_shortest_upcoming_theme(): void
     {
-        $user = User::factory()->create();
-        $payload = $this->emptyPayload();
+        $long = Theme::factory()->create(['title' => 'Internationale dag van de vriendschap']);
+        $short = Theme::factory()->create(['title' => 'Dierendag']);
 
-        $mail = (new MonthlyDigestNotification($payload))->toMail($user);
+        $payload = new Payload(
+            themes: new Collection([
+                ThemeOccurrence::factory()->for($long)->create(['start_date' => '2026-07-30']),
+                ThemeOccurrence::factory()->for($short)->create(['start_date' => '2026-08-04']),
+            ]),
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 2,
+            newFicheCount: 4,
+            sentAt: now(),
+        );
+
+        $mail = (new MonthlyDigestNotification($payload))->toMail(User::factory()->create());
+
+        $this->assertInstanceOf(MailMessage::class, $mail);
+        // The shortest title wins even though the longer theme comes first chronologically.
+        $this->assertSame('Dierendag komt eraan — verse ideeën liggen klaar', $mail->subject);
+    }
+
+    public function test_subject_falls_back_to_diamond_when_no_themes(): void
+    {
+        $diamond = Fiche::factory()->published()->create([
+            'title' => 'Geurtjes-bingo voor mensen met dementie',
+            'has_diamond' => true,
+        ]);
+
+        $payload = new Payload(
+            themes: new Collection,
+            diamond: $diamond->fresh(['user', 'initiative']),
+            recentFiches: new Collection,
+            upcomingThemeCount: 0,
+            newFicheCount: 3,
+            sentAt: now(),
+        );
+
+        $mail = (new MonthlyDigestNotification($payload))->toMail(User::factory()->create());
+
+        $this->assertSame('Fiche van de maand: Geurtjes-bingo voor mensen met dementie', $mail->subject);
+    }
+
+    public function test_subject_falls_back_to_fiche_count_when_no_themes_or_diamond(): void
+    {
+        $payload = new Payload(
+            themes: new Collection,
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 0,
+            newFicheCount: 9,
+            sentAt: now(),
+        );
+
+        $mail = (new MonthlyDigestNotification($payload))->toMail(User::factory()->create());
+
+        $this->assertSame('9 nieuwe fiches uit andere woonzorgcentra', $mail->subject);
+    }
+
+    public function test_subject_uses_singular_fiche_wording_for_one_fiche(): void
+    {
+        $payload = new Payload(
+            themes: new Collection,
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 0,
+            newFicheCount: 1,
+            sentAt: now(),
+        );
+
+        $mail = (new MonthlyDigestNotification($payload))->toMail(User::factory()->create());
+
+        $this->assertSame('1 nieuwe fiche uit een ander woonzorgcentrum', $mail->subject);
+    }
+
+    public function test_subject_uses_evergreen_line_when_payload_empty(): void
+    {
+        $mail = (new MonthlyDigestNotification($this->emptyPayload()))->toMail(User::factory()->create());
 
         $this->assertInstanceOf(MailMessage::class, $mail);
         $this->assertSame('Verse ideeën voor de komende weken', $mail->subject);
