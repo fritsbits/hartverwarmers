@@ -40,7 +40,12 @@ class MonthlyDigestNotification extends BaseMailNotification
 
     private function previewText(): string
     {
-        $themes = $this->payload->themes;
+        $featured = $this->featuredTheme();
+
+        $themes = $this->payload->themes
+            ->reject(fn (ThemeOccurrence $occurrence): bool => $featured && $occurrence->is($featured))
+            ->values();
+
         $fiches = $this->payload->newFicheCount;
 
         if ($themes->isEmpty()) {
@@ -55,12 +60,17 @@ class MonthlyDigestNotification extends BaseMailNotification
         }
 
         $prefix = match (true) {
-            count($names) >= 3 && $remaining > 0 => implode(', ', $names)." en {$remaining} andere thema's",
+            count($names) >= 3 && $remaining > 0 => implode(', ', $names).' en '.$this->otherThemesPhrase($remaining),
             count($names) >= 3 => implode(', ', $names),
             default => "{$names[0]} en {$names[1]}",
         };
 
         return "{$prefix} — plus {$fiches} nieuwe fiches van collega's.";
+    }
+
+    private function otherThemesPhrase(int $count): string
+    {
+        return $count === 1 ? '1 ander thema' : "{$count} andere thema's";
     }
 
     /**

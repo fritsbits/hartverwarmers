@@ -528,14 +528,49 @@ class MonthlyDigestNotificationTest extends TestCase
         $this->assertStringContainsString(route('profile.notifications'), $html);
     }
 
-    public function test_preview_text_lists_theme_names_when_three_or_more(): void
+    public function test_preview_text_lists_theme_names_excluding_the_subject_headline(): void
     {
+        // 'Vaderdag' is the shortest title, so it headlines the SUBJECT and is
+        // dropped from the preheader — the two lines never echo each other.
         $themes = collect([
-            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Moederdag']))->create(),
-            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Hemelvaart']))->create(),
-            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Pinksteren']))->create(),
             ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Vaderdag']))->create(),
-            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Wereldfietsdag']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Internationale kattendag']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Dag van de senioren']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Wereld Chocoladedag']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Dag van de fotografie']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Nationale Frietjesdag']))->create(),
+        ]);
+
+        $payload = new Payload(
+            themes: $themes,
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 6,
+            newFicheCount: 6,
+            sentAt: now(),
+        );
+
+        $user = User::factory()->create();
+        $mail = (new MonthlyDigestNotification($payload))->toMail($user);
+
+        $this->assertSame('Vaderdag komt eraan — verse ideeën liggen klaar', $mail->subject);
+        $this->assertSame(
+            "Internationale kattendag, Dag van de senioren, Wereld Chocoladedag en 2 andere thema's — plus 6 nieuwe fiches van collega's.",
+            $mail->metadata['preview_text'] ?? null
+        );
+    }
+
+    public function test_preview_text_uses_singular_wording_for_one_remaining_theme(): void
+    {
+        // Five upcoming themes: 'Vaderdag' headlines the subject, three others
+        // are named in the preheader, leaving exactly one — which must read
+        // '1 ander thema', not '1 andere thema's'.
+        $themes = collect([
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Vaderdag']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Internationale kattendag']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Dag van de senioren']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Wereld Chocoladedag']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Dag van de fotografie']))->create(),
         ]);
 
         $payload = new Payload(
@@ -547,16 +582,15 @@ class MonthlyDigestNotificationTest extends TestCase
             sentAt: now(),
         );
 
-        $user = User::factory()->create();
-        $mail = (new MonthlyDigestNotification($payload))->toMail($user);
+        $mail = (new MonthlyDigestNotification($payload))->toMail(User::factory()->create());
 
         $this->assertSame(
-            "Moederdag, Hemelvaart, Pinksteren en 2 andere thema's — plus 6 nieuwe fiches van collega's.",
+            "Internationale kattendag, Dag van de senioren en 1 ander thema — plus 6 nieuwe fiches van collega's.",
             $mail->metadata['preview_text'] ?? null
         );
     }
 
-    public function test_preview_text_when_only_one_theme(): void
+    public function test_preview_text_falls_back_to_fiches_when_the_only_theme_is_featured(): void
     {
         $themes = collect([
             ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Moederdag']))->create(),
@@ -573,8 +607,38 @@ class MonthlyDigestNotificationTest extends TestCase
 
         $mail = (new MonthlyDigestNotification($payload))->toMail(User::factory()->create());
 
+        // The lone theme headlines the subject, so the preheader has no theme
+        // left to list and pivots to the fiche count.
+        $this->assertSame('Moederdag komt eraan — verse ideeën liggen klaar', $mail->subject);
         $this->assertSame(
-            "Moederdag en 6 nieuwe fiches van collega's.",
+            '6 nieuwe fiches uit andere woonzorgcentra om uit te putten.',
+            $mail->metadata['preview_text'] ?? null
+        );
+    }
+
+    public function test_preview_text_names_the_single_remaining_theme(): void
+    {
+        // Two upcoming themes: 'Dierendag' (shorter) headlines the subject, the
+        // other one carries the preheader.
+        $themes = collect([
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Internationale kattendag']))->create(),
+            ThemeOccurrence::factory()->for(Theme::factory()->create(['title' => 'Dierendag']))->create(),
+        ]);
+
+        $payload = new Payload(
+            themes: $themes,
+            diamond: null,
+            recentFiches: new Collection,
+            upcomingThemeCount: 2,
+            newFicheCount: 6,
+            sentAt: now(),
+        );
+
+        $mail = (new MonthlyDigestNotification($payload))->toMail(User::factory()->create());
+
+        $this->assertSame('Dierendag komt eraan — verse ideeën liggen klaar', $mail->subject);
+        $this->assertSame(
+            "Internationale kattendag en 6 nieuwe fiches van collega's.",
             $mail->metadata['preview_text'] ?? null
         );
     }
