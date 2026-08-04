@@ -180,7 +180,7 @@
                     </flux:dropdown>
                 @else
                     @if(Route::has('login'))
-                        <flux:button variant="ghost" href="{{ route('login') }}">Inloggen</flux:button>
+                        <flux:button variant="ghost" href="{{ route('login') }}" class="hidden sm:inline-flex">Inloggen</flux:button>
                     @endif
                     @if(Route::has('register'))
                         <flux:button variant="primary" size="sm" href="{{ route('register') }}">Registreren</flux:button>
@@ -282,6 +282,17 @@
                 </div>
             </div>
             @endfeature
+
+            @guest
+                @if(Route::has('login'))
+                    <a href="{{ route('login') }}" class="sm:hidden flex items-center gap-2 px-3 py-2 rounded-lg text-base font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-bg-accent-light)]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--color-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                        </svg>
+                        Inloggen
+                    </a>
+                @endif
+            @endguest
         </div>
     </div>
 </nav>
