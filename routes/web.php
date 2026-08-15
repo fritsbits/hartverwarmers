@@ -125,7 +125,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/mails/{email}', [MailPreviewController::class, 'show'])->name('admin.mails.show');
         Route::get('/admin/mails/{email}/preview', [MailPreviewController::class, 'preview'])->name('admin.mails.preview');
         Route::delete('/initiatieven/{initiative:slug}', [InitiativeController::class, 'destroy'])->name('initiatives.destroy');
-        Route::delete('/initiatieven/{initiative:slug}/{fiche:slug}', [FicheController::class, 'destroy'])->name('fiches.destroy');
         Route::post('/admin/impersonate/{user}', [ImpersonateController::class, 'start'])
             ->where('user', '[0-9]+')
             ->name('admin.impersonate.start');

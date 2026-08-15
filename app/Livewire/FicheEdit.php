@@ -6,6 +6,7 @@ use App\Models\Fiche;
 use App\Models\File;
 use App\Models\Initiative;
 use App\Models\Tag;
+use App\Services\FichePurger;
 use App\Services\FileTextExtractor;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
@@ -142,20 +143,12 @@ class FicheEdit extends Component
         $this->newUploads = [];
     }
 
-    public function removeFile(int $fileId): void
+    public function removeFile(int $fileId, FichePurger $purger): void
     {
         $file = File::where('id', $fileId)->where('fiche_id', $this->fiche->id)->first();
 
         if ($file) {
-            Storage::disk('public')->delete($file->path);
-
-            if ($file->preview_images) {
-                foreach ($file->preview_images as $preview) {
-                    Storage::disk('public')->delete($preview);
-                }
-            }
-
-            $file->delete();
+            $purger->purgeFile($file);
 
             $this->existingFiles = array_values(
                 array_filter($this->existingFiles, fn ($f) => $f['id'] !== $fileId)

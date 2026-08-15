@@ -1,27 +1,4 @@
 <x-layout :title="$fiche->title" :description="$fiche->description ? Str::limit(strip_tags($fiche->description), 160) : 'Praktijkfiche: ' . $fiche->title . ' — een uitgewerkte activiteit op Hartverwarmers.'" :full-width="true">
-    @auth
-        @if(auth()->user()->isAdmin())
-            <flux:modal name="delete-fiche" class="max-w-md">
-                <div class="space-y-4">
-                    <flux:heading size="lg">Fiche verwijderen?</flux:heading>
-                    <p class="text-sm text-[var(--color-text-secondary)]">
-                        Weet je zeker dat je <strong>{{ $fiche->title }}</strong> wilt verwijderen?
-                    </p>
-                    <div class="flex gap-3 justify-end">
-                        <flux:modal.close>
-                            <flux:button variant="ghost">Annuleren</flux:button>
-                        </flux:modal.close>
-                        <form action="{{ route('fiches.destroy', [$initiative, $fiche]) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <flux:button type="submit" variant="danger">Verwijderen</flux:button>
-                        </form>
-                    </div>
-                </div>
-            </flux:modal>
-        @endif
-    @endauth
-
     @php
         $hasPreviewCarousel = $fiche->files->contains(fn ($f) => $f->hasPreviewImages());
         $uploadedFiles = $fiche->files->filter(fn ($f) => !$f->isGenerated());
@@ -96,9 +73,10 @@
                                         </flux:menu.item>
                                     </form>
 
-                                    <flux:modal.trigger name="delete-fiche">
-                                        <flux:menu.item variant="danger" icon="trash">Verwijder</flux:menu.item>
-                                    </flux:modal.trigger>
+                                    {{-- Deleting lives in the admin overview, where it also wipes the files from disk --}}
+                                    <flux:menu.item variant="danger" icon="trash" href="{{ route('admin.fiches.index', ['zoek' => $fiche->title]) }}">
+                                        Verwijderen in admin
+                                    </flux:menu.item>
 
                                 </flux:menu>
                             </flux:dropdown>

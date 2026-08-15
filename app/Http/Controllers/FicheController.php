@@ -181,12 +181,4 @@ class FicheController extends Controller
         return redirect()->to($redirectTo)
             ->with('success', "Diamantje {$status} \"{$fiche->title}\".");
     }
-
-    public function destroy(Initiative $initiative, Fiche $fiche): RedirectResponse
-    {
-        $fiche->delete();
-
-        return redirect()->route('initiatives.show', $initiative)
-            ->with('success', "Fiche \"{$fiche->title}\" is verwijderd.");
-    }
 }

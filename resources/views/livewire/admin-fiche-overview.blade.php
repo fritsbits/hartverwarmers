@@ -7,6 +7,7 @@
             <flux:select.option value="">Alle fiches</flux:select.option>
             <flux:select.option value="unassessed">Niet beoordeeld</flux:select.option>
             <flux:select.option value="assessed">Beoordeeld</flux:select.option>
+            <flux:select.option value="unpublished">Niet gepubliceerd</flux:select.option>
             <flux:select.option disabled>────────────</flux:select.option>
             <flux:select.option value="q-strong">Sterke kern</flux:select.option>
             <flux:select.option value="q-quickwin">Goede activiteit, zwakke fiche</flux:select.option>
@@ -149,6 +150,9 @@
                                 <flux:button size="xs" :variant="$fiche->has_diamond ? 'filled' : 'ghost'" icon="sparkles" wire:click.stop="toggleDiamond({{ $fiche->id }})">
                                     {{ $fiche->has_diamond ? 'Diamant verwijderen' : 'Maak diamant' }}
                                 </flux:button>
+                                <flux:button size="xs" variant="ghost" icon="trash" wire:click.stop="confirmPurge({{ $fiche->id }})" class="!text-red-600 hover:!text-red-700">
+                                    Definitief verwijderen
+                                </flux:button>
                             </div>
                         </flux:table.cell>
                     </flux:table.row>
@@ -165,5 +169,53 @@
             @endforelse
         </flux:table.rows>
     </flux:table>
+
+    {{-- Permanent delete: for takedown requests, where a soft delete would leave the files downloadable --}}
+    <flux:modal wire:model.self="showPurgeModal" class="md:w-[32rem]">
+        @php($target = $this->purgeTarget)
+        @if($target)
+            <div class="space-y-5">
+                <div>
+                    <flux:heading size="lg" class="font-heading font-bold">Definitief verwijderen?</flux:heading>
+                    <flux:text class="mt-2">
+                        <strong>{{ $target->title }}</strong> van {{ $target->user?->full_name ?? 'een onbekende bijdrager' }}
+                        wordt onherroepelijk gewist. Dit is geen prullenbak — herstellen kan niet.
+                    </flux:text>
+                </div>
+
+                <div class="rounded-lg border border-[var(--color-border-light)] bg-[var(--color-bg-cream)] p-4">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-secondary)] mb-2">Wat verdwijnt</p>
+                    <ul class="text-sm text-[var(--color-text-primary)] space-y-1 list-disc pl-4">
+                        <li>{{ $target->files->count() }} bestand(en) van de server, inclusief previews en thumbnails</li>
+                        <li>{{ $target->comments_count }} reactie(s) en {{ $target->likes_count }} hartje(s)</li>
+                        <li>de fiche zelf, met haar tags, thema's en scores</li>
+                    </ul>
+
+                    @if($target->files->isNotEmpty())
+                        <ul class="mt-3 space-y-0.5 text-xs text-[var(--color-text-secondary)]">
+                            @foreach($target->files as $file)
+                                <li class="truncate">{{ $file->original_filename }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+
+                <flux:field>
+                    <flux:label>Typ VERWIJDER om te bevestigen</flux:label>
+                    <flux:input wire:model="purgeConfirmation" placeholder="VERWIJDER" autocomplete="off" />
+                    <flux:error name="purgeConfirmation" />
+                </flux:field>
+
+                <div class="flex justify-end gap-3">
+                    <flux:modal.close>
+                        <flux:button variant="ghost">Annuleren</flux:button>
+                    </flux:modal.close>
+                    <flux:button variant="danger" icon="trash" wire:click="purge" wire:loading.attr="disabled" wire:target="purge">
+                        Definitief verwijderen
+                    </flux:button>
+                </div>
+            </div>
+        @endif
+    </flux:modal>
 
 </div>

@@ -25,21 +25,6 @@ class AdminSoftDeleteTest extends TestCase
         $this->assertSoftDeleted('initiatives', ['id' => $initiative->id]);
     }
 
-    public function test_admin_can_soft_delete_fiche(): void
-    {
-        $admin = User::factory()->admin()->create();
-        $initiative = Initiative::factory()->published()->create();
-        $fiche = Fiche::factory()->published()->create([
-            'initiative_id' => $initiative->id,
-        ]);
-
-        $response = $this->actingAs($admin)->delete(route('fiches.destroy', [$initiative, $fiche]));
-
-        $response->assertRedirect(route('initiatives.show', $initiative));
-        $response->assertSessionHas('success');
-        $this->assertSoftDeleted('fiches', ['id' => $fiche->id]);
-    }
-
     public function test_non_admin_gets_403_on_initiative_delete(): void
     {
         $contributor = User::factory()->create();
@@ -51,37 +36,11 @@ class AdminSoftDeleteTest extends TestCase
         $this->assertDatabaseHas('initiatives', ['id' => $initiative->id, 'deleted_at' => null]);
     }
 
-    public function test_non_admin_gets_403_on_fiche_delete(): void
-    {
-        $contributor = User::factory()->create();
-        $initiative = Initiative::factory()->published()->create();
-        $fiche = Fiche::factory()->published()->create([
-            'initiative_id' => $initiative->id,
-        ]);
-
-        $response = $this->actingAs($contributor)->delete(route('fiches.destroy', [$initiative, $fiche]));
-
-        $response->assertStatus(403);
-        $this->assertDatabaseHas('fiches', ['id' => $fiche->id, 'deleted_at' => null]);
-    }
-
     public function test_guest_gets_redirected_on_initiative_delete(): void
     {
         $initiative = Initiative::factory()->published()->create();
 
         $response = $this->delete(route('initiatives.destroy', $initiative));
-
-        $response->assertRedirect(route('login'));
-    }
-
-    public function test_guest_gets_redirected_on_fiche_delete(): void
-    {
-        $initiative = Initiative::factory()->published()->create();
-        $fiche = Fiche::factory()->published()->create([
-            'initiative_id' => $initiative->id,
-        ]);
-
-        $response = $this->delete(route('fiches.destroy', [$initiative, $fiche]));
 
         $response->assertRedirect(route('login'));
     }
@@ -108,7 +67,7 @@ class AdminSoftDeleteTest extends TestCase
         $response->assertDontSee('Verwijderen');
     }
 
-    public function test_admin_sees_delete_button_on_fiche_show(): void
+    public function test_admin_is_pointed_to_the_admin_overview_to_delete_a_fiche(): void
     {
         $admin = User::factory()->admin()->create();
         $initiative = Initiative::factory()->published()->create();
@@ -119,7 +78,7 @@ class AdminSoftDeleteTest extends TestCase
         $response = $this->actingAs($admin)->get(route('fiches.show', [$initiative, $fiche]));
 
         $response->assertStatus(200);
-        $response->assertSee('Verwijderen');
+        $response->assertSee('Verwijderen in admin');
     }
 
     public function test_contributor_does_not_see_delete_button_on_fiche_show(): void
