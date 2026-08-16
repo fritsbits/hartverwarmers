@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Fiche;
 use App\Models\Initiative;
+use App\Models\InteractionEvent;
 use App\Models\UserInteraction;
 use App\Services\FicheInteractionService;
 use Illuminate\Http\RedirectResponse;
@@ -57,6 +58,12 @@ class FicheController extends Controller
                 'interactable_id' => $fiche->id,
                 'type' => 'view',
             ]);
+
+            InteractionEvent::create([
+                'user_id' => auth()->id(),
+                'type' => 'view',
+                'fiche_id' => $fiche->id,
+            ]);
         }
 
         $ficheInteractions = app(FicheInteractionService::class)
@@ -109,6 +116,12 @@ class FicheController extends Controller
             'interactable_type' => Fiche::class,
             'interactable_id' => $fiche->id,
             'type' => 'download',
+        ]);
+
+        InteractionEvent::create([
+            'user_id' => auth()->id(),
+            'type' => 'download',
+            'fiche_id' => $fiche->id,
         ]);
 
         if ($files->count() === 1) {
