@@ -13,12 +13,12 @@ class OkrSeederTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_seeder_creates_five_objectives(): void
+    public function test_seeder_creates_six_objectives(): void
     {
         $this->seed(OkrSeeder::class);
 
         $this->assertSame(
-            ['presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief', 'reactivatie'],
+            ['presentatiekwaliteit', 'inhoudelijke-kwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief', 'reactivatie'],
             Objective::orderBy('position')->pluck('slug')->all(),
         );
     }
@@ -57,19 +57,23 @@ class OkrSeederTest extends TestCase
         ], $onboarding->keyResults->pluck('metric_key')->all());
     }
 
-    public function test_seeder_only_sets_target_for_reactivation(): void
+    public function test_seeder_sets_targets_only_for_the_two_krs_that_have_one(): void
     {
         $this->seed(OkrSeeder::class);
 
-        // Enkel de reactivatie-KR krijgt een target; alle andere blijven target-loos.
+        // Alleen reactivation_rate en diamant_score_share krijgen een geseed
+        // target; alle andere KR's blijven bewust target-loos.
         $this->assertSame(
-            1,
-            KeyResult::whereNotNull('target_value')->count(),
-            'Alleen reactivation_rate mag een geseed target hebben.',
+            ['diamant_score_share', 'reactivation_rate'],
+            KeyResult::whereNotNull('target_value')->orderBy('metric_key')->pluck('metric_key')->all(),
         );
         $this->assertSame(
             5,
             KeyResult::where('metric_key', 'reactivation_rate')->value('target_value'),
+        );
+        $this->assertSame(
+            35,
+            KeyResult::where('metric_key', 'diamant_score_share')->value('target_value'),
         );
     }
 
@@ -78,8 +82,8 @@ class OkrSeederTest extends TestCase
         $this->seed(OkrSeeder::class);
         $this->seed(OkrSeeder::class);
 
-        $this->assertSame(5, Objective::count());
-        $this->assertSame(9, KeyResult::count());
+        $this->assertSame(6, Objective::count());
+        $this->assertSame(10, KeyResult::count());
         $this->assertSame(5, Initiative::count());
     }
 
@@ -89,7 +93,7 @@ class OkrSeederTest extends TestCase
 
         $objective = Objective::where('slug', 'reactivatie')->firstOrFail();
         $this->assertSame('Reactivatie', $objective->title);
-        $this->assertSame(5, $objective->position);
+        $this->assertSame(6, $objective->position);
 
         $kr = $objective->keyResults->firstWhere('metric_key', 'reactivation_rate');
         $this->assertNotNull($kr);

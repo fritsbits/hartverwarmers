@@ -1607,10 +1607,10 @@ class AdminDashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee('Objectieven');
         $response->assertSee('Initiatieven');
-        foreach (['Fichekwaliteit', 'Activatie', 'Interactie', 'Retentie'] as $title) {
+        foreach (['Presentatiekwaliteit', 'Inhoudelijke kwaliteit', 'Activatie', 'Interactie', 'Retentie'] as $title) {
             $response->assertSee($title);
         }
-        foreach (['presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief'] as $slug) {
+        foreach (['presentatiekwaliteit', 'inhoudelijke-kwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief'] as $slug) {
             $response->assertSee('?tab='.$slug.'&amp;range=quarter', escape: false);
         }
 

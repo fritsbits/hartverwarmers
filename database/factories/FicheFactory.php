@@ -88,4 +88,12 @@ class FicheFactory extends Factory
             'presentation_score' => $score,
         ]);
     }
+
+    public function withQualityScore(int $score): static
+    {
+        return $this->state(fn () => [
+            'quality_score' => $score,
+            'quality_assessed_at' => now(),
+        ]);
+    }
 }

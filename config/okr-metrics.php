@@ -1,5 +1,6 @@
 <?php
 
+use App\Metrics\DiamantScoreShareMetric;
 use App\Metrics\NewsletterActivationRateMetric;
 use App\Metrics\OnboardingFollowupResponseRateMetric;
 use App\Metrics\OnboardingInteraction30dRateMetric;
@@ -17,6 +18,7 @@ use App\Metrics\ThankRateMetric;
 
 return [
     'presentation_score_avg' => PresentationScoreAvgMetric::class,
+    'diamant_score_share' => DiamantScoreShareMetric::class,
     'onboarding_signup_count' => OnboardingSignupCountMetric::class,
     'onboarding_verification_rate' => OnboardingVerificationRateMetric::class,
     'onboarding_return_7d_rate' => OnboardingReturn7dRateMetric::class,

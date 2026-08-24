@@ -30,11 +30,11 @@ class ObjectiveStatBuilderTest extends TestCase
         $stats = $this->build();
 
         $this->assertSame(
-            ['presentatiekwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief', 'reactivatie'],
+            ['presentatiekwaliteit', 'inhoudelijke-kwaliteit', 'onboarding', 'bedankjes', 'nieuwsbrief', 'reactivatie'],
             $stats->pluck('slug')->all(),
         );
         $this->assertSame(
-            ['Fichekwaliteit', 'Activatie', 'Interactie', 'Retentie', 'Reactivatie'],
+            ['Presentatiekwaliteit', 'Inhoudelijke kwaliteit', 'Activatie', 'Interactie', 'Retentie', 'Reactivatie'],
             $stats->pluck('title')->all(),
         );
     }

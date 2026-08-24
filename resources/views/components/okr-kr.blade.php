@@ -11,6 +11,7 @@
     $barColor = \App\Services\Okr\KrHealth::barClass($value->current, $kr->target_value, $kr->metric_key);
     $description = match ($kr->metric_key) {
         'presentation_score_avg' => 'Gemiddelde presentatiescore van gepubliceerde fiches, op een schaal van 0 tot 100.',
+        'diamant_score_share' => 'Aandeel van de beoordeelde fiches dat 70 of meer haalt op de diamantscore — de inhoudelijke beoordeling op DIAMANT-aansluiting, originaliteit en betekenis.',
         'onboarding_signup_count' => 'Aantal nieuwe leden dat zich registreerde.',
         'onboarding_verification_rate' => 'Aandeel nieuwe leden dat zijn e-mailadres bevestigde.',
         'onboarding_return_7d_rate' => 'Aandeel nieuwe leden dat binnen 7 dagen terugkeerde naar de site.',

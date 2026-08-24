@@ -12,11 +12,12 @@ class OkrSeeder extends Seeder
     public function run(): void
     {
         $objectives = [
-            ['slug' => 'presentatiekwaliteit', 'title' => 'Fichekwaliteit', 'position' => 1],
-            ['slug' => 'onboarding', 'title' => 'Activatie', 'position' => 2],
-            ['slug' => 'bedankjes', 'title' => 'Interactie', 'position' => 3],
-            ['slug' => 'nieuwsbrief', 'title' => 'Retentie', 'position' => 4],
-            ['slug' => 'reactivatie', 'title' => 'Reactivatie', 'position' => 5],
+            ['slug' => 'presentatiekwaliteit', 'title' => 'Presentatiekwaliteit', 'position' => 1],
+            ['slug' => 'inhoudelijke-kwaliteit', 'title' => 'Inhoudelijke kwaliteit', 'position' => 2],
+            ['slug' => 'onboarding', 'title' => 'Activatie', 'position' => 3],
+            ['slug' => 'bedankjes', 'title' => 'Interactie', 'position' => 4],
+            ['slug' => 'nieuwsbrief', 'title' => 'Retentie', 'position' => 5],
+            ['slug' => 'reactivatie', 'title' => 'Reactivatie', 'position' => 6],
         ];
 
         foreach ($objectives as $data) {
@@ -26,6 +27,9 @@ class OkrSeeder extends Seeder
         $keyResults = [
             'presentatiekwaliteit' => [
                 ['label' => 'Gemiddelde presentatiescore', 'metric_key' => 'presentation_score_avg', 'target_unit' => ''],
+            ],
+            'inhoudelijke-kwaliteit' => [
+                ['label' => 'Fiches met sterke diamantscore', 'metric_key' => 'diamant_score_share', 'target_value' => 35, 'target_unit' => '%'],
             ],
             'onboarding' => [
                 ['label' => 'Aanmeldingen', 'metric_key' => 'onboarding_signup_count', 'target_unit' => ''],
