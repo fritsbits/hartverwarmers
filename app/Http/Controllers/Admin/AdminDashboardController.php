@@ -84,7 +84,11 @@ class AdminDashboardController extends Controller
         $signupTrend = $tab === 'onboarding' ? $this->signupTrend($range) : [];
         $signupStats = $tab === 'onboarding' ? $this->signupStats($range) : [];
 
-        $objectives = Objective::with('keyResults')->orderBy('position')->get();
+        $objectives = Objective::query()->active()->with('keyResults')->orderBy('position')->get();
+
+        $archivedObjectives = $tab === 'overzicht'
+            ? Objective::query()->archived()->with('initiatives')->orderByDesc('archived_at')->get()
+            : collect();
 
         $objectiveStats = $tab === 'overzicht'
             ? app(ObjectiveStatBuilder::class)->build($objectives, $range)
@@ -92,7 +96,7 @@ class AdminDashboardController extends Controller
 
         $currentObjective = null;
         if ($tab !== 'overzicht') {
-            $currentObjective = $objectives->firstWhere('slug', $tab);
+            $currentObjective = Objective::query()->where('slug', $tab)->with('keyResults')->first();
             if ($currentObjective) {
                 $currentObjective->load(['initiatives.baselines', 'initiatives.objective.keyResults']);
             }
@@ -104,12 +108,14 @@ class AdminDashboardController extends Controller
         if ($tab === 'overzicht') {
             $startedInitiatives = Initiative::query()
                 ->whereNotNull('started_at')
+                ->whereHas('objective', fn ($q) => $q->active())
                 ->with(['objective.keyResults', 'baselines'])
                 ->orderByDesc('started_at')
                 ->get();
 
             $plannedInitiatives = Initiative::query()
                 ->whereNull('started_at')
+                ->whereHas('objective', fn ($q) => $q->active())
                 ->with('objective')
                 ->orderBy('position')
                 ->get();
@@ -131,6 +137,7 @@ class AdminDashboardController extends Controller
             'tab' => $tab,
             'range' => $range,
             'objectives' => $objectives,
+            'archivedObjectives' => $archivedObjectives,
             'objectiveStats' => $objectiveStats,
             'currentObjective' => $currentObjective,
             'rangeLabel' => $rangeLabel,

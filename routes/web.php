@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminDiamondRotationController;
 use App\Http\Controllers\Admin\AdminFicheController;
+use App\Http\Controllers\Admin\AdminOkrController;
 use App\Http\Controllers\Admin\AdminProductUpdateController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\HealthController;
@@ -114,6 +115,8 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('admin')->group(function () {
         Route::get('/admin', AdminDashboardController::class)->name('admin.dashboard');
+        Route::post('/admin/okrs/{objective:slug}/archiveren', [AdminOkrController::class, 'archive'])->name('admin.okrs.archive');
+        Route::post('/admin/okrs/{objective:slug}/heractiveren', [AdminOkrController::class, 'unarchive'])->name('admin.okrs.unarchive');
         Route::get('/admin/design-systeem', [DesignSystemController::class, 'index'])->name('admin.design-system');
         Route::get('/admin/features', [FeatureController::class, 'index'])->name('admin.features');
         Route::post('/admin/features/{feature}/toggle', [FeatureController::class, 'toggle'])->name('admin.features.toggle');

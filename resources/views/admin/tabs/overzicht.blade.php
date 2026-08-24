@@ -39,3 +39,24 @@
         </section>
     @endif
 @endif
+
+@if(($archivedObjectives ?? collect())->isNotEmpty())
+    <section class="mt-10" data-testid="archived-okrs">
+        <p class="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-tertiary)] mb-3">Gearchiveerd</p>
+        <div class="bg-white rounded-xl border border-[var(--color-border-light)] divide-y divide-[var(--color-border-light)]">
+            @foreach($archivedObjectives as $archived)
+                @php $archivedStart = $archived->startedAt(); @endphp
+                <a href="?tab={{ $archived->slug }}" class="flex items-center justify-between gap-4 px-4 py-3 hover:bg-[var(--color-bg-subtle)] transition-colors">
+                    <span class="font-medium text-[var(--color-text-secondary)]">{{ $archived->title }}</span>
+                    <span class="text-xs text-[var(--color-text-tertiary)] tabular-nums whitespace-nowrap">
+                        @if($archivedStart)
+                            liep van {{ $archivedStart->isoFormat('D MMM YYYY') }} tot {{ $archived->archived_at->isoFormat('D MMM YYYY') }}
+                        @else
+                            gearchiveerd op {{ $archived->archived_at->isoFormat('D MMM YYYY') }}
+                        @endif
+                    </span>
+                </a>
+            @endforeach
+        </div>
+    </section>
+@endif
