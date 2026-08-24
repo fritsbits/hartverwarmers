@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Metrics\DiamantScoreShareMetric;
 use App\Models\Comment;
 use App\Models\Fiche;
 use App\Models\Like;
@@ -12,10 +11,9 @@ use App\Models\Okr\Objective;
 use App\Models\OnboardingEmailLog;
 use App\Models\User;
 use App\Models\UserInteraction;
+use App\Services\Okr\DiamantQualityInsights;
 use App\Services\Okr\InitiativeImpact;
-use App\Services\Okr\MetricRegistry;
 use App\Services\Okr\ObjectiveStatBuilder;
-use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -171,67 +169,11 @@ class AdminDashboardController extends Controller
             'upcomingNewsletterSends' => $tab === 'nieuwsbrief' ? $this->upcomingNewsletterSends() : [],
             'lastNewsletterDigestMeta' => $tab === 'nieuwsbrief' ? $this->lastNewsletterDigestMeta() : null,
             'recentUnsubscribes' => $tab === 'nieuwsbrief' ? $this->recentUnsubscribes() : [],
-            'diamantShareTrend' => $tab === 'inhoudelijke-kwaliteit' ? $this->diamantShareTrend($range) : [],
-            'diamantShareCounts' => $tab === 'inhoudelijke-kwaliteit' ? $this->diamantShareCounts() : [],
+            'diamantCohorts' => $tab === 'inhoudelijke-kwaliteit' ? app(DiamantQualityInsights::class)->cohorts($range) : [],
+            'diamantDistribution' => $tab === 'inhoudelijke-kwaliteit' ? app(DiamantQualityInsights::class)->distribution() : [],
             'initiativeSummaries' => $initiativeSummaries,
             'plannedInitiatives' => $plannedInitiatives,
         ]);
-    }
-
-    /**
-     * The KR's own value replayed at the end of each period in the range, so the
-     * chart line and the headline number can never disagree. Past dates are
-     * cached for weeks by the registry, so this is cheap after the first render.
-     *
-     * @return array<int, array{label: string, share: int|null}>
-     */
-    private function diamantShareTrend(string $range): array
-    {
-        $registry = app(MetricRegistry::class);
-
-        [$points, $unit] = match ($range) {
-            'week' => [7, 'day'],
-            'quarter' => [13, 'week'],
-            'alltime' => [12, 'month'],
-            default => [5, 'week'],
-        };
-
-        $result = [];
-
-        for ($i = $points - 1; $i >= 0; $i--) {
-            $date = match ($unit) {
-                'day' => now()->subDays($i)->endOfDay(),
-                'month' => now()->subMonths($i)->endOfMonth(),
-                default => now()->subWeeks($i)->endOfWeek(),
-            };
-
-            // The current period is still running — measure it up to now.
-            $date = $date->isFuture() ? now() : $date;
-
-            $result[] = [
-                'label' => $date->isoFormat($unit === 'month' ? 'MMM YY' : 'D MMM'),
-                'share' => $registry->computeAsOf('diamant_score_share', CarbonImmutable::instance($date))->current,
-            ];
-        }
-
-        return $result;
-    }
-
-    /**
-     * Count first, rate second: the share only means something next to the
-     * number of fiches it is computed from.
-     *
-     * @return array{strong: int, scored: int, threshold: int}
-     */
-    private function diamantShareCounts(): array
-    {
-        $scored = Fiche::query()->published()->whereNotNull('quality_score');
-
-        return [
-            'strong' => (clone $scored)->where('quality_score', '>=', DiamantScoreShareMetric::THRESHOLD)->count(),
-            'scored' => $scored->count(),
-            'threshold' => DiamantScoreShareMetric::THRESHOLD,
-        ];
     }
 
     /** @return array<int, array{week_key: string|int, week_label: string, avg_score: int|null}> */

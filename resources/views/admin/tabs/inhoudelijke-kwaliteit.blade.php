@@ -4,7 +4,7 @@
             @foreach($currentObjective->keyResults as $kr)
                 <x-okr-kr :kr="$kr" :range="$range">
                     @if($kr->metric_key === 'diamant_score_share')
-                        @include('admin.partials.fragments.diamant-share-trend', ['kr' => $kr])
+                        @include('admin.partials.fragments.diamant-cohorts', ['kr' => $kr])
                     @endif
                 </x-okr-kr>
             @endforeach
@@ -25,5 +25,11 @@
                 </flux:card>
             @endforelse
         </x-slot:initiatives>
+
+        <x-slot:context>
+            <div class="grid gap-4">
+                @include('admin.context.inhoudelijke-kwaliteit')
+            </div>
+        </x-slot:context>
     </x-okr-tab>
 @endif
