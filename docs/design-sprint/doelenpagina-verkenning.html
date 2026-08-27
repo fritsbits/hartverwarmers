@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De doelenpagina als startpunt · Verkenning #4</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:700,700i|fira-sans:300,300i,400,400i,500,600,700" rel="stylesheet">
+<style>
+/* ============================================================================
+   kit.css — gedeelde stylesheet van verkenning #3, letterlijk ingesloten.
+   NIET AANPASSEN. Sectie-agenten schrijven eigen regels met een .tN-prefix
+   in hun eigen <style>-blok.
+   ========================================================================= */
+/* ==========================================================================
+   HARTVERWARMERS — DESIGN-KIT verkenning #3 "Kwaliteitstools"
+   Eén stylesheet voor de volledige exploratiepagina.
+   Light mode only. Warm, tactiel, scrapbook. Geen framework, geen CDN.
+
+   Fonts: zet in de <head> van de pagina
+     <link rel="preconnect" href="https://fonts.bunny.net">
+     <link href="https://fonts.bunny.net/css?family=aleo:700,700i|fira-sans:300,400,500,600,700"
+           rel="stylesheet">
+   (de @import hieronder is een vangnet als de <link> ontbreekt)
+   ========================================================================== */
+
+@import url('https://fonts.bunny.net/css?family=aleo:700,700i|fira-sans:300,400,500,600,700');
+
+/* ==========================================================================
+   1. TOKENS
+   ========================================================================== */
+
+:root {
+  /* --- merkkleuren (identiek aan resources/css/app.css) --- */
+  --orange:        #E8764B;
+  --orange-hover:  #D4683F;
+  --orange-deep:   #B4552C;   /* AA op wit (4.91) — vervangt het te lichte #C25A33 */
+  --teal:          #4CB7C5;
+  --teal-deep:     #1E7B87;
+  --yellow:        #F4C44E;
+  --yellow-deep:   #8A6412;   /* AA op wit (5.37) */
+  --purple:        #B57BB3;
+  --purple-deep:   #7E4F7C;
+  --green:         #8AA96B;
+  --green-deep:    #55703C;
+
+  --ink:           #231E1A;
+  --ink-soft:      #756C65;
+  --ink-faint:     #C0B5AE;
+
+  --cream:         #FEF8F4;
+  --white:         #FFFFFF;
+  --paper:         #FFFDF9;
+  --subtle:        #F5F0EC;
+  --accent-light:  #FDF3EE;
+
+  --border:        #EBE4DE;
+  --border-hover:  #DDD5CD;
+
+  --heading: 'Aleo', Georgia, serif;
+  --body:    'Fira Sans', system-ui, -apple-system, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-full: 999px;
+
+  --shadow-card:  0 1px 3px rgba(35,30,26,.06), 0 6px 20px rgba(35,30,26,.05);
+  --shadow-hover: 0 2px 6px rgba(35,30,26,.08), 0 14px 30px rgba(35,30,26,.09);
+  --shadow-mock:  0 2px 6px rgba(35,30,26,.08), 0 18px 40px rgba(35,30,26,.10);
+  --shadow-paper: 0 1px 2px rgba(35,30,26,.10), 0 10px 24px rgba(35,30,26,.08);
+  --shadow-lift:  0 3px 8px rgba(35,30,26,.15);
+
+  --nav-h: 56px;
+
+  /* ======================================================================
+     HET FACETPALET — 7 DIAMANT-facetten, voorstel voor de denkdag
+     Per facet: --x       gem-vulkleur
+                --x-light achtergrondtint (op wit én cream bruikbaar)
+                --x-deep  tekstkleur op licht — AA (>=4.5:1) op wit, cream
+                          én op de eigen lichte tint
+     Vijf warme noten (oranje, goud, roos, salie, paars) + twee koele
+     tegengewichten (teal, schemerblauw) die de reeks laten ademen.
+     ====================================================================== */
+
+  /* D — Doen · oranje, het merkoranje zelf: energie, in beweging */
+  --doen:        #E8764B;
+  --doen-light:  #FDF4EF;
+  --doen-deep:   #B4552C;
+
+  /* I — Inclusief · teal, koel en ruim: er is plaats voor iedereen */
+  --incl:        #4CB7C5;
+  --incl-light:  #EDF7F9;
+  --incl-deep:   #1E7B87;
+
+  /* A — Autonomie · goud: haar eigen keuze, haar eigen moment */
+  --auto:        #EFB13F;
+  --auto-light:  #FCF2DC;
+  --auto-deep:   #8A6412;
+
+  /* M — Mensgericht · roos-terracotta: de persoon, het hart */
+  --mens:        #C2666F;
+  --mens-light:  #FBECEC;
+  --mens-deep:   #9E4750;
+
+  /* A — Anderen · paars: verbinding tussen mensen */
+  --and:         #B57BB3;
+  --and-light:   #F5EBF4;
+  --and-deep:    #7E4F7C;
+
+  /* N — Normalisatie · salie: huiselijk, alledaags, ongedwongen */
+  --norm:        #8AA96B;
+  --norm-light:  #EEF3E6;
+  --norm-deep:   #55703C;
+
+  /* T — Talent · schemerblauw: rust en gewicht, de diepste kleur */
+  --tal:         #5E7FA8;
+  --tal-light:   #ECF0F6;
+  --tal-deep:    #3F5C82;
+}
+
+/* --- facetklassen: zet drie variabelen, elk component leest ze uit --------
+   Plak .f-doen … .f-talent op ELK element (gem, kaart, chip, segment,
+   markering, rij). Zonder facetklasse valt alles terug op oranje.        */
+.f-doen         { --f: var(--doen); --f-light: var(--doen-light); --f-deep: var(--doen-deep); --f-ink: #fff; }
+.f-inclusief    { --f: var(--incl); --f-light: var(--incl-light); --f-deep: var(--incl-deep); --f-ink: var(--ink); }
+.f-autonomie    { --f: var(--auto); --f-light: var(--auto-light); --f-deep: var(--auto-deep); --f-ink: var(--ink); }
+.f-mensgericht  { --f: var(--mens); --f-light: var(--mens-light); --f-deep: var(--mens-deep); --f-ink: #fff; }
+.f-anderen      { --f: var(--and);  --f-light: var(--and-light);  --f-deep: var(--and-deep);  --f-ink: #fff; }
+.f-normalisatie { --f: var(--norm); --f-light: var(--norm-light); --f-deep: var(--norm-deep); --f-ink: var(--ink); }
+.f-talent       { --f: var(--tal);  --f-light: var(--tal-light);  --f-deep: var(--tal-deep);  --f-ink: #fff; }
+
+/* losse hulpklassen bovenop een .f-* klasse */
+.facet-text   { color: var(--f-deep, var(--orange-deep)); }
+.facet-bg     { background: var(--f-light, var(--accent-light)); }
+.facet-border { border-color: var(--f, var(--orange)); }
+
+/* ==========================================================================
+   2. RESET & BASIS
+   ========================================================================== */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 16px);
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body { max-width: 100%; overflow-x: clip; }
+
+body {
+  font-family: var(--body);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--cream);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--heading);
+  font-weight: 700;
+  line-height: 1.18;
+  color: var(--ink);
+}
+
+/* niets breekt ooit uit zijn kader */
+h1, h2, h3, h4, p, li, td, th, dd, dt, figcaption, blockquote, summary, b, strong, span, a {
+  overflow-wrap: break-word;
+}
+img, svg, video { max-width: 100%; height: auto; display: block; }
+
+a { color: inherit; }
+::selection { background: var(--yellow); color: var(--ink); }
+
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 3px; }
+
+/* elke flex/grid-child mag krimpen — dé oorzaak van horizontale overflow */
+:where(.split, .cols-2, .cols-3, .mocks, .anno-wrap, .m-pair, .ba, .m-gallery,
+       .tool-index, .park-strip, .flow, .m-tap-row, .gem-row, .pro-con,
+       .m-versions, .m-modal-foot, .m-facetrow, .m-choice, .m-spark,
+       .today-row, .m-board-row, .stack-row) > * { min-width: 0; }
+
+/* ==========================================================================
+   3. PAGINASHELL — nav, cover, secties, koppen
+   ========================================================================== */
+
+nav.deck-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+  background: rgba(254,248,244,.94);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 4px;
+  padding: 9px clamp(14px, 4vw, 48px);
+  font-size: 13px; font-weight: 500;
+  min-height: var(--nav-h);
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none;
+}
+nav.deck-nav::-webkit-scrollbar { display: none; }
+nav.deck-nav .brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--heading); font-weight: 700; font-size: 15px;
+  margin-right: auto; color: var(--ink); text-decoration: none;
+  white-space: nowrap; flex: 0 0 auto;
+}
+nav.deck-nav .brand .gem { width: 16px; height: 16px; }
+nav.deck-nav a.navlink {
+  color: var(--ink-soft); text-decoration: none;
+  padding: 6px 11px; border-radius: var(--radius-full);
+  transition: background .15s ease, color .15s ease;
+  white-space: nowrap; flex: 0 0 auto;
+}
+nav.deck-nav a.navlink:hover { background: var(--accent-light); color: var(--orange-deep); }
+nav.deck-nav a.navlink.num { font-weight: 600; }
+nav.deck-nav a.navlink.soft { color: var(--ink-faint); }
+
+/* --- cover --- */
+header.cover {
+  min-height: 88vh; display: flex; align-items: center;
+  padding: calc(var(--nav-h) + 56px) clamp(20px, 6vw, 72px) 72px;
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(ellipse at 88% 12%, rgba(244,196,78,.16), transparent 55%),
+    radial-gradient(ellipse at 8% 92%, rgba(232,118,75,.10), transparent 55%),
+    var(--cream);
+}
+.cover-inner { max-width: 1180px; margin: 0 auto; width: 100%; position: relative; }
+.cover h1 { font-size: clamp(2.3rem, 6vw, 4.4rem); max-width: 15ch; margin: 16px 0 24px; }
+.cover h1 em { font-style: normal; color: var(--orange); }
+.cover .sub { font-size: clamp(1.02rem, 1.6vw, 1.28rem); color: var(--ink-soft); max-width: 56ch; }
+.cover .meta-strip {
+  margin-top: 40px; display: flex; flex-wrap: wrap; gap: 10px 28px;
+  font-size: 14px; color: var(--ink-soft); font-weight: 400;
+}
+.cover .meta-strip span strong { font-weight: 600; color: var(--ink); }
+
+.disclaimer {
+  display: inline-block; margin-bottom: 10px;
+  background: var(--yellow); color: var(--ink);
+  font-size: 13px; font-weight: 600; padding: 4px 14px;
+  border-radius: var(--radius-full); transform: rotate(-1deg);
+}
+
+/* zwevende gems rechts op de cover (7 stuks) */
+.cover-gems {
+  position: absolute; right: clamp(-30px, 1vw, 40px); top: 50%;
+  transform: translateY(-50%); display: none;
+  grid-template-columns: repeat(3, 84px); gap: 20px;
+}
+@media (min-width: 1120px) { .cover-gems { display: grid; } }
+.cover-gems .gem { width: 84px; height: 84px; font-size: 34px; }
+.cover-gems .gem:nth-child(2n) { transform: translateY(26px) rotate(4deg); }
+.cover-gems .gem:nth-child(3n) { transform: translateY(-14px) rotate(-5deg); }
+
+/* --- secties --- */
+section.slide { padding: clamp(56px, 8vw, 108px) clamp(18px, 6vw, 72px); }
+section.slide.tight { padding-block: clamp(38px, 5vw, 64px); }
+.wrap { max-width: 1180px; margin: 0 auto; }
+.wrap-narrow { max-width: 820px; margin: 0 auto; }
+.bg-white  { background: var(--white); }
+.bg-cream  { background: var(--cream); }
+.bg-subtle { background: var(--subtle); }
+.bg-paper  { background: var(--paper); }
+
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--body); font-weight: 600; font-size: 15px;
+  letter-spacing: .13em; text-transform: uppercase; color: var(--orange);
+  margin-bottom: 12px;
+}
+.section-label .gem { width: 14px; height: 14px; }
+
+.slide h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); margin-bottom: 18px; max-width: 26ch; }
+.slide h3 { font-size: clamp(1.15rem, 2vw, 1.4rem); margin-bottom: 10px; }
+.lead { font-size: 1.1rem; color: var(--ink-soft); max-width: 60ch; }
+.lead strong, p strong { font-weight: 600; color: var(--ink); }
+.slide p + p { margin-top: 13px; }
+.muted { color: var(--ink-soft); }
+.tiny-note { font-size: .82rem; color: var(--ink-faint); }
+
+.split { display: grid; gap: clamp(26px, 5vw, 60px); grid-template-columns: minmax(0,1fr); align-items: start; }
+@media (min-width: 900px) { .split { grid-template-columns: minmax(0,1.1fr) minmax(0,.9fr); } }
+.split.even  { grid-template-columns: minmax(0,1fr); }
+@media (min-width: 900px) { .split.even { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
+
+.cols-2, .cols-3 { display: grid; gap: clamp(16px, 2.4vw, 26px); grid-template-columns: minmax(0,1fr); }
+@media (min-width: 760px)  { .cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width: 760px)  { .cols-3 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width: 1020px) { .cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+/* echte app-componenten, 1-op-1 nagebouwd voor de paginatekst */
+.cta-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-weight: 600; color: var(--orange); text-decoration: none;
+  transition: gap .15s ease, color .15s ease; font-size: .98rem;
+}
+.cta-link::after { content: '\2192'; transition: transform .15s ease; }
+.cta-link:hover { gap: 8px; color: var(--orange-hover); }
+.cta-link:hover::after { transform: translateX(3px); }
+
+.btn-pill {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 24px; font-weight: 600; color: #fff; text-decoration: none;
+  background: var(--orange); border-radius: var(--radius-full); border: none;
+  min-height: 44px; transition: background .15s ease, box-shadow .15s ease;
+}
+.btn-pill:hover { background: var(--orange-hover); box-shadow: var(--shadow-card); }
+
+.content-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.content-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--border-hover); }
+
+/* --- toolkop (per tool) --- */
+.tool-head { display: flex; align-items: flex-start; gap: clamp(14px, 3vw, 34px); margin-bottom: 14px; flex-wrap: wrap; }
+.tool-num {
+  font-family: var(--heading); font-weight: 700;
+  font-size: clamp(3.4rem, 9vw, 7rem); line-height: .85;
+  -webkit-text-stroke: 2px currentColor; color: transparent;
+  opacity: .85; flex: 0 0 auto; margin-top: 4px;
+}
+.tool-head .titles { padding-top: clamp(2px, 1vw, 16px); flex: 1 1 320px; min-width: 0; }
+.tool-kicker {
+  font-size: 13.5px; font-weight: 600; letter-spacing: .13em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.tool-head h2 { margin-bottom: 10px; }
+.tool-oneliner { font-size: 1.12rem; color: var(--ink-soft); max-width: 58ch; }
+
+.tool-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.tool-pills .tp {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; font-weight: 600;
+  border: 1.5px solid currentColor; border-radius: var(--radius-full);
+  padding: 4px 13px; color: var(--ink-soft);
+}
+.tool-pills .tp b { font-weight: 400; opacity: .8; }
+.tool-pills .tp.hot { color: var(--orange-deep); background: var(--accent-light); }
+
+/* toolindex op de cover-sectie */
+.tool-index { display: grid; gap: 14px; grid-template-columns: minmax(0,1fr); margin-top: 40px; }
+@media (min-width: 640px)  { .tool-index { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width: 1000px) { .tool-index { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+a.tool-tile {
+  display: block; text-decoration: none; color: inherit;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 20px 16px;
+  box-shadow: var(--shadow-card); transition: transform .15s ease, box-shadow .15s ease;
+}
+a.tool-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-mock); }
+.tool-tile .t-num { font-family: var(--heading); font-weight: 700; font-size: 1.8rem; line-height: 1; color: var(--orange); }
+.tool-tile h3 { font-size: 1.02rem; margin: 6px 0 5px; }
+.tool-tile p { font-size: .85rem; color: var(--ink-soft); font-weight: 400; }
+
+/* --- flow in stappen --- */
+.flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; margin: 32px 0 12px; }
+.flow-step {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 12px 16px; font-size: .88rem; font-weight: 400;
+  flex: 1 1 160px; max-width: 260px;
+  box-shadow: 0 1px 2px rgba(35,30,26,.04);
+}
+.flow-step .n { font-family: var(--heading); font-weight: 700; font-size: .78rem; display: block; margin-bottom: 3px; color: var(--orange-deep); }
+.flow-arrow { align-self: center; color: var(--ink-faint); font-size: 18px; flex: 0 0 auto; }
+
+footer.deck-foot {
+  padding: 40px clamp(20px, 6vw, 72px) 60px; text-align: center;
+  font-size: .85rem; color: var(--ink-faint);
+}
+footer.deck-foot .gem { display: flex; width: 22px; height: 22px; margin: 0 auto 10px; }
+
+/* ==========================================================================
+   4. GEM — het facet-diamantje
+   ========================================================================== */
+
+.gem {
+  display: inline-flex; align-items: center; justify-content: center;
+  clip-path: polygon(30% 0, 70% 0, 100% 35%, 50% 100%, 0 35%);
+  background: var(--f, var(--orange));
+  color: var(--f-ink, #fff);
+  font-family: var(--heading); font-weight: 700;
+  width: 24px; height: 24px; font-size: 11px; line-height: 1;
+  /* de letter zit in het brede bovenstuk van het ruitje.
+     em (niet %) — procentuele padding rekent tegen de OUDER-breedte
+     en rekt het diamantje uit zodra het in een brede flexrij staat. */
+  padding-bottom: .3em;
+  flex: 0 0 auto; align-self: center; overflow: hidden;
+}
+.gem.idle { background: var(--subtle); color: var(--ink-faint); }
+.gem.ghost { background: var(--f-light, var(--accent-light)); color: var(--f-deep, var(--orange-deep)); }
+
+.gem-xs { width: 13px; height: 13px; font-size: 7px; }
+.gem-sm { width: 18px; height: 18px; font-size: 9px; }
+.gem-md { width: 28px; height: 28px; font-size: 13px; }
+.gem-lg { width: 42px; height: 42px; font-size: 19px; }
+.gem-xl { width: 64px; height: 64px; font-size: 28px; }
+
+.gem-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.gem-row.spread { gap: 12px; }
+.gem-row .lbl { font-size: .8rem; color: var(--ink-soft); font-weight: 500; }
+
+/* facetlegende: gem + naam onder elkaar */
+.gem-legend { display: flex; flex-wrap: wrap; gap: 14px 22px; margin-top: 20px; }
+.gem-legend .gl { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 500; }
+.gem-legend .gl b { font-family: var(--heading); font-weight: 700; color: var(--f-deep, var(--ink)); }
+.gem-legend .gl code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .74rem; color: var(--ink-faint); }
+
+/* ==========================================================================
+   5. MOCK-CHROME — venster + telefoon
+   ========================================================================== */
+
+.mocks {
+  display: flex; flex-wrap: wrap; gap: clamp(18px, 3vw, 34px);
+  margin: 36px 0 8px; align-items: flex-start;
+}
+.mock { flex: 1 1 320px; max-width: 440px; min-width: 0; }
+.mock.wide { flex: 1 1 100%; max-width: 760px; }
+.mock.narrow { flex: 1 1 260px; max-width: 320px; }
+
+.mock-frame {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; box-shadow: var(--shadow-mock); overflow: hidden;
+  position: relative;
+}
+.mock-chrome {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--subtle); border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+}
+.mock-chrome .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border-hover); flex: 0 0 auto; }
+.mock-chrome .url {
+  margin-left: 8px; background: var(--white); border-radius: var(--radius-full);
+  font-size: 10px; color: var(--ink-faint); padding: 2px 12px; font-weight: 400;
+  flex: 1 1 auto; min-width: 0; text-align: center;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.mock-body { padding: 18px 18px 20px; font-size: 13px; line-height: 1.5; }
+.mock-body.dense { padding: 14px 14px 16px; }
+.mock-body.board { background: var(--cream); }
+.mock-caption { font-size: .85rem; color: var(--ink-soft); margin-top: 12px; padding: 0 4px; }
+.mock-caption strong { font-weight: 600; color: var(--ink); }
+
+/* telefoonvariant */
+.mock-phone {
+  width: 100%; max-width: 300px; margin: 0 auto;
+  background: var(--ink); border-radius: 34px; padding: 10px;
+  box-shadow: var(--shadow-mock);
+}
+.mock-phone .phone-screen {
+  background: var(--white); border-radius: 26px; overflow: hidden; position: relative;
+}
+.mock-phone .phone-notch {
+  height: 22px; display: flex; align-items: center; justify-content: center;
+  background: var(--white);
+}
+.mock-phone .phone-notch::after {
+  content: ''; width: 74px; height: 5px; border-radius: 3px; background: var(--border-hover);
+}
+.mock-phone .phone-body { padding: 8px 14px 20px; font-size: 12.5px; line-height: 1.5; }
+.mock-phone .phone-home {
+  height: 4px; width: 96px; margin: 6px auto 8px;
+  background: var(--border-hover); border-radius: 3px;
+}
+
+/* ==========================================================================
+   6. IN-MOCK BOUWSTENEN (.m-*)  — alles binnen .mock-body / .phone-body
+   ========================================================================== */
+
+/* app-header binnen de mock */
+.m-sitehead {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--heading); font-weight: 700; font-size: 12.5px;
+  padding-bottom: 11px; border-bottom: 1px solid var(--border); margin-bottom: 13px;
+  color: var(--ink);
+}
+.m-sitehead .gem { width: 15px; height: 15px; font-size: 8px; }
+.m-sitehead .navdots { margin-left: auto; display: flex; gap: 9px; }
+.m-sitehead .navdots i { width: 24px; height: 5px; border-radius: 3px; background: var(--subtle); }
+
+/* tekst */
+.m-eyebrow { font-size: 9.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--orange); margin-bottom: 5px; }
+.m-h  { font-family: var(--heading); font-weight: 700; font-size: 16px; line-height: 1.25; margin-bottom: 6px; }
+.m-h2 { font-family: var(--heading); font-weight: 700; font-size: 13.5px; line-height: 1.3; margin-bottom: 5px; }
+.m-sub { color: var(--ink-soft); font-size: 11.5px; }
+.m-p { font-size: 11.5px; color: var(--ink); font-weight: 400; }
+.m-p + .m-p { margin-top: 7px; }
+.m-divider { height: 1px; background: var(--border); margin: 13px 0; border: 0; }
+.m-foot { font-size: 10px; color: var(--ink-faint); margin-top: 10px; }
+
+/* knoppen */
+.m-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  background: var(--orange); color: #fff; text-decoration: none;
+  font-weight: 600; font-size: 12px; border-radius: var(--radius-full);
+  padding: 8px 18px; border: 1.5px solid var(--orange); min-height: 34px;
+}
+.m-btn.ghost { background: transparent; color: var(--ink-soft); border-color: var(--border-hover); }
+.m-btn.skip  { background: var(--white); color: var(--ink-soft); border-color: var(--border-hover); }  /* Overslaan = volwaardige knop */
+.m-btn.tiny  { font-size: 11px; padding: 5px 13px; min-height: 0; }
+.m-btn.block { display: flex; width: 100%; }
+.m-btn.facet { background: var(--f, var(--orange)); border-color: var(--f, var(--orange)); color: var(--f-ink, #fff); }
+
+.m-link { color: var(--orange-deep); font-weight: 600; font-size: 11.5px; text-decoration: none; }
+.m-cta {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--orange); font-weight: 600; font-size: 11.5px; text-decoration: none;
+}
+.m-cta::after { content: '\2192'; }
+
+/* grote tikknop — minimaal 44px, voor keuzeschermen */
+.m-tap-row { display: grid; gap: 8px; grid-template-columns: minmax(0,1fr); margin: 10px 0; }
+.m-tapbtn {
+  display: flex; align-items: center; gap: 10px;
+  min-height: 46px; padding: 11px 14px;
+  background: var(--white); border: 1.5px solid var(--border-hover);
+  border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500;
+  color: var(--ink); text-align: left; text-decoration: none; cursor: default;
+}
+.m-tapbtn .ic { font-size: 16px; flex: 0 0 auto; }
+.m-tapbtn.on {
+  border-color: var(--f, var(--orange)); background: var(--f-light, var(--accent-light));
+  color: var(--f-deep, var(--orange-deep)); font-weight: 600;
+}
+.m-tapbtn.on .ic { color: var(--f-deep, var(--orange-deep)); }
+
+/* aanvinkbare keuze */
+.m-choice {
+  display: flex; gap: 10px; align-items: flex-start;
+  border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px 12px; margin-bottom: 8px; background: var(--white);
+  font-size: 11.5px; min-height: 44px;
+}
+.m-choice.checked { border-color: var(--f, var(--orange)); background: var(--f-light, var(--accent-light)); }
+.m-choice .box {
+  width: 17px; height: 17px; border: 1.5px solid var(--border-hover); border-radius: 5px;
+  flex: 0 0 auto; margin-top: 1px; background: var(--white);
+}
+.m-choice.checked .box {
+  background: var(--f, var(--orange)); border-color: var(--f, var(--orange));
+  display: flex; align-items: center; justify-content: center;
+  color: var(--f-ink, #fff); font-size: 10px; font-weight: 700;
+}
+.m-choice.checked .box::after { content: '\2713'; }
+
+/* chips */
+.m-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.m-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1.5px solid var(--border-hover); color: var(--ink-soft);
+  font-size: 11px; font-weight: 600; border-radius: var(--radius-full);
+  padding: 6px 12px; background: var(--white); min-height: 30px;
+}
+.m-chip.on {
+  border-color: var(--f, var(--orange)); color: var(--f-deep, var(--orange-deep));
+  background: var(--f-light, var(--accent-light));
+}
+.m-chip .gem { width: 11px; height: 11px; font-size: 6px; }
+
+.m-input {
+  border: 1px solid var(--border); border-radius: var(--radius-full);
+  padding: 8px 14px; font-size: 11px; color: var(--ink-faint); background: var(--white);
+}
+.m-textarea {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px 12px; font-size: 11.5px; color: var(--ink-faint);
+  background: var(--white); min-height: 62px;
+}
+
+/* citaat op lijntjespapier */
+.m-quote {
+  font-family: var(--heading); font-style: italic; font-size: 13px;
+  color: var(--ink); border-left: 3px solid var(--f, var(--yellow));
+  padding: 3px 0 3px 12px; margin: 10px 0 12px;
+  background: repeating-linear-gradient(transparent, transparent 19px, rgba(76,183,197,.10) 19px, rgba(76,183,197,.10) 20px);
+}
+
+/* facetrij: gem + naam + kernvraag (B2) */
+.m-facetrow {
+  display: flex; gap: 11px; align-items: flex-start;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.m-facetrow:last-child { border-bottom: 0; }
+.m-facetrow .fr-body { flex: 1 1 auto; min-width: 0; }
+.m-facetrow .fr-name { font-family: var(--heading); font-weight: 700; font-size: 12.5px; color: var(--f-deep, var(--ink)); display: block; }
+.m-facetrow .fr-q { font-size: 11.5px; font-style: italic; color: var(--ink-soft); font-weight: 400; margin-top: 2px; }
+.m-facetrow .fr-chev { margin-left: auto; color: var(--ink-faint); font-size: 12px; flex: 0 0 auto; }
+
+/* ==========================================================================
+   7. WIZARD / MODAL-CHROME
+   ========================================================================== */
+
+.m-modal {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--white); box-shadow: var(--shadow-mock); overflow: hidden;
+}
+.m-modal.on-cream { background: var(--cream); }
+.m-modal-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 15px 10px; border-bottom: 1px solid var(--border);
+  background: var(--white);
+}
+.m-stepcount {
+  font-size: 10px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.m-modal-head .m-x { margin-left: auto; color: var(--ink-faint); font-size: 13px; flex: 0 0 auto; }
+.m-modal-body { padding: 15px; }
+.m-modal-foot {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 12px 15px; border-top: 1px solid var(--border); background: var(--cream);
+}
+.m-modal-foot .spacer { flex: 1 1 auto; }
+
+/* stappenbalk: bolletjes met verbindingslijn */
+.m-steps { display: flex; align-items: center; gap: 0; padding: 12px 15px 0; }
+.m-steps i {
+  width: 9px; height: 9px; border-radius: 50%; background: var(--border-hover); flex: 0 0 auto;
+}
+.m-steps i.done { background: var(--f, var(--orange)); }
+.m-steps i.on {
+  background: var(--f, var(--orange)); width: 13px; height: 13px;
+  box-shadow: 0 0 0 4px var(--f-light, var(--accent-light));
+}
+.m-steps s { flex: 1 1 auto; height: 2px; background: var(--border); border: 0; margin: 0 5px; }
+.m-steps s.done { background: var(--f, var(--orange)); opacity: .5; }
+
+/* voortgang als 7 facetsegmenten — NOOIT een percentage */
+.m-segbar { display: flex; gap: 4px; margin: 10px 0 12px; }
+.m-segbar i { flex: 1 1 0; min-width: 0; height: 7px; border-radius: 4px; background: var(--border); }
+.m-segbar i.filled { background: var(--f, var(--orange)); }
+.m-segbar i.current { background: var(--f, var(--orange)); box-shadow: 0 0 0 3px var(--f-light, var(--accent-light)); }
+.m-segbar-lbl { font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); }
+
+/* oude naam, blijft werken */
+.m-progress { display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--ink-faint); font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.m-progress .gem { width: 13px; height: 13px; font-size: 7px; }
+
+/* ==========================================================================
+   8. CONTRASTPAAR — nooit rood, nooit een kruisje
+   ========================================================================== */
+
+.m-pair { display: grid; gap: 9px; grid-template-columns: minmax(0,1fr); margin: 10px 0; }
+@media (min-width: 520px) { .m-pair { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.m-pair-side {
+  border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  padding: 11px 12px; font-size: 11.5px; background: var(--white);
+  position: relative; font-weight: 400;
+}
+.m-pair-side.pos { border-color: var(--f, var(--orange)); background: var(--f-light, var(--accent-light)); }
+.m-pair-side.neu { border-color: var(--border); background: var(--subtle); color: var(--ink-soft); }
+.m-pair-lbl {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 6px;
+}
+.m-pair-side.pos .m-pair-lbl { color: var(--f-deep, var(--orange-deep)); }
+.m-pair-side.picked { box-shadow: 0 0 0 2px var(--f, var(--orange)); }
+.m-pair-check {
+  position: absolute; top: -8px; right: -8px; width: 20px; height: 20px;
+  background: var(--f, var(--orange)); color: var(--f-ink, #fff); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+  border: 2px solid var(--white);
+}
+/* oude naam uit verkenning #2 */
+.m-versions { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; margin: 10px 0; }
+.m-version { border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 11px 12px; font-size: 11.5px; background: var(--white); position: relative; }
+.m-version.picked { border-color: var(--f, var(--orange)); background: var(--f-light, var(--accent-light)); }
+
+/* ==========================================================================
+   9. PAPIER, POLAROID, POST-IT, PRIKBORD, GERUIT PAPIER
+   ========================================================================== */
+
+/* lijntjespapier met kleurenrand */
+.m-paper {
+  background:
+    repeating-linear-gradient(transparent, transparent 21px, rgba(76,183,197,.13) 21px, rgba(76,183,197,.13) 22px),
+    var(--paper);
+  border: 1px solid var(--border); border-radius: 4px;
+  box-shadow: var(--shadow-paper); padding: 16px 16px 18px; position: relative;
+}
+/* geen gekleurde strip bovenaan: een blad papier heeft er geen */
+.m-paper .ph { font-family: var(--heading); font-weight: 700; font-size: 14px; margin: 6px 0 10px; }
+.m-paper ul { list-style: none; }
+.m-paper li { display: flex; gap: 8px; font-size: 11.5px; margin-bottom: 8px; align-items: flex-start; font-weight: 400; }
+.m-paper li .gem { margin-top: 2px; }
+.m-paper .sig { font-family: var(--heading); font-style: italic; font-size: 11px; color: var(--ink-soft); margin-top: 12px; text-align: right; }
+
+/* geruit papier (schrift) */
+.m-grid-paper {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(76,183,197,.16) 15px, rgba(76,183,197,.16) 16px),
+    repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(76,183,197,.16) 15px, rgba(76,183,197,.16) 16px),
+    var(--paper);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-paper); padding: 16px;
+}
+.m-grid-paper .gp-h { font-family: var(--heading); font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.m-grid-paper .gp-hand { font-family: var(--heading); font-style: italic; font-size: 12.5px; color: var(--ink); line-height: 1.9; }
+
+/* geel notitieblok / spiekkaart — groot genoeg om te fotograferen */
+.notepad {
+  background: #FFF6D9; border-radius: 4px 4px 8px 8px;
+  box-shadow: var(--shadow-paper); padding: 0 0 16px;
+  max-width: 320px; position: relative; transform: rotate(-1deg);
+}
+.notepad::before {
+  content: ''; display: block; height: 14px;
+  background: repeating-linear-gradient(90deg, #EFD79A 0 10px, #FFF6D9 10px 22px);
+  border-radius: 4px 4px 0 0;
+}
+.notepad .np-h {
+  font-family: var(--heading); font-weight: 700; font-size: 14px;
+  padding: 12px 16px 6px; display: flex; align-items: center; gap: 8px;
+}
+.notepad ul { list-style: none; padding: 0 16px; }
+.notepad li {
+  font-size: 12.5px; font-weight: 400; line-height: 1.5;
+  padding: 8px 0 8px 18px; position: relative;
+  border-bottom: 1px dashed rgba(138,100,18,.28);
+}
+.notepad li:last-child { border-bottom: 0; }
+.notepad li::before { content: '\25A2'; position: absolute; left: 0; color: var(--yellow-deep); }
+.notepad .np-foot {
+  font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600;
+  color: var(--yellow-deep); text-align: center; padding-top: 10px;
+}
+
+/* post-it */
+.postit {
+  background: #FFF6D9; border-radius: 3px; box-shadow: var(--shadow-lift);
+  padding: 14px 16px; font-size: .92rem; line-height: 1.5; font-weight: 400;
+  max-width: 260px; transform: rotate(-1.2deg);
+}
+.postit.alt  { background: #FDEDE4; }
+.postit.teal { background: #E3F4F6; }
+.postit .pi-h { font-family: var(--heading); font-weight: 700; font-size: .98rem; display: block; margin-bottom: 5px; }
+.postit .add { display: block; margin-top: 7px; font-weight: 600; font-size: .82rem; color: var(--orange-deep); }
+
+/* mini post-it binnen een mock */
+.m-sticky {
+  background: #FFF6D9; border-radius: 3px; box-shadow: 0 2px 5px rgba(35,30,26,.12);
+  padding: 9px 11px; font-size: 11px; line-height: 1.45; margin-bottom: 8px;
+  position: relative; font-weight: 400;
+}
+.m-sticky.alt  { background: #FDEDE4; }
+.m-sticky.teal { background: #E3F4F6; }
+.m-sticky .add { display: block; margin-top: 5px; font-weight: 600; font-size: 10.5px; color: var(--orange-deep); }
+.r1 { transform: rotate(-1.2deg); }
+.r2 { transform: rotate(.9deg); }
+.r3 { transform: rotate(-.6deg); }
+.tilt-l { transform: rotate(-2.2deg); }
+.tilt-r { transform: rotate(1.8deg); }
+
+/* prikbord */
+.m-board {
+  background:
+    radial-gradient(circle at 20% 25%, rgba(232,118,75,.07), transparent 42%),
+    radial-gradient(circle at 80% 78%, rgba(244,196,78,.09), transparent 45%),
+    #F6EEE5;
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 15px; position: relative;
+}
+.m-board-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+.m-board .pin {
+  position: absolute; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--orange); box-shadow: 0 1px 2px rgba(35,30,26,.3);
+}
+
+/* polaroid */
+.polaroid {
+  background: #fff; padding: 7px 7px 14px; width: 100%; max-width: 150px;
+  box-shadow: var(--shadow-lift); text-align: center; position: relative;
+  border-radius: 2px;
+}
+.polaroid .pl-photo {
+  aspect-ratio: 4/3; border-radius: 2px; margin-bottom: 8px;
+  background: linear-gradient(135deg, #F3E0C4, #E8A87C);
+  display: flex; align-items: center; justify-content: center; font-size: 30px;
+}
+.polaroid .pl-photo.f { background: linear-gradient(135deg, var(--f-light, #F3E0C4), var(--f, #E8A87C)); }
+.polaroid figcaption, .polaroid .pl-cap {
+  font-size: 10.5px; line-height: 1.35; font-weight: 500; color: var(--ink);
+  font-family: var(--heading);
+}
+.polaroid .pl-cap small { display: block; font-family: var(--body); font-weight: 400; font-size: 9.5px; color: var(--ink-soft); margin-top: 3px; }
+.polaroid.picked { box-shadow: 0 0 0 2.5px var(--f, var(--orange)), var(--shadow-lift); }
+.polaroid .pl-check {
+  position: absolute; top: -9px; right: -9px; width: 22px; height: 22px;
+  background: var(--f, var(--orange)); color: var(--f-ink, #fff); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+  border: 2px solid #fff;
+}
+.polaroid.lg { max-width: 210px; }
+.polaroid.lg .pl-photo { font-size: 42px; }
+.polaroid.lg figcaption, .polaroid.lg .pl-cap { font-size: 12px; }
+
+/* galerij-raster van polaroids */
+.m-gallery {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr));
+  align-items: start;
+}
+.m-gallery.lg { grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); }
+.m-gallery > * { justify-self: center; }
+
+/* ==========================================================================
+   10. VOOR / NA
+   ========================================================================== */
+
+.ba { display: grid; gap: 14px; grid-template-columns: minmax(0,1fr); margin-top: 18px; }
+@media (min-width: 720px) { .ba { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.ba-col { border-radius: var(--radius-lg); padding: 18px 20px; border: 1px solid var(--border); }
+.ba-col.before { background: var(--subtle); color: var(--ink-soft); border-color: var(--border); }
+.ba-col.after  { background: var(--cream); border-color: var(--orange); box-shadow: var(--shadow-card); }
+.ba-lbl {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 10px;
+}
+.ba-col.after .ba-lbl { color: var(--orange-deep); }
+.ba-col p { font-size: .96rem; font-weight: 400; }
+.ba-col p + p { margin-top: 10px; }
+
+/* markering van de verschoven zin */
+.hl, mark.hl {
+  background: var(--f-light, var(--accent-light));
+  color: inherit; padding: 1px 3px; border-radius: 3px;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  border-bottom: 2px solid var(--f, var(--orange));
+  position: relative; cursor: help;
+}
+/* tooltip bij hover — facet + één zin waarom */
+.hl[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 20;
+  width: max-content; max-width: min(260px, 70vw);
+  background: var(--ink); color: #F5EEE8; font-family: var(--body); font-weight: 400;
+  font-size: 12px; line-height: 1.4; padding: 8px 11px; border-radius: 8px;
+  box-shadow: var(--shadow-lift); white-space: normal;
+}
+
+/* ==========================================================================
+   11. ACCORDION & TABS  (werken zonder JS)
+   ========================================================================== */
+
+.m-acc { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--white); }
+details.m-acc-item { border-bottom: 1px solid var(--border); }
+details.m-acc-item:last-child { border-bottom: 0; }
+summary.m-acc-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; cursor: pointer; list-style: none;
+  font-size: 12.5px; min-height: 44px;
+}
+summary.m-acc-head::-webkit-details-marker { display: none; }
+summary.m-acc-head .ah-name { font-family: var(--heading); font-weight: 700; color: var(--f-deep, var(--ink)); }
+summary.m-acc-head .ah-q { font-size: 11.5px; font-style: italic; color: var(--ink-soft); font-weight: 400; }
+summary.m-acc-head .ah-body { flex: 1 1 auto; min-width: 0; }
+summary.m-acc-head::after { content: '\25BE'; margin-left: auto; color: var(--ink-faint); transition: transform .15s ease; flex: 0 0 auto; }
+details.m-acc-item[open] > summary.m-acc-head::after { transform: rotate(180deg); }
+details.m-acc-item[open] > summary.m-acc-head { background: var(--f-light, var(--accent-light)); }
+.m-acc-body { padding: 4px 14px 14px; font-size: 11.5px; font-weight: 400; }
+
+/* tabs (statisch: geef één .on) */
+.m-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; }
+.m-tabs::-webkit-scrollbar { display: none; }
+.m-tab {
+  padding: 8px 13px; font-size: 11.5px; font-weight: 600; color: var(--ink-soft);
+  border-bottom: 2px solid transparent; white-space: nowrap; flex: 0 0 auto;
+  text-decoration: none; min-height: 36px; display: inline-flex; align-items: center; gap: 6px;
+}
+.m-tab.on { color: var(--f-deep, var(--orange-deep)); border-bottom-color: var(--f, var(--orange)); }
+
+/* ==========================================================================
+   12. AI-COLLEGA, WAARDERING, SUGGESTIE
+   ========================================================================== */
+
+.m-ai-lint {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(100deg, var(--accent-light), #FBF1E4);
+  border: 1px solid #F1D9C6; color: var(--orange-deep);
+  font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 4px 11px; border-radius: var(--radius-full);
+}
+.m-shine {
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 13px 14px; box-shadow: var(--shadow-card);
+}
+.m-shine .sh-h { display: flex; align-items: center; gap: 8px; font-family: var(--heading); font-weight: 700; font-size: 13px; margin-bottom: 7px; }
+.m-shine .sh-body { font-size: 11.5px; font-weight: 400; }
+.m-shine .sh-sig { font-size: 10px; color: var(--ink-faint); margin-top: 10px; font-style: italic; }
+.m-shine .sh-divider { height: 1px; background: var(--border); margin: 12px 0; }
+.m-shine .sh-chance { font-size: 11.5px; font-weight: 400; }
+.m-shine .sh-acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 11px; }
+
+.m-suggest {
+  border: 1.5px solid var(--teal); border-radius: var(--radius-md); background: #FBFEFF;
+  padding: 13px 14px; margin-bottom: 10px;
+}
+.m-suggest .who { display: flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 600; color: var(--teal-deep); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 7px; }
+.m-suggest .who .gem { width: 15px; height: 15px; font-size: 8px; background: var(--teal); }
+.m-suggest .acts { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; align-items: center; }
+
+.m-spark {
+  display: flex; gap: 10px; align-items: flex-start;
+  border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--white);
+  padding: 10px 12px; margin-bottom: 8px; font-size: 11.5px; font-weight: 400;
+}
+.m-spark .gem { margin-top: 1px; }
+.m-spark .by { display: block; font-size: 10px; color: var(--ink-faint); margin-top: 3px; }
+
+/* banner in een mock (bv. herbezoek, weekfacet) */
+.m-banner {
+  background: linear-gradient(120deg, var(--f, var(--orange)), color-mix(in srgb, var(--f, var(--orange)) 78%, #000 8%));
+  border-radius: var(--radius-md); color: #fff; padding: 14px 15px;
+  position: relative; overflow: hidden;
+}
+.m-banner::after {
+  content: ''; position: absolute; right: -22px; top: -22px; width: 90px; height: 90px;
+  background: rgba(255,255,255,.13);
+  clip-path: polygon(30% 0, 70% 0, 100% 35%, 50% 100%, 0 35%);
+}
+.m-banner .bn-k { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .88; }
+.m-banner .bn-t { font-family: var(--heading); font-weight: 700; font-size: 15px; margin: 3px 0 6px; }
+.m-banner p { font-size: 11.5px; opacity: .95; font-weight: 400; }
+
+/* twee kolommen resultaat: schittert al / groeikans (F2) */
+.m-result { display: grid; gap: 10px; grid-template-columns: minmax(0,1fr); }
+@media (min-width: 560px) { .m-result { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.m-result-col { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; background: var(--white); }
+.m-result-col.shine { background: var(--accent-light); border-color: #F1D9C6; }
+.m-result-col .rc-h { font-family: var(--heading); font-weight: 700; font-size: 12.5px; margin-bottom: 9px; display: flex; align-items: center; gap: 7px; }
+.m-result-col .rc-item { display: flex; gap: 8px; align-items: flex-start; font-size: 11.5px; margin-bottom: 8px; font-weight: 400; }
+.m-result-col .rc-item .gem { margin-top: 2px; }
+.m-result-col .rc-tip { font-size: 10.5px; color: var(--ink-soft); font-style: italic; display: block; margin-top: 3px; }
+
+/* ==========================================================================
+   13. ANNOTATIE & SCREENSHOTS VAN VANDAAG
+   ========================================================================== */
+
+.anno-wrap { display: grid; gap: clamp(20px, 3vw, 36px); grid-template-columns: minmax(0,1fr); align-items: start; margin-top: 32px; }
+@media (min-width: 940px) { .anno-wrap { grid-template-columns: minmax(0,1.15fr) minmax(0,.85fr); } }
+.anno-mock { position: relative; }
+.anno-dot {
+  position: absolute; z-index: 5;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--orange); color: #fff; border: 2px solid #fff;
+  font-family: var(--heading); font-weight: 700; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lift);
+}
+.anno-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.anno { display: flex; gap: 12px; align-items: flex-start; }
+.anno .n {
+  width: 26px; height: 26px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--accent-light); color: var(--orange-deep);
+  border: 1.5px solid var(--orange);
+  font-family: var(--heading); font-weight: 700; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; margin-top: 2px;
+}
+.anno .a-body { flex: 1 1 auto; min-width: 0; }
+.anno b { font-family: var(--heading); font-weight: 700; font-size: 1rem; display: block; margin-bottom: 2px; }
+.anno p { font-size: .92rem; color: var(--ink-soft); font-weight: 400; }
+
+/* screenshot van de huidige app */
+.today-row { display: grid; gap: clamp(18px, 3vw, 30px); grid-template-columns: minmax(0,1fr); align-items: start; }
+@media (min-width: 860px) { .today-row { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+figure.today-shot {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 8px; box-shadow: var(--shadow-card); max-width: 100%; overflow: hidden;
+}
+figure.today-shot img {
+  width: 100%; max-width: 100%; height: auto; display: block;
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+}
+figure.today-shot figcaption {
+  font-size: .84rem; color: var(--ink-soft); padding: 10px 6px 4px; font-weight: 400;
+}
+figure.today-shot figcaption b {
+  display: inline-block; font-family: var(--body); font-weight: 700; font-size: 10.5px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-right: 6px;
+}
+
+/* ==========================================================================
+   14. KAARTEN OP PAGINANIVEAU — Maite, parkeer, callout, pro/con
+   ========================================================================== */
+
+.maite-card {
+  background: #FFF6D9; border-radius: 4px; padding: 18px 20px 16px;
+  box-shadow: var(--shadow-lift); transform: rotate(-.7deg); font-size: .95rem;
+}
+.maite-card .lbl {
+  display: block; font-size: 11.5px; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--yellow-deep); margin-bottom: 8px;
+}
+.maite-card p { font-family: var(--heading); font-style: italic; font-size: 1.05rem; line-height: 1.45; }
+.maite-card p + p { margin-top: 10px; }
+.maite-card .who { font-family: var(--body); font-style: normal; font-size: .82rem; color: var(--yellow-deep); font-weight: 600; margin-top: 10px; display: block; }
+
+/* kleiner kaartje voor de misschien-strook */
+.park-strip { display: grid; gap: 14px; grid-template-columns: minmax(0,1fr); margin-top: 26px; }
+@media (min-width: 760px)  { .park-strip { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width: 1040px) { .park-strip { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.park-card {
+  background: var(--white); border: 1px dashed var(--border-hover);
+  border-radius: var(--radius-md); padding: 15px 17px; font-size: .89rem;
+}
+.park-card .pk-lbl {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px;
+}
+.park-card h3 { font-size: 1rem; margin-bottom: 6px; }
+.park-card p { color: var(--ink-soft); font-weight: 400; }
+.park-card .pk-note { margin-top: 8px; font-size: .82rem; color: var(--ink-faint); font-style: italic; }
+
+.callout {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--white); border: 1px dashed var(--border-hover);
+  border-radius: var(--radius-md); padding: 16px 20px; margin-top: 24px;
+  font-size: .94rem; color: var(--ink-soft);
+}
+.callout .ico { font-size: 22px; line-height: 1.2; flex: 0 0 auto; }
+.callout strong { color: var(--ink); font-weight: 600; }
+.callout.warm { background: var(--accent-light); border-style: solid; border-color: #F1D9C6; }
+
+.pro-con { display: grid; gap: 18px; margin-top: 34px; grid-template-columns: minmax(0,1fr); }
+@media (min-width: 860px) { .pro-con { grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr); } }
+.an-col h3 { font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.an-col ul { list-style: none; }
+.an-col li { font-size: .91rem; padding-left: 22px; position: relative; margin-bottom: 9px; color: var(--ink-soft); font-weight: 400; }
+.an-col li strong { color: var(--ink); font-weight: 600; }
+.an-col.pro li::before { content: '\2713'; position: absolute; left: 0; color: var(--green-deep); font-weight: 700; }
+.an-col.con li::before { content: '\301C'; position: absolute; left: 0; color: var(--orange-deep); font-weight: 700; }
+
+/* tabel — altijd in een scrollkader */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 30px; border-radius: var(--radius-lg); }
+table.compare {
+  width: 100%; min-width: 620px; border-collapse: collapse;
+  background: var(--white); box-shadow: var(--shadow-card); font-size: .9rem;
+}
+table.compare th, table.compare td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
+table.compare thead th { font-family: var(--heading); font-size: .92rem; background: var(--subtle); vertical-align: bottom; }
+table.compare thead th small { display: block; font-family: var(--body); font-weight: 400; font-size: .74rem; color: var(--ink-soft); }
+table.compare tbody th { font-weight: 600; font-size: .86rem; color: var(--ink-soft); width: 180px; }
+table.compare td { font-weight: 400; }
+table.compare tbody tr:last-child th, table.compare tbody tr:last-child td { border-bottom: none; }
+
+/* ==========================================================================
+   15. KLEINE HULPKLASSEN
+   ========================================================================== */
+
+.stack-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.mt-s { margin-top: 10px; } .mt-m { margin-top: 20px; } .mt-l { margin-top: 34px; }
+.mb-s { margin-bottom: 10px; } .mb-m { margin-bottom: 20px; } .mb-l { margin-bottom: 34px; }
+.center { text-align: center; }
+.nowrap { white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+<style>
+/* ============================================================
+   Eigen regels voor verkenning #4, prefix .t4
+   ============================================================ */
+
+/* bloklader: de nieuwe pagina-opbouw in één kolom */
+.t4-ladder { max-width: 720px; display: flex; flex-direction: column; gap: 9px; margin-top: 30px; }
+.t4-row {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 13px 16px;
+  text-decoration: none; color: inherit;
+}
+.t4-row > * { min-width: 0; }
+.t4-row.new { border-color: var(--orange); background: var(--accent-light); }
+a.t4-row.new:hover { box-shadow: var(--shadow-card); }
+.t4-chip {
+  flex: 0 0 auto; width: 64px; text-align: center;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  border-radius: var(--radius-full); padding: 4px 0;
+  background: var(--subtle); color: var(--ink-faint);
+}
+.t4-row.new .t4-chip { background: var(--orange); color: #fff; }
+.t4-row .t4-name { font-family: var(--heading); font-weight: 700; font-size: 1rem; }
+.t4-row .t4-note { font-size: .85rem; color: var(--ink-soft); font-weight: 400; }
+.t4-row .t4-bnum {
+  margin-left: auto; flex: 0 0 auto;
+  font-family: var(--heading); font-weight: 700; font-size: .8rem;
+  color: var(--orange-deep); white-space: nowrap;
+}
+
+/* referentierij in de mock van bouwsteen 3 */
+.t4-ref {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  font-size: 11.5px; font-weight: 400;
+}
+.t4-ref:last-child { border-bottom: 0; }
+.t4-reftype {
+  flex: 0 0 auto; width: 78px; text-align: center;
+  font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  border-radius: var(--radius-full); padding: 3px 0; margin-top: 1px;
+  background: var(--f-light, var(--accent-light)); color: var(--f-deep, var(--orange-deep));
+}
+.t4-ref b { font-weight: 600; display: block; }
+.t4-ref small { color: var(--ink-soft); font-size: 10.5px; }
+
+/* mini-fichekaart in de mocks */
+.t4-fiches { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(150px,100%), 1fr)); margin-top: 10px; }
+.t4-fiche {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md);
+  overflow: hidden; box-shadow: 0 1px 2px rgba(35,30,26,.05);
+}
+.t4-fiche .tf-img {
+  aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
+  font-size: 22px; background: linear-gradient(135deg, var(--f-light, #F3E0C4), color-mix(in srgb, var(--f, #E8A87C) 45%, #fff));
+}
+.t4-fiche .tf-body { padding: 8px 10px 10px; }
+.t4-fiche .tf-t { font-family: var(--heading); font-weight: 700; font-size: 11.5px; line-height: 1.3; }
+.t4-fiche .tf-m { font-size: 9.5px; color: var(--ink-faint); margin-top: 3px; font-weight: 400; }
+.t4-dia {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 8.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--orange-deep); background: var(--accent-light);
+  border-radius: var(--radius-full); padding: 2px 8px; margin-bottom: 5px;
+}
+.t4-why {
+  font-size: 10.5px; font-style: italic; color: var(--ink-soft); font-weight: 400;
+  border-top: 1px dashed var(--border-hover); margin-top: 7px; padding-top: 6px;
+}
+.t4-why b { font-style: normal; font-weight: 600; color: var(--f-deep, var(--orange-deep)); }
+
+/* wat-het-vraagt-kaartje naast elke bouwsteen */
+.t4-ask {
+  background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 16px 18px; box-shadow: var(--shadow-card); font-size: .92rem;
+}
+.t4-ask .ta-l {
+  display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--orange-deep); margin-bottom: 8px;
+}
+.t4-ask ul { list-style: none; }
+.t4-ask li { padding-left: 20px; position: relative; margin-bottom: 7px; font-weight: 400; color: var(--ink-soft); }
+.t4-ask li::before { content: '\2192'; position: absolute; left: 0; color: var(--orange); font-weight: 600; }
+.t4-ask li strong { color: var(--ink); font-weight: 600; }
+
+/* vragenblok */
+.t4-q {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 20px 22px; box-shadow: var(--shadow-card);
+}
+.t4-q h3 { font-size: 1.08rem; margin-bottom: 4px; }
+.t4-q .tq-sub { font-size: .88rem; color: var(--ink-soft); margin-bottom: 14px; font-weight: 400; }
+.t4-q label {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
+  border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  font-size: .92rem; font-weight: 400; background: var(--white);
+}
+.t4-q label:hover { border-color: var(--border-hover); background: var(--cream); }
+.t4-q label:has(input:checked) { border-color: var(--orange); background: var(--accent-light); font-weight: 500; }
+.t4-q input { margin-top: 3px; accent-color: var(--orange); flex: 0 0 auto; }
+.t4-q label small { display: block; color: var(--ink-soft); font-size: .8rem; font-weight: 400; }
+.t4-q button {
+  font: inherit; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 20px; font-weight: 600; font-size: .9rem; color: #fff;
+  background: var(--orange); border: none; border-radius: var(--radius-full);
+  margin-top: 6px;
+}
+.t4-q button:hover { background: var(--orange-hover); }
+.t4-q .tq-done { display: none; font-size: .84rem; color: var(--green-deep); font-weight: 600; margin-top: 8px; }
+.t4-q.queued .tq-done { display: block; }
+
+.t4-quotegrid { display: grid; gap: 22px; grid-template-columns: minmax(0,1fr); align-items: start; }
+@media (min-width: 860px) { .t4-quotegrid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+
+/* beslist-kaart in het vragenblok */
+.t4-decided {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 14px 16px; margin-bottom: 10px; font-size: .93rem; font-weight: 400;
+}
+.t4-decided .td-chip {
+  flex: 0 0 auto; margin-top: 2px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  border-radius: var(--radius-full); padding: 4px 10px;
+  background: var(--norm-light); color: var(--norm-deep);
+}
+.t4-decided b { font-weight: 600; }
+.t4-decided small { display: block; color: var(--ink-soft); font-size: .82rem; }
+</style>
+</head>
+<body>
+
+<nav class="deck-nav">
+  <a class="brand" href="#top"><span class="gem f-doen">D</span> Hartverwarmers · Verkenning #4</a>
+  <a class="navlink" href="#vandaag">Vandaag</a>
+  <a class="navlink" href="#omslag">De omslag</a>
+  <a class="navlink" href="#opbouw">Nieuwe opbouw</a>
+  <a class="navlink num" href="#b1">1</a>
+  <a class="navlink num" href="#b2">2</a>
+  <a class="navlink num" href="#b3">3</a>
+  <a class="navlink num" href="#b4">4</a>
+  <a class="navlink soft" href="#later">Later</a>
+  <a class="navlink" href="#vragen">Vragen</a>
+</nav>
+
+<header class="cover" id="top">
+  <div class="cover-inner">
+    <span class="disclaimer">Verkenning · nog niets is gebouwd</span>
+    <span class="section-label" style="display:block;">Na de denkdag</span>
+    <h1>De doelenpagina krijgt <em>body</em></h1>
+    <p class="sub">
+      Op de denkdag kwam het gesprek telkens terug bij hetzelfde punt: de pagina per
+      DIAMANT-doel is te mager om te dragen wat we ermee willen. Deze verkenning toont
+      vier bouwstenen die dat oplossen, met <strong>/doelen/doen</strong> als voorbeeld.
+      Weinig tekst, veel schetsen. Om samen met Maite en Nadine te overlopen.
+    </p>
+    <div class="meta-strip">
+      <span><strong>Verkenning #4</strong> · doelenpagina</span>
+      <span>Voorbeeld: <strong>Doen</strong></span>
+      <span>Geldt voor <strong>alle zeven doelen</strong></span>
+    </div>
+  </div>
+  <div class="cover-gems" aria-hidden="true">
+    <span class="gem f-doen">D</span>
+    <span class="gem f-inclusief">I</span>
+    <span class="gem f-autonomie">A</span>
+    <span class="gem f-mensgericht">M</span>
+    <span class="gem f-anderen">A</span>
+    <span class="gem f-normalisatie">N</span>
+    <span class="gem f-talent">T</span>
+  </div>
+</header>
+
+<!-- ================= VANDAAG ================= -->
+<section class="slide bg-white" id="vandaag">
+  <div class="wrap">
+    <span class="section-label"><span class="gem gem-xs f-doen">D</span> Waar we staan</span>
+    <h2>De pagina vandaag: mooi begin, snel gedaan</h2>
+    <p class="lead">Wie op een doel klikt, krijgt een sterke kop en een goeie kernvraag. Maar daarna houdt de pagina op.</p>
+
+    <div class="anno-wrap">
+      <figure class="today-shot">
+        <img src="assets/huidige-doelen-doen.png" alt="Schermafdruk van de huidige pagina /doelen/doen" width="1440" height="2561">
+        <figcaption><b>Vandaag</b> hartverwarmers.be/doelen/doen, volledige pagina</figcaption>
+      </figure>
+      <div>
+        <ol class="anno-list">
+          <li class="anno"><span class="n">1</span>
+            <div class="a-body"><b>Kop en kernvraag</b>
+            <p>"Doen je bewoners vandaag iets dat hen energie geeft?" Sterk vertrekpunt, dit blijft.</p></div>
+          </li>
+          <li class="anno"><span class="n">2</span>
+            <div class="a-body"><b>Checklist op papier</b>
+            <p>Vier concrete richtlijnen. Blijft ook.</p></div>
+          </li>
+          <li class="anno"><span class="n">3</span>
+            <div class="a-body"><b>Initiatieven</b>
+            <p>Zes brede verzamelmappen zoals "Beweging &amp; fit". Geen enkel concreet voorbeeld van hoe doen er in de praktijk uitziet.</p></div>
+          </li>
+          <li class="anno"><span class="n">4</span>
+            <div class="a-body"><b>En dan stopt het</b>
+            <p>Geen schoolvoorbeelden, geen verhaal, geen verdieping. Wie hier landt met goesting om rond doen te werken, valt in het niets.</p></div>
+          </li>
+        </ol>
+
+        <div class="maite-card mt-l">
+          <span class="lbl">Uit het gesprek</span>
+          <p>"Nu is die pagina nog heel summier. Die doelstellingen mogen meer gewicht krijgen, meer invulling."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DE OMSLAG ================= -->
+<section class="slide bg-cream" id="omslag">
+  <div class="wrap">
+    <span class="section-label"><span class="gem gem-xs f-mensgericht">M</span> De kerngedachte</span>
+    <h2>Eerst het doel, dan de activiteit</h2>
+    <p class="lead">
+      De site is gebouwd rond de fichebak: kies iets, doe het morgen. In de vormingen leren
+      jullie net het omgekeerde aan. De doelenpagina is de plek waar de site die denkrichting
+      kan overnemen.
+    </p>
+
+    <div class="ba">
+      <div class="ba-col before">
+        <span class="ba-lbl">Vandaag · de fichebak-reflex</span>
+        <p><strong>"Ik zoek een activiteit."</strong></p>
+        <p>Bladeren door de bak, iets kiezen dat er tof uitziet, morgen op tafel leggen. Het doel komt achteraf, als het al komt.</p>
+      </div>
+      <div class="ba-col after">
+        <span class="ba-lbl">Morgen · doel als vertrekpunt</span>
+        <p><strong>"Ik wil meer inzetten op doen."</strong></p>
+        <p>De doelenpagina toont wat doen betekent, hoe het er in de praktijk uitziet, en welke fiches erbij passen. De keuze wordt gerichter.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="ico">⚖️</span>
+      <p><strong>Geen ombouw, een aanvulling.</strong> De fichebak blijft bestaan voor wie gewoon snel iets zoekt. We maken de doelenroute sterker, we breken de oude route niet af.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NIEUWE OPBOUW ================= -->
+<section class="slide bg-white" id="opbouw">
+  <div class="wrap">
+    <span class="section-label"><span class="gem gem-xs f-doen">D</span> Voorstel</span>
+    <h2>De nieuwe opbouw in één oogopslag</h2>
+    <p class="lead">Wat er staat blijft staan. Er komen vier blokken bij, elk hieronder uitgewerkt als bouwsteen.</p>
+
+    <div class="t4-ladder">
+      <div class="t4-row"><span class="t4-chip">Blijft</span><div><span class="t4-name">Kop en kernvraag</span></div></div>
+      <div class="t4-row"><span class="t4-chip">Blijft</span><div><span class="t4-name">Checklist</span></div></div>
+      <a class="t4-row new" href="#b1"><span class="t4-chip">Nieuw</span><div><span class="t4-name">Schoolvoorbeelden</span><span class="t4-note"> · 3 à 5 fiches, door het team gekozen</span></div><span class="t4-bnum">Bouwsteen 1 ↓</span></a>
+      <a class="t4-row new" href="#b2"><span class="t4-chip">Nieuw</span><div><span class="t4-name">Een verhaal uit de praktijk</span><span class="t4-note"> · wat dit doel voor één bewoner betekende</span></div><span class="t4-bnum">Bouwsteen 2 ↓</span></a>
+      <a class="t4-row new" href="#b3"><span class="t4-chip">Nieuw</span><div><span class="t4-name">Verder kijken</span><span class="t4-note"> · podcast, gidsen, methodieken, materiaal</span></div><span class="t4-bnum">Bouwsteen 3 ↓</span></a>
+      <a class="t4-row new" href="#b4"><span class="t4-chip">Nieuw</span><div><span class="t4-name">Alle fiches bij dit doel</span><span class="t4-note"> · rechtstreeks gekoppeld, niet via de mappen</span></div><span class="t4-bnum">Bouwsteen 4 ↓</span></a>
+      <div class="t4-row"><span class="t4-chip">Blijft</span><div><span class="t4-name">Initiatieven</span><span class="t4-note"> · zakken naar onder als bundels</span></div></div>
+      <div class="t4-row"><span class="t4-chip">Blijft</span><div><span class="t4-name">Verwante doelstellingen</span></div></div>
+    </div>
+
+    <p class="tiny-note mt-m">Dezelfde opbouw geldt voor alle zeven doelen. De voorbeelden hieronder gebruiken telkens Doen.</p>
+
+    <div class="callout warm">
+      <span class="ico">🧭</span>
+      <p><strong>Aanpak: doel per doel.</strong> We bouwen eerst de volledige pagina voor de D van Doen uit, leren daarvan, en rollen dan door naar de andere letters.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BOUWSTEEN 1 ================= -->
+<section class="slide bg-cream f-doen" id="b1">
+  <div class="wrap">
+    <div class="tool-head facet-text">
+      <span class="tool-num">1</span>
+      <div class="titles">
+        <span class="tool-kicker facet-text">Bouwsteen 1</span>
+        <h2>Schoolvoorbeelden, gekozen door mensen</h2>
+        <p class="tool-oneliner">Drie à vijf fiches waarvan jullie zeggen: zó ziet doen eruit. Met telkens één zin waarom.</p>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="mock wide">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">hartverwarmers.be/doelen/doen</span></div>
+          <div class="mock-body">
+            <div class="m-eyebrow">Uitgelicht door het team</div>
+            <div class="m-h2">Zo ziet doen eruit</div>
+            <p class="m-sub">Deze fiches zijn schoolvoorbeelden van bewoners die zelf meedoen.</p>
+            <div class="t4-fiches">
+              <div class="t4-fiche">
+                <div class="tf-img">🚂</div>
+                <div class="tf-body">
+                  <span class="t4-dia"><span class="gem gem-xs f-doen">D</span> Diamantje</span>
+                  <div class="tf-t">De trein rijdt naar de zee</div>
+                  <div class="tf-m">Bewegingsverhaal in de kring</div>
+                  <div class="t4-why"><b>Waarom:</b> elke bewoner beweegt mee op eigen tempo, niemand kijkt alleen toe.</div>
+                </div>
+              </div>
+              <div class="t4-fiche">
+                <div class="tf-img">🍽️</div>
+                <div class="tf-body">
+                  <span class="t4-dia"><span class="gem gem-xs f-doen">D</span> Diamantje</span>
+                  <div class="tf-t">De langste tafel</div>
+                  <div class="tf-m">230 mensen aan één tafel</div>
+                  <div class="t4-why"><b>Waarom:</b> bewoners werkten zelf mee aan placemats en vragen.</div>
+                </div>
+              </div>
+              <div class="t4-fiche">
+                <div class="tf-img">🥩</div>
+                <div class="tf-body">
+                  <span class="t4-dia"><span class="gem gem-xs f-doen">D</span> Diamantje</span>
+                  <div class="tf-t">Samen naar de beenhouwer</div>
+                  <div class="tf-m">Uitstap met de leefgroep</div>
+                  <div class="t4-why"><b>Waarom:</b> een gewone boodschap wordt een activiteit waar bewoners zelf in stappen.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Het team kiest, niet de computer.</strong> De AI-score mag kandidaten voorstellen, de keuze en de waarom-zin komen van jullie.</p>
+      </div>
+
+      <div>
+        <div class="t4-ask">
+          <span class="ta-l">Wat dit van ons vraagt</span>
+          <ul>
+            <li><strong>Maite en Nadine verdelen de letters</strong> en kiezen per doel 3 à 5 fiches, samen zo'n 25 keuzes.</li>
+            <li><strong>Eén zin waarom</strong> per fiche. Die zin ís de curatie.</li>
+            <li>De bestaande diamantjes van de maand zijn een startvoorraad.</li>
+          </ul>
+        </div>
+        <div class="maite-card mt-m">
+          <span class="lbl">Uit het gesprek</span>
+          <p>"Het zou nuttig zijn om die voorbeelden goed te cureren. Dat jullie zeggen: kijk, dit zijn nu echt de schone voorbeelden van doen, van activeren."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BOUWSTEEN 2 ================= -->
+<section class="slide bg-white f-mensgericht" id="b2">
+  <div class="wrap">
+    <div class="tool-head facet-text">
+      <span class="tool-num">2</span>
+      <div class="titles">
+        <span class="tool-kicker facet-text">Bouwsteen 2</span>
+        <h2>Eén verhaal uit de praktijk</h2>
+        <p class="tool-oneliner">Geen benodigdheden, geen stappenplan. Gewoon wat er gebeurde en wat het met een bewoner deed.</p>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="mock wide">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">hartverwarmers.be/doelen/doen</span></div>
+          <div class="mock-body" style="background: var(--cream);">
+            <div class="m-eyebrow" style="color: var(--mens-deep);">Verhaal</div>
+            <div class="m-board">
+              <span class="pin" style="left: 50%; top: 7px;"></span>
+              <div class="m-board-row">
+                <figure class="polaroid lg tilt-l">
+                  <div class="pl-photo f">🏊</div>
+                  <figcaption>Het zwembad van Marcella</figcaption>
+                </figure>
+                <div style="flex: 1 1 240px; min-width: 0;">
+                  <div class="m-h">"Wie leerde jou eigenlijk zwemmen?"</div>
+                  <p class="m-p">Eén vraag tijdens een gesprekskaartenmoment, en de tafel stond in vuur en vlam. Zoveel bewoners die tot op late leeftijd zijn blijven zwemmen.</p>
+                  <p class="m-p">Dus belde het team een revalidatiecentrum met een lift tot in het bad. En gingen ze opnieuw zwemmen.</p>
+                  <p class="m-foot">Begint bij een verhaal, eindigt in doen.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Van verhaal naar activiteit.</strong> Het verhaal toont waarom het doel ertoe doet, de fiches eronder tonen hoe je eraan begint.</p>
+      </div>
+
+      <div>
+        <div class="t4-ask">
+          <span class="ta-l">Wat dit van ons vraagt</span>
+          <ul>
+            <li><strong>Verhalen sprokkelen</strong> uit vormingen en de podcast. De rijles-bewoner, de oldtimerparade: ze bestaan al.</li>
+            <li><strong>Een of twee per doel</strong> volstaat om te starten.</li>
+            <li>De voorbeelden van Sense of Home kunnen hier een nieuwe thuis krijgen.</li>
+          </ul>
+        </div>
+        <div class="callout warm mt-m">
+          <span class="ico">✔️</span>
+          <p><strong>Beslist:</strong> we zetten eerst een paar verhalen handmatig op de pagina en beslissen daarna pas hoe verhalen definitief in de site passen.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BOUWSTEEN 3 ================= -->
+<section class="slide bg-cream f-talent" id="b3">
+  <div class="wrap">
+    <div class="tool-head facet-text">
+      <span class="tool-num">3</span>
+      <div class="titles">
+        <span class="tool-kicker facet-text">Bouwsteen 3</span>
+        <h2>Verder kijken: verdieping voor wie meer wil</h2>
+        <p class="tool-oneliner">Per doel een kort, gekozen lijstje. Geen bibliotheek, wel de vijf beste vertrekpunten.</p>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="mock wide">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">hartverwarmers.be/doelen/doen</span></div>
+          <div class="mock-body">
+            <div class="m-eyebrow" style="color: var(--tal-deep);">Verder kijken</div>
+            <div class="m-h2">Wil je dieper graven rond doen?</div>
+            <div class="t4-ref"><span class="t4-reftype">Podcast</span><div><b>Studio Bomma over participatie</b><small>Luister onderweg, 40 min.</small></div></div>
+            <div class="t4-ref"><span class="t4-reftype">Gids</span><div><b>De participatiegids "Jij, wij, samen"</b><small>Gratis te downloaden, veel gebruikt in de vormingen.</small></div></div>
+            <div class="t4-ref"><span class="t4-reftype">Methodiek</span><div><b>Verven: piepkleine betekenisvolle momenten in de zorg</b><small>Onderzoek van Artevelde, uitgetest in het werkveld.</small></div></div>
+            <div class="t4-ref"><span class="t4-reftype">Methodiek</span><div><b>Object handling</b><small>Voorwerpen als opstap naar interactie.</small></div></div>
+            <div class="t4-ref"><span class="t4-reftype">Materiaal</span><div><b>Gesprekskaarten en spelmateriaal</b><small>Onder meer via de uitleendienst van Artevelde.</small></div></div>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Elk item heeft een reden.</strong> Alles op dit lijstje is door jullie in vormingen gebruikt of aanbevolen.</p>
+      </div>
+
+      <div>
+        <div class="t4-ask">
+          <span class="ta-l">Wat dit van ons vraagt</span>
+          <ul>
+            <li><strong>Per letter een lijstje aanleveren.</strong> Op de denkdag klonk het al: "dat heb ik heel praktisch, per letter wat achtergrond".</li>
+            <li>Podcastafleveringen verdelen over de doelen waar ze bij horen.</li>
+          </ul>
+        </div>
+        <div class="maite-card mt-m">
+          <span class="lbl">Uit het gesprek</span>
+          <p>"Dat je die participatiegids, een podcast of een boek koppelt aan de pagina waar die letter wordt uitgelegd. Dan krijgt dat al wat meer body."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BOUWSTEEN 4 ================= -->
+<section class="slide bg-white f-doen" id="b4">
+  <div class="wrap">
+    <div class="tool-head facet-text">
+      <span class="tool-num">4</span>
+      <div class="titles">
+        <span class="tool-kicker facet-text">Bouwsteen 4</span>
+        <h2>Fiches die aanzetten tot doen</h2>
+        <p class="tool-oneliner">Fiches hangen nu enkel via de verzamelmappen aan een doel. We koppelen ze rechtstreeks.</p>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="mock wide">
+        <div class="mock-frame">
+          <div class="mock-chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">hartverwarmers.be/doelen/doen</span></div>
+          <div class="mock-body">
+            <div class="m-eyebrow">Aan de slag</div>
+            <div class="m-h2">Fiches die aanzetten tot doen</div>
+            <div class="m-chips">
+              <span class="m-chip on">Alle</span>
+              <span class="m-chip">Nieuw deze maand</span>
+              <span class="m-chip">Diamantjes</span>
+              <span class="m-chip">Voor kleine groepen</span>
+            </div>
+            <div class="t4-fiches">
+              <div class="t4-fiche"><div class="tf-img">🎳</div><div class="tf-body"><div class="tf-t">Bewoners presenteren de bingo</div><div class="tf-m">Beweging &amp; fit</div></div></div>
+              <div class="t4-fiche"><div class="tf-img">🌿</div><div class="tf-body"><div class="tf-t">Het plantenrondje</div><div class="tf-m">Tuinieren</div></div></div>
+              <div class="t4-fiche"><div class="tf-img">🧶</div><div class="tf-body"><div class="tf-t">Samen de was opvouwen</div><div class="tf-m">Huiselijke taken</div></div></div>
+              <div class="t4-fiche"><div class="tf-img">🎲</div><div class="tf-body"><div class="tf-t">Duo maakt de quiz voor de rest</div><div class="tf-m">Quizzen</div></div></div>
+            </div>
+            <p class="m-foot">Fiches uit alle mappen samen, zolang ze bij doen passen.</p>
+          </div>
+        </div>
+        <p class="mock-caption"><strong>Kan zonder grote verbouwing.</strong> Fiches kunnen technisch al een doel-etiket dragen, we tonen het alleen nog nergens.</p>
+      </div>
+
+      <div>
+        <div class="t4-ask">
+          <span class="ta-l">Wat dit van ons vraagt</span>
+          <ul>
+            <li><strong>Weinig.</strong> De koppeling kan automatisch worden voorgesteld op basis van de fiche-inhoud.</li>
+            <li>Jullie corrigeren enkel waar de voorzet fout zit.</li>
+            <li>Hoe meer voorbeelden en duiding op de pagina staan (bouwstenen 1 en 3), hoe beter die voorzet wordt.</li>
+          </ul>
+        </div>
+        <div class="callout mt-m">
+          <span class="ico">🗂️</span>
+          <p><strong>De initiatieven verdwijnen niet.</strong> Ze zakken op de pagina naar onder, als bundels voor wie liever per thema bladert.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LATER ================= -->
+<section class="slide tight bg-subtle" id="later">
+  <div class="wrap">
+    <span class="section-label">Bewust geparkeerd</span>
+    <h2>Groter dan deze pagina</h2>
+    <p class="lead">Vier ideeën uit de denkdag die hierbij horen maar een eigen gesprek verdienen.</p>
+
+    <div class="park-strip">
+      <div class="park-card">
+        <span class="pk-lbl">Structuur</span>
+        <h3>Doelen vooraan op de site</h3>
+        <p>De startpagina begint nu bij de initiatieven. Ze zou bij de doelen kunnen beginnen, zodat de middel-doel-omslag overal doorwerkt.</p>
+        <p class="pk-note">Pas zinvol als de doelenpagina's gevuld zijn.</p>
+      </div>
+      <div class="park-card">
+        <span class="pk-lbl">Ritme</span>
+        <h3>Elk kwartaal één doel in de kijker</h3>
+        <p>De nieuwsbrief zet een kwartaal lang één doel centraal en roept op tot voorbeelden. In anderhalf jaar is de diamant rond.</p>
+        <p class="pk-note">Vraagt dat er per doel al iets klaarstaat, anders blijft de oproep leeg.</p>
+      </div>
+      <div class="park-card">
+        <span class="pk-lbl">Het model</span>
+        <h3>Inclusief of inspraak?</h3>
+        <p>Op de denkdag klonk twijfel of de I van Inclusief niet beter Inspraak wordt. Dat raakt de teksten van elke doelenpagina.</p>
+        <p class="pk-note">Beslissing van Maite en Nadine, los van dit ontwerp.</p>
+      </div>
+      <div class="park-card">
+        <span class="pk-lbl">Invulling</span>
+        <h3>Subthema's onder Anderen</h3>
+        <p>Familie, vrijwilligers, samenwerkingen met scholen en verenigingen: nu zit alles in één ruim doel. Subthema's geven het meer houvast.</p>
+        <p class="pk-note">Zelfde bouwstenen, gewoon fijner opgedeeld.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VRAGEN ================= -->
+<section class="slide bg-white" id="vragen">
+  <div class="wrap">
+    <span class="section-label"><span class="gem gem-xs f-autonomie">A</span> Voor rond de tafel</span>
+    <h2>Wat al vastligt, en wat nog open staat</h2>
+    <p class="lead">Drie knopen zijn al doorgehakt. Eén vraag ligt nog op tafel voor het gesprek met Maite en Nadine.</p>
+
+    <div class="t4-quotegrid mt-l">
+      <div>
+        <div class="t4-decided"><span class="td-chip">Beslist</span><div><b>Doel per doel, te beginnen bij de D van Doen.</b><small>Eerst één pagina volledig uitbouwen, daarvan leren, dan de andere letters.</small></div></div>
+        <div class="t4-decided"><span class="td-chip">Beslist</span><div><b>Verhalen: eerst een paar handmatig proberen.</b><small>Op de pagina zetten, kijken wat het doet, dan pas de definitieve vorm kiezen.</small></div></div>
+        <div class="t4-decided"><span class="td-chip">Beslist</span><div><b>Maite en Nadine verdelen de letters voor de curatie.</b><small>Per doel 3 à 5 schoolvoorbeelden, met telkens één zin waarom.</small></div></div>
+      </div>
+      <form class="t4-q" data-lavish-question="startvolgorde"
+        onsubmit="event.preventDefault(); const c = new FormData(event.currentTarget).get('start'); if (!c) return; window.lavish?.queuePrompt('Start de uitwerking van de doelenpagina met bouwsteen: ' + c, { tag: 'choice', text: 'Eerst bouwen: ' + c, element: event.currentTarget, queueKey: 'startvolgorde', data: { question: 'startvolgorde', answer: c } }); event.currentTarget.classList.add('queued');">
+        <h3>Open vraag: welke bouwsteen eerst op de Doen-pagina?</h3>
+        <p class="tq-sub">Alles tegelijk hoeft niet. Waar begint de meeste waarde?</p>
+        <label><input type="radio" name="start" value="Schoolvoorbeelden"> <span>Schoolvoorbeelden <small>Vraagt curatie van het team, maar maakt direct het verschil.</small></span></label>
+        <label><input type="radio" name="start" value="Verhalen"> <span>Verhalen <small>Het warmst, maar de verhalen moeten eerst gesprokkeld worden.</small></span></label>
+        <label><input type="radio" name="start" value="Verder kijken"> <span>Verder kijken <small>De lijstjes liggen deels al klaar.</small></span></label>
+        <label><input type="radio" name="start" value="Fiches bij het doel"> <span>Fiches bij het doel <small>Vraagt het minst van het team.</small></span></label>
+        <button type="submit">Zet klaar</button>
+        <span class="tq-done">✓ Klaargezet. Verstuur via "Send to Agent".</span>
+      </form>
+
+    </div>
+
+    <div class="callout">
+      <span class="ico">💬</span>
+      <p><strong>Voor de tafelronde.</strong> Dit blok vat de stand van zaken samen. Opmerkingen bij eender welk blok op deze pagina komen gewoon bij Frederik terecht.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="deck-foot">
+  <span class="gem f-doen">D</span>
+  Verkenning #4 · De doelenpagina · Hartverwarmers
+</footer>
+
+</body>
+</html>
