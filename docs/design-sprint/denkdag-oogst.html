@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oogst van de denkdag</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:400,400i,700|fira-sans:300,300i,400,400i,500,600,700" rel="stylesheet">
+<style>
+:root{
+  --orange:#E8764B; --orange-hover:#D4683F; --orange-deep:#C25A33;
+  --teal:#4CB7C5; --teal-deep:#2E8D9A; --yellow:#F4C44E; --purple:#B57BB3;
+  --green:#5F8A4A; --green-light:#EDF3E8;
+  --ink:#231E1A; --ink-soft:#756C65; --ink-faint:#C0B5AE;
+  --cream:#FEF8F4; --white:#FFFFFF; --subtle:#F5F0EC; --accent:#FDF3EE;
+  --border:#EBE4DE; --border-hover:#DDD5CD;
+  --heading:'Aleo',serif; --body:'Fira Sans',sans-serif;
+  --shadow:0 1px 3px rgba(35,30,26,.06), 0 6px 20px rgba(35,30,26,.05);
+  --shadow-lift:0 2px 6px rgba(35,30,26,.08), 0 16px 36px rgba(35,30,26,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:74px;}
+body{font-family:var(--body);font-weight:300;font-size:17px;line-height:1.62;color:var(--ink);background:var(--cream);-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4{font-family:var(--heading);font-weight:700;line-height:1.18;}
+a{color:var(--orange);}
+.wrap{max-width:1140px;margin:0 auto;padding:0 26px;}
+.lbl{font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);}
+
+nav{position:sticky;top:0;z-index:20;background:rgba(254,248,244,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);}
+nav .wrap{display:flex;gap:20px;align-items:center;height:52px;overflow-x:auto;}
+nav a{font-size:14px;font-weight:500;text-decoration:none;color:var(--ink-soft);white-space:nowrap;}
+nav a:hover{color:var(--orange);}
+nav b{font-family:var(--heading);font-size:15px;color:var(--ink);white-space:nowrap;}
+
+header.top{padding:54px 0 34px;}
+header.top h1{font-size:41px;margin:10px 0 16px;max-width:20ch;}
+header.top p{max-width:66ch;color:var(--ink-soft);}
+header.top p+p{margin-top:11px;}
+.meta{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px;padding-top:20px;border-top:1px solid var(--border);font-size:14.5px;color:var(--ink-soft);}
+.meta b{font-weight:600;color:var(--ink);}
+
+section{padding:44px 0;}
+section.alt{background:var(--subtle);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+section>.wrap>h2{font-size:29px;margin:6px 0 8px;}
+section>.wrap>.sub{color:var(--ink-soft);max-width:74ch;margin-bottom:26px;}
+
+/* verdictstrook */
+.verdicts{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,168px),1fr));}
+.vd{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:15px 16px 16px;min-width:0;display:flex;flex-direction:column;gap:7px;}
+.vd .num{font-family:var(--heading);font-weight:700;font-size:13px;color:var(--ink-faint);}
+.vd h3{font-size:17px;}
+.stamp{align-self:flex-start;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:5px;}
+.stamp.ja{background:var(--green-light);color:var(--green);}
+.stamp.deels{background:#FDF6E2;color:#9A7415;}
+.stamp.nee{background:var(--subtle);color:var(--ink-soft);}
+.vd .kort{font-size:13.5px;color:var(--ink-soft);line-height:1.4;margin-top:auto;}
+
+/* pistekaarten */
+.piste{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:26px 28px;box-shadow:var(--shadow);margin-bottom:18px;}
+.piste-kop{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:4px;}
+.piste-kop .num{font-family:var(--heading);font-weight:700;font-size:15px;color:var(--orange);}
+.piste-kop h3{font-size:23px;}
+.piste .oordeel{font-size:17px;font-weight:400;color:var(--ink);margin:10px 0 20px;max-width:76ch;}
+.split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:26px;align-items:start;}
+@media (max-width:860px){.split{grid-template-columns:minmax(0,1fr);gap:20px;}}
+.kolom h4{font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:11px;}
+.punten{list-style:none;display:flex;flex-direction:column;gap:11px;}
+.punten li{display:flex;gap:10px;font-size:15.5px;line-height:1.5;min-width:0;}
+.punten .ic{flex:0 0 18px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:3px;}
+.punten .ic.blijft{background:var(--green-light);color:var(--green);}
+.punten .ic.weg{background:var(--subtle);color:var(--ink-faint);}
+.citaten{background:var(--accent);border-radius:10px;padding:16px 18px;min-width:0;}
+.citaten blockquote{font-family:var(--heading);font-style:italic;font-size:15.5px;line-height:1.5;color:var(--ink);padding-left:13px;border-left:2px solid var(--yellow);}
+.citaten blockquote+blockquote{margin-top:13px;}
+
+/* nieuwe dingen */
+.nieuw{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));}
+.nk{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px 22px;min-width:0;}
+.nk h3{font-size:19px;margin-bottom:8px;}
+.nk p{font-size:15.5px;color:var(--ink-soft);}
+.nk blockquote{font-family:var(--heading);font-style:italic;font-size:15px;color:var(--ink);margin-top:12px;padding-left:12px;border-left:2px solid var(--yellow);}
+
+/* todo */
+.groep{margin-bottom:34px;}
+.groep>h3{font-size:22px;margin-bottom:5px;}
+.groep>p.gsub{color:var(--ink-soft);font-size:15.5px;margin-bottom:18px;max-width:74ch;}
+.taak{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:13px;}
+.taak.groot{border-left:none;}
+.taak-kop{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;}
+.taak-kop h4{font-family:var(--heading);font-size:19px;font-weight:700;}
+.tag{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:5px;background:var(--subtle);color:var(--ink-soft);white-space:nowrap;}
+.tag.groot{background:#F3E7F2;color:#7E4C7C;}
+.tag.klein{background:#E6F4F6;color:var(--teal-deep);}
+.taak .wat{font-size:15.5px;margin:9px 0 0;max-width:80ch;}
+.taak .feiten{display:flex;gap:22px;flex-wrap:wrap;margin-top:13px;font-size:13.5px;color:var(--ink-soft);}
+.taak .feiten b{font-weight:600;color:var(--ink);}
+.triage{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px;padding-top:14px;border-top:1px solid var(--border);}
+.triage span.q{font-size:13px;color:var(--ink-faint);align-self:center;margin-right:4px;}
+.triage label{font-size:14px;font-weight:500;padding:7px 14px;border-radius:999px;border:1.5px solid var(--border);cursor:pointer;background:var(--cream);transition:border-color .14s,background .14s;min-height:36px;display:inline-flex;align-items:center;}
+.triage label:hover{border-color:var(--border-hover);}
+.triage label:has(input:checked){border-color:var(--orange);background:var(--accent);color:var(--orange-deep);font-weight:600;}
+.triage input{position:absolute;opacity:0;pointer-events:none;}
+
+.afgevoerd{background:var(--white);border:1px dashed var(--border-hover);border-radius:12px;padding:20px 22px;}
+.afgevoerd ul{list-style:none;display:flex;flex-direction:column;gap:13px;}
+.afgevoerd li{font-size:15.5px;min-width:0;}
+.afgevoerd b{font-family:var(--heading);font-weight:700;}
+.afgevoerd .r{color:var(--ink-soft);}
+
+.vragen{list-style:none;display:flex;flex-direction:column;gap:14px;max-width:80ch;}
+.vragen li{display:flex;gap:13px;background:var(--white);border:1px solid var(--border);border-radius:11px;padding:16px 18px;min-width:0;}
+.vragen .n{font-family:var(--heading);font-weight:700;color:var(--orange);flex:0 0 auto;}
+.vragen p{font-size:15.5px;min-width:0;}
+.vragen .waarom{display:block;font-size:14px;color:var(--ink-soft);margin-top:5px;}
+
+.send{position:sticky;bottom:0;background:rgba(254,248,244,.95);backdrop-filter:blur(8px);border-top:1px solid var(--border);padding:14px 0;z-index:15;}
+.send .wrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+button.go{font-family:var(--body);font-weight:600;font-size:15px;padding:11px 24px;border-radius:999px;border:none;background:var(--orange);color:#fff;cursor:pointer;}
+button.go:hover{background:var(--orange-hover);}
+.state{font-size:14px;color:var(--ink-soft);}
+.state.ok{color:var(--green);font-weight:500;}
+footer{padding:36px 0 60px;}
+footer p{color:var(--ink-soft);font-size:15px;max-width:74ch;}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <b>Oogst van de denkdag</b>
+  <a href="#verdict">Uitkomst</a>
+  <a href="#pistes">Per piste</a>
+  <a href="#nieuw">Nieuw</a>
+  <a href="#todo">Werven en projecten</a>
+  <a href="#vragen">Open vragen</a>
+</div></nav>
+
+<header class="top">
+  <div class="wrap">
+    <span class="lbl">27 augustus 2026, met Maite en Nadine</span>
+    <h1>Wat er van de zes pistes overblijft</h1>
+    <p>Dit is wat ik uit het transcript haal over de kwaliteitstools. De doelenpagina-helft van het gesprek zit al in verkenning #4, dus die staat hier alleen waar een piste er expliciet naartoe verhuist.</p>
+    <p>Lees het als een voorstel van mijn kant. Waar ik een uitspraak interpreteer in plaats van citeer, staat dat erbij. Rechts van elke piste staan de letterlijke zinnen uit het gesprek, zodat je kunt nakijken of ik goed geluisterd heb.</p>
+    <div class="meta">
+      <span><b>2</b> van de 6 pistes gaan door</span>
+      <span><b>3</b> leveren een bruikbaar restje</span>
+      <span><b>1</b> volledig afgevoerd</span>
+      <span><b>4</b> nieuwe dingen uit het gesprek</span>
+    </div>
+  </div>
+</header>
+
+<section class="alt" id="verdict">
+  <div class="wrap">
+    <span class="lbl">De uitkomst</span>
+    <h2>Zes pistes, zes verdicten</h2>
+    <p class="sub">De opvallendste uitkomst: de twee pistes die overleven zijn allebei de eenvoudigste van de zes. Alles waar een gebruiker doorheen moest klikken, sneuvelde.</p>
+    <div class="verdicts">
+      <div class="vd">
+        <span class="num">Piste 1</span><h3>Laat ze schitteren</h3>
+        <span class="stamp deels">Restje</span>
+        <p class="kort">Wizard weg, de tips in het downloadpakket blijven.</p>
+      </div>
+      <div class="vd">
+        <span class="num">Piste 2</span><h3>Vraag je af</h3>
+        <span class="stamp ja">Doorgaan</span>
+        <p class="kort">Statisch blok onder het verhaal. De enige piste die integraal doorgaat.</p>
+      </div>
+      <div class="vd">
+        <span class="num">Piste 3</span><h3>Wat er al schittert</h3>
+        <span class="stamp nee">Niet nu</span>
+        <p class="kort">Verkeerd moment. De waardering verhuist naar een e-mail.</p>
+      </div>
+      <div class="vd">
+        <span class="num">Piste 4</span><h3>Fris je klassieker op</h3>
+        <span class="stamp deels">Restje</span>
+        <p class="kort">Spiekkaart weg, drie reflectievragen per doel blijven.</p>
+      </div>
+      <div class="vd">
+        <span class="num">Piste 5</span><h3>De Schitterscan</h3>
+        <span class="stamp nee">Afgevoerd</span>
+        <p class="kort">Klopt niet met het model. Je hoeft niet alle zeven doelen te halen.</p>
+      </div>
+      <div class="vd">
+        <span class="num">Piste 6</span><h3>De Schittergalerij</h3>
+        <span class="stamp ja">Doorgaan</span>
+        <p class="kort">Verhuist naar de doelenpagina, als vijfde bouwsteen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pistes">
+  <div class="wrap">
+    <span class="lbl">Wat er gezegd is</span>
+    <h2>Per piste</h2>
+    <p class="sub">Links wat ik eruit concludeer, rechts de zinnen waarop dat steunt.</p>
+
+    <article class="piste">
+      <div class="piste-kop"><span class="num">Piste 1</span><h3>Laat ze schitteren</h3></div>
+      <p class="oordeel">De wizard sneuvelt, maar niet omdat het idee slecht is. Hij verliest van piste 2, die hetzelfde doet met minder klikken. Wat wel overleeft is het idee dat de reflectie meegaat in het downloadpakket, want wie downloadt is meestal al weg van de site.</p>
+      <div class="split">
+        <div class="kolom">
+          <h4>Wat blijft en wat sneuvelt</h4>
+          <ul class="punten">
+            <li><span class="ic weg">&times;</span><span>De interactieve wizard van drie stappen. Te veel klikken voor wat het oplevert, en te ver gezocht bij een concrete fiche.</span></li>
+            <li><span class="ic weg">&times;</span><span>De naam. Die werkt niet, ook niet voor jou.</span></li>
+            <li><span class="ic blijft">&check;</span><span>De kernvragen zelf. Die zijn precies waar het om gaat, ook als ze nergens interactief zijn.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Een begeleidend blad in de zip of bij de download, met de vragen erop.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Eén verschuiving is genoeg, niet zeven. Als iemand op één aspect iets anders doet, is het gelukt.</span></li>
+          </ul>
+        </div>
+        <div class="citaten">
+          <h4>Uit het gesprek</h4>
+          <blockquote>"Dat heet nu nog wat raar. Laat ze schitteren."</blockquote>
+          <blockquote>"Aha, dus je kiest zelf hoe je bepaalde doelen wil toepassen en dan krijg je dan een soort checklist die je kunt bewaren of e-mailen naar je eigen. Dat is wel wat ver gezocht."</blockquote>
+          <blockquote>"Ik denk dat het idee was, als je dat downloadt, dat dat ook meegestuurd wordt. Die tips die automatisch ook meekomen in een download."</blockquote>
+          <blockquote>"Ken jij het levensverhaal van je bewoners? Heb je bewoners vandaag iets gekozen of is alles voor hen beslist? Daarin zijn het die goede vragen om mee te confronteren."</blockquote>
+          <blockquote>"Als dat dan in iets moet, één verbinding, is dat wel verschil. Of één verschuiving."</blockquote>
+          <blockquote>"Dat was wat hetzelfde, maar complexer. Ja nee, dan is dat tweede beter."</blockquote>
+        </div>
+      </div>
+    </article>
+
+    <article class="piste">
+      <div class="piste-kop"><span class="num">Piste 2</span><h3>Vraag je af</h3></div>
+      <p class="oordeel">De enige piste die integraal doorgaat, en meteen ook de simpelste. Het blok komt onder het verhaal op de fichepagina, zonder interactie. De discussie ging vooral over het contrastpaar: dat mag blijven, maar zonder dat er ergens staat wat de goede en wat de slechte versie is.</p>
+      <div class="split">
+        <div class="kolom">
+          <h4>Wat blijft en wat sneuvelt</h4>
+          <ul class="punten">
+            <li><span class="ic blijft">&check;</span><span>Het blok komt gewoon onder het verhaal te staan. Geen accordeon, geen klikken.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Per gekoppeld doel de kernvraag, plus hoe je met dat aspect meer kunt doen.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Ook op fiches die al bestaan, niet alleen op nieuwe.</span></li>
+            <li><span class="ic weg">&times;</span><span>Het contrastpaar zoals het nu getekend is, waarbij links de goede en rechts de mindere versie staat. Ook al staat het er niet, je leest het er wel in.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Wel twee scenes, maar zo geformuleerd dat de begeleidster zelf zegt hoe het bij haar gaat.</span></li>
+          </ul>
+        </div>
+        <div class="citaten">
+          <h4>Uit het gesprek</h4>
+          <blockquote>"In plaats van dat dat interactief is, dat dat daar gewoon onder komt."</blockquote>
+          <blockquote>"Ook bij fiches die al gemaakt zijn in het verleden, dat hij daar een keer iets naar kijkt."</blockquote>
+          <blockquote>"Of vind je dat belerend? Ik denk dat er alternatieven zijn waardoor dat minder belerend is."</blockquote>
+          <blockquote>"Waardoor je zelf kunt zeggen hoe dat bij jou gaat, of zou kunnen gaan, zonder dat het aangeduid is wat dat goed en slecht is."</blockquote>
+          <blockquote>"Vraag je af. Ja, daarvan gaan we wel iets doen. Dus dat is als je een activiteit ziet staan, dat daar gewoon onderkomt van hoe kun je nog meer iets met die bepaalde aspecten doen."</blockquote>
+        </div>
+      </div>
+    </article>
+
+    <article class="piste">
+      <div class="piste-kop"><span class="num">Piste 3</span><h3>Wat er al schittert</h3></div>
+      <p class="oordeel">Dit is de piste waar het gesprek het langst over ging, en het bezwaar is scherp: feedback op het moment dat iemand net iets ingestuurd heeft, valt verkeerd. Ook als ze positief bedoeld is. De waardering zelf wil iedereen wel, maar dan eerder als bedanking dan als beoordeling. Uit die discussie kwam een concreter idee dat ik hieronder als apart project zet.</p>
+      <div class="split">
+        <div class="kolom">
+          <h4>Wat blijft en wat sneuvelt</h4>
+          <ul class="punten">
+            <li><span class="ic weg">&times;</span><span>Het feedbackblok op de eigen fichepagina, in beide varianten. Niet nu.</span></li>
+            <li><span class="ic weg">&times;</span><span>Zeker variant 2, met de ene groeikans erbij. Dat leest als kritiek op het slechtst mogelijke moment.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Benoemen wat er goed is, blijft waardevol. Daar leren mensen het meest van.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Dat verhuist naar een bedank-e-mail na de inzending, die ook vooraf uitlegt dat er later tips bij de fiche komen te staan.</span></li>
+            <li><span class="ic blijft">&check;</span><span>De echte hulp hoort thuis bij het bedenken, niet na het insturen.</span></li>
+          </ul>
+        </div>
+        <div class="citaten">
+          <h4>Uit het gesprek</h4>
+          <blockquote>"Groter maken, wat er al goed is, met die mensen."</blockquote>
+          <blockquote>"Dat is misschien een logischere stap, dat het je helpt om iets goed te bedenken en niet dat je er trots op bent, want je zet dat hier op."</blockquote>
+          <blockquote>"Maar wel wat er echt heel goed aan is, want daar leren mensen nog keiveel in."</blockquote>
+          <blockquote>"Er kan één e-mail zijn, waar je al een beetje een waarschuwing geeft van als je dat gaat zien staan op het platform, dan gaan er nog tips aangekoppeld zijn."</blockquote>
+          <blockquote>"Maar dat je toch ook wel de persoon die het uploadt ook wel even in zijn waarde brengt."</blockquote>
+          <blockquote>"Wat er al schittert, dat was op het einde van als je iets opgeladen hebt, nee dat gaan we niet doen."</blockquote>
+        </div>
+      </div>
+    </article>
+
+    <article class="piste">
+      <div class="piste-kop"><span class="num">Piste 4</span><h3>Fris je klassieker op</h3></div>
+      <p class="oordeel">De werkvorm zelf gaat niet door, en de spiekkaart kreeg de hardste opmerking van de dag. Wat er wel uitkomt is kleiner en beter: drie reflectievragen per doel, op de doelenpagina. Let op het verschil dat Maite maakt, want dat is precies waar piste 4 de mist inging: de vragen horen bij het doel, niet bij het soort activiteit.</p>
+      <div class="split">
+        <div class="kolom">
+          <h4>Wat blijft en wat sneuvelt</h4>
+          <ul class="punten">
+            <li><span class="ic weg">&times;</span><span>De spiekkaart. Die voelt als digitaal huiswerk.</span></li>
+            <li><span class="ic weg">&times;</span><span>De acht klassiekertegels als startpunt. Bingo werkte niet als voorbeeld.</span></li>
+            <li><span class="ic weg">&times;</span><span>Zeven schermen na elkaar doorlopen.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Drie reflectievragen per doel, als leervorm op de doelenpagina.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Het vertrekpunt is het doel, niet het thema of het soort activiteit.</span></li>
+          </ul>
+        </div>
+        <div class="citaten">
+          <h4>Uit het gesprek</h4>
+          <blockquote>"Ja, ik vind hem een klein beetje lagerschoolachtig, die is zo... Met dat spiekbriefje en zo. Dat is echt gelijk zo een platform voor je huiswerk digitaal te doen."</blockquote>
+          <blockquote>"Ik zou kunnen zeggen, hoe kun je een activiteit nog meer laten schitteren op dit doel. Op het doel hé, niet op het thema."</blockquote>
+          <blockquote>"En dan kunnen we daar wel een stuk of drie leuke reflectievragen in steken."</blockquote>
+          <blockquote>"Dat is misschien een soort leervorm op de doelenpagina. En daar zo drie leuke reflectievragen."</blockquote>
+        </div>
+      </div>
+    </article>
+
+    <article class="piste">
+      <div class="piste-kop"><span class="num">Piste 5</span><h3>De Schitterscan</h3></div>
+      <p class="oordeel">Deze is niet afgekeurd op de uitvoering maar op de logica eronder, en dat is de belangrijkste correctie van de hele dag. Een balk met zeven segmenten suggereert dat je ze alle zeven moet aantikken. Zo werkt het model niet. Een activiteit die alleen op Mensgericht heel sterk is, is een goede activiteit.</p>
+      <div class="split">
+        <div class="kolom">
+          <h4>Wat blijft en wat sneuvelt</h4>
+          <ul class="punten">
+            <li><span class="ic weg">&times;</span><span>De zelfscan met eenentwintig stellingen.</span></li>
+            <li><span class="ic weg">&times;</span><span>De voortgangsbalk met zeven segmenten. Die maakt van het model een checklist.</span></li>
+            <li><span class="ic blijft">&check;</span><span>De regel eronder blijft wel gelden voor alles wat we nog bouwen: het is niet de bedoeling dat een activiteit alle zeven doelen raakt.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Een scan van een heel activiteitenaanbod is een interessant idee, maar hoort niet op dit platform. Dat is opleidingsmateriaal.</span></li>
+          </ul>
+        </div>
+        <div class="citaten">
+          <h4>Uit het gesprek</h4>
+          <blockquote>"Maar zo zit het eigenlijk niet in elkaar. Je moet niet al die doelen bereiken. Je kunt een keigoeie activiteit hebben die heel menselijk is."</blockquote>
+          <blockquote>"Maar misschien is het beter als ik hier een activiteitenaanbod door scanne dan. Maar ja, dat is nu niet voor deze platform."</blockquote>
+          <blockquote>"De scan, dat was het niet echt."</blockquote>
+        </div>
+      </div>
+    </article>
+
+    <article class="piste">
+      <div class="piste-kop"><span class="num">Piste 6</span><h3>De Schittergalerij</h3></div>
+      <p class="oordeel">Het meest enthousiaste onthaal van de zes, en het verandert van plaats: dit hoort op de doelenpagina, per doel een paar klassiekers. Interessant is dat de galerij precies doet wat de scan probeerde en niet lukte. Ze toont dat het niet om het soort activiteit gaat maar om het doel erachter, zonder ergens iets te scoren.</p>
+      <div class="split">
+        <div class="kolom">
+          <h4>Wat blijft en wat sneuvelt</h4>
+          <ul class="punten">
+            <li><span class="ic blijft">&check;</span><span>De voor en na van klassiekers, met de verschoven zinnen gemarkeerd.</span></li>
+            <li><span class="ic blijft">&check;</span><span>Als vijfde bouwsteen op de doelenpagina, per doel een paar klassiekers.</span></li>
+            <li><span class="ic blijft">&check;</span><span>De bestaande vraagjes op de doelenpagina blijven ernaast staan, die zijn geliefd.</span></li>
+            <li><span class="ic blijft">&check;</span><span>De wandeling werd expliciet genoemd als het sterkste voorbeeld.</span></li>
+            <li><span class="ic weg">&times;</span><span>Niet als losstaande galerijpagina met een eigen ingang.</span></li>
+          </ul>
+        </div>
+        <div class="citaten">
+          <h4>Uit het gesprek</h4>
+          <blockquote>"Die schittergalerij, ja, dat is tof te implementeren of te bouwen op zo'n doelenpagina."</blockquote>
+          <blockquote>"Zodat het echt niet altijd gaat om de soort activiteit, maar dat het echt gaat over het doel dat je erachter wil. Dat een quiz verschrikkelijk kan zijn, maar ook een bepaald doel kan bedienen."</blockquote>
+          <blockquote>"Ja, maar ik vind dat dat ook zeker mag blijven, want dat vind ik echt leuk met die vraagjes."</blockquote>
+          <blockquote>"Mijn die wandeling, dat is echt wel leuk."</blockquote>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="alt" id="nieuw">
+  <div class="wrap">
+    <span class="lbl">Niet uit de zes pistes</span>
+    <h2>Wat er nieuw op tafel kwam</h2>
+    <p class="sub">Vier dingen die niemand had voorbereid en die uit het gesprek zelf ontstonden. Het eerste is volgens mij het belangrijkste van de hele dag.</p>
+    <div class="nieuw">
+      <div class="nk">
+        <h3>Hulp bij het bedenken</h3>
+        <p>Het platform helpt je vandaag als je de fiche van iemand anders bekijkt, en als je over een doel wil leren. Maar niet op het moment dat je zelf iets nieuws wil verzinnen. Dat is het gat waar alle drie de afgevoerde pistes eigenlijk omheen draaiden.</p>
+        <blockquote>"Als je iets wilt bedenken of als je iets nieuw maakt, om daarin hulp te krijgen. Er zit zo geen brainstormpartner in."</blockquote>
+      </div>
+      <div class="nk">
+        <h3>Een bedank-e-mail na de inzending</h3>
+        <p>Eén algemene mail, niet per fiche geschreven. Hij bedankt, zegt waarom de bijdrage waardevol is, en kondigt aan dat er later tips bij de fiche kunnen komen te staan, zodat niemand verrast is als dat gebeurt.</p>
+        <blockquote>"Die krijgen een mailtje terug, van bedankt voor uw inzending. En dat je daar dan kunt inzetten, super tof."</blockquote>
+      </div>
+      <div class="nk">
+        <h3>Extra vragen bij het insturen</h3>
+        <p>Er komen fiches binnen zonder enige context, een kale bingo of quiz. Extra vragen in het formulier vangen dat op het moment zelf op, in plaats van er achteraf iets over te moeten zeggen.</p>
+        <blockquote>"Zonder iets van context. Gewoon, hier is ze. Zonder iets van doel erbij."</blockquote>
+      </div>
+      <div class="nk">
+        <h3>Het scorealgoritme laten toetsen</h3>
+        <p>Jij hebt de diamantscore op gevoel afgesteld. Maite en Nadine kunnen nakijken of hij streng genoeg is en of hij naar de juiste dingen kijkt. Dit is de goedkoopste manier om de onderbouwing steviger te maken.</p>
+        <blockquote>"Om dat eens te checken. Of dat dat streng genoeg is, of dat dat naar de juiste dingen kijkt. Nu doe ik dat wat op het gevoel."</blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<form id="todo-form">
+<section id="todo">
+  <div class="wrap">
+    <span class="lbl">Wat je hiermee kunt doen</span>
+    <h2>Werven en kleinere projecten</h2>
+    <p class="sub">Negen stukken werk, gesorteerd op omvang. Onder elk item kun je aanduiden wat je ermee wil. Onderaan stuur je de hele triage in één keer door.</p>
+
+    <div class="groep">
+      <h3>Werven</h3>
+      <p class="gsub">Groter dan een avond. Elk hiervan heeft een eigen verkenning of blueprint nodig voor je begint.</p>
+
+      <div class="taak groot" data-taak="W1">
+        <div class="taak-kop"><h4>W1. Vraag je af, op de fichepagina</h4><span class="tag groot">Werf</span><span class="tag">Piste 2</span></div>
+        <p class="wat">Een blok onder het verhaal met per gekoppeld doel de kernvraag en een suggestie om er meer mee te doen. Statisch, geen interactie. Het contrastpaar moet herschreven worden zodat er nergens een goede en een mindere versie staat. Draait ook over bestaande fiches.</p>
+        <div class="feiten"><span><b>Klaar om te bouwen:</b> bijna, alleen de contrastpaar-vorm ligt open</span><span><b>Content:</b> bestaat al in config/diamant.php</span><span><b>Afhankelijk van:</b> niets</span></div>
+        <div class="triage"><span class="q">Wat doen we hiermee?</span>
+          <label><input type="radio" name="W1" value="doen nu"> Doen</label>
+          <label><input type="radio" name="W1" value="later"> Later</label>
+          <label><input type="radio" name="W1" value="schrappen"> Schrappen</label>
+        </div>
+      </div>
+
+      <div class="taak groot" data-taak="W2">
+        <div class="taak-kop"><h4>W2. De schittergalerij als vijfde bouwsteen op de doelenpagina</h4><span class="tag groot">Werf</span><span class="tag">Piste 6</span></div>
+        <p class="wat">Per doel een paar klassiekers, elk twee keer verteld, met de verschoven zinnen gemarkeerd. Komt naast de vier bouwstenen uit verkenning #4, dus de Doen-pagina wordt hiermee uitgebreid in plaats van opnieuw ontworpen. De inhoud is curatiewerk, niet bouwwerk.</p>
+        <div class="feiten"><span><b>Bouwwerk:</b> beperkt, het patroon staat al getekend</span><span><b>Curatiewerk:</b> groot, per doel een paar makeovers schrijven</span><span><b>Afhankelijk van:</b> de Doen-pagina uit verkenning #4</span></div>
+        <div class="triage"><span class="q">Wat doen we hiermee?</span>
+          <label><input type="radio" name="W2" value="doen nu"> Doen</label>
+          <label><input type="radio" name="W2" value="later"> Later</label>
+          <label><input type="radio" name="W2" value="schrappen"> Schrappen</label>
+        </div>
+      </div>
+
+      <div class="taak groot" data-taak="W3">
+        <div class="taak-kop"><h4>W3. Hulp bij het bedenken van een nieuwe activiteit</h4><span class="tag groot">Werf</span><span class="tag">Nieuw</span></div>
+        <p class="wat">De grootste en de vaagste. Ingang via een doel, bijvoorbeeld "ik wil iets rond Anderen", en van daaruit een wizard of een gesprek dat je naar een activiteit brengt. DIAMANT is de ruggengraat; het stappenplan kan gevoed worden met stukken uit de BAM, Sense of Home en het community-buildingmateriaal, plus jullie eigen mini-stappenplan uit de vorming. Jij noemde het zelf duurder en moeilijker dan de rest, en Maite wil het eerst uitproberen voor er iets gebouwd wordt.</p>
+        <div class="feiten"><span><b>Volgende stap:</b> een verkenning, geen code</span><span><b>Risico:</b> vraagt dialoog, en dialoog is precies wat de andere pistes deed sneuvelen</span><span><b>Bronnen:</b> nog aan te leveren door Maite</span></div>
+        <div class="triage"><span class="q">Wat doen we hiermee?</span>
+          <label><input type="radio" name="W3" value="doen nu"> Doen</label>
+          <label><input type="radio" name="W3" value="later"> Later</label>
+          <label><input type="radio" name="W3" value="schrappen"> Schrappen</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="groep">
+      <h3>Kleinere projecten</h3>
+      <p class="gsub">Afgebakend, elk op zichzelf af te werken.</p>
+
+      <div class="taak" data-taak="K1">
+        <div class="taak-kop"><h4>K1. Drie reflectievragen per doel</h4><span class="tag klein">Klein</span><span class="tag">Piste 4</span></div>
+        <p class="wat">Eenentwintig vragen in totaal, drie per doel, op de doelenpagina als leervorm. Vertrekpunt is het doel, niet het soort activiteit. Dit is het enige bruikbare restje van piste 4 en het is vooral schrijfwerk.</p>
+        <div class="feiten"><span><b>Werk:</b> schrijven, weinig bouwen</span><span><b>Wie:</b> te bepalen, Maite of jij met een voorzet</span></div>
+        <div class="triage"><span class="q">Wat doen we hiermee?</span>
+          <label><input type="radio" name="K1" value="doen nu"> Doen</label>
+          <label><input type="radio" name="K1" value="later"> Later</label>
+          <label><input type="radio" name="K1" value="schrappen"> Schrappen</label>
+        </div>
+      </div>
+
+      <div class="taak" data-taak="K2">
+        <div class="taak-kop"><h4>K2. Reflectieblad in het downloadpakket</h4><span class="tag klein">Klein</span><span class="tag">Piste 1</span></div>
+        <p class="wat">Een pdf mee in de zip, met de fiche-info en de kernvragen van de gekoppelde doelen. Wie downloadt is meestal weg van de site, dus dit is de enige plek waar je die persoon nog bereikt. De downloadflow bouwt vandaag al zips.</p>
+        <div class="feiten"><span><b>Werk:</b> een dag, misschien minder</span><span><b>Hangt samen met:</b> W1, zelfde vragen</span></div>
+        <div class="triage"><span class="q">Wat doen we hiermee?</span>
+          <label><input type="radio" name="K2" value="doen nu"> Doen</label>
+          <label><input type="radio" name="K2" value="later"> Later</label>
+          <label><input type="radio" name="K2" value="schrappen"> Schrappen</label>
+        </div>
+      </div>
+
+      <div class="taak" data-taak="K3">
+        <div class="taak-kop"><h4>K3. Bedank-e-mail na een inzending</h4><span class="tag klein">Klein</span><span class="tag">Nieuw</span></div>
+        <p class="wat">Eén algemene mail voor alle inzendingen. Bedankt, zegt wat de bijdrage waard is, en legt vooraf uit dat er later tips bij de fiche kunnen komen zodat andere gebruikers haar naar hun eigen doel kunnen buigen. Dit is wat piste 3 vervangt.</p>
+        <div class="feiten"><span><b>Werk:</b> vooral copy schrijven</span><span><b>Let op:</b> geen mail per hartje, dat is al afgesproken</span></div>
+        <div class="triage"><span class="q">Wat doen we hiermee?</span>
+          <label><input type="radio" name="K3" value="doen nu"> Doen</label>
+          <label><input type="radio" name="K3" value="later"> Later</label>
+          <label><input type="radio" name="K3" value="schrappen"> Schrappen</label>
+        </div>
+      </div>
+
+      <div class="taak" data-taak="K4">
+        <div class="taak-kop"><h4>K4. Extra vragen in het insturen-formulier</h4><span class="tag klein">Klein</span><span class="tag">Nieuw</span></div>
+        <p class="wat">Vangt de kale inzendingen op, een bingo of quiz zonder doel of context. Vraag op het moment zelf waar het naartoe moet, in plaats van er achteraf feedback over te geven. Dit is ook de plek waar de hulp bij het bedenken later kan aanhaken.</p>
+        <div class="feiten"><span><b>Werk:</b> formulier plus copy</span><span><b>Opent de deur naar:</b> W3</span></div>
+        <div class="triage"><span class="q">Wat doen we hiermee?</span>
+          <label><input type="radio" name="K4" value="doen nu"> Doen</label>
+          <label><input type="radio" name="K4" value="later"> Later</label>
+          <label><input type="radio" name="K4" value="schrappen"> Schrappen</label>
+        </div>
+      </div>
+
+      <div class="taak" data-taak="K5">
+        <div class="taak-kop"><h4>K5. Het scorealgoritme laten toetsen</h4><span class="tag klein">Klein</span><span class="tag">Nieuw</span></div>
+        <p class="wat">Leg de criteria van de diamantscore voor aan Maite en Nadine. Is hij streng genoeg, kijkt hij naar de juiste dingen? Nadine is hier academisch kritisch op, dus dit is de goedkoopste manier om die kritiek voor te zijn. Vraagt van jou alleen dat je de criteria leesbaar opschrijft.</p>
+        <div class="feiten"><span><b>Werk:</b> een document, geen code</span><span><b>Levert op:</b> onderbouwing die je later nodig hebt</span></div>
+        <div class="triage"><span class="q">Wat doen we hiermee?</span>
+          <label><input type="radio" name="K5" value="doen nu"> Doen</label>
+          <label><input type="radio" name="K5" value="later"> Later</label>
+          <label><input type="radio" name="K5" value="schrappen"> Schrappen</label>
+        </div>
+      </div>
+
+      <div class="taak" data-taak="K6">
+        <div class="taak-kop"><h4>K6. Kwartaaldoel in de kijker</h4><span class="tag klein">Klein</span><span class="tag">Eerder geparkeerd</span></div>
+        <p class="wat">Kwam terug op tafel en is nu niet meer geparkeerd. Eén doel per periode in de kijker, met verhalen en social posts. Voorwaarde is dat de doelenpagina van dat doel af is, dus dit volgt vanzelf op de D-pagina. Zeven kwartalen is te traag; de volgorde volgen zonder aan de kwartalen vast te hangen mag ook.</p>
+        <div class="feiten"><span><b>Afhankelijk van:</b> een afgewerkte doelenpagina per letter</span><span><b>Beslist:</b> beginnen bij de D</span></div>
+        <div class="triage"><span class="q">Wat doen we hiermee?</span>
+          <label><input type="radio" name="K6" value="doen nu"> Doen</label>
+          <label><input type="radio" name="K6" value="later"> Later</label>
+          <label><input type="radio" name="K6" value="schrappen"> Schrappen</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="groep">
+      <h3>Afgevoerd</h3>
+      <p class="gsub">Hier hoef je niets mee te doen. Ik zet ze erbij zodat je kunt nakijken of ik ze terecht wegleg.</p>
+      <div class="afgevoerd">
+        <ul>
+          <li><b>De schitterwizard bij de download.</b> <span class="r">Verliest van piste 2, die hetzelfde doet zonder klikken. "Dat was wat hetzelfde, maar complexer."</span></li>
+          <li><b>Auteursfeedback op de eigen fichepagina.</b> <span class="r">Verkeerd moment. De waardering leeft voort in K3.</span></li>
+          <li><b>De Schitterscan met eenentwintig stellingen.</b> <span class="r">Botst met het model: je hoeft niet alle zeven doelen te halen.</span></li>
+          <li><b>De spiekkaart.</b> <span class="r">"Dat is echt gelijk zo een platform voor je huiswerk digitaal te doen."</span></li>
+          <li><b>De herken-werkvorm met zeven schermen.</b> <span class="r">Leeft voort als K1, drie vragen per doel.</span></li>
+          <li><b>Een scan van een heel activiteitenaanbod.</b> <span class="r">Interessant, maar opleidingsmateriaal, niet dit platform.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="vragen">
+  <div class="wrap">
+    <span class="lbl">Nog te beslissen</span>
+    <h2>Open vragen</h2>
+    <p class="sub">Vier dingen die het gesprek niet heeft opgelost en die je nodig hebt voor W1 en K1 kunnen starten.</p>
+    <ul class="vragen">
+      <li><span class="n">1</span><p>Hoe ziet een contrastpaar eruit zonder dat er een goede en een mindere versie in te lezen valt?<span class="waarom">Dit blokkeert W1. Twee scenes naast elkaar leest bijna altijd als voor en na, ook zonder label. Mogelijk moet de vraag ernaast staan in plaats van eronder.</span></p></li>
+      <li><span class="n">2</span><p>Hoe gaat het blok heten, nu "Laat ze schitteren" niet werkt?<span class="waarom">Het woord schitteren zit intussen in vijf verschillende namen. Waarschijnlijk moet er maar één overblijven.</span></p></li>
+      <li><span class="n">3</span><p>Draaien we W1 ook over de bestaande fiches, en wanneer?<span class="waarom">Maite vroeg dit expliciet. Vijfhonderd fiches nakijken is niet realistisch, dus de vraag is hoeveel je automatisch laat gebeuren.</span></p></li>
+      <li><span class="n">4</span><p>Wie schrijft de eenentwintig reflectievragen?<span class="waarom">Jij kunt een voorzet doen per doel, maar de toon moet van Maite komen. Zelfde patroon als bij de verhalen in verkenning #4.</span></p></li>
+    </ul>
+  </div>
+</section>
+
+<div class="send"><div class="wrap">
+  <button type="submit" class="go">Stuur mijn triage door</button>
+  <span class="state" data-state>Nog niets aangeduid</span>
+</div></div>
+</form>
+
+<footer>
+  <div class="wrap">
+    <p>Gebaseerd op het transcript van 27 augustus 2026. De doelenpagina-helft van dat gesprek staat in verkenning #4 en herhaal ik hier niet. Klopt een verdict niet met wat jij gehoord hebt, annoteer erop, dan pas ik het aan.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById('todo-form');
+  if (!form) { return; }
+  var namen = {
+    W1: 'W1 Vraag je af op de fichepagina',
+    W2: 'W2 Schittergalerij op de doelenpagina',
+    W3: 'W3 Hulp bij het bedenken',
+    K1: 'K1 Drie reflectievragen per doel',
+    K2: 'K2 Reflectieblad in het downloadpakket',
+    K3: 'K3 Bedank-e-mail na inzending',
+    K4: 'K4 Extra vragen in het insturen-formulier',
+    K5: 'K5 Scorealgoritme laten toetsen',
+    K6: 'K6 Kwartaaldoel in de kijker'
+  };
+  var staat = form.querySelector('[data-state]');
+
+  form.addEventListener('change', function () {
+    var n = form.querySelectorAll('input[type=radio]:checked').length;
+    staat.textContent = n + ' van 9 aangeduid';
+    staat.classList.remove('ok');
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var regels = [];
+    Object.keys(namen).forEach(function (k) {
+      var g = form.querySelector('input[name="' + k + '"]:checked');
+      if (g) { regels.push(namen[k] + ': ' + g.value); }
+    });
+    if (!regels.length) { staat.textContent = 'Duid eerst iets aan.'; return; }
+    if (typeof window.lavish !== 'undefined' && window.lavish && window.lavish.queuePrompt) {
+      window.lavish.queuePrompt('Triage van de werven en projecten uit de denkdag:\n' + regels.join('\n'), {
+        tag: 'triage',
+        text: regels.length + ' items getrieerd',
+        element: form,
+        queueKey: 'triage',
+        data: { triage: regels }
+      });
+    }
+    staat.textContent = 'Doorgestuurd: ' + regels.length + ' items';
+    staat.classList.add('ok');
+  });
+})();
+</script>
+
+</body>
+</html>

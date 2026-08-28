@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wat er meemoet</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:400,400i,700,700i|fira-sans:300,300i,400,400i,500,600,700" rel="stylesheet">
+<style>
+:root{
+  --orange:#E8764B; --orange-hover:#D4683F; --orange-deep:#C25A33;
+  --teal:#4CB7C5; --teal-deep:#2E8D9A; --yellow:#F4C44E;
+  --green:#5F8A4A; --green-light:#EDF3E8;
+  --ink:#231E1A; --ink-soft:#756C65; --ink-faint:#C0B5AE;
+  --cream:#FEF8F4; --white:#FFFFFF; --subtle:#F5F0EC; --accent:#FDF3EE;
+  --border:#EBE4DE; --border-hover:#DDD5CD;
+  --paper:#FFFDF9;
+  --doen:#E8764B; --doen-l:#FDF4EF; --doen-d:#B4552C;
+  --incl:#4CB7C5; --incl-l:#EDF7F9; --incl-d:#1E7B87;
+  --auto:#EFB13F; --auto-l:#FCF2DC; --auto-d:#8A6412;
+  --mens:#C2666F; --mens-l:#FBECEC; --mens-d:#9E4750;
+  --and:#B57BB3;  --and-l:#F5EBF4;  --and-d:#7E4F7C;
+  --norm:#8AA96B; --norm-l:#EEF3E6; --norm-d:#55703C;
+  --tal:#5E7FA8;  --tal-l:#ECF0F6;  --tal-d:#3F5C82;
+  --heading:'Aleo',serif; --body:'Fira Sans',sans-serif;
+  --shadow:0 1px 3px rgba(35,30,26,.06), 0 6px 20px rgba(35,30,26,.05);
+  --shadow-lift:0 2px 6px rgba(35,30,26,.08), 0 16px 36px rgba(35,30,26,.10);
+}
+.f-doen{--f:var(--doen);--f-l:var(--doen-l);--f-d:var(--doen-d);}
+.f-incl{--f:var(--incl);--f-l:var(--incl-l);--f-d:var(--incl-d);}
+.f-auto{--f:var(--auto);--f-l:var(--auto-l);--f-d:var(--auto-d);}
+.f-mens{--f:var(--mens);--f-l:var(--mens-l);--f-d:var(--mens-d);}
+.f-and{--f:var(--and);--f-l:var(--and-l);--f-d:var(--and-d);}
+.f-norm{--f:var(--norm);--f-l:var(--norm-l);--f-d:var(--norm-d);}
+.f-tal{--f:var(--tal);--f-l:var(--tal-l);--f-d:var(--tal-d);}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:74px;}
+body{font-family:var(--body);font-weight:300;font-size:17px;line-height:1.62;color:var(--ink);background:var(--cream);-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4,h5{font-family:var(--heading);font-weight:700;line-height:1.18;}
+a{color:var(--orange);}
+.wrap{max-width:1160px;margin:0 auto;padding:0 26px;}
+.lbl{font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--orange);}
+
+nav{position:sticky;top:0;z-index:20;background:rgba(254,248,244,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);}
+nav .wrap{display:flex;gap:20px;align-items:center;height:52px;overflow-x:auto;}
+nav a{font-size:14px;font-weight:500;text-decoration:none;color:var(--ink-soft);white-space:nowrap;}
+nav a:hover{color:var(--orange);}
+nav b{font-family:var(--heading);font-size:15px;white-space:nowrap;}
+
+header.top{padding:54px 0 30px;}
+header.top h1{font-size:41px;margin:10px 0 16px;max-width:19ch;}
+header.top p{max-width:68ch;color:var(--ink-soft);}
+header.top p+p{margin-top:11px;}
+
+section{padding:46px 0;}
+section.alt{background:var(--subtle);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+section>.wrap>h2{font-size:29px;margin:6px 0 8px;}
+section>.wrap>.sub{color:var(--ink-soft);max-width:76ch;margin-bottom:26px;}
+
+/* triage-check */
+.check{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));}
+.ck{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:19px 21px;min-width:0;}
+.ck h3{font-size:18px;margin-bottom:7px;}
+.ck p{font-size:15.5px;color:var(--ink-soft);}
+.ck .bron{display:block;margin-top:10px;font-size:13.5px;color:var(--ink-faint);}
+.ck.ok{border-color:#CFE2C4;background:var(--green-light);}
+.ck.ok h3{color:var(--green);}
+
+/* bouwitem */
+.item{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:30px 32px;box-shadow:var(--shadow);margin-bottom:26px;}
+.item-kop{display:flex;gap:13px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px;}
+.item-kop .code{font-family:var(--heading);font-weight:700;font-size:15px;color:#fff;background:var(--f,var(--orange));padding:3px 11px;border-radius:6px;}
+.item-kop h3{font-size:26px;}
+.item .waar{font-size:14.5px;color:var(--ink-faint);}
+.item .inleiding{font-size:17px;margin:14px 0 26px;max-width:80ch;}
+
+h4.blokkop{font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft);margin:30px 0 14px;padding-top:18px;border-top:1px solid var(--border);}
+h4.blokkop:first-of-type{border-top:none;padding-top:0;margin-top:0;}
+
+/* mockup */
+.mock{border:1px solid var(--border-hover);border-radius:10px;overflow:hidden;background:var(--white);box-shadow:var(--shadow-lift);margin-bottom:8px;}
+.mock-bar{height:30px;background:var(--subtle);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px;padding:0 12px;}
+.mock-bar i{width:8px;height:8px;border-radius:50%;background:var(--ink-faint);display:block;}
+.mock-bar span{font-size:12px;color:var(--ink-faint);margin-left:10px;}
+.mock-body{padding:26px 28px 30px;}
+.mock-cap{font-size:14px;color:var(--ink-soft);margin-bottom:26px;}
+.mock-cap b{font-weight:600;color:var(--ink);}
+
+.m-eyebrow{font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);}
+.m-h{font-family:var(--heading);font-weight:700;font-size:24px;margin:6px 0 6px;}
+.m-sub{font-size:16px;color:var(--ink-soft);margin-bottom:20px;}
+.gem{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;flex:0 0 30px;
+  background:var(--f,var(--orange));color:#fff;font-family:var(--heading);font-weight:700;font-size:15px;
+  clip-path:polygon(50% 0,100% 35%,80% 100%,20% 100%,0 35%);}
+.gem.klein{width:22px;height:22px;flex:0 0 22px;font-size:11px;}
+
+.rij{display:flex;gap:15px;align-items:flex-start;padding:19px 0;border-bottom:1px solid var(--border);min-width:0;}
+.rij:last-of-type{border-bottom:none;}
+.rij .tekst{min-width:0;}
+.rij .naam{font-family:var(--heading);font-weight:700;font-size:18px;color:var(--f-d,var(--ink));}
+.rij .vraag{font-family:var(--heading);font-style:italic;font-size:17px;color:var(--ink-soft);margin-top:4px;line-height:1.45;}
+.rij .suggestie{font-size:16px;margin-top:9px;}
+.rij .suggestie b{font-weight:600;}
+
+.waardering{background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin-bottom:6px;}
+.waardering .kop{font-family:var(--heading);font-weight:700;font-size:19px;margin-bottom:8px;}
+.waardering p{font-size:16.5px;}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--f-l,var(--subtle));color:var(--f-d,var(--ink-soft));
+  font-size:14px;font-weight:600;padding:5px 12px 5px 6px;border-radius:999px;}
+.afsluiter{font-size:14.5px;color:var(--ink-faint);margin-top:16px;font-style:italic;}
+.mlink{display:inline-flex;align-items:center;gap:6px;font-size:16px;font-weight:600;color:var(--orange);text-decoration:none;margin-top:18px;}
+.mlink::after{content:'\2192';}
+
+/* voor-na */
+.ba{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:6px;}
+@media (max-width:800px){.ba{grid-template-columns:minmax(0,1fr);}}
+.ba>div{border-radius:10px;padding:20px 22px;min-width:0;}
+.ba .voor{background:#F2F0EE;color:#5C5652;}
+.ba .na{background:var(--accent);}
+.ba .kolomkop{font-family:var(--body);font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:11px;color:var(--ink-soft);}
+.ba p{font-size:16.5px;line-height:1.55;}
+mark.hl{background:#FBE3D4;padding:1px 3px;border-radius:3px;color:var(--ink);cursor:help;position:relative;border-bottom:1px dotted var(--orange);}
+.slot{font-family:var(--heading);font-weight:700;font-size:16px;margin-top:16px;}
+
+.regels{list-style:none;display:flex;flex-direction:column;gap:13px;}
+.regels li{display:flex;gap:12px;font-size:16px;line-height:1.5;min-width:0;}
+.regels .n{flex:0 0 24px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--orange-deep);
+  font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:3px;}
+.regels b{font-weight:600;}
+
+.bron{background:var(--subtle);border-radius:9px;padding:14px 17px;font-size:14.5px;color:var(--ink-soft);margin-top:16px;}
+.bron b{font-weight:600;color:var(--ink);}
+.bron code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:var(--white);padding:1px 5px;border-radius:4px;word-break:break-all;}
+
+/* palet */
+.palet{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));}
+.pf{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px;min-width:0;text-align:center;}
+.pf .staal{height:34px;border-radius:6px;background:var(--f);margin-bottom:9px;}
+.pf .nm{font-family:var(--heading);font-weight:700;font-size:15px;color:var(--f-d);}
+.pf .hex{font-family:ui-monospace,monospace;font-size:12px;color:var(--ink-faint);}
+
+/* achterblijft */
+.blijft{list-style:none;display:flex;flex-direction:column;gap:13px;}
+.blijft li{background:var(--white);border:1px dashed var(--border-hover);border-radius:11px;padding:15px 18px;font-size:15.5px;min-width:0;}
+.blijft b{font-family:var(--heading);font-weight:700;}
+.blijft .waar{color:var(--ink-soft);}
+
+/* keuzekaarten met gerenderde opties */
+.keuzes{display:flex;flex-direction:column;gap:16px;margin-top:20px;}
+label.keuze{display:block;border:1.5px solid var(--border);border-radius:13px;background:var(--cream);padding:20px 22px 18px;cursor:pointer;min-width:0;transition:border-color .15s,box-shadow .15s;}
+label.keuze:hover{border-color:var(--border-hover);box-shadow:var(--shadow);}
+label.keuze:has(input:checked){border-color:var(--orange);background:var(--accent);box-shadow:var(--shadow-lift);}
+label.keuze input{position:absolute;opacity:0;pointer-events:none;}
+.keuze-kop{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;}
+.keuze-kop .tick{flex:0 0 20px;width:20px;height:20px;border-radius:50%;border:2px solid var(--border-hover);background:var(--white);margin-top:4px;position:relative;}
+label.keuze:has(input:checked) .tick{border-color:var(--orange);}
+label.keuze:has(input:checked) .tick::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--orange);}
+.keuze-kop h4{font-family:var(--heading);font-size:19px;}
+.keuze-kop .kort{font-size:15px;color:var(--ink-soft);margin-top:3px;max-width:76ch;}
+.weeg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px;margin-top:14px;}
+.weeg span{font-size:14.5px;line-height:1.45;padding-left:24px;position:relative;min-width:0;}
+.weeg .plus::before{content:'+';position:absolute;left:0;top:0;font-weight:700;color:var(--green);}
+.weeg .min::before{content:'\2212';position:absolute;left:0;top:0;font-weight:700;color:var(--ink-faint);}
+.weeg .min{color:var(--ink-soft);}
+
+/* twee scenes zonder oordeel */
+.scenes{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:14px;align-items:center;}
+@media (max-width:760px){.scenes{grid-template-columns:minmax(0,1fr);}}
+.scene{background:var(--subtle);border-radius:9px;padding:16px 18px;min-width:0;}
+.scene-lbl{font-family:var(--body);font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;}
+.scene p{font-size:16px;line-height:1.5;}
+.tussen{text-align:center;min-width:0;}
+.tussen-vraag{font-family:var(--heading);font-style:italic;font-size:16px;color:var(--ink-soft);display:block;max-width:16ch;margin:0 auto;line-height:1.35;}
+@media (max-width:760px){.tussen-vraag{max-width:none;}}
+.scene-voet{font-size:14.5px;color:var(--ink-faint);margin-top:14px;}
+.eenscene{background:var(--f-l,var(--subtle));border-radius:9px;padding:17px 19px;}
+.eenscene p{font-size:16.5px;line-height:1.5;}
+.eenscene .scene-lbl{color:var(--f-d,var(--ink-soft));}
+
+.gen-lijst{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:13px;}
+.gen-lijst li{display:flex;gap:10px;font-size:16px;align-items:flex-start;min-width:0;}
+.gen-lijst b{font-weight:600;}
+
+/* paginaschema */
+.pagina{display:flex;flex-direction:column;gap:7px;border:1px solid var(--border-hover);border-radius:10px;padding:12px;background:var(--white);}
+.pblok{background:var(--subtle);border-radius:6px;padding:11px 14px;font-size:14px;color:var(--ink-soft);min-width:0;}
+.pblok.vol{background:var(--f-l);color:var(--f-d);font-weight:600;padding:26px 14px;}
+.pblok.strook{background:var(--f-l);color:var(--f-d);font-weight:600;}
+
+/* beslist */
+.beslist{display:flex;flex-direction:column;gap:14px;}
+.bs{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:22px 24px;min-width:0;}
+.bs-lbl{display:inline-block;font-family:var(--body);font-weight:700;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);background:var(--green-light);padding:4px 10px;border-radius:5px;margin-bottom:11px;}
+.bs h3{font-size:21px;margin-bottom:9px;}
+.bs p{font-size:16.5px;max-width:80ch;}
+.bs .bs-gevolg{font-size:15px;color:var(--ink-soft);margin-top:11px;padding-top:11px;border-top:1px solid var(--border);}
+
+/* uitklapstrook */
+.strookblok{background:var(--f-l);border-radius:9px;overflow:hidden;}
+.strookblok summary{list-style:none;cursor:pointer;display:flex;gap:14px;align-items:center;padding:16px 19px;min-width:0;}
+.strookblok summary::-webkit-details-marker{display:none;}
+.sb-tekst{flex:1 1 auto;min-width:0;}
+.sb-kop{display:block;font-family:var(--heading);font-weight:700;font-size:18px;color:var(--f-d);}
+.sb-sub{display:block;font-size:15px;color:var(--ink-soft);margin-top:2px;}
+.sb-pijl{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--white);position:relative;transition:transform .2s ease;}
+.sb-pijl::after{content:'';position:absolute;left:9px;top:9px;width:7px;height:7px;border-right:2px solid var(--f-d);border-bottom:2px solid var(--f-d);transform:rotate(45deg);}
+.strookblok[open] .sb-pijl{transform:rotate(180deg);}
+.sb-inhoud{padding:4px 19px 20px;}
+.sb-titel{font-family:var(--heading);font-weight:700;font-size:19px;margin-bottom:11px;}
+.sb-rest{font-size:14.5px;color:var(--ink-soft);margin-top:16px;padding-top:13px;border-top:1px solid rgba(35,30,26,.08);}
+
+/* beslissingen */
+.vraagblok{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:24px 26px;margin-bottom:16px;box-shadow:var(--shadow);}
+.vraagblok h3{font-size:20px;margin-bottom:7px;}
+.vraagblok>p{font-size:16px;color:var(--ink-soft);max-width:78ch;}
+.opties{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px;}
+.opties label{font-size:15px;font-weight:500;padding:9px 17px;border-radius:999px;border:1.5px solid var(--border);
+  cursor:pointer;background:var(--cream);min-height:40px;display:inline-flex;align-items:center;transition:border-color .14s,background .14s;}
+.opties label:hover{border-color:var(--border-hover);}
+.opties label:has(input:checked){border-color:var(--orange);background:var(--accent);color:var(--orange-deep);font-weight:600;}
+.opties input{position:absolute;opacity:0;pointer-events:none;}
+
+.send{position:sticky;bottom:0;background:rgba(254,248,244,.95);backdrop-filter:blur(8px);border-top:1px solid var(--border);padding:14px 0;z-index:15;}
+.send .wrap{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+button.go{font-family:var(--body);font-weight:600;font-size:15px;padding:11px 24px;border-radius:999px;border:none;background:var(--orange);color:#fff;cursor:pointer;}
+button.go:hover{background:var(--orange-hover);}
+.state{font-size:14px;color:var(--ink-soft);}
+.state.ok{color:var(--green);font-weight:500;}
+footer{padding:36px 0 60px;}
+footer p{color:var(--ink-soft);font-size:15px;max-width:76ch;}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <b>Wat er meemoet</b>
+  <a href="#check">Triage</a>
+  <a href="#b6">B6 Vraag je af</a>
+  <a href="#b5">B5 Schittergallerij</a>
+  <a href="#gedeeld">Gedeeld</a>
+  <a href="#achter">Blijft achter</a>
+  <a href="#beslissen">Beslist</a>
+</div></nav>
+
+<header class="top">
+  <div class="wrap">
+    <span class="lbl">Bij de bekrachtigde bouwlijst van 28 augustus</span>
+    <h1>Wat er meemoet uit de mockups</h1>
+    <p>De bouwlijst legt vast wát er gebouwd wordt. Ze legt niet vast hoe het eruitziet, welke zinnen erin staan of welke regels we onderweg hebben afgesproken. Dat zit in de mockups, en die worden na vandaag door niemand meer geopend.</p>
+    <p>Dit blad haalt die stukken eruit en hangt ze aan B5 en B6. Waar het kan toon ik het gerenderd in plaats van beschreven, met de echte tekst erin, zodat je het bij het bouwen kunt overnemen zonder terug te moeten naar een bestand van 232 KB.</p>
+  </div>
+</header>
+
+<section id="check">
+  <div class="wrap">
+    <span class="lbl">Eerst even naast elkaar</span>
+    <h2>Je triage en de bouwlijst</h2>
+    <p class="sub">Ze spreken elkaar nergens tegen. Twee dingen wil ik wel benoemen, want ze lezen als een conflict terwijl ze het niet zijn.</p>
+    <div class="check">
+      <div class="ck ok">
+        <h3>Zeven van de negen kloppen exact</h3>
+        <p>W1 en W2 doen nu, dat zijn B6 en B5. W3 later, dat is de geparkeerde brainstormpartner. K2, K3 en K6 sluiten aan bij wat de bouwlijst al besliste.</p>
+        <span class="bron">Geen actie nodig</span>
+      </div>
+      <div class="ck">
+        <h3>K1, de reflectievragen</h3>
+        <p>Jij schrapt ze als apart project. De bouwlijst zegt iets anders over dezelfde vragen: "De goede reflectievragen eruit verhuizen naar B5 en B6." Ze verdwijnen dus niet, ze worden inhoud binnen twee items in plaats van een eigen ding.</p>
+        <span class="bron">Ik lees dat als hetzelfde besluit. Zeg het als je ze echt volledig wil laten vallen.</span>
+      </div>
+      <div class="ck">
+        <h3>K5 tegenover E2</h3>
+        <p>Jij zet "scorealgoritme laten toetsen" op later. De bouwlijst heeft E2 als blokkerende randvoorwaarde. Dat zijn twee verschillende dingen: E2 is jij die het algoritme afstemt op het definitieve model, K5 is Maite en Nadine die de criteria beoordelen.</p>
+        <span class="bron">E2 blijft dus blokkerend, K5 mag wachten.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="b6">
+  <div class="wrap">
+    <div class="item f-mens">
+      <div class="item-kop"><span class="code">B6</span><h3>Vraag-je-af-blok onder elke fiche</h3></div>
+      <span class="waar">Bron: piste 2, met stukken uit piste 1 en piste 3. Bouwlijst: "Eerst waardering, dan suggestie."</span>
+      <p class="inleiding">Dit item bestaat in geen enkele mockup in deze vorm. Piste 2 tekende de vragen, piste 3 tekende de waardering, piste 1 schreef de suggesties. De bouwlijst plakt ze aan elkaar. Hieronder staat wat dat oplevert, met echte tekst van de beenhouwerij-fiche, zodat je ziet of de volgorde werkt.</p>
+
+      <h4 class="blokkop">Zo zou het blok eruitzien</h4>
+      <div class="mock">
+        <div class="mock-bar"><i></i><i></i><i></i><span>hartverwarmers.be / fiches / naar-de-beenhouwerij</span></div>
+        <div class="mock-body">
+          <span class="m-eyebrow">Vraag je af</span>
+          <h4 class="m-h">Wat maakt deze activiteit sterker?</h4>
+
+          <div class="waardering f-mens">
+            <div class="kop">Wat er al in zit</div>
+            <p>Deze fiche vertrekt van wie zij is: veertig jaar achter de toog van haar eigen slagerij. Ze kiest zelf de charcuterie, niemand kiest voor haar. En dat de leefgroep daarna haar soep eet, maakt er ook een moment van samen zijn van.</p>
+            <div class="chips">
+              <span class="chip f-mens"><span class="gem klein f-mens">M</span>Mensgericht</span>
+              <span class="chip f-auto"><span class="gem klein f-auto">A</span>Autonomie</span>
+              <span class="chip f-and"><span class="gem klein f-and">A</span>Anderen</span>
+            </div>
+          </div>
+
+          <div style="margin-top:26px">
+            <div class="rij f-mens">
+              <span class="gem f-mens">M</span>
+              <div class="tekst">
+                <div class="naam">Mensgericht</div>
+                <div class="vraag">"Ken je het levensverhaal van je bewoners, of werk je vanuit het activiteitenprogramma?"</div>
+                <div class="suggestie"><b>Meer ermee doen:</b> vraag familie naar drie dingen die deze persoon graag deed.</div>
+              </div>
+            </div>
+            <div class="rij f-auto">
+              <span class="gem f-auto">A</span>
+              <div class="tekst">
+                <div class="naam">Autonomie</div>
+                <div class="vraag">"Hebben je bewoners vandaag iets gekozen, of is alles voor hen beslist?"</div>
+                <div class="suggestie"><b>Meer ermee doen:</b> laat proeven van twee smaken en observeer de reactie.</div>
+              </div>
+            </div>
+            <div class="rij f-and">
+              <span class="gem f-and">A</span>
+              <div class="tekst">
+                <div class="naam">Anderen</div>
+                <div class="vraag">"Zitten je bewoners naast elkaar, of zijn ze echt met elkaar verbonden?"</div>
+                <div class="suggestie"><b>Meer ermee doen:</b> bied een rol aan de rand aan: toekijken, materiaal aanreiken, muziek kiezen.</div>
+              </div>
+            </div>
+          </div>
+          <a class="mlink" href="#b6">Meer over de doelen</a>
+        </div>
+      </div>
+      <p class="mock-cap"><b>Wat hier uit welke piste komt:</b> de waarderingsalinea en de chips uit piste 3, de drie kernvragen en de rijstructuur uit piste 2, de suggesties uit de wizardstappen van piste 1. Die suggesties staan al in <code>config/diamant.php</code> onder <code>adaptations</code>.</p>
+
+      <h4 class="blokkop">De regels die meemoeten</h4>
+      <ul class="regels">
+        <li><span class="n">1</span><span><b>Alleen de doelen die aan de fiche hangen.</b> Nooit alle zeven, nooit een balk met zeven segmenten. Dat is de correctie die piste 5 de kop kostte: een activiteit hoeft niet alle doelen te raken.</span></li>
+        <li><span class="n">2</span><span><b>De kernvraag blijft leesbaar, ook als er iets openklapt.</b> Ze verdwijnt niet in een kop, want dan wordt het paar eronder twee losse verhaaltjes in plaats van een antwoord.</span></li>
+        <li><span class="n">3</span><span><b>Geen rood, geen kruisje, geen goed en slecht.</b> Dit is de scherpste eis van de dag en ze is nog niet opgelost. Zie de beslissing onderaan.</span></li>
+        <li><span class="n">4</span><span><b>Eén verschuiving is genoeg.</b> Uit piste 1: als iemand op één aspect iets anders doet, is het gelukt. Dat pleit voor drie suggesties, niet zeven.</span></li>
+        <li><span class="n">5</span><span><b>Een link naar het doel onderaan.</b> Voor het eerst krijgen de doelenpagina's verkeer vanaf de fiches, op de plek waar mensen toch al zijn.</span></li>
+        <li><span class="n">6</span><span><b>Geen doelen gekoppeld betekent geen blok.</b> Geen uitlegkop, geen lege staat, gewoon niets. Bij één doel krimpt het blok mee.</span></li>
+      </ul>
+
+      <div class="bron">
+        <b>De waardering hoeft niet geschreven te worden.</b> De pipeline schrijft vandaag al een Vlaamse beoordeling bij elke fiche, in <code>quality_justification</code>, voor 406 van de 420 fiches. Die tekst is admin-only. De alinea "Wat er al in zit" hierboven is een lichte herschrijving van wat er voor fiche 416 letterlijk in de database staat. Dat scheelt een contentwerf, maar het vraagt wel dat de tekst herschreven wordt naar de bezoeker in plaats van naar de auteur.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="b5">
+  <div class="wrap">
+    <div class="item f-norm">
+      <div class="item-kop"><span class="code">B5</span><h3>Schittergallerij op de doelenpagina</h3></div>
+      <span class="waar">Bron: piste 6, integraal. Bouwlijst: klassiekers per doel, AI stelt voor, Maite en Nadine keuren.</span>
+      <p class="inleiding">De enige piste die ongewijzigd doorgaat. Drie makeovers zijn volledig uitgeschreven en goedgekeurd in de sessie; die tekst is het meest concrete dat uit de hele verkenning komt en zou het eerst verloren gaan. Hieronder de bingonamiddag zoals ze getekend is.</p>
+
+      <h4 class="blokkop">De bingonamiddag, volledig uitgeschreven</h4>
+      <div class="mock">
+        <div class="mock-bar"><i></i><i></i><i></i><span>hartverwarmers.be / doelen / normalisatie</span></div>
+        <div class="mock-body">
+          <h4 class="m-h">De bingonamiddag</h4>
+          <p class="m-sub">Elke dinsdag om twee uur. Twee keer verteld.</p>
+          <div class="ba">
+            <div class="voor">
+              <div class="kolomkop">Zoals het vaak gaat</div>
+              <p>Om 14u stipt worden de bewoners opgehaald naar de activiteitenruimte en in een kring gezet. De begeleidster roept de nummers, controleert de volle kaarten en geeft de prijsjes in volgorde. Om 15u30 gaat iedereen terug.</p>
+            </div>
+            <div class="na">
+              <div class="kolomkop">Zo kan het schitteren</div>
+              <p><mark class="hl" title="Normalisatie: het gewone leven als vertrekpunt.">Bingo aan de keukentafel, met koffie erbij, wie voorbijkomt schuift aan.</mark> <mark class="hl" title="Talent: hun vaardigheid, geen taak van de begeleidster.">Maria roept de nummers</mark>, ze deed dat vroeger op de markt. <mark class="hl" title="Talent: hij was boekhouder en ziet alles.">Frans controleert de volle kaarten.</mark> <mark class="hl" title="Autonomie: één keuze maakt het moment van hen.">De winnaar kiest zelf uit de prijzenmand.</mark> Wie moe is, gaat weg zonder dat het opvalt.</p>
+            </div>
+          </div>
+          <p class="slot">Eén mogelijke versie. Niet de juiste.</p>
+        </div>
+      </div>
+      <p class="mock-cap"><b>Hover over de gemarkeerde zinnen</b> voor de tooltip met het doel en de reden. Op gsm bestaat hover niet, daar staan de twee kolommen als tabbladen met "Wat er verschoof" voluit eronder.</p>
+
+      <h4 class="blokkop">De regels die meemoeten</h4>
+      <ul class="regels">
+        <li><span class="n">1</span><span><b>Links is vaal, niet fout.</b> Grijs papier, geen rood, geen kruisje, geen woord dat verwijt. Die namiddag gebeurt overal, ook op goede dagen.</span></li>
+        <li><span class="n">2</span><span><b>Alleen de verschoven zinnen zijn gemarkeerd.</b> Vier zinnen, meer niet. Een makeover is geen ander programma.</span></li>
+        <li><span class="n">3</span><span><b>De tooltip is één zin, met het doel erin.</b> Geen theorie, geen link die je wegleidt.</span></li>
+        <li><span class="n">4</span><span><b>"Eén mogelijke versie. Niet de juiste." staat onder elke makeover.</b> Zonder die regel leest de rechterkolom als een norm en is de galerij een afvinklijst.</span></li>
+        <li><span class="n">5</span><span><b>Het bestaande vraagje op de doelenpagina blijft ernaast staan.</b> Dat staat ook in de bouwlijst, en Maite noemde het expliciet.</span></li>
+      </ul>
+
+      <h4 class="blokkop">De inhoud die klaarligt</h4>
+      <ul class="regels">
+        <li><span class="n">A</span><span><b>De bingonamiddag</b>, Autonomie, Normalisatie en Talent. Volledig uitgeschreven, hierboven.</span></li>
+        <li><span class="n">B</span><span><b>De zangnamiddag</b>, Inclusief, Mensgericht en Autonomie. Volledig uitgeschreven. Wiske kiest het eerste lied, de teksten staan groot op het scherm, wie niet meer zingt krijgt een tamboerijn.</span></li>
+        <li><span class="n">C</span><span><b>De wandeling</b>, Doen, Autonomie en Normalisatie. Volledig uitgeschreven, en expliciet de sterkste genoemd in de sessie. De groep beslist onderweg welke kant het opgaat, onderweg wordt er iets gehaald, Louis duwt een stukje zelf.</span></li>
+        <li><span class="n">D</span><span><b>Vijf kandidaten zonder tekst:</b> de kaartnamiddag, het koffiemoment, de knutselnamiddag, de quiz en bloemschikken. Die wachten op Maite. De kleurplaat kwam in de sessie ter sprake als kandidaat en staat nog nergens.</span></li>
+      </ul>
+
+      <div class="bron">
+        <b>Het aanleverblad staat ook al getekend.</b> Vier velden per klassieker, die samen één JSON-bestand worden op de content-disk: titel, de gewone versie, de schitterende versie, en per gemarkeerde zin het doel plus de reden. Dat is precies de vorm die de flow uit de bouwlijst nodig heeft, waarbij AI voorstelt en Maite en Nadine keuren.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="gedeeld">
+  <div class="wrap">
+    <span class="lbl">Hoort bij geen van beide, en toch nodig</span>
+    <h2>Wat allebei de items nodig hebben</h2>
+    <p class="sub">Dit staat in geen enkele bouwlijstregel en zit alleen in de mockups. B5 en B6 kunnen geen van beide zonder.</p>
+
+    <h4 class="blokkop">Het facetpalet</h4>
+    <p style="max-width:78ch;margin-bottom:18px;color:var(--ink-soft);font-size:16px;">Per-facetkleuren bestaan vandaag nergens in de app. Het component <code style="font-size:14px">&lt;x-diamant-gem&gt;</code> kent drie toestanden en één oranje. B5 toont per doel een makeover, B6 toont per doel een rij, dus allebei hebben ze een kleur per doel nodig. Dit palet is ontworpen bij de verkenning en nagemeten op contrast: elke donkere tint haalt AA tegen wit en cream.</p>
+    <div class="palet">
+      <div class="pf f-doen"><div class="staal"></div><div class="nm">Doen</div><div class="hex">#E8764B</div></div>
+      <div class="pf f-incl"><div class="staal"></div><div class="nm">Inclusief</div><div class="hex">#4CB7C5</div></div>
+      <div class="pf f-auto"><div class="staal"></div><div class="nm">Autonomie</div><div class="hex">#EFB13F</div></div>
+      <div class="pf f-mens"><div class="staal"></div><div class="nm">Mensgericht</div><div class="hex">#C2666F</div></div>
+      <div class="pf f-and"><div class="staal"></div><div class="nm">Anderen</div><div class="hex">#B57BB3</div></div>
+      <div class="pf f-norm"><div class="staal"></div><div class="nm">Normalisatie</div><div class="hex">#8AA96B</div></div>
+      <div class="pf f-tal"><div class="staal"></div><div class="nm">Talent</div><div class="hex">#5E7FA8</div></div>
+    </div>
+    <div class="bron" style="margin-top:20px">
+      <b>Eén kanttekening die ik eerder al meldde:</b> de witte letter ín de gem haalt geen AA op vier van de zeven kleuren. Dat is identiek aan het huidige component en de facetnaam staat overal voluit, dus het is geen achteruitgang. Maar als Nadine erop doorvraagt is het een echt punt.
+      Het palet plus alle mockup-CSS staat in <code>docs/design-sprint/kwaliteitstools-sessie.html</code>.
+    </div>
+
+    <h4 class="blokkop">Twee regels die overal gelden</h4>
+    <ul class="regels">
+      <li><span class="n">1</span><span><b>Nooit een cijfer richting de gebruiker.</b> Geen score, geen percentage, geen sterren, geen voortgangsbalk die naar honderd procent loopt. De diamantscore blijft admin-only. Dit gold al voor de verkenning en het geldt nu voor B5 en B6.</span></li>
+      <li><span class="n">2</span><span><b>Een activiteit hoeft niet alle zeven doelen te raken.</b> Dit is de correctie van Maite die piste 5 kelderde, en ze raakt elk toekomstig ontwerp waarin de zeven doelen samen in beeld komen.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="achter">
+  <div class="wrap">
+    <span class="lbl">Bewust niet meegenomen</span>
+    <h2>Wat er achterblijft, en waar het goede stuk landde</h2>
+    <p class="sub">Zodat je kunt nakijken of er niets sneuvelt dat je wou houden.</p>
+    <ul class="blijft">
+      <li><b>De wizard van drie stappen.</b> <span class="waar">De inhoud leeft voort: de drie kernvragen staan in B6, de adaptations worden de suggesties.</span></li>
+      <li><b>Het reflectieblad in de zip.</b> <span class="waar">Vervalt volledig, zowel in jouw triage als in de bouwlijst. De vragen staan op de pagina zelf.</span></li>
+      <li><b>Het waarderingskaartje voor de auteur.</b> <span class="waar">Het kaartje verdwijnt, de tekst niet: die wordt de opening van B6, nu gericht aan de bezoeker.</span></li>
+      <li><b>De ene groeikans met de knop "Ze is goed zo".</b> <span class="waar">Verdwijnt helemaal. Het bezwaar was het moment, niet de vorm.</span></li>
+      <li><b>De spiekkaart en de zeven herkenschermen.</b> <span class="waar">De contrastscenes zelf blijven bruikbaar als grondstof voor B5-makeovers.</span></li>
+      <li><b>De zelfscan met eenentwintig stellingen.</b> <span class="waar">Weg, maar de regel eronder blijft gelden voor alles wat we bouwen.</span></li>
+      <li><b>De bedankmail bij inzending.</b> <span class="waar">Niet bekrachtigd in de bouwlijst en door jou geschrapt. Als hij ooit terugkomt, staat de copy-aanzet in de oogstpagina.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="alt" id="beslissen">
+  <div class="wrap">
+    <span class="lbl">Beslist op 28 augustus</span>
+    <h2>De drie beslissingen</h2>
+    <p class="sub">B6 wordt hiermee soberder dan de bouwlijst voorzag, en de galerij blijft binnen de doelenpagina in plaats van er een bestemming naast te worden.</p>
+
+    <div class="beslist">
+      <div class="bs">
+        <span class="bs-lbl">Beslist</span>
+        <h3>Geen scenes in B6, alleen de vraag</h3>
+        <p>Het contrastpaar gaat niet mee naar de fichepagina. De kernvraag doet het werk, met daaronder één suggestie. Daarmee is het probleem opgelost door het weg te nemen: zonder tweede scene valt er niets te vergelijken en dus niets te veroordelen.</p>
+        <p class="bs-gevolg">De contrastparen uit <code>config/diamant.php</code> blijven ongebruikt op de fichepagina. Ze zijn wel de grondstof voor de makeovers in B5.</p>
+      </div>
+
+      <div class="bs">
+        <span class="bs-lbl">Beslist</span>
+        <h3>Geen waarderingsalinea, meteen de vragen</h3>
+        <p>Het blok begint waar piste 2 het begon. Geen samenvatting van wat er al goed zit, geen chips met de herkende doelen bovenaan.</p>
+        <p class="bs-gevolg">Dit overschrijft een regel uit de bekrachtigde bouwlijst, die bij B6 zegt: "Eerst waardering, dan suggestie: toon welke doelen er al in zitten, daarna hoe je er meer mee kan." Als die bouwlijst het vertrekpunt van het implementatieplan blijft, moet die regel daar aangepast worden. De <code>quality_justification</code> die de agent al schrijft, blijft dus voorlopig admin-only.</p>
+      </div>
+
+      <div class="bs">
+        <span class="bs-lbl">Beslist, met correctie</span>
+        <h3>De galerij blijft op de doelenpagina, achter een expand</h3>
+        <p>Geen aparte galerijpagina en geen doorklik. Een compacte strook met een introzin, en daaronder de drie klassiekers die opengaan op de pagina zelf. Vloeiend, geïntegreerd, niet als een nieuwe bestemming.</p>
+        <p class="bs-gevolg">Hiermee vervalt het bezwaar dat ik bij deze optie noteerde. De galerij wordt geen plek waar je naartoe moet, ze zit gewoon in het doel.</p>
+      </div>
+    </div>
+
+    <h4 class="blokkop" style="margin-top:34px">Zo ziet B6 er nu uit</h4>
+    <div class="mock">
+      <div class="mock-bar"><i></i><i></i><i></i><span>hartverwarmers.be / fiches / naar-de-beenhouwerij</span></div>
+      <div class="mock-body">
+        <span class="m-eyebrow">Vraag je af</span>
+        <h4 class="m-h" style="margin-bottom:16px">Wat maakt deze activiteit sterker?</h4>
+        <div class="rij f-mens" style="padding-top:0">
+          <span class="gem f-mens">M</span>
+          <div class="tekst">
+            <div class="naam">Mensgericht</div>
+            <div class="vraag">"Ken je het levensverhaal van je bewoners, of werk je vanuit het activiteitenprogramma?"</div>
+            <div class="suggestie"><b>Meer ermee doen:</b> vraag familie naar drie dingen die deze persoon graag deed.</div>
+          </div>
+        </div>
+        <div class="rij f-auto">
+          <span class="gem f-auto">A</span>
+          <div class="tekst">
+            <div class="naam">Autonomie</div>
+            <div class="vraag">"Hebben je bewoners vandaag iets gekozen, of is alles voor hen beslist?"</div>
+            <div class="suggestie"><b>Meer ermee doen:</b> laat proeven van twee smaken en observeer de reactie.</div>
+          </div>
+        </div>
+        <div class="rij f-and">
+          <span class="gem f-and">A</span>
+          <div class="tekst">
+            <div class="naam">Anderen</div>
+            <div class="vraag">"Zitten je bewoners naast elkaar, of zijn ze echt met elkaar verbonden?"</div>
+            <div class="suggestie"><b>Meer ermee doen:</b> bied een rol aan de rand aan: toekijken, materiaal aanreiken, muziek kiezen.</div>
+          </div>
+        </div>
+        <a class="mlink" href="#b6">Meer over de doelen</a>
+      </div>
+    </div>
+    <p class="mock-cap"><b>Eén aanname die ik maak:</b> de regel "Meer ermee doen" blijft staan. Vraag 1 ging over de scenes en vraag 2 over de waardering, geen van beide over de suggestie, en de bouwlijst vraagt expliciet om "hoe je er meer mee kan". Zeg het als je ook die eruit wil, dan blijft alleen de vraag over.</p>
+
+    <h4 class="blokkop">Zo zou de strook op de doelenpagina werken</h4>
+    <p style="max-width:78ch;margin-bottom:16px;color:var(--ink-soft);font-size:16px;">Klik ze open, dat is het gedrag dat je bedoelt. In het echt komen de drie klassiekers onder elkaar te staan, elk met de twee kolommen.</p>
+    <div class="mock">
+      <div class="mock-bar"><i></i><i></i><i></i><span>hartverwarmers.be / doelen / doen</span></div>
+      <div class="mock-body">
+        <div class="pblok" style="margin-bottom:8px">B2 Verhaal uit de praktijk</div>
+        <details class="strookblok f-doen">
+          <summary>
+            <span class="sb-tekst">
+              <span class="sb-kop">Drie klassiekers die aanzetten tot doen</span>
+              <span class="sb-sub">Dezelfde namiddag, twee keer verteld. Kijk wat er verschuift.</span>
+            </span>
+            <span class="sb-pijl"></span>
+          </summary>
+          <div class="sb-inhoud">
+            <h5 class="sb-titel">De wandeling</h5>
+            <div class="ba">
+              <div class="voor">
+                <div class="kolomkop">Zoals het vaak gaat</div>
+                <p>De route ligt vast en de begeleidster duwt. Er wordt een halfuur gestapt en daarna gaat iedereen terug naar binnen.</p>
+              </div>
+              <div class="na">
+                <div class="kolomkop">Zo kan het schitteren</div>
+                <p><mark class="hl" title="Autonomie: de keuze ligt bij hen, ook onderweg.">De groep beslist onderweg welke kant het opgaat.</mark> <mark class="hl" title="Normalisatie: een wandeling met een reden, zoals iedereen die maakt.">Onderweg wordt er iets gehaald</mark>, brood of een krant. <mark class="hl" title="Doen: zelf doen, ook al gaat het trager.">Louis duwt een stukje zelf.</mark></p>
+              </div>
+            </div>
+            <p class="slot">Eén mogelijke versie. Niet de juiste.</p>
+            <p class="sb-rest">Daaronder: de knutselnamiddag en het koffiemoment, in dezelfde vorm.</p>
+          </div>
+        </details>
+        <div class="pblok" style="margin-top:8px">B3 Verder kijken</div>
+      </div>
+    </div>
+    <p class="mock-cap">Gesloten neemt de strook twee regels in. Open staat de galerij middenin de pagina, zonder dat iemand ergens naartoe moest.</p>
+  </div>
+</section>
+
+
+<footer>
+  <div class="wrap">
+    <p>De bouwlijst zelf heb ik niet aangeraakt, die blijft van de andere thread. Dit blad hangt ernaast. Klopt er iets niet met wat daar staat, zeg het en ik pas dit aan in plaats van de bouwlijst.</p>
+  </div>
+</footer>
+
+
+
+</body>
+</html>
