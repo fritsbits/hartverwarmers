@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bouwlijst na de review · Doelenpagina &amp; kwaliteitstools</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:700,700i|fira-sans:300,300i,400,400i,500,600,700" rel="stylesheet">
+<style>
+/* ============================================================================
+   kit.css — gedeelde stylesheet van verkenning #3, letterlijk ingesloten.
+   NIET AANPASSEN. Sectie-agenten schrijven eigen regels met een .tN-prefix
+   in hun eigen <style>-blok.
+   ========================================================================= */
+/* ==========================================================================
+   HARTVERWARMERS — DESIGN-KIT verkenning #3 "Kwaliteitstools"
+   Eén stylesheet voor de volledige exploratiepagina.
+   Light mode only. Warm, tactiel, scrapbook. Geen framework, geen CDN.
+
+   Fonts: zet in de <head> van de pagina
+     <link rel="preconnect" href="https://fonts.bunny.net">
+     <link href="https://fonts.bunny.net/css?family=aleo:700,700i|fira-sans:300,400,500,600,700"
+           rel="stylesheet">
+   (de @import hieronder is een vangnet als de <link> ontbreekt)
+   ========================================================================== */
+
+@import url('https://fonts.bunny.net/css?family=aleo:700,700i|fira-sans:300,400,500,600,700');
+
+/* ==========================================================================
+   1. TOKENS
+   ========================================================================== */
+
+:root {
+  /* --- merkkleuren (identiek aan resources/css/app.css) --- */
+  --orange:        #E8764B;
+  --orange-hover:  #D4683F;
+  --orange-deep:   #B4552C;   /* AA op wit (4.91) — vervangt het te lichte #C25A33 */
+  --teal:          #4CB7C5;
+  --teal-deep:     #1E7B87;
+  --yellow:        #F4C44E;
+  --yellow-deep:   #8A6412;   /* AA op wit (5.37) */
+  --purple:        #B57BB3;
+  --purple-deep:   #7E4F7C;
+  --green:         #8AA96B;
+  --green-deep:    #55703C;
+
+  --ink:           #231E1A;
+  --ink-soft:      #756C65;
+  --ink-faint:     #C0B5AE;
+
+  --cream:         #FEF8F4;
+  --white:         #FFFFFF;
+  --paper:         #FFFDF9;
+  --subtle:        #F5F0EC;
+  --accent-light:  #FDF3EE;
+
+  --border:        #EBE4DE;
+  --border-hover:  #DDD5CD;
+
+  --heading: 'Aleo', Georgia, serif;
+  --body:    'Fira Sans', system-ui, -apple-system, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-full: 999px;
+
+  --shadow-card:  0 1px 3px rgba(35,30,26,.06), 0 6px 20px rgba(35,30,26,.05);
+  --shadow-hover: 0 2px 6px rgba(35,30,26,.08), 0 14px 30px rgba(35,30,26,.09);
+  --shadow-mock:  0 2px 6px rgba(35,30,26,.08), 0 18px 40px rgba(35,30,26,.10);
+  --shadow-paper: 0 1px 2px rgba(35,30,26,.10), 0 10px 24px rgba(35,30,26,.08);
+  --shadow-lift:  0 3px 8px rgba(35,30,26,.15);
+
+  --nav-h: 56px;
+
+  /* ======================================================================
+     HET FACETPALET — 7 DIAMANT-facetten, voorstel voor de denkdag
+     Per facet: --x       gem-vulkleur
+                --x-light achtergrondtint (op wit én cream bruikbaar)
+                --x-deep  tekstkleur op licht — AA (>=4.5:1) op wit, cream
+                          én op de eigen lichte tint
+     Vijf warme noten (oranje, goud, roos, salie, paars) + twee koele
+     tegengewichten (teal, schemerblauw) die de reeks laten ademen.
+     ====================================================================== */
+
+  /* D — Doen · oranje, het merkoranje zelf: energie, in beweging */
+  --doen:        #E8764B;
+  --doen-light:  #FDF4EF;
+  --doen-deep:   #B4552C;
+
+  /* I — Inclusief · teal, koel en ruim: er is plaats voor iedereen */
+  --incl:        #4CB7C5;
+  --incl-light:  #EDF7F9;
+  --incl-deep:   #1E7B87;
+
+  /* A — Autonomie · goud: haar eigen keuze, haar eigen moment */
+  --auto:        #EFB13F;
+  --auto-light:  #FCF2DC;
+  --auto-deep:   #8A6412;
+
+  /* M — Mensgericht · roos-terracotta: de persoon, het hart */
+  --mens:        #C2666F;
+  --mens-light:  #FBECEC;
+  --mens-deep:   #9E4750;
+
+  /* A — Anderen · paars: verbinding tussen mensen */
+  --and:         #B57BB3;
+  --and-light:   #F5EBF4;
+  --and-deep:    #7E4F7C;
+
+  /* N — Normalisatie · salie: huiselijk, alledaags, ongedwongen */
+  --norm:        #8AA96B;
+  --norm-light:  #EEF3E6;
+  --norm-deep:   #55703C;
+
+  /* T — Talent · schemerblauw: rust en gewicht, de diepste kleur */
+  --tal:         #5E7FA8;
+  --tal-light:   #ECF0F6;
+  --tal-deep:    #3F5C82;
+}
+
+/* --- facetklassen: zet drie variabelen, elk component leest ze uit --------
+   Plak .f-doen … .f-talent op ELK element (gem, kaart, chip, segment,
+   markering, rij). Zonder facetklasse valt alles terug op oranje.        */
+.f-doen         { --f: var(--doen); --f-light: var(--doen-light); --f-deep: var(--doen-deep); --f-ink: #fff; }
+.f-inclusief    { --f: var(--incl); --f-light: var(--incl-light); --f-deep: var(--incl-deep); --f-ink: var(--ink); }
+.f-autonomie    { --f: var(--auto); --f-light: var(--auto-light); --f-deep: var(--auto-deep); --f-ink: var(--ink); }
+.f-mensgericht  { --f: var(--mens); --f-light: var(--mens-light); --f-deep: var(--mens-deep); --f-ink: #fff; }
+.f-anderen      { --f: var(--and);  --f-light: var(--and-light);  --f-deep: var(--and-deep);  --f-ink: #fff; }
+.f-normalisatie { --f: var(--norm); --f-light: var(--norm-light); --f-deep: var(--norm-deep); --f-ink: var(--ink); }
+.f-talent       { --f: var(--tal);  --f-light: var(--tal-light);  --f-deep: var(--tal-deep);  --f-ink: #fff; }
+
+/* losse hulpklassen bovenop een .f-* klasse */
+.facet-text   { color: var(--f-deep, var(--orange-deep)); }
+.facet-bg     { background: var(--f-light, var(--accent-light)); }
+.facet-border { border-color: var(--f, var(--orange)); }
+
+/* ==========================================================================
+   2. RESET & BASIS
+   ========================================================================== */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 16px);
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body { max-width: 100%; overflow-x: clip; }
+
+body {
+  font-family: var(--body);
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--cream);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--heading);
+  font-weight: 700;
+  line-height: 1.18;
+  color: var(--ink);
+}
+
+/* niets breekt ooit uit zijn kader */
+h1, h2, h3, h4, p, li, td, th, dd, dt, figcaption, blockquote, summary, b, strong, span, a {
+  overflow-wrap: break-word;
+}
+img, svg, video { max-width: 100%; height: auto; display: block; }
+
+a { color: inherit; }
+::selection { background: var(--yellow); color: var(--ink); }
+
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 3px; }
+
+/* elke flex/grid-child mag krimpen — dé oorzaak van horizontale overflow */
+:where(.split, .cols-2, .cols-3, .mocks, .anno-wrap, .m-pair, .ba, .m-gallery,
+       .tool-index, .park-strip, .flow, .m-tap-row, .gem-row, .pro-con,
+       .m-versions, .m-modal-foot, .m-facetrow, .m-choice, .m-spark,
+       .today-row, .m-board-row, .stack-row) > * { min-width: 0; }
+
+/* ==========================================================================
+   3. PAGINASHELL — nav, cover, secties, koppen
+   ========================================================================== */
+
+nav.deck-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 60;
+  background: rgba(254,248,244,.94);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 4px;
+  padding: 9px clamp(14px, 4vw, 48px);
+  font-size: 13px; font-weight: 500;
+  min-height: var(--nav-h);
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none;
+}
+nav.deck-nav::-webkit-scrollbar { display: none; }
+nav.deck-nav .brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--heading); font-weight: 700; font-size: 15px;
+  margin-right: auto; color: var(--ink); text-decoration: none;
+  white-space: nowrap; flex: 0 0 auto;
+}
+nav.deck-nav .brand .gem { width: 16px; height: 16px; }
+nav.deck-nav a.navlink {
+  color: var(--ink-soft); text-decoration: none;
+  padding: 6px 11px; border-radius: var(--radius-full);
+  transition: background .15s ease, color .15s ease;
+  white-space: nowrap; flex: 0 0 auto;
+}
+nav.deck-nav a.navlink:hover { background: var(--accent-light); color: var(--orange-deep); }
+nav.deck-nav a.navlink.num { font-weight: 600; }
+nav.deck-nav a.navlink.soft { color: var(--ink-faint); }
+
+/* --- cover --- */
+header.cover {
+  min-height: 88vh; display: flex; align-items: center;
+  padding: calc(var(--nav-h) + 56px) clamp(20px, 6vw, 72px) 72px;
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(ellipse at 88% 12%, rgba(244,196,78,.16), transparent 55%),
+    radial-gradient(ellipse at 8% 92%, rgba(232,118,75,.10), transparent 55%),
+    var(--cream);
+}
+.cover-inner { max-width: 1180px; margin: 0 auto; width: 100%; position: relative; }
+.cover h1 { font-size: clamp(2.3rem, 6vw, 4.4rem); max-width: 15ch; margin: 16px 0 24px; }
+.cover h1 em { font-style: normal; color: var(--orange); }
+.cover .sub { font-size: clamp(1.02rem, 1.6vw, 1.28rem); color: var(--ink-soft); max-width: 56ch; }
+.cover .meta-strip {
+  margin-top: 40px; display: flex; flex-wrap: wrap; gap: 10px 28px;
+  font-size: 14px; color: var(--ink-soft); font-weight: 400;
+}
+.cover .meta-strip span strong { font-weight: 600; color: var(--ink); }
+
+.disclaimer {
+  display: inline-block; margin-bottom: 10px;
+  background: var(--yellow); color: var(--ink);
+  font-size: 13px; font-weight: 600; padding: 4px 14px;
+  border-radius: var(--radius-full); transform: rotate(-1deg);
+}
+
+/* zwevende gems rechts op de cover (7 stuks) */
+.cover-gems {
+  position: absolute; right: clamp(-30px, 1vw, 40px); top: 50%;
+  transform: translateY(-50%); display: none;
+  grid-template-columns: repeat(3, 84px); gap: 20px;
+}
+@media (min-width: 1120px) { .cover-gems { display: grid; } }
+.cover-gems .gem { width: 84px; height: 84px; font-size: 34px; }
+.cover-gems .gem:nth-child(2n) { transform: translateY(26px) rotate(4deg); }
+.cover-gems .gem:nth-child(3n) { transform: translateY(-14px) rotate(-5deg); }
+
+/* --- secties --- */
+section.slide { padding: clamp(56px, 8vw, 108px) clamp(18px, 6vw, 72px); }
+section.slide.tight { padding-block: clamp(38px, 5vw, 64px); }
+.wrap { max-width: 1180px; margin: 0 auto; }
+.wrap-narrow { max-width: 820px; margin: 0 auto; }
+.bg-white  { background: var(--white); }
+.bg-cream  { background: var(--cream); }
+.bg-subtle { background: var(--subtle); }
+.bg-paper  { background: var(--paper); }
+
+.section-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--body); font-weight: 600; font-size: 15px;
+  letter-spacing: .13em; text-transform: uppercase; color: var(--orange);
+  margin-bottom: 12px;
+}
+.section-label .gem { width: 14px; height: 14px; }
+
+.slide h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); margin-bottom: 18px; max-width: 26ch; }
+.slide h3 { font-size: clamp(1.15rem, 2vw, 1.4rem); margin-bottom: 10px; }
+.lead { font-size: 1.1rem; color: var(--ink-soft); max-width: 60ch; }
+.lead strong, p strong { font-weight: 600; color: var(--ink); }
+.slide p + p { margin-top: 13px; }
+.muted { color: var(--ink-soft); }
+.tiny-note { font-size: .82rem; color: var(--ink-faint); }
+
+.split { display: grid; gap: clamp(26px, 5vw, 60px); grid-template-columns: minmax(0,1fr); align-items: start; }
+@media (min-width: 900px) { .split { grid-template-columns: minmax(0,1.1fr) minmax(0,.9fr); } }
+.split.even  { grid-template-columns: minmax(0,1fr); }
+@media (min-width: 900px) { .split.even { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
+
+.cols-2, .cols-3 { display: grid; gap: clamp(16px, 2.4vw, 26px); grid-template-columns: minmax(0,1fr); }
+@media (min-width: 760px)  { .cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width: 760px)  { .cols-3 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width: 1020px) { .cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+/* echte app-componenten, 1-op-1 nagebouwd voor de paginatekst */
+.cta-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-weight: 600; color: var(--orange); text-decoration: none;
+  transition: gap .15s ease, color .15s ease; font-size: .98rem;
+}
+.cta-link::after { content: '\2192'; transition: transform .15s ease; }
+.cta-link:hover { gap: 8px; color: var(--orange-hover); }
+.cta-link:hover::after { transform: translateX(3px); }
+
+.btn-pill {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 24px; font-weight: 600; color: #fff; text-decoration: none;
+  background: var(--orange); border-radius: var(--radius-full); border: none;
+  min-height: 44px; transition: background .15s ease, box-shadow .15s ease;
+}
+.btn-pill:hover { background: var(--orange-hover); box-shadow: var(--shadow-card); }
+
+.content-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-md); overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.content-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--border-hover); }
+
+/* --- toolkop (per tool) --- */
+.tool-head { display: flex; align-items: flex-start; gap: clamp(14px, 3vw, 34px); margin-bottom: 14px; flex-wrap: wrap; }
+.tool-num {
+  font-family: var(--heading); font-weight: 700;
+  font-size: clamp(3.4rem, 9vw, 7rem); line-height: .85;
+  -webkit-text-stroke: 2px currentColor; color: transparent;
+  opacity: .85; flex: 0 0 auto; margin-top: 4px;
+}
+.tool-head .titles { padding-top: clamp(2px, 1vw, 16px); flex: 1 1 320px; min-width: 0; }
+.tool-kicker {
+  font-size: 13.5px; font-weight: 600; letter-spacing: .13em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.tool-head h2 { margin-bottom: 10px; }
+.tool-oneliner { font-size: 1.12rem; color: var(--ink-soft); max-width: 58ch; }
+
+.tool-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.tool-pills .tp {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; font-weight: 600;
+  border: 1.5px solid currentColor; border-radius: var(--radius-full);
+  padding: 4px 13px; color: var(--ink-soft);
+}
+.tool-pills .tp b { font-weight: 400; opacity: .8; }
+.tool-pills .tp.hot { color: var(--orange-deep); background: var(--accent-light); }
+
+/* toolindex op de cover-sectie */
+.tool-index { display: grid; gap: 14px; grid-template-columns: minmax(0,1fr); margin-top: 40px; }
+@media (min-width: 640px)  { .tool-index { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width: 1000px) { .tool-index { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+a.tool-tile {
+  display: block; text-decoration: none; color: inherit;
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 20px 16px;
+  box-shadow: var(--shadow-card); transition: transform .15s ease, box-shadow .15s ease;
+}
+a.tool-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-mock); }
+.tool-tile .t-num { font-family: var(--heading); font-weight: 700; font-size: 1.8rem; line-height: 1; color: var(--orange); }
+.tool-tile h3 { font-size: 1.02rem; margin: 6px 0 5px; }
+.tool-tile p { font-size: .85rem; color: var(--ink-soft); font-weight: 400; }
+
+/* --- flow in stappen --- */
+.flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; margin: 32px 0 12px; }
+.flow-step {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 12px 16px; font-size: .88rem; font-weight: 400;
+  flex: 1 1 160px; max-width: 260px;
+  box-shadow: 0 1px 2px rgba(35,30,26,.04);
+}
+.flow-step .n { font-family: var(--heading); font-weight: 700; font-size: .78rem; display: block; margin-bottom: 3px; color: var(--orange-deep); }
+.flow-arrow { align-self: center; color: var(--ink-faint); font-size: 18px; flex: 0 0 auto; }
+
+footer.deck-foot {
+  padding: 40px clamp(20px, 6vw, 72px) 60px; text-align: center;
+  font-size: .85rem; color: var(--ink-faint);
+}
+footer.deck-foot .gem { display: flex; width: 22px; height: 22px; margin: 0 auto 10px; }
+
+/* ==========================================================================
+   4. GEM — het facet-diamantje
+   ========================================================================== */
+
+.gem {
+  display: inline-flex; align-items: center; justify-content: center;
+  clip-path: polygon(30% 0, 70% 0, 100% 35%, 50% 100%, 0 35%);
+  background: var(--f, var(--orange));
+  color: var(--f-ink, #fff);
+  font-family: var(--heading); font-weight: 700;
+  width: 24px; height: 24px; font-size: 11px; line-height: 1;
+  /* de letter zit in het brede bovenstuk van het ruitje.
+     em (niet %) — procentuele padding rekent tegen de OUDER-breedte
+     en rekt het diamantje uit zodra het in een brede flexrij staat. */
+  padding-bottom: .3em;
+  flex: 0 0 auto; align-self: center; overflow: hidden;
+}
+.gem.idle { background: var(--subtle); color: var(--ink-faint); }
+.gem.ghost { background: var(--f-light, var(--accent-light)); color: var(--f-deep, var(--orange-deep)); }
+
+.gem-xs { width: 13px; height: 13px; font-size: 7px; }
+.gem-sm { width: 18px; height: 18px; font-size: 9px; }
+.gem-md { width: 28px; height: 28px; font-size: 13px; }
+.gem-lg { width: 42px; height: 42px; font-size: 19px; }
+.gem-xl { width: 64px; height: 64px; font-size: 28px; }
+
+.gem-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.gem-row.spread { gap: 12px; }
+.gem-row .lbl { font-size: .8rem; color: var(--ink-soft); font-weight: 500; }
+
+/* facetlegende: gem + naam onder elkaar */
+.gem-legend { display: flex; flex-wrap: wrap; gap: 14px 22px; margin-top: 20px; }
+.gem-legend .gl { display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 500; }
+.gem-legend .gl b { font-family: var(--heading); font-weight: 700; color: var(--f-deep, var(--ink)); }
+.gem-legend .gl code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .74rem; color: var(--ink-faint); }
+
+/* ==========================================================================
+   5. MOCK-CHROME — venster + telefoon
+   ========================================================================== */
+
+.mocks {
+  display: flex; flex-wrap: wrap; gap: clamp(18px, 3vw, 34px);
+  margin: 36px 0 8px; align-items: flex-start;
+}
+.mock { flex: 1 1 320px; max-width: 440px; min-width: 0; }
+.mock.wide { flex: 1 1 100%; max-width: 760px; }
+.mock.narrow { flex: 1 1 260px; max-width: 320px; }
+
+.mock-frame {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; box-shadow: var(--shadow-mock); overflow: hidden;
+  position: relative;
+}
+.mock-chrome {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--subtle); border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+}
+.mock-chrome .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border-hover); flex: 0 0 auto; }
+.mock-chrome .url {
+  margin-left: 8px; background: var(--white); border-radius: var(--radius-full);
+  font-size: 10px; color: var(--ink-faint); padding: 2px 12px; font-weight: 400;
+  flex: 1 1 auto; min-width: 0; text-align: center;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.mock-body { padding: 18px 18px 20px; font-size: 13px; line-height: 1.5; }
+.mock-body.dense { padding: 14px 14px 16px; }
+.mock-body.board { background: var(--cream); }
+.mock-caption { font-size: .85rem; color: var(--ink-soft); margin-top: 12px; padding: 0 4px; }
+.mock-caption strong { font-weight: 600; color: var(--ink); }
+
+/* telefoonvariant */
+.mock-phone {
+  width: 100%; max-width: 300px; margin: 0 auto;
+  background: var(--ink); border-radius: 34px; padding: 10px;
+  box-shadow: var(--shadow-mock);
+}
+.mock-phone .phone-screen {
+  background: var(--white); border-radius: 26px; overflow: hidden; position: relative;
+}
+.mock-phone .phone-notch {
+  height: 22px; display: flex; align-items: center; justify-content: center;
+  background: var(--white);
+}
+.mock-phone .phone-notch::after {
+  content: ''; width: 74px; height: 5px; border-radius: 3px; background: var(--border-hover);
+}
+.mock-phone .phone-body { padding: 8px 14px 20px; font-size: 12.5px; line-height: 1.5; }
+.mock-phone .phone-home {
+  height: 4px; width: 96px; margin: 6px auto 8px;
+  background: var(--border-hover); border-radius: 3px;
+}
+
+/* ==========================================================================
+   6. IN-MOCK BOUWSTENEN (.m-*)  — alles binnen .mock-body / .phone-body
+   ========================================================================== */
+
+/* app-header binnen de mock */
+.m-sitehead {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--heading); font-weight: 700; font-size: 12.5px;
+  padding-bottom: 11px; border-bottom: 1px solid var(--border); margin-bottom: 13px;
+  color: var(--ink);
+}
+.m-sitehead .gem { width: 15px; height: 15px; font-size: 8px; }
+.m-sitehead .navdots { margin-left: auto; display: flex; gap: 9px; }
+.m-sitehead .navdots i { width: 24px; height: 5px; border-radius: 3px; background: var(--subtle); }
+
+/* tekst */
+.m-eyebrow { font-size: 9.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--orange); margin-bottom: 5px; }
+.m-h  { font-family: var(--heading); font-weight: 700; font-size: 16px; line-height: 1.25; margin-bottom: 6px; }
+.m-h2 { font-family: var(--heading); font-weight: 700; font-size: 13.5px; line-height: 1.3; margin-bottom: 5px; }
+.m-sub { color: var(--ink-soft); font-size: 11.5px; }
+.m-p { font-size: 11.5px; color: var(--ink); font-weight: 400; }
+.m-p + .m-p { margin-top: 7px; }
+.m-divider { height: 1px; background: var(--border); margin: 13px 0; border: 0; }
+.m-foot { font-size: 10px; color: var(--ink-faint); margin-top: 10px; }
+
+/* knoppen */
+.m-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  background: var(--orange); color: #fff; text-decoration: none;
+  font-weight: 600; font-size: 12px; border-radius: var(--radius-full);
+  padding: 8px 18px; border: 1.5px solid var(--orange); min-height: 34px;
+}
+.m-btn.ghost { background: transparent; color: var(--ink-soft); border-color: var(--border-hover); }
+.m-btn.skip  { background: var(--white); color: var(--ink-soft); border-color: var(--border-hover); }  /* Overslaan = volwaardige knop */
+.m-btn.tiny  { font-size: 11px; padding: 5px 13px; min-height: 0; }
+.m-btn.block { display: flex; width: 100%; }
+.m-btn.facet { background: var(--f, var(--orange)); border-color: var(--f, var(--orange)); color: var(--f-ink, #fff); }
+
+.m-link { color: var(--orange-deep); font-weight: 600; font-size: 11.5px; text-decoration: none; }
+.m-cta {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--orange); font-weight: 600; font-size: 11.5px; text-decoration: none;
+}
+.m-cta::after { content: '\2192'; }
+
+/* grote tikknop — minimaal 44px, voor keuzeschermen */
+.m-tap-row { display: grid; gap: 8px; grid-template-columns: minmax(0,1fr); margin: 10px 0; }
+.m-tapbtn {
+  display: flex; align-items: center; gap: 10px;
+  min-height: 46px; padding: 11px 14px;
+  background: var(--white); border: 1.5px solid var(--border-hover);
+  border-radius: var(--radius-md); font-size: 12.5px; font-weight: 500;
+  color: var(--ink); text-align: left; text-decoration: none; cursor: default;
+}
+.m-tapbtn .ic { font-size: 16px; flex: 0 0 auto; }
+.m-tapbtn.on {
+  border-color: var(--f, var(--orange)); background: var(--f-light, var(--accent-light));
+  color: var(--f-deep, var(--orange-deep)); font-weight: 600;
+}
+.m-tapbtn.on .ic { color: var(--f-deep, var(--orange-deep)); }
+
+/* aanvinkbare keuze */
+.m-choice {
+  display: flex; gap: 10px; align-items: flex-start;
+  border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px 12px; margin-bottom: 8px; background: var(--white);
+  font-size: 11.5px; min-height: 44px;
+}
+.m-choice.checked { border-color: var(--f, var(--orange)); background: var(--f-light, var(--accent-light)); }
+.m-choice .box {
+  width: 17px; height: 17px; border: 1.5px solid var(--border-hover); border-radius: 5px;
+  flex: 0 0 auto; margin-top: 1px; background: var(--white);
+}
+.m-choice.checked .box {
+  background: var(--f, var(--orange)); border-color: var(--f, var(--orange));
+  display: flex; align-items: center; justify-content: center;
+  color: var(--f-ink, #fff); font-size: 10px; font-weight: 700;
+}
+.m-choice.checked .box::after { content: '\2713'; }
+
+/* chips */
+.m-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.m-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1.5px solid var(--border-hover); color: var(--ink-soft);
+  font-size: 11px; font-weight: 600; border-radius: var(--radius-full);
+  padding: 6px 12px; background: var(--white); min-height: 30px;
+}
+.m-chip.on {
+  border-color: var(--f, var(--orange)); color: var(--f-deep, var(--orange-deep));
+  background: var(--f-light, var(--accent-light));
+}
+.m-chip .gem { width: 11px; height: 11px; font-size: 6px; }
+
+.m-input {
+  border: 1px solid var(--border); border-radius: var(--radius-full);
+  padding: 8px 14px; font-size: 11px; color: var(--ink-faint); background: var(--white);
+}
+.m-textarea {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px 12px; font-size: 11.5px; color: var(--ink-faint);
+  background: var(--white); min-height: 62px;
+}
+
+/* citaat op lijntjespapier */
+.m-quote {
+  font-family: var(--heading); font-style: italic; font-size: 13px;
+  color: var(--ink); border-left: 3px solid var(--f, var(--yellow));
+  padding: 3px 0 3px 12px; margin: 10px 0 12px;
+  background: repeating-linear-gradient(transparent, transparent 19px, rgba(76,183,197,.10) 19px, rgba(76,183,197,.10) 20px);
+}
+
+/* facetrij: gem + naam + kernvraag (B2) */
+.m-facetrow {
+  display: flex; gap: 11px; align-items: flex-start;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.m-facetrow:last-child { border-bottom: 0; }
+.m-facetrow .fr-body { flex: 1 1 auto; min-width: 0; }
+.m-facetrow .fr-name { font-family: var(--heading); font-weight: 700; font-size: 12.5px; color: var(--f-deep, var(--ink)); display: block; }
+.m-facetrow .fr-q { font-size: 11.5px; font-style: italic; color: var(--ink-soft); font-weight: 400; margin-top: 2px; }
+.m-facetrow .fr-chev { margin-left: auto; color: var(--ink-faint); font-size: 12px; flex: 0 0 auto; }
+
+/* ==========================================================================
+   7. WIZARD / MODAL-CHROME
+   ========================================================================== */
+
+.m-modal {
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  background: var(--white); box-shadow: var(--shadow-mock); overflow: hidden;
+}
+.m-modal.on-cream { background: var(--cream); }
+.m-modal-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 15px 10px; border-bottom: 1px solid var(--border);
+  background: var(--white);
+}
+.m-stepcount {
+  font-size: 10px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.m-modal-head .m-x { margin-left: auto; color: var(--ink-faint); font-size: 13px; flex: 0 0 auto; }
+.m-modal-body { padding: 15px; }
+.m-modal-foot {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 12px 15px; border-top: 1px solid var(--border); background: var(--cream);
+}
+.m-modal-foot .spacer { flex: 1 1 auto; }
+
+/* stappenbalk: bolletjes met verbindingslijn */
+.m-steps { display: flex; align-items: center; gap: 0; padding: 12px 15px 0; }
+.m-steps i {
+  width: 9px; height: 9px; border-radius: 50%; background: var(--border-hover); flex: 0 0 auto;
+}
+.m-steps i.done { background: var(--f, var(--orange)); }
+.m-steps i.on {
+  background: var(--f, var(--orange)); width: 13px; height: 13px;
+  box-shadow: 0 0 0 4px var(--f-light, var(--accent-light));
+}
+.m-steps s { flex: 1 1 auto; height: 2px; background: var(--border); border: 0; margin: 0 5px; }
+.m-steps s.done { background: var(--f, var(--orange)); opacity: .5; }
+
+/* voortgang als 7 facetsegmenten — NOOIT een percentage */
+.m-segbar { display: flex; gap: 4px; margin: 10px 0 12px; }
+.m-segbar i { flex: 1 1 0; min-width: 0; height: 7px; border-radius: 4px; background: var(--border); }
+.m-segbar i.filled { background: var(--f, var(--orange)); }
+.m-segbar i.current { background: var(--f, var(--orange)); box-shadow: 0 0 0 3px var(--f-light, var(--accent-light)); }
+.m-segbar-lbl { font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); }
+
+/* oude naam, blijft werken */
+.m-progress { display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--ink-faint); font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.m-progress .gem { width: 13px; height: 13px; font-size: 7px; }
+
+/* ==========================================================================
+   8. CONTRASTPAAR — nooit rood, nooit een kruisje
+   ========================================================================== */
+
+.m-pair { display: grid; gap: 9px; grid-template-columns: minmax(0,1fr); margin: 10px 0; }
+@media (min-width: 520px) { .m-pair { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.m-pair-side {
+  border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  padding: 11px 12px; font-size: 11.5px; background: var(--white);
+  position: relative; font-weight: 400;
+}
+.m-pair-side.pos { border-color: var(--f, var(--orange)); background: var(--f-light, var(--accent-light)); }
+.m-pair-side.neu { border-color: var(--border); background: var(--subtle); color: var(--ink-soft); }
+.m-pair-lbl {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 6px;
+}
+.m-pair-side.pos .m-pair-lbl { color: var(--f-deep, var(--orange-deep)); }
+.m-pair-side.picked { box-shadow: 0 0 0 2px var(--f, var(--orange)); }
+.m-pair-check {
+  position: absolute; top: -8px; right: -8px; width: 20px; height: 20px;
+  background: var(--f, var(--orange)); color: var(--f-ink, #fff); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+  border: 2px solid var(--white);
+}
+/* oude naam uit verkenning #2 */
+.m-versions { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 9px; margin: 10px 0; }
+.m-version { border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 11px 12px; font-size: 11.5px; background: var(--white); position: relative; }
+.m-version.picked { border-color: var(--f, var(--orange)); background: var(--f-light, var(--accent-light)); }
+
+/* ==========================================================================
+   9. PAPIER, POLAROID, POST-IT, PRIKBORD, GERUIT PAPIER
+   ========================================================================== */
+
+/* lijntjespapier met kleurenrand */
+.m-paper {
+  background:
+    repeating-linear-gradient(transparent, transparent 21px, rgba(76,183,197,.13) 21px, rgba(76,183,197,.13) 22px),
+    var(--paper);
+  border: 1px solid var(--border); border-radius: 4px;
+  box-shadow: var(--shadow-paper); padding: 16px 16px 18px; position: relative;
+}
+/* geen gekleurde strip bovenaan: een blad papier heeft er geen */
+.m-paper .ph { font-family: var(--heading); font-weight: 700; font-size: 14px; margin: 6px 0 10px; }
+.m-paper ul { list-style: none; }
+.m-paper li { display: flex; gap: 8px; font-size: 11.5px; margin-bottom: 8px; align-items: flex-start; font-weight: 400; }
+.m-paper li .gem { margin-top: 2px; }
+.m-paper .sig { font-family: var(--heading); font-style: italic; font-size: 11px; color: var(--ink-soft); margin-top: 12px; text-align: right; }
+
+/* geruit papier (schrift) */
+.m-grid-paper {
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 15px, rgba(76,183,197,.16) 15px, rgba(76,183,197,.16) 16px),
+    repeating-linear-gradient(90deg, transparent, transparent 15px, rgba(76,183,197,.16) 15px, rgba(76,183,197,.16) 16px),
+    var(--paper);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-paper); padding: 16px;
+}
+.m-grid-paper .gp-h { font-family: var(--heading); font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.m-grid-paper .gp-hand { font-family: var(--heading); font-style: italic; font-size: 12.5px; color: var(--ink); line-height: 1.9; }
+
+/* geel notitieblok / spiekkaart — groot genoeg om te fotograferen */
+.notepad {
+  background: #FFF6D9; border-radius: 4px 4px 8px 8px;
+  box-shadow: var(--shadow-paper); padding: 0 0 16px;
+  max-width: 320px; position: relative; transform: rotate(-1deg);
+}
+.notepad::before {
+  content: ''; display: block; height: 14px;
+  background: repeating-linear-gradient(90deg, #EFD79A 0 10px, #FFF6D9 10px 22px);
+  border-radius: 4px 4px 0 0;
+}
+.notepad .np-h {
+  font-family: var(--heading); font-weight: 700; font-size: 14px;
+  padding: 12px 16px 6px; display: flex; align-items: center; gap: 8px;
+}
+.notepad ul { list-style: none; padding: 0 16px; }
+.notepad li {
+  font-size: 12.5px; font-weight: 400; line-height: 1.5;
+  padding: 8px 0 8px 18px; position: relative;
+  border-bottom: 1px dashed rgba(138,100,18,.28);
+}
+.notepad li:last-child { border-bottom: 0; }
+.notepad li::before { content: '\25A2'; position: absolute; left: 0; color: var(--yellow-deep); }
+.notepad .np-foot {
+  font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600;
+  color: var(--yellow-deep); text-align: center; padding-top: 10px;
+}
+
+/* post-it */
+.postit {
+  background: #FFF6D9; border-radius: 3px; box-shadow: var(--shadow-lift);
+  padding: 14px 16px; font-size: .92rem; line-height: 1.5; font-weight: 400;
+  max-width: 260px; transform: rotate(-1.2deg);
+}
+.postit.alt  { background: #FDEDE4; }
+.postit.teal { background: #E3F4F6; }
+.postit .pi-h { font-family: var(--heading); font-weight: 700; font-size: .98rem; display: block; margin-bottom: 5px; }
+.postit .add { display: block; margin-top: 7px; font-weight: 600; font-size: .82rem; color: var(--orange-deep); }
+
+/* mini post-it binnen een mock */
+.m-sticky {
+  background: #FFF6D9; border-radius: 3px; box-shadow: 0 2px 5px rgba(35,30,26,.12);
+  padding: 9px 11px; font-size: 11px; line-height: 1.45; margin-bottom: 8px;
+  position: relative; font-weight: 400;
+}
+.m-sticky.alt  { background: #FDEDE4; }
+.m-sticky.teal { background: #E3F4F6; }
+.m-sticky .add { display: block; margin-top: 5px; font-weight: 600; font-size: 10.5px; color: var(--orange-deep); }
+.r1 { transform: rotate(-1.2deg); }
+.r2 { transform: rotate(.9deg); }
+.r3 { transform: rotate(-.6deg); }
+.tilt-l { transform: rotate(-2.2deg); }
+.tilt-r { transform: rotate(1.8deg); }
+
+/* prikbord */
+.m-board {
+  background:
+    radial-gradient(circle at 20% 25%, rgba(232,118,75,.07), transparent 42%),
+    radial-gradient(circle at 80% 78%, rgba(244,196,78,.09), transparent 45%),
+    #F6EEE5;
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 15px; position: relative;
+}
+.m-board-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+.m-board .pin {
+  position: absolute; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--orange); box-shadow: 0 1px 2px rgba(35,30,26,.3);
+}
+
+/* polaroid */
+.polaroid {
+  background: #fff; padding: 7px 7px 14px; width: 100%; max-width: 150px;
+  box-shadow: var(--shadow-lift); text-align: center; position: relative;
+  border-radius: 2px;
+}
+.polaroid .pl-photo {
+  aspect-ratio: 4/3; border-radius: 2px; margin-bottom: 8px;
+  background: linear-gradient(135deg, #F3E0C4, #E8A87C);
+  display: flex; align-items: center; justify-content: center; font-size: 30px;
+}
+.polaroid .pl-photo.f { background: linear-gradient(135deg, var(--f-light, #F3E0C4), var(--f, #E8A87C)); }
+.polaroid figcaption, .polaroid .pl-cap {
+  font-size: 10.5px; line-height: 1.35; font-weight: 500; color: var(--ink);
+  font-family: var(--heading);
+}
+.polaroid .pl-cap small { display: block; font-family: var(--body); font-weight: 400; font-size: 9.5px; color: var(--ink-soft); margin-top: 3px; }
+.polaroid.picked { box-shadow: 0 0 0 2.5px var(--f, var(--orange)), var(--shadow-lift); }
+.polaroid .pl-check {
+  position: absolute; top: -9px; right: -9px; width: 22px; height: 22px;
+  background: var(--f, var(--orange)); color: var(--f-ink, #fff); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
+  border: 2px solid #fff;
+}
+.polaroid.lg { max-width: 210px; }
+.polaroid.lg .pl-photo { font-size: 42px; }
+.polaroid.lg figcaption, .polaroid.lg .pl-cap { font-size: 12px; }
+
+/* galerij-raster van polaroids */
+.m-gallery {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr));
+  align-items: start;
+}
+.m-gallery.lg { grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); }
+.m-gallery > * { justify-self: center; }
+
+/* ==========================================================================
+   10. VOOR / NA
+   ========================================================================== */
+
+.ba { display: grid; gap: 14px; grid-template-columns: minmax(0,1fr); margin-top: 18px; }
+@media (min-width: 720px) { .ba { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.ba-col { border-radius: var(--radius-lg); padding: 18px 20px; border: 1px solid var(--border); }
+.ba-col.before { background: var(--subtle); color: var(--ink-soft); border-color: var(--border); }
+.ba-col.after  { background: var(--cream); border-color: var(--orange); box-shadow: var(--shadow-card); }
+.ba-lbl {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase;
+  color: var(--ink-faint); margin-bottom: 10px;
+}
+.ba-col.after .ba-lbl { color: var(--orange-deep); }
+.ba-col p { font-size: .96rem; font-weight: 400; }
+.ba-col p + p { margin-top: 10px; }
+
+/* markering van de verschoven zin */
+.hl, mark.hl {
+  background: var(--f-light, var(--accent-light));
+  color: inherit; padding: 1px 3px; border-radius: 3px;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  border-bottom: 2px solid var(--f, var(--orange));
+  position: relative; cursor: help;
+}
+/* tooltip bij hover — facet + één zin waarom */
+.hl[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 20;
+  width: max-content; max-width: min(260px, 70vw);
+  background: var(--ink); color: #F5EEE8; font-family: var(--body); font-weight: 400;
+  font-size: 12px; line-height: 1.4; padding: 8px 11px; border-radius: 8px;
+  box-shadow: var(--shadow-lift); white-space: normal;
+}
+
+/* ==========================================================================
+   11. ACCORDION & TABS  (werken zonder JS)
+   ========================================================================== */
+
+.m-acc { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--white); }
+details.m-acc-item { border-bottom: 1px solid var(--border); }
+details.m-acc-item:last-child { border-bottom: 0; }
+summary.m-acc-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; cursor: pointer; list-style: none;
+  font-size: 12.5px; min-height: 44px;
+}
+summary.m-acc-head::-webkit-details-marker { display: none; }
+summary.m-acc-head .ah-name { font-family: var(--heading); font-weight: 700; color: var(--f-deep, var(--ink)); }
+summary.m-acc-head .ah-q { font-size: 11.5px; font-style: italic; color: var(--ink-soft); font-weight: 400; }
+summary.m-acc-head .ah-body { flex: 1 1 auto; min-width: 0; }
+summary.m-acc-head::after { content: '\25BE'; margin-left: auto; color: var(--ink-faint); transition: transform .15s ease; flex: 0 0 auto; }
+details.m-acc-item[open] > summary.m-acc-head::after { transform: rotate(180deg); }
+details.m-acc-item[open] > summary.m-acc-head { background: var(--f-light, var(--accent-light)); }
+.m-acc-body { padding: 4px 14px 14px; font-size: 11.5px; font-weight: 400; }
+
+/* tabs (statisch: geef één .on) */
+.m-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; }
+.m-tabs::-webkit-scrollbar { display: none; }
+.m-tab {
+  padding: 8px 13px; font-size: 11.5px; font-weight: 600; color: var(--ink-soft);
+  border-bottom: 2px solid transparent; white-space: nowrap; flex: 0 0 auto;
+  text-decoration: none; min-height: 36px; display: inline-flex; align-items: center; gap: 6px;
+}
+.m-tab.on { color: var(--f-deep, var(--orange-deep)); border-bottom-color: var(--f, var(--orange)); }
+
+/* ==========================================================================
+   12. AI-COLLEGA, WAARDERING, SUGGESTIE
+   ========================================================================== */
+
+.m-ai-lint {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: linear-gradient(100deg, var(--accent-light), #FBF1E4);
+  border: 1px solid #F1D9C6; color: var(--orange-deep);
+  font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 4px 11px; border-radius: var(--radius-full);
+}
+.m-shine {
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 13px 14px; box-shadow: var(--shadow-card);
+}
+.m-shine .sh-h { display: flex; align-items: center; gap: 8px; font-family: var(--heading); font-weight: 700; font-size: 13px; margin-bottom: 7px; }
+.m-shine .sh-body { font-size: 11.5px; font-weight: 400; }
+.m-shine .sh-sig { font-size: 10px; color: var(--ink-faint); margin-top: 10px; font-style: italic; }
+.m-shine .sh-divider { height: 1px; background: var(--border); margin: 12px 0; }
+.m-shine .sh-chance { font-size: 11.5px; font-weight: 400; }
+.m-shine .sh-acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 11px; }
+
+.m-suggest {
+  border: 1.5px solid var(--teal); border-radius: var(--radius-md); background: #FBFEFF;
+  padding: 13px 14px; margin-bottom: 10px;
+}
+.m-suggest .who { display: flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 600; color: var(--teal-deep); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 7px; }
+.m-suggest .who .gem { width: 15px; height: 15px; font-size: 8px; background: var(--teal); }
+.m-suggest .acts { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; align-items: center; }
+
+.m-spark {
+  display: flex; gap: 10px; align-items: flex-start;
+  border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--white);
+  padding: 10px 12px; margin-bottom: 8px; font-size: 11.5px; font-weight: 400;
+}
+.m-spark .gem { margin-top: 1px; }
+.m-spark .by { display: block; font-size: 10px; color: var(--ink-faint); margin-top: 3px; }
+
+/* banner in een mock (bv. herbezoek, weekfacet) */
+.m-banner {
+  background: linear-gradient(120deg, var(--f, var(--orange)), color-mix(in srgb, var(--f, var(--orange)) 78%, #000 8%));
+  border-radius: var(--radius-md); color: #fff; padding: 14px 15px;
+  position: relative; overflow: hidden;
+}
+.m-banner::after {
+  content: ''; position: absolute; right: -22px; top: -22px; width: 90px; height: 90px;
+  background: rgba(255,255,255,.13);
+  clip-path: polygon(30% 0, 70% 0, 100% 35%, 50% 100%, 0 35%);
+}
+.m-banner .bn-k { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .88; }
+.m-banner .bn-t { font-family: var(--heading); font-weight: 700; font-size: 15px; margin: 3px 0 6px; }
+.m-banner p { font-size: 11.5px; opacity: .95; font-weight: 400; }
+
+/* twee kolommen resultaat: schittert al / groeikans (F2) */
+.m-result { display: grid; gap: 10px; grid-template-columns: minmax(0,1fr); }
+@media (min-width: 560px) { .m-result { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.m-result-col { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; background: var(--white); }
+.m-result-col.shine { background: var(--accent-light); border-color: #F1D9C6; }
+.m-result-col .rc-h { font-family: var(--heading); font-weight: 700; font-size: 12.5px; margin-bottom: 9px; display: flex; align-items: center; gap: 7px; }
+.m-result-col .rc-item { display: flex; gap: 8px; align-items: flex-start; font-size: 11.5px; margin-bottom: 8px; font-weight: 400; }
+.m-result-col .rc-item .gem { margin-top: 2px; }
+.m-result-col .rc-tip { font-size: 10.5px; color: var(--ink-soft); font-style: italic; display: block; margin-top: 3px; }
+
+/* ==========================================================================
+   13. ANNOTATIE & SCREENSHOTS VAN VANDAAG
+   ========================================================================== */
+
+.anno-wrap { display: grid; gap: clamp(20px, 3vw, 36px); grid-template-columns: minmax(0,1fr); align-items: start; margin-top: 32px; }
+@media (min-width: 940px) { .anno-wrap { grid-template-columns: minmax(0,1.15fr) minmax(0,.85fr); } }
+.anno-mock { position: relative; }
+.anno-dot {
+  position: absolute; z-index: 5;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--orange); color: #fff; border: 2px solid #fff;
+  font-family: var(--heading); font-weight: 700; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lift);
+}
+.anno-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.anno { display: flex; gap: 12px; align-items: flex-start; }
+.anno .n {
+  width: 26px; height: 26px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--accent-light); color: var(--orange-deep);
+  border: 1.5px solid var(--orange);
+  font-family: var(--heading); font-weight: 700; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; margin-top: 2px;
+}
+.anno .a-body { flex: 1 1 auto; min-width: 0; }
+.anno b { font-family: var(--heading); font-weight: 700; font-size: 1rem; display: block; margin-bottom: 2px; }
+.anno p { font-size: .92rem; color: var(--ink-soft); font-weight: 400; }
+
+/* screenshot van de huidige app */
+.today-row { display: grid; gap: clamp(18px, 3vw, 30px); grid-template-columns: minmax(0,1fr); align-items: start; }
+@media (min-width: 860px) { .today-row { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+figure.today-shot {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 8px; box-shadow: var(--shadow-card); max-width: 100%; overflow: hidden;
+}
+figure.today-shot img {
+  width: 100%; max-width: 100%; height: auto; display: block;
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+}
+figure.today-shot figcaption {
+  font-size: .84rem; color: var(--ink-soft); padding: 10px 6px 4px; font-weight: 400;
+}
+figure.today-shot figcaption b {
+  display: inline-block; font-family: var(--body); font-weight: 700; font-size: 10.5px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); margin-right: 6px;
+}
+
+/* ==========================================================================
+   14. KAARTEN OP PAGINANIVEAU — Maite, parkeer, callout, pro/con
+   ========================================================================== */
+
+.maite-card {
+  background: #FFF6D9; border-radius: 4px; padding: 18px 20px 16px;
+  box-shadow: var(--shadow-lift); transform: rotate(-.7deg); font-size: .95rem;
+}
+.maite-card .lbl {
+  display: block; font-size: 11.5px; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--yellow-deep); margin-bottom: 8px;
+}
+.maite-card p { font-family: var(--heading); font-style: italic; font-size: 1.05rem; line-height: 1.45; }
+.maite-card p + p { margin-top: 10px; }
+.maite-card .who { font-family: var(--body); font-style: normal; font-size: .82rem; color: var(--yellow-deep); font-weight: 600; margin-top: 10px; display: block; }
+
+/* kleiner kaartje voor de misschien-strook */
+.park-strip { display: grid; gap: 14px; grid-template-columns: minmax(0,1fr); margin-top: 26px; }
+@media (min-width: 760px)  { .park-strip { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width: 1040px) { .park-strip { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+.park-card {
+  background: var(--white); border: 1px dashed var(--border-hover);
+  border-radius: var(--radius-md); padding: 15px 17px; font-size: .89rem;
+}
+.park-card .pk-lbl {
+  display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--ink-faint); margin-bottom: 6px;
+}
+.park-card h3 { font-size: 1rem; margin-bottom: 6px; }
+.park-card p { color: var(--ink-soft); font-weight: 400; }
+.park-card .pk-note { margin-top: 8px; font-size: .82rem; color: var(--ink-faint); font-style: italic; }
+
+.callout {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--white); border: 1px dashed var(--border-hover);
+  border-radius: var(--radius-md); padding: 16px 20px; margin-top: 24px;
+  font-size: .94rem; color: var(--ink-soft);
+}
+.callout .ico { font-size: 22px; line-height: 1.2; flex: 0 0 auto; }
+.callout strong { color: var(--ink); font-weight: 600; }
+.callout.warm { background: var(--accent-light); border-style: solid; border-color: #F1D9C6; }
+
+.pro-con { display: grid; gap: 18px; margin-top: 34px; grid-template-columns: minmax(0,1fr); }
+@media (min-width: 860px) { .pro-con { grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1.1fr); } }
+.an-col h3 { font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.an-col ul { list-style: none; }
+.an-col li { font-size: .91rem; padding-left: 22px; position: relative; margin-bottom: 9px; color: var(--ink-soft); font-weight: 400; }
+.an-col li strong { color: var(--ink); font-weight: 600; }
+.an-col.pro li::before { content: '\2713'; position: absolute; left: 0; color: var(--green-deep); font-weight: 700; }
+.an-col.con li::before { content: '\301C'; position: absolute; left: 0; color: var(--orange-deep); font-weight: 700; }
+
+/* tabel — altijd in een scrollkader */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 30px; border-radius: var(--radius-lg); }
+table.compare {
+  width: 100%; min-width: 620px; border-collapse: collapse;
+  background: var(--white); box-shadow: var(--shadow-card); font-size: .9rem;
+}
+table.compare th, table.compare td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
+table.compare thead th { font-family: var(--heading); font-size: .92rem; background: var(--subtle); vertical-align: bottom; }
+table.compare thead th small { display: block; font-family: var(--body); font-weight: 400; font-size: .74rem; color: var(--ink-soft); }
+table.compare tbody th { font-weight: 600; font-size: .86rem; color: var(--ink-soft); width: 180px; }
+table.compare td { font-weight: 400; }
+table.compare tbody tr:last-child th, table.compare tbody tr:last-child td { border-bottom: none; }
+
+/* ==========================================================================
+   15. KLEINE HULPKLASSEN
+   ========================================================================== */
+
+.stack-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.mt-s { margin-top: 10px; } .mt-m { margin-top: 20px; } .mt-l { margin-top: 34px; }
+.mb-s { margin-bottom: 10px; } .mb-m { margin-bottom: 20px; } .mb-l { margin-bottom: 34px; }
+.center { text-align: center; }
+.nowrap { white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+<style>
+/* ============================================================
+   Eigen regels voor de bouwlijst, prefix .t5
+   ============================================================ */
+
+/* bouwitem-kaart */
+.t5-item {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 20px 22px 18px; box-shadow: var(--shadow-card);
+}
+.t5-item > * { min-width: 0; }
+.t5-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+.t5-id {
+  flex: 0 0 auto; font-family: var(--heading); font-weight: 700; font-size: .82rem;
+  background: var(--accent-light); color: var(--orange-deep);
+  border: 1.5px solid var(--orange); border-radius: var(--radius-full);
+  padding: 3px 12px;
+}
+.t5-item.decide .t5-id { background: var(--auto-light); color: var(--auto-deep); border-color: var(--auto); }
+.t5-head h3 { font-size: 1.15rem; margin: 0; }
+.t5-one { font-size: .95rem; color: var(--ink-soft); font-weight: 400; margin-bottom: 12px; }
+.t5-item ul { list-style: none; }
+.t5-item li { font-size: .9rem; font-weight: 400; padding-left: 20px; position: relative; margin-bottom: 7px; color: var(--ink); }
+.t5-item li::before { content: '\2713'; position: absolute; left: 0; color: var(--green-deep); font-weight: 700; }
+.t5-item li.q::before { content: '?'; color: var(--auto-deep); }
+.t5-item li strong { font-weight: 600; }
+.t5-item li em.src { font-style: italic; color: var(--ink-soft); }
+.t5-wie {
+  display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center;
+  border-top: 1px dashed var(--border-hover); margin-top: 12px; padding-top: 10px;
+  font-size: .8rem; color: var(--ink-faint); font-weight: 500;
+}
+.t5-wie .w {
+  display: inline-flex; align-items: center; gap: 5px;
+  border: 1.5px solid var(--border-hover); border-radius: var(--radius-full);
+  padding: 3px 11px; font-size: .78rem; font-weight: 600; color: var(--ink-soft);
+}
+.t5-wie .w.fred { border-color: var(--teal); color: var(--teal-deep); }
+.t5-wie .w.mn { border-color: var(--purple); color: var(--purple-deep); }
+
+.t5-grid { display: grid; gap: clamp(16px, 2.4vw, 24px); grid-template-columns: minmax(0,1fr); margin-top: 32px; }
+@media (min-width: 900px) { .t5-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.t5-grid > .t5-item { align-self: start; }
+
+/* niet-doen-rij */
+.t5-no {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--subtle); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 13px 16px; margin-bottom: 9px; font-size: .92rem; color: var(--ink-soft); font-weight: 400;
+}
+.t5-no .nx { flex: 0 0 auto; font-weight: 700; color: var(--ink-faint); margin-top: 1px; }
+.t5-no b { color: var(--ink); font-weight: 600; }
+
+/* bevestigingslijst */
+.t5-confirm label {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 9px 12px; margin-bottom: 7px; cursor: pointer;
+  border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  font-size: .9rem; font-weight: 400; background: var(--white);
+}
+.t5-confirm label:has(input:checked) { border-color: var(--green); background: var(--norm-light); }
+.t5-confirm input { margin-top: 3px; accent-color: var(--green-deep); flex: 0 0 auto; }
+.t5-confirm label b { font-weight: 600; }
+
+/* vraagkaart, overgenomen uit verkenning #4 */
+.t4-q {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 20px 22px; box-shadow: var(--shadow-card);
+}
+.t4-q h3 { font-size: 1.08rem; margin-bottom: 4px; }
+.t4-q .tq-sub { font-size: .88rem; color: var(--ink-soft); margin-bottom: 14px; font-weight: 400; }
+.t4-q label {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
+  border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  font-size: .92rem; font-weight: 400; background: var(--white);
+}
+.t4-q label:hover { border-color: var(--border-hover); background: var(--cream); }
+.t4-q label:has(input:checked) { border-color: var(--orange); background: var(--accent-light); font-weight: 500; }
+.t4-q input { margin-top: 3px; accent-color: var(--orange); flex: 0 0 auto; }
+.t4-q label small { display: block; color: var(--ink-soft); font-size: .8rem; font-weight: 400; }
+.t4-q button {
+  font: inherit; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 20px; font-weight: 600; font-size: .9rem; color: #fff;
+  background: var(--orange); border: none; border-radius: var(--radius-full);
+  margin-top: 6px;
+}
+.t4-q button:hover { background: var(--orange-hover); }
+.t4-q .tq-done { display: none; font-size: .84rem; color: var(--green-deep); font-weight: 600; margin-top: 8px; }
+.t4-q.queued .tq-done { display: block; }
+.t4-quotegrid { display: grid; gap: 22px; grid-template-columns: minmax(0,1fr); align-items: start; }
+.t4-quotegrid > * { min-width: 0; }
+
+/* de bevestigingsvinkjes blijven op t4-q-basis, maar in het groen */
+.t5-confirm label:has(input:checked) { border-color: var(--green); background: var(--norm-light); font-weight: 400; }
+.t5-confirm input { accent-color: var(--green-deep); }
+
+/* beslist-kaart */
+.t5-decided {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 13px 16px; margin-bottom: 9px; font-size: .93rem; font-weight: 400;
+}
+.t5-decided > * { min-width: 0; }
+.t5-decided .td-chip {
+  flex: 0 0 auto; margin-top: 2px; width: 62px; text-align: center;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  border-radius: var(--radius-full); padding: 4px 0;
+  background: var(--norm-light); color: var(--norm-deep);
+}
+.t5-decided b { font-weight: 600; }
+.t5-decided small { display: block; color: var(--ink-soft); font-size: .82rem; }
+
+/* telstrip op de cover */
+.t5-counts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 36px; }
+.t5-count {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 10px 18px; box-shadow: var(--shadow-card); font-size: .85rem; color: var(--ink-soft); font-weight: 500;
+}
+.t5-count b { font-family: var(--heading); font-weight: 700; font-size: 1.4rem; color: var(--ink); display: block; line-height: 1.1; }
+</style>
+</head>
+<body>
+
+<nav class="deck-nav">
+  <a class="brand" href="#top"><span class="gem f-doen">D</span> Hartverwarmers · Bouwlijst</a>
+  <a class="navlink" href="#doelenpagina">Doelenpagina</a>
+  <a class="navlink" href="#fichepagina">Fichepagina</a>
+  <a class="navlink" href="#beslissen">Eerst beslissen</a>
+  <a class="navlink soft" href="#niet">Niet doen</a>
+  <a class="navlink soft" href="#later">Later</a>
+  <a class="navlink" href="#vragen">Beantwoord</a>
+  <a class="navlink num" href="#bevestig">Bekrachtigd</a>
+</nav>
+
+<header class="cover" id="top">
+  <div class="cover-inner">
+    <span class="disclaimer">Bekrachtigd op 28 augustus 2026 · vertrekpunt voor het implementatieplan</span>
+    <span class="section-label" style="display:block;">Na de review met Maite en Nadine</span>
+    <h1>Wat er nu <em>gebouwd</em> wordt</h1>
+    <p class="sub">
+      De oogst van de reviewmeeting, bekrachtigd door Frederik: zes bouwitems en twee
+      randvoorwaarden. Zeven pistes vallen af, drie ideeën wachten tot na de Doen-pagina.
+      Alle open vragen zijn beantwoord.
+    </p>
+    <div class="t5-counts">
+      <div class="t5-count"><b>6</b> bouwen</div>
+      <div class="t5-count"><b>2</b> eerst beslissen</div>
+      <div class="t5-count"><b>7</b> niet doen</div>
+      <div class="t5-count"><b>3</b> later</div>
+    </div>
+  </div>
+  <div class="cover-gems" aria-hidden="true">
+    <span class="gem f-doen">D</span>
+    <span class="gem f-inclusief">I</span>
+    <span class="gem f-autonomie">A</span>
+    <span class="gem f-mensgericht">M</span>
+    <span class="gem f-anderen">A</span>
+    <span class="gem f-normalisatie">N</span>
+    <span class="gem f-talent">T</span>
+  </div>
+</header>
+
+<!-- ================= DOELENPAGINA ================= -->
+<section class="slide bg-white" id="doelenpagina">
+  <div class="wrap">
+    <span class="section-label"><span class="gem gem-xs f-doen">D</span> Bouwen · deel 1</span>
+    <h2>De Doen-pagina, volledig</h2>
+    <p class="lead">
+      Herbevestigd in de meeting: we werken doel per doel en bouwen eerst de D helemaal af,
+      zodat we weten hoeveel werk één letter kost. Vijf blokken.
+    </p>
+
+    <div class="t5-grid">
+      <div class="t5-item">
+        <div class="t5-head"><span class="t5-id">B1</span><h3>Schoolvoorbeelden-blok</h3></div>
+        <p class="t5-one">3 à 5 gecureerde fiches met telkens één zin waarom.</p>
+        <ul>
+          <li>Schoolvoorbeelden hoeven <strong>geen diamantjes</strong> te zijn. Omgekeerd wel: het diamantje van de maand kan er later uit gekozen worden.</li>
+          <li><strong>Curatiehulp bouwen:</strong> per doel een suggestielijst van hoogscorende fiches, zodat niemand door 500 fiches moet.</li>
+          <li>Nieuwe voorbeelden van buiten zijn welkom, liever zelfs. <em class="src">"Nu is het net moeilijk om nog goeie diamantjes te vinden."</em></li>
+          <li class="q">Foto's bij de voorbeelden: nog te bezien, optioneel.</li>
+        </ul>
+        <div class="t5-wie">Wie <span class="w mn">Maite &amp; Nadine kiezen</span> <span class="w fred">Frederik bouwt blok + suggestielijst</span></div>
+      </div>
+
+      <div class="t5-item">
+        <div class="t5-head"><span class="t5-id">B2</span><h3>Verhaal uit de praktijk</h3></div>
+        <p class="t5-one">Nieuw, compact contenttype. Geen eigen pagina, wel een eigen stijl.</p>
+        <ul>
+          <li><strong>Echt gebeurd</strong> is de voorwaarde; mooi uitschrijven mag. <em class="src">"Dan moet dat echt waar zijn."</em></li>
+          <li>Klein blokje met eigen vormgeving (ander lettertype), herkenbaar zonder rubriekslabel.</li>
+          <li><strong>Optioneel fotoveld;</strong> een generieke foto (de fiets) kan als er geen echte is.</li>
+          <li>Aanlevering: inspreken of doorsturen; kandidaten ook uit podcast- en vormingsmateriaal halen. Voorbeelden liggen klaar: de fietsenpoetser, Wiske en het koor.</li>
+          <li><strong>Flow beslist:</strong> Frederik en AI maken er publiceerbare voorstellen van, Maite en Nadine keuren voor publicatie. Dat geldt ook voor externe voorbeelden bij B1.</li>
+        </ul>
+        <div class="t5-wie">Wie <span class="w mn">Maite &amp; Nadine sprokkelen</span> <span class="w fred">Frederik extraheert &amp; bouwt</span></div>
+      </div>
+
+      <div class="t5-item">
+        <div class="t5-head"><span class="t5-id">B3</span><h3>Verder kijken (referenties)</h3></div>
+        <p class="t5-one">Per doel een kort lijstje met type: podcast, gids, methodiek, materiaal.</p>
+        <ul>
+          <li><strong>Geen beheersysteem bouwen.</strong> <em class="src">"Stuur maar door, dat is voor mij dan weinig werk."</em></li>
+          <li>Kan het jaar door groeien via een mailtje.</li>
+        </ul>
+        <div class="t5-wie">Wie <span class="w mn">Maite &amp; Nadine leveren per letter</span> <span class="w fred">Frederik voegt toe</span></div>
+      </div>
+
+      <div class="t5-item">
+        <div class="t5-head"><span class="t5-id">B4</span><h3>Fiches automatisch aan doelen</h3></div>
+        <p class="t5-one">Rechtstreekse koppeling, met een lijst "Fiches die aanzetten tot doen".</p>
+        <ul>
+          <li><strong>Volautomatisch.</strong> <em class="src">"Dat moet automatisch kunnen eigenlijk."</em> Geen handmatige dubbelcheck van 500 fiches.</li>
+          <li>Filters op de lijst, zoals kleine groepen en individueel.</li>
+          <li>Kale quizzen en bingo's zonder doel vallen er gewoon buiten. Dat is oké.</li>
+          <li><strong>Wacht op E1:</strong> eerst de definitieve doelen, dan pas koppelen.</li>
+        </ul>
+        <div class="t5-wie">Wie <span class="w fred">Frederik, volledig</span></div>
+      </div>
+
+      <div class="t5-item">
+        <div class="t5-head"><span class="t5-id">B5</span><h3>Schittergallerij</h3></div>
+        <p class="t5-one">Klassiekers (bingo, wandeling, kleurplaat) telkens in een gewone en een schitterende versie, per doel.</p>
+        <ul>
+          <li>De enige piste uit de kwaliteitstools-verkenning die integraal doorgaat. <em class="src">"Tof te implementeren op zo'n doelenpagina."</em></li>
+          <li>Toont dat niet de activiteit telt maar het doel erachter: een quiz kan verschrikkelijk zijn én een doel bedienen.</li>
+          <li>Het bestaande NIET/WEL-vraagje blijft daarnaast gewoon staan.</li>
+          <li><strong>Flow beslist:</strong> AI stelt de versies voor, Maite en Nadine keuren en verfijnen.</li>
+        </ul>
+        <div class="t5-wie">Wie <span class="w fred">Frederik bouwt, AI stelt voor</span> <span class="w mn">Maite &amp; Nadine keuren</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FICHEPAGINA ================= -->
+<section class="slide bg-cream" id="fichepagina">
+  <div class="wrap">
+    <span class="section-label"><span class="gem gem-xs f-mensgericht">M</span> Bouwen · deel 2</span>
+    <h2>Op elke fichepagina</h2>
+    <p class="lead">Uit de zes kwaliteitspistes blijft één zichtbaar blok voor bezoekers over.</p>
+
+    <div class="t5-grid">
+      <div class="t5-item">
+        <div class="t5-head"><span class="t5-id">B6</span><h3>Vraag-je-af-blok onder elke fiche</h3></div>
+        <p class="t5-one">Een vast blok onder het verhaal van de fiche, ook bij bestaande fiches.</p>
+        <ul>
+          <li><strong>Eerst waardering, dan suggestie:</strong> toon welke doelen er al in zitten ("we herkennen dit al"), daarna hoe je er meer mee kan.</li>
+          <li>Geformuleerd naar bezoekers: <strong>hoe zet je dit naar je hand.</strong> Nooit goed/slecht, nooit belerend, geen spiekkaart.</li>
+          <li>Statisch blok, geen interactieve wizard (die piste viel af).</li>
+        </ul>
+        <div class="t5-wie">Wie <span class="w fred">Frederik, volledig</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= EERST BESLISSEN ================= -->
+<section class="slide bg-white" id="beslissen">
+  <div class="wrap">
+    <span class="section-label"><span class="gem gem-xs f-autonomie">A</span> Randvoorwaarden</span>
+    <h2>Eerst beslissen, dan bouwen</h2>
+    <p class="lead">Twee dingen blokkeren de rest zolang ze open staan.</p>
+
+    <div class="t5-grid">
+      <div class="t5-item decide">
+        <div class="t5-head"><span class="t5-id">E1</span><h3>De definitieve doelen</h3></div>
+        <p class="t5-one">Inclusief wordt mogelijk Inspraak; overlap eruit; eventueel minder doelen.</p>
+        <ul>
+          <li><em class="src">"Wat hiervoor nog moet gebeuren is dat we bepalen wat de juiste doelen zijn, en dan gaat dat vlot gaan."</em></li>
+          <li>Blokkeert B4 (automatische koppeling) en kleurt alle teksten en reflectievragen.</li>
+        </ul>
+        <div class="t5-wie">Wie <span class="w mn">Maite &amp; Nadine beslissen</span> <span class="w fred">Frederik verwerkt</span></div>
+      </div>
+
+      <div class="t5-item decide">
+        <div class="t5-head"><span class="t5-id">E2</span><h3>Scoringsalgoritme nakijken</h3></div>
+        <p class="t5-one">De doelherkenning moet op het diamantmodel rusten en streng genoeg zijn.</p>
+        <ul>
+          <li>Afstemmen op het definitieve model uit E1.</li>
+          <li>Frederik checkt zelf of het streng genoeg is; geen review van 500 fiches door het team.</li>
+        </ul>
+        <div class="t5-wie">Wie <span class="w fred">Frederik</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NIET DOEN ================= -->
+<section class="slide tight bg-subtle" id="niet">
+  <div class="wrap">
+    <span class="section-label">Afgevallen in de review</span>
+    <h2>Wat we niet doen</h2>
+
+    <div class="mt-m">
+      <div class="t5-no"><span class="nx">✕</span><p><b>"Wat er al schittert": AI-feedback aan de auteur op de eigen fiche.</b> Expliciet afgevoerd; B6 en B7 nemen de goede kant ervan over.</p></div>
+      <div class="t5-no"><span class="nx">✕</span><p><b>De scan met 21 stellingen.</b> "Dat was het niet echt."</p></div>
+      <div class="t5-no"><span class="nx">✕</span><p><b>De spiekkaart-werkvorm.</b> Te schools, "lagerschoolachtig". De goede reflectievragen eruit verhuizen naar B5 en B6.</p></div>
+      <div class="t5-no"><span class="nx">✕</span><p><b>De interactieve download-wizard (piste 1).</b> Te complex; het statische vraag-je-af-blok wint. Ook het pdf-restje vervalt: het blok op de pagina volstaat.</p></div>
+      <div class="t5-no"><span class="nx">✕</span><p><b>De aparte bedankmail bij inzending (was B7).</b> Niet bekrachtigd bij het afvinken van de bouwlijst.</p></div>
+      <div class="t5-no"><span class="nx">✕</span><p><b>Een beheersysteem waarmee het team zelf referenties toevoegt.</b> Doorsturen per mail is genoeg.</p></div>
+      <div class="t5-no"><span class="nx">✕</span><p><b>Subthema's onder Anderen als vaste paginastructuur.</b> Familie, vrijwilligers, buurt en samenwerkingen komen via de verhalen naar boven, en later via suggesties bij het bedenken of herwerken van een fiche.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LATER ================= -->
+<section class="slide tight bg-cream" id="later">
+  <div class="wrap">
+    <span class="section-label">Bewust geparkeerd</span>
+    <h2>Voor na de Doen-pagina</h2>
+
+    <div class="park-strip">
+      <div class="park-card">
+        <span class="pk-lbl">Ritme</span>
+        <h3>Eén doel in de kijker per periode</h3>
+        <p>In de nieuwsbrief, met oproep tot voorbeelden. Kan pas als de pagina van die letter af is, en hoeft geen zeven kwartalen te duren.</p>
+        <p class="pk-note">Frederik denkt de werking nog uit.</p>
+      </div>
+      <div class="park-card">
+        <span class="pk-lbl">Nieuw idee</span>
+        <h3>Brainstormpartner voor nieuwe activiteiten</h3>
+        <p>Een begeleide flow die vanuit een doel naar een activiteit toewerkt, gevoed door het diamant-stappenplan, de BAM en asset mapping.</p>
+        <p class="pk-note">Uitdaging op zich, en duurder. Eerst uitproberen wat er nu al ligt.</p>
+      </div>
+      <div class="park-card">
+        <span class="pk-lbl">Structuur</span>
+        <h3>Doelen op de homepage</h3>
+        <p>De doelen als ingang van de site. Kwam opnieuw ter sprake als logisch vervolg, blijft wachten op gevulde doelenpagina's.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VRAGEN ================= -->
+<section class="slide bg-white" id="vragen">
+  <div class="wrap">
+    <span class="section-label"><span class="gem gem-xs f-talent">T</span> Beantwoord</span>
+    <h2>De drie open vragen, beslist</h2>
+    <p class="lead">Waar het transcript dubbelzinnig was, heeft Frederik gekozen. De antwoorden zitten ook verwerkt in de items hierboven.</p>
+    <div class="mt-l" style="max-width: 780px;">
+      <div class="t5-decided"><span class="td-chip">Beslist</span><div><b>De download-pdf met reflectievragen vervalt volledig.</b><small>Het vraag-je-af-blok op de fichepagina (B6) volstaat.</small></div></div>
+      <div class="t5-decided"><span class="td-chip">Beslist</span><div><b>Schittergallerij: AI stelt de versies voor, Maite en Nadine keuren en verfijnen.</b></div></div>
+      <div class="t5-decided"><span class="td-chip">Beslist</span><div><b>Doorgestuurd materiaal: Frederik en AI maken er content van, Maite en Nadine keuren voor publicatie.</b><small>Geldt voor ingesproken verhalen én externe voorbeelden zoals dat uit de Heiveld-podcast.</small></div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= BEVESTIGEN ================= -->
+<section class="slide bg-cream" id="bevestig">
+  <div class="wrap wrap-narrow">
+    <span class="section-label"><span class="gem gem-xs f-doen">D</span> Bekrachtigd</span>
+    <h2>De bekrachtigde bouwlijst</h2>
+    <p class="lead">Op 28 augustus 2026 bekrachtigd door Frederik. Dit is het vertrekpunt voor het implementatieplan.</p>
+
+    <div class="mt-l">
+      <div class="t5-decided"><span class="td-chip">Bouwen</span><div><b>B1</b> Schoolvoorbeelden-blok + suggestielijst voor curatie</div></div>
+      <div class="t5-decided"><span class="td-chip">Bouwen</span><div><b>B2</b> Verhaal uit de praktijk als compact contenttype met optionele foto</div></div>
+      <div class="t5-decided"><span class="td-chip">Bouwen</span><div><b>B3</b> Verder kijken: referenties per doel, aangeleverd per mail</div></div>
+      <div class="t5-decided"><span class="td-chip">Bouwen</span><div><b>B4</b> Fiches volautomatisch aan doelen, lijst met filters</div></div>
+      <div class="t5-decided"><span class="td-chip">Bouwen</span><div><b>B5</b> Schittergallerij met klassiekers per doel</div></div>
+      <div class="t5-decided"><span class="td-chip">Bouwen</span><div><b>B6</b> Vraag-je-af-blok onder elke fiche, waardering eerst</div></div>
+      <div class="t5-decided"><span class="td-chip">Eerst</span><div><b>E1</b> De definitieve doelen vastleggen (inclusief/inspraak)</div></div>
+      <div class="t5-decided"><span class="td-chip">Eerst</span><div><b>E2</b> Scoringsalgoritme afstemmen op het definitieve model</div></div>
+      <div class="t5-no" style="margin-top: 14px;"><span class="nx">✕</span><p><b>B7 Bedankmail bij inzending:</b> niet bekrachtigd, vervalt.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="deck-foot">
+  <span class="gem f-doen">D</span>
+  Bouwlijst na de review · Doelenpagina &amp; kwaliteitstools · Hartverwarmers
+</footer>
+
+</body>
+</html>
