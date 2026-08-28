@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnablePreviewMode;
 use App\Http\Middleware\EnsureQueueWorkerRunning;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsCurator;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', HandleImpersonation::class);
         $middleware->appendToGroup('web', EnsureQueueWorkerRunning::class);
         $middleware->appendToGroup('web', TrackLastVisit::class);
+        $middleware->appendToGroup('web', EnablePreviewMode::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         Integration::handles($exceptions);

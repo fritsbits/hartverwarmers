@@ -1,0 +1,75 @@
+{
+  "schoolvoorbeelden": [
+    {
+      "fiche_id": 416,
+      "waarom": "Zij kiest de charcuterie en werkt mee van winkel tot soep. De hele leefgroep proeft het resultaat."
+    },
+    {
+      "fiche_id": 167,
+      "waarom": "Wie nog kan haken maakt een dekentje voor wie dat niet meer kan. Zorgen voor elkaar in plaats van bezig zijn."
+    },
+    {
+      "fiche_id": 147,
+      "waarom": "De bewoners organiseren het feest zelf, van de intrede tot het programma. Niemand kijkt alleen toe."
+    }
+  ],
+  "verhalen": [
+    {
+      "tekst": "“Wie leerde jou eigenlijk zwemmen?” Eén vraag aan tafel, en heel de groep begon te vertellen. Nu gaan ze opnieuw zwemmen, in een bad met een lift.",
+      "bron": "Begint bij een verhaal, eindigt in doen.",
+      "status": "klaar"
+    },
+    {
+      "tekst": "Hij poetste elke fiets van het huis. Een leven lang met fietsen bezig geweest, en hier opnieuw een taak die van hem was.",
+      "bron": "Het volledige verhaal moet nog opgetekend worden.",
+      "status": "te-schrijven"
+    },
+    {
+      "tekst": "Wiske zong al jaren niet meer. Tot ze het eerste lied van het koor mocht kiezen.",
+      "bron": "Het volledige verhaal moet nog opgetekend worden.",
+      "status": "te-schrijven"
+    }
+  ],
+  "klassiekers": [
+    {
+      "titel": "De klassieke wandeling",
+      "icoon": "footprints",
+      "kleur": 2,
+      "klassiek": "De route ligt vast en de begeleidster duwt. Er wordt kort gestapt en daarna gaat iedereen terug naar binnen.",
+      "verschuivingen": [
+        {"voorbeeld": "Louis duwt zelf een stuk van de weg.", "principe": "Zelf doen", "toelichting": "ook als het trager gaat"},
+        {"voorbeeld": "Onderweg wordt er brood gehaald, en wie wil draagt de tas.", "principe": "Kleine stapjes", "toelichting": "één handeling is al een succes"},
+        {"voorbeeld": "Binnen zegt de begeleidster luidop wie het brood heeft meegedragen.", "principe": "Waardering", "toelichting": "benoem wat iemand gedaan heeft"}
+      ]
+    },
+    {
+      "titel": "De klassieke knutselnamiddag",
+      "icoon": "scissors",
+      "kleur": 5,
+      "klassiek": "Alles ligt voorgeknipt klaar. De bewoners plakken de stukken op hun plaats en de begeleidster maakt af wat niet lukt.",
+      "verschuivingen": [
+        {"voorbeeld": "Het materiaal ligt in het midden, iedereen neemt zelf wat hij nodig heeft.", "principe": "Zelf doen", "toelichting": "ook als het trager gaat"},
+        {"voorbeeld": "Wie niet meer kan knippen, scheurt het papier of kiest de kleuren.", "principe": "Aangepast materiaal", "toelichting": "zo blijft zelf doen mogelijk"},
+        {"voorbeeld": "Wat af is hangt aan de muur, met de naam erbij van wie het maakte.", "principe": "Waardering", "toelichting": "benoem wat iemand gedaan heeft"}
+      ]
+    },
+    {
+      "titel": "Het klassieke koffiemoment",
+      "icoon": "coffee",
+      "kleur": 1,
+      "klassiek": "De koffie staat ingeschonken op tafel als de bewoners binnenkomen, en na een halfuur wordt alles weer afgeruimd.",
+      "verschuivingen": [
+        {"voorbeeld": "De kan staat op tafel in plaats van op het dienblad achteraan.", "principe": "Aangepast materiaal", "toelichting": "zo blijft zelf doen mogelijk"},
+        {"voorbeeld": "Wie het nog kan, schenkt in voor zichzelf en voor de buur.", "principe": "Zelf doen", "toelichting": "ook al gaat er al eens iets naast"},
+        {"voorbeeld": "Mie deelt de koekjes rond. Dat is haar taak geworden.", "principe": "Kleine stapjes", "toelichting": "één handeling is al een succes"}
+      ]
+    }
+  ],
+  "referenties": [
+    {"type": "podcast", "titel": "Studio Bomma over participatie", "onder": "Luister onderweg, 40 minuten.", "url": "#"},
+    {"type": "gids", "titel": "De participatiegids “Jij, wij, samen”", "onder": "Gratis te downloaden.", "url": "#"},
+    {"type": "methodiek", "titel": "Verven: piepkleine betekenisvolle momenten", "onder": "Onderzoek van Artevelde, uitgetest in het werkveld.", "url": "#"},
+    {"type": "methodiek", "titel": "Object handling", "onder": "Voorwerpen als opstap naar interactie.", "url": "#"},
+    {"type": "materiaal", "titel": "Gesprekskaarten en spelmateriaal", "onder": "Onder meer via de uitleendienst van Artevelde.", "url": "#"}
+  ]
+}
