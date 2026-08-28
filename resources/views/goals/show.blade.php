@@ -93,6 +93,10 @@
                     </div>
                 @endif
             </div>
+
+            @if($showGoalPreview)
+                <x-goal.klassiekers :items="$goalContent['klassiekers']" :facet-letter="$facet['letter']" />
+            @endif
         </div>
     </section>
 
@@ -138,22 +142,41 @@
         </section>
     @endif
 
-    {{-- Block 5: Initiatieven --}}
-    @if(!$initiatives->isEmpty())
-        <section>
+    @if($showGoalPreview)
+        <section class="bg-[var(--color-bg-cream)]">
             <div class="max-w-6xl mx-auto px-6 py-16">
-                <span class="section-label">Inspiratie</span>
-                <h2 class="mt-1 mb-2">{{ $facet['initiatives_heading'] ?? 'Initiatieven bij deze doelstelling' }}</h2>
-                <p class="text-[var(--color-text-secondary)] mb-8">Gebruik deze als startpunt en pas ze aan voor jouw bewoners.</p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($initiatives as $initiative)
-                        <x-initiative-card :initiative="$initiative" />
-                    @endforeach
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                    <div class="min-w-0">
+                        <x-goal.referenties :items="$goalContent['referenties']" :facet-keyword="$facet['keyword']" />
+                    </div>
+                    <div class="min-w-0">
+                        <x-goal.verhalen :items="$goalContent['verhalen']" />
+                    </div>
                 </div>
             </div>
         </section>
+
+        <x-goal.schoolvoorbeelden :items="$schoolvoorbeelden" :facet-keyword="$facet['keyword']" />
     @endif
+
+    @unless($showGoalPreview)
+        {{-- Block 5: Initiatieven --}}
+        @if(!$initiatives->isEmpty())
+            <section>
+                <div class="max-w-6xl mx-auto px-6 py-16">
+                    <span class="section-label">Inspiratie</span>
+                    <h2 class="mt-1 mb-2">{{ $facet['initiatives_heading'] ?? 'Initiatieven bij deze doelstelling' }}</h2>
+                    <p class="text-[var(--color-text-secondary)] mb-8">Gebruik deze als startpunt en pas ze aan voor jouw bewoners.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach($initiatives as $initiative)
+                            <x-initiative-card :initiative="$initiative" />
+                        @endforeach
+                    </div>
+                </div>
+            </section>
+        @endif
+    @endunless
 
     {{-- Verwante doelstellingen --}}
     <section class="bg-[var(--color-bg-cream)]">

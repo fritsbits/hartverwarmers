@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Fiche;
 use App\Models\Initiative;
 use App\Models\Tag;
 use App\Services\DiamantService;
+use App\Services\GoalContent;
+use App\Support\PreviewMode;
 use Illuminate\View\View;
 
 class GoalController extends Controller
@@ -62,12 +65,43 @@ class GoalController extends Controller
 
         $allFacets = $this->diamantService->all();
 
+        $goalContent = GoalContent::for($facetSlug);
+
+        $hasGoalContent = collect($goalContent)->contains(fn (array $block) => filled($block));
+
+        $showGoalPreview = PreviewMode::doelenpagina() && $hasGoalContent;
+
+        $schoolvoorbeeldIds = collect($goalContent['schoolvoorbeelden'])->pluck('fiche_id')->filter();
+
+        $schoolvoorbeelden = collect();
+
+        if ($showGoalPreview && $schoolvoorbeeldIds->isNotEmpty()) {
+            $fiches = Fiche::query()
+                ->whereIn('id', $schoolvoorbeeldIds)
+                ->where('published', true)
+                ->whereNotNull('initiative_id')
+                ->with('user', 'initiative')
+                ->get()
+                ->keyBy('id');
+
+            $schoolvoorbeelden = collect($goalContent['schoolvoorbeelden'])
+                ->map(fn (array $item) => [
+                    'fiche' => $fiches->get($item['fiche_id'] ?? null),
+                    'waarom' => $item['waarom'] ?? '',
+                ])
+                ->filter(fn (array $item) => $item['fiche'] !== null)
+                ->values();
+        }
+
         return view('goals.show', [
             'facet' => $facet,
             'initiatives' => $initiatives,
             'allFacets' => $allFacets,
             'totalInitiativeCount' => $totalInitiativeCount,
             'facetInitiativeCount' => $facetInitiativeCount,
+            'goalContent' => $goalContent,
+            'schoolvoorbeelden' => $schoolvoorbeelden,
+            'showGoalPreview' => $showGoalPreview,
         ]);
     }
 }
