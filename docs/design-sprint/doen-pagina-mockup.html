@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De Doen-pagina, volledig · mockup</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:700,700i|fira-sans:300,300i,400,500,600,700" rel="stylesheet">
+<style>
+/* ==========================================================================
+   Mockup van /doelen/doen, volledig uitgebouwd volgens de bekrachtigde
+   bouwlijst van 28 augustus 2026. Tokens identiek aan resources/css/app.css.
+   Alle fiches, namen, kudos en aantallen komen uit de echte database.
+   ========================================================================== */
+
+:root {
+  --orange:        #E8764B;
+  --orange-hover:  #D4683F;
+  --orange-deep:   #B4552C;
+  --ink:           #231E1A;
+  --ink-soft:      #756C65;
+  --ink-faint:     #C0B5AE;
+  --cream:         #FEF8F4;
+  --white:         #FFFFFF;
+  --paper:         #FFFDF9;
+  --subtle:        #F5F0EC;
+  --accent-light:  #FDF3EE;
+  --border:        #EBE4DE;
+  --border-hover:  #DDD5CD;
+
+  /* het facetpalet uit de verkenning — bestaat in de app nog niet */
+  --doen:        #E8764B;  --doen-light:  #FDF4EF;  --doen-deep:  #B4552C;
+  --auto:        #EFB13F;  --auto-light:  #FCF2DC;  --auto-deep:  #8A6412;
+  --mens:        #C2666F;  --mens-light:  #FBECEC;  --mens-deep:  #9E4750;
+  --norm:        #8AA96B;  --norm-light:  #EEF3E6;  --norm-deep:  #55703C;
+  --tal:         #5E7FA8;  --tal-light:   #ECF0F6;  --tal-deep:   #3F5C82;
+
+  --heading: 'Aleo', Georgia, serif;
+  --body: 'Fira Sans', system-ui, sans-serif;
+  --shadow-card: 0 1px 3px rgba(35,30,26,.06), 0 6px 20px rgba(35,30,26,.05);
+  --shadow-hover: 0 2px 6px rgba(35,30,26,.08), 0 14px 30px rgba(35,30,26,.09);
+  --shadow-paper: 0 1px 2px rgba(35,30,26,.10), 0 10px 24px rgba(35,30,26,.08);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--body); font-weight: 300; font-size: 17px; line-height: 1.65;
+  color: var(--ink); background: var(--white);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--heading); font-weight: 700; line-height: 1.18; }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+::selection { background: #F4C44E; color: var(--ink); }
+
+.wrap { max-width: 1152px; margin: 0 auto; padding: 0 24px; }
+
+/* --- briefingbalk (hoort niet bij de pagina zelf) --- */
+.brief-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--ink); color: #F5EEE8;
+  font-size: 13px; font-weight: 400;
+  display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: center;
+  padding: 8px 24px;
+}
+.brief-bar b { font-weight: 600; color: #fff; }
+.brief-bar .dot-sep { opacity: .4; }
+.brief-bar .right { margin-left: auto; opacity: .75; }
+@media (max-width: 720px) { .brief-bar .right { display: none; } }
+
+/* etiketten die nieuwe blokken aanduiden */
+.tag-new, .tag-stays {
+  position: absolute; top: 18px; right: 24px; z-index: 5;
+  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 999px; white-space: nowrap;
+}
+.tag-new { background: var(--ink); color: #FDF3EE; }
+.tag-stays { border: 1.5px dashed var(--border-hover); color: var(--ink-faint); background: rgba(255,255,255,.6); }
+section { position: relative; }
+
+/* --- nav --- */
+.nav {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  font-size: 14px; font-weight: 500;
+}
+.nav .wrap { display: flex; align-items: center; gap: 6px; min-height: 56px; }
+.nav .logo { display: flex; align-items: center; gap: 9px; margin-right: 14px; }
+.nav .logo .heart { width: 26px; height: 26px; color: var(--orange); }
+.nav .logo span { font-family: var(--heading); font-weight: 700; font-size: 20px; letter-spacing: -.01em; }
+.nav a.item { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 8px; color: var(--ink); }
+.nav a.item:hover { background: var(--accent-light); color: var(--orange); }
+.nav a.item.active { color: var(--orange); }
+.nav .caret { font-size: 10px; color: var(--ink-faint); }
+.nav .spacer { flex: 1; }
+.nav .ghost { padding: 8px 12px; color: var(--ink); font-weight: 500; }
+.nav .pill {
+  background: var(--orange); color: #fff; font-weight: 600;
+  padding: 8px 20px; border-radius: 999px; font-size: 14px;
+}
+@media (max-width: 860px) { .nav a.item, .nav .ghost { display: none; } }
+
+/* --- hero --- */
+.hero { background: var(--cream); border-bottom: 1px solid var(--border); }
+.hero .wrap { padding-top: 32px; padding-bottom: 64px; }
+.crumbs { font-size: 14px; color: var(--ink-soft); font-weight: 400; margin-bottom: 24px; }
+.crumbs .sep { color: var(--ink-faint); margin: 0 7px; }
+.section-label {
+  display: block; font-weight: 600; font-size: 15px; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--orange); margin-bottom: 4px;
+}
+.hero h1 { font-size: 52px; margin-bottom: 24px; }
+.hero .desc { font-size: 24px; line-height: 1.55; font-weight: 300; color: var(--ink-soft); max-width: 34ch; }
+
+/* --- vraag je af + checklist --- */
+.ask .wrap { display: grid; grid-template-columns: 1fr; gap: 48px; padding-top: 48px; padding-bottom: 48px; align-items: start; }
+@media (min-width: 920px) { .ask .wrap { grid-template-columns: 1.05fr .95fr; } }
+.ask h2 { font-size: 32px; margin: 4px 0 24px; max-width: 24ch; }
+.nw-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+.nw-badge {
+  width: 56px; flex: 0 0 auto; text-align: center; font-size: 13.5px; font-weight: 600;
+  padding: 2px 0; border-radius: 6px;
+}
+.nw-badge.niet { background: #F0EDEA; color: #6B655F; }
+.nw-badge.wel { background: var(--accent-light); color: var(--orange); }
+.nw-row p { font-size: 20px; font-weight: 300; }
+.nw-row.niet p { color: var(--ink-soft); text-decoration: line-through; }
+
+.checklist {
+  background: var(--paper);
+  background-image: repeating-linear-gradient(transparent, transparent 35px, rgba(76,183,197,.14) 35px, rgba(76,183,197,.14) 36px);
+  border: 1px solid var(--border); border-radius: 4px;
+  box-shadow: var(--shadow-paper); padding: 26px 30px 30px;
+  transform: rotate(-1.2deg); max-width: 480px; justify-self: center;
+}
+@media (min-width: 920px) { .checklist { margin-top: -76px; } }
+.checklist .cl-label {
+  font-family: var(--heading); font-style: italic; font-weight: 700; font-size: 14px;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--orange);
+  display: block; margin-bottom: 14px;
+}
+.checklist .cl-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; font-weight: 400; font-size: 16px; line-height: 1.55; }
+.checklist .cl-item:last-child { margin-bottom: 0; }
+
+/* gem: het facet-diamantje */
+.gem {
+  display: inline-flex; align-items: center; justify-content: center;
+  clip-path: polygon(30% 0, 70% 0, 100% 35%, 50% 100%, 0 35%);
+  background: var(--doen); color: #fff;
+  font-family: var(--heading); font-weight: 700;
+  width: 24px; height: 24px; font-size: 11px; padding-bottom: .3em;
+  flex: 0 0 auto;
+}
+.gem.sm { width: 17px; height: 17px; font-size: 8px; margin-top: 4px; }
+.gem.md { width: 34px; height: 34px; font-size: 15px; }
+.gem.ghost { background: var(--doen-light); color: var(--doen-deep); }
+.gem.g-auto { background: var(--auto); color: var(--ink); }
+.gem.g-norm { background: var(--norm); color: var(--ink); }
+.gem.g-mens { background: var(--mens); }
+.gem.g-tal { background: var(--tal); }
+
+/* --- generieke sectiekoppen --- */
+section.block .wrap { padding-top: 64px; padding-bottom: 64px; }
+.bg-cream { background: var(--cream); }
+.bg-subtle { background: var(--subtle); }
+.blockhead h2 { font-size: 32px; margin: 4px 0 8px; }
+.blockhead .sub { color: var(--ink-soft); font-weight: 400; margin-bottom: 32px; max-width: 62ch; }
+
+/* --- B1 schoolvoorbeelden --- */
+.exemplars { display: grid; gap: 24px; grid-template-columns: 1fr; }
+@media (min-width: 760px) { .exemplars { grid-template-columns: repeat(3, 1fr); } }
+.exemplar {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; box-shadow: var(--shadow-card); display: flex; flex-direction: column;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.exemplar:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.exemplar img { aspect-ratio: 16/10; object-fit: cover; width: 100%; }
+.exemplar .ex-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.exemplar h3 { font-family: var(--body); font-weight: 600; font-size: 18px; line-height: 1.35; }
+.exemplar .ex-meta { font-size: 14px; color: var(--ink-soft); font-weight: 400; }
+.exemplar .ex-why {
+  margin-top: auto; background: var(--accent-light);
+  border-radius: 8px; padding: 10px 14px; font-size: 15px; font-weight: 400; line-height: 1.55;
+}
+.exemplar .ex-why b { font-weight: 600; color: var(--orange-deep); }
+
+/* --- B2 verhaal --- */
+.story-board {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(232,118,75,.07), transparent 42%),
+    radial-gradient(circle at 82% 80%, rgba(244,196,78,.09), transparent 45%),
+    #F6EEE5;
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: clamp(24px, 4vw, 44px); position: relative;
+}
+.story-board .pin {
+  position: absolute; left: 50%; top: 12px; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--orange); box-shadow: 0 1px 3px rgba(35,30,26,.35);
+}
+.story-row { display: flex; flex-wrap: wrap; gap: clamp(24px, 4vw, 48px); align-items: center; }
+.polaroid {
+  background: #fff; padding: 10px 10px 18px; width: 250px; flex: 0 0 auto;
+  box-shadow: 0 3px 8px rgba(35,30,26,.15); border-radius: 2px;
+  transform: rotate(-2.2deg); text-align: center; margin: 0 auto;
+}
+.polaroid .ph {
+  aspect-ratio: 4/3; border-radius: 2px; margin-bottom: 10px;
+  background: linear-gradient(135deg, #D7EDF1, #4CB7C5);
+  display: flex; align-items: center; justify-content: center; font-size: 52px;
+}
+.polaroid figcaption { font-family: var(--heading); font-weight: 700; font-size: 15px; }
+.polaroid figcaption small { display: block; font-family: var(--body); font-weight: 400; font-size: 12.5px; color: var(--ink-soft); margin-top: 3px; }
+.story-txt { flex: 1 1 340px; min-width: 0; }
+.story-txt .story-kicker {
+  font-family: var(--heading); font-style: italic; font-size: 14px; font-weight: 700;
+  color: var(--mens-deep); letter-spacing: .06em; margin-bottom: 8px; display: block;
+}
+.story-txt h3 { font-size: 27px; margin-bottom: 14px; }
+.story-txt p { font-weight: 400; max-width: 58ch; }
+.story-txt p + p { margin-top: 12px; }
+.story-txt .story-foot { margin-top: 16px; font-family: var(--heading); font-style: italic; font-size: 16px; color: var(--ink-soft); }
+
+/* --- B5 schittergallerij-strook --- */
+.gallery-strip {
+  border: 1px solid var(--border);
+  border-radius: 12px; background: var(--white); box-shadow: var(--shadow-card);
+  margin-top: 40px; overflow: hidden;
+}
+.gallery-strip summary {
+  display: flex; align-items: center; gap: 16px; padding: 20px 24px;
+  cursor: pointer; list-style: none;
+}
+.gallery-strip summary::-webkit-details-marker { display: none; }
+.gallery-strip summary .gs-kop { font-family: var(--heading); font-weight: 700; font-size: 20px; display: block; }
+.gallery-strip summary .gs-sub { color: var(--ink-soft); font-size: 15px; font-weight: 400; }
+.gallery-strip summary .chev { margin-left: auto; color: var(--ink-faint); transition: transform .2s ease; font-size: 15px; }
+.gallery-strip[open] summary .chev { transform: rotate(180deg); }
+.gallery-strip[open] summary { border-bottom: 1px solid var(--border); }
+.gs-body { padding: 26px 24px 24px; }
+.gs-title { font-family: var(--heading); font-weight: 700; font-size: 21px; margin-bottom: 4px; }
+.gs-when { color: var(--ink-soft); font-size: 15px; font-weight: 400; margin-bottom: 18px; }
+.ba { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 760px) { .ba { grid-template-columns: 1fr 1fr; } }
+.ba-col { border-radius: 12px; padding: 18px 20px; font-weight: 400; font-size: 16px; line-height: 1.6; }
+.ba-col .kolomkop {
+  font-size: 12px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ba-col.voor { background: var(--subtle); color: var(--ink-soft); border: 1px solid var(--border); }
+.ba-col.voor .kolomkop { color: var(--ink-faint); }
+.ba-col.na { background: var(--cream); border: 1px solid var(--orange); }
+.ba-col.na .kolomkop { color: var(--orange-deep); }
+mark.hl {
+  background: var(--hl-bg, var(--accent-light)); color: inherit;
+  padding: 1px 3px; border-radius: 3px; border-bottom: 2px solid var(--hl-line, var(--orange));
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  position: relative; cursor: help;
+}
+mark.hl.m-auto { --hl-bg: var(--auto-light); --hl-line: var(--auto); }
+mark.hl.m-norm { --hl-bg: var(--norm-light); --hl-line: var(--norm); }
+mark.hl.m-doen { --hl-bg: var(--doen-light); --hl-line: var(--doen); }
+mark.hl[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 20;
+  width: max-content; max-width: min(280px, 72vw);
+  background: var(--ink); color: #F5EEE8; font-weight: 400; font-size: 13px; line-height: 1.45;
+  padding: 8px 12px; border-radius: 8px; box-shadow: 0 3px 8px rgba(35,30,26,.25);
+}
+.gs-slot { margin-top: 14px; font-family: var(--heading); font-style: italic; font-size: 15.5px; color: var(--ink-soft); }
+.gs-next { display: flex; flex-direction: column; gap: 8px; margin-top: 22px; }
+.gs-next .nx {
+  display: flex; align-items: center; gap: 12px;
+  border: 1px dashed var(--border-hover); border-radius: 10px;
+  padding: 12px 16px; font-size: 15px; font-weight: 400; color: var(--ink-soft);
+}
+.gs-next .nx b { font-family: var(--heading); font-weight: 700; color: var(--ink); font-size: 16px; }
+.gs-next .nx .wacht { margin-left: auto; font-size: 12.5px; color: var(--ink-faint); font-style: italic; }
+@media (max-width: 600px) { .gs-next .nx .wacht { display: none; } }
+
+/* --- B3 verder kijken --- */
+.refs { display: flex; flex-direction: column; max-width: 760px; }
+.ref {
+  display: flex; gap: 18px; align-items: flex-start;
+  padding: 16px 4px; border-bottom: 1px solid var(--border);
+}
+.ref:last-child { border-bottom: 0; }
+.ref .rtype {
+  flex: 0 0 92px; text-align: center; font-size: 11.5px; font-weight: 700;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--ink-soft);
+  border: 1.5px solid var(--border-hover); border-radius: 999px; padding: 4px 0; margin-top: 3px;
+}
+.ref b { font-weight: 600; font-size: 17px; }
+.ref small { display: block; color: var(--ink-soft); font-size: 15px; font-weight: 400; }
+.ref .arrow { margin-left: auto; color: var(--ink-faint); align-self: center; }
+
+/* --- B4 fiches --- */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1.5px solid var(--border-hover); color: var(--ink-soft);
+  font-size: 14px; font-weight: 600; border-radius: 999px;
+  padding: 7px 16px; background: var(--white);
+}
+.chip.on { border-color: var(--orange); color: var(--orange-deep); background: var(--accent-light); }
+.fiches { display: grid; gap: 24px; grid-template-columns: 1fr; }
+@media (min-width: 680px) { .fiches { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .fiches { grid-template-columns: repeat(3, 1fr); } }
+.fiche {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; box-shadow: var(--shadow-card); display: flex; flex-direction: column;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.fiche:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--border-hover); }
+.fiche .dia {
+  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+  font-size: 12px; font-weight: 700; color: var(--orange-deep);
+  background: var(--accent-light); border-radius: 999px; padding: 3px 11px; margin-bottom: 10px;
+}
+.fiche .dia .gem { width: 13px; height: 13px; font-size: 6px; }
+.fiche h3 { font-family: var(--body); font-weight: 600; font-size: 17.5px; line-height: 1.35; }
+.fiche .fdesc {
+  margin-top: 6px; font-size: 14.5px; font-weight: 400; color: var(--ink-soft);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.fiche .fmeta {
+  display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 13px;
+  border-top: 1px solid var(--border); font-size: 14px; color: var(--ink-soft); font-weight: 400;
+}
+.fiche .avatar {
+  width: 26px; height: 26px; border-radius: 50%; flex: 0 0 auto;
+  background: var(--subtle); color: var(--ink-soft);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+}
+.fiche .hearts { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.fiche .hearts svg { width: 16px; height: 16px; }
+.fiches-foot { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: baseline; }
+.cta-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-weight: 600; color: var(--orange); font-size: 16px;
+}
+.cta-link::after { content: '\2192'; transition: transform .15s ease; }
+.cta-link:hover { color: var(--orange-hover); }
+.cta-link:hover::after { transform: translateX(3px); }
+.fiches-foot .note { font-size: 14px; color: var(--ink-faint); font-weight: 400; }
+
+/* --- initiatieven --- */
+.inits { display: grid; gap: 24px; grid-template-columns: 1fr; }
+@media (min-width: 680px) { .inits { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .inits { grid-template-columns: repeat(3, 1fr); } }
+.init {
+  position: relative; border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border); box-shadow: var(--shadow-card);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.init:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+.init img { aspect-ratio: 16/10; object-fit: cover; width: 100%; }
+.init .ttl {
+  position: absolute; bottom: 16px; left: 16px;
+  background: #fff; padding: 6px 12px; border-radius: 6px;
+  font-family: var(--heading); font-weight: 700; font-size: 17px; line-height: 1.3;
+}
+.init .ttl span { color: var(--orange); margin-left: 4px; }
+
+/* --- verwante doelstellingen --- */
+.related p.intro { font-size: 17px; font-weight: 400; color: var(--ink-soft); max-width: 62ch; margin-bottom: 28px; }
+.related p.intro strong { font-weight: 600; color: var(--ink); }
+.rel-grid { display: grid; gap: 12px; grid-template-columns: 1fr; max-width: 860px; }
+@media (min-width: 720px) { .rel-grid { grid-template-columns: 1fr 1fr; } }
+.rel {
+  display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 12px;
+}
+.rel:hover { background: var(--subtle); }
+.rel b { font-weight: 600; }
+.rel span { color: var(--ink-soft); font-weight: 400; }
+
+/* --- footer --- */
+footer { background: var(--cream); border-top: 1px solid var(--border); font-size: 15px; }
+footer .wrap { padding-top: 48px; padding-bottom: 24px; }
+.foot-grid { display: grid; gap: 36px; grid-template-columns: 1fr; }
+@media (min-width: 860px) { .foot-grid { grid-template-columns: 1.3fr 1fr 1fr 1fr; } }
+.foot-brand .logo { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.foot-brand .logo .heart { width: 22px; height: 22px; color: var(--orange); }
+.foot-brand .logo span { font-family: var(--heading); font-weight: 700; font-size: 18px; }
+.foot-brand p { color: var(--ink-soft); font-weight: 400; font-size: 14.5px; max-width: 30ch; margin-bottom: 14px; }
+.foot-brand .stat { font-size: 14.5px; color: var(--ink-soft); font-weight: 400; }
+.foot-brand .stat b { font-weight: 700; color: var(--ink); }
+.foot-col h4 {
+  font-family: var(--body); font-size: 12.5px; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px;
+}
+.foot-col a { display: block; color: var(--ink-soft); font-weight: 400; font-size: 14.5px; padding: 3px 0; }
+.foot-col a:hover { color: var(--orange); }
+.foot-bottom {
+  display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between;
+  border-top: 1px solid var(--border); margin-top: 36px; padding-top: 18px;
+  font-size: 13.5px; color: var(--ink-faint); font-weight: 400;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Briefingbalk: hoort niet bij de pagina, duidt aan wat dit is -->
+<div class="brief-bar">
+  <b>Mockup</b><span class="dot-sep">·</span>
+  <span>zo kan <b>/doelen/doen</b> eruitzien, volledig uitgebouwd volgens de bouwlijst van 28 augustus</span>
+  <span class="right">Alle fiches, namen, foto's en cijfers zijn echt en komen uit de database</span>
+</div>
+
+<!-- ======================= NAV (blijft) ======================= -->
+<nav class="nav">
+  <div class="wrap">
+    <a class="logo" href="#">
+      <svg class="heart" viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg>
+      <span>hartverwarmers</span>
+    </a>
+    <a class="item" href="#">Ontdek <span class="caret">▾</span></a>
+    <a class="item" href="#">Bijdragers</a>
+    <a class="item" href="#">Contact</a>
+    <a class="item active" href="#">Doelen <span class="caret">▾</span></a>
+    <span class="spacer"></span>
+    <a class="ghost" href="#">Inloggen</a>
+    <a class="pill" href="#">Registreren</a>
+  </div>
+</nav>
+
+<!-- ======================= HERO (blijft) ======================= -->
+<header class="hero">
+  <div class="wrap">
+    <div class="crumbs">Home <span class="sep">›</span> DIAMANT-kompas <span class="sep">›</span> Doen</div>
+    <span class="section-label">Doelstelling</span>
+    <h1>Doen</h1>
+    <p class="desc">De D van Doen staat voor activerend werken — bewoners zelf laten doen, in kleine stapjes, zodat ze vertrouwen opbouwen en het plezier van het bezig zijn zelf ervaren.</p>
+  </div>
+</header>
+
+<!-- ======================= VRAAG JE AF + CHECKLIST (blijft) ======================= -->
+<section class="ask">
+  <span class="tag-stays">Blijft</span>
+  <div class="wrap">
+    <div>
+      <span class="section-label">Vraag je af</span>
+      <h2>Doen je bewoners vandaag iets dat hen energie geeft — of vullen ze de dag zonder het zelf te merken?</h2>
+      <div class="nw-row niet"><span class="nw-badge niet">NIET</span><p>We moeten de bewoner bezighouden</p></div>
+      <div class="nw-row"><span class="nw-badge wel">WEL</span><p>Wat wil deze persoon vandaag ondernemen?</p></div>
+    </div>
+    <div class="checklist">
+      <span class="cl-label">Checklist</span>
+      <div class="cl-item"><span class="gem sm ghost">D</span><p>Laat bewoners zelf doen, ook als het langzamer gaat. Zelfs één handeling is al een succes.</p></div>
+      <div class="cl-item"><span class="gem sm ghost">D</span><p>Bouw activiteiten op in kleine stapjes die succeservaringen opleveren.</p></div>
+      <div class="cl-item"><span class="gem sm ghost">D</span><p>Geef expliciet waardering voor elke bijdrage, hoe klein ook.</p></div>
+      <div class="cl-item"><span class="gem sm ghost">D</span><p>Pas materiaal of omgeving aan zodat zelf doen mogelijk blijft.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= B1 SCHOOLVOORBEELDEN (nieuw) ======================= -->
+<section class="block bg-cream">
+  <span class="tag-new">Nieuw · B1</span>
+  <div class="wrap">
+    <div class="blockhead">
+      <span class="section-label">Uitgelicht door het team</span>
+      <h2>Zo ziet doen eruit</h2>
+      <p class="sub">Deze fiches zijn schoolvoorbeelden van bewoners die zelf meedoen. Gekozen door Maite en Nadine, met telkens één zin waarom.</p>
+    </div>
+    <div class="exemplars">
+      <article class="exemplar">
+        <img src="assets/samen-koken.webp" alt="Samen koken">
+        <div class="ex-body">
+          <h3>Een oude passie opnieuw beleven: naar de beenhouwerij</h3>
+          <p class="ex-meta">Tinneke Maes · Samen koken</p>
+          <p class="ex-why"><b>Waarom:</b> zij kiest de charcuterie en werkt mee van winkel tot soep. De hele leefgroep proeft het resultaat.</p>
+        </div>
+      </article>
+      <article class="exemplar">
+        <img src="assets/herinneringen-delen.webp" alt="Meubels renoveren">
+        <div class="ex-body">
+          <h3>Meubels renoveren</h3>
+          <p class="ex-meta">Frederik Vincx · Herinneringen delen</p>
+          <p class="ex-why"><b>Waarom:</b> schuren en verven brengt klussers weer echt aan het werk, en het resultaat blijft in huis staan.</p>
+        </div>
+      </article>
+      <article class="exemplar">
+        <img src="assets/feesten-vieren.webp" alt="Feesten vieren">
+        <div class="ex-body">
+          <h3>Intrede van de Sint georganiseerd door bewoners</h3>
+          <p class="ex-meta">Tina Geens · Feesten vieren</p>
+          <p class="ex-why"><b>Waarom:</b> de bewoners organiseren het feest zelf, van de intrede tot het programma. Niemand kijkt alleen toe.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= B2 VERHAAL + B5 GALERIJ (nieuw) ======================= -->
+<section class="block">
+  <span class="tag-new">Nieuw · B2 + B5</span>
+  <div class="wrap">
+
+    <div class="story-board">
+      <span class="pin"></span>
+      <div class="story-row">
+        <figure class="polaroid">
+          <div class="ph">🏊</div>
+          <figcaption>Het zwembad van Marcella<small>foto volgt van het team</small></figcaption>
+        </figure>
+        <div class="story-txt">
+          <span class="story-kicker">Verhaal uit de praktijk</span>
+          <h3>"Wie leerde jou eigenlijk zwemmen?"</h3>
+          <p>Eén vraag tijdens een gesprekskaartenmoment, en de tafel stond in vuur en vlam. Zoveel bewoners die tot op late leeftijd zijn blijven zwemmen.</p>
+          <p>Dus belde het team een revalidatiecentrum met een lift tot in het bad. En gingen ze opnieuw zwemmen.</p>
+          <p class="story-foot">Begint bij een verhaal, eindigt in doen.</p>
+        </div>
+      </div>
+    </div>
+
+    <details class="gallery-strip" open>
+      <summary>
+        <span>
+          <span class="gs-kop">Drie klassiekers die aanzetten tot doen</span>
+          <span class="gs-sub">Dezelfde namiddag, twee keer verteld. Kijk wat er verschuift.</span>
+        </span>
+        <span class="chev">▾</span>
+      </summary>
+      <div class="gs-body">
+        <h3 class="gs-title">De wandeling</h3>
+        <p class="gs-when">Elke weekdag na het middagmaal.</p>
+        <div class="ba">
+          <div class="ba-col voor">
+            <div class="kolomkop">Zoals het vaak gaat</div>
+            <p>De route ligt vast en de begeleidster duwt. Er wordt een halfuur gestapt en daarna gaat iedereen terug naar binnen.</p>
+          </div>
+          <div class="ba-col na">
+            <div class="kolomkop">Zo kan het schitteren</div>
+            <p><mark class="hl m-auto" data-tip="Autonomie: de keuze ligt bij hen, ook onderweg.">De groep beslist onderweg welke kant het opgaat.</mark> <mark class="hl m-norm" data-tip="Normalisatie: een wandeling met een reden, zoals iedereen die maakt.">Onderweg wordt er iets gehaald</mark>, brood of een krant. <mark class="hl m-doen" data-tip="Doen: zelf doen, ook al gaat het trager.">Louis duwt een stukje zelf.</mark></p>
+          </div>
+        </div>
+        <p class="gs-slot">Eén mogelijke versie. Niet de juiste.</p>
+        <div class="gs-next">
+          <div class="nx"><span class="gem sm">D</span><span><b>De knutselnamiddag</b> · in dezelfde vorm</span><span class="wacht">tekst volgt, voorstel ligt bij het team</span></div>
+          <div class="nx"><span class="gem sm">D</span><span><b>Het koffiemoment</b> · in dezelfde vorm</span><span class="wacht">tekst volgt, voorstel ligt bij het team</span></div>
+        </div>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<!-- ======================= B3 VERDER KIJKEN (nieuw) ======================= -->
+<section class="block bg-cream">
+  <span class="tag-new">Nieuw · B3</span>
+  <div class="wrap">
+    <div class="blockhead">
+      <span class="section-label">Verder kijken</span>
+      <h2>Wil je dieper graven rond doen?</h2>
+      <p class="sub">Vijf vertrekpunten, gekozen door het team. Alles op dit lijstje wordt in de vormingen gebruikt of aanbevolen.</p>
+    </div>
+    <div class="refs">
+      <div class="ref"><span class="rtype">Podcast</span><div><b>Studio Bomma over participatie</b><small>Luister onderweg, 40 minuten.</small></div><span class="arrow">→</span></div>
+      <div class="ref"><span class="rtype">Gids</span><div><b>De participatiegids "Jij, wij, samen"</b><small>Gratis te downloaden, veel gebruikt in de vormingen.</small></div><span class="arrow">→</span></div>
+      <div class="ref"><span class="rtype">Methodiek</span><div><b>Verven: piepkleine betekenisvolle momenten in de zorg</b><small>Onderzoek van Artevelde, uitgetest in het werkveld.</small></div><span class="arrow">→</span></div>
+      <div class="ref"><span class="rtype">Methodiek</span><div><b>Object handling</b><small>Voorwerpen als opstap naar interactie.</small></div><span class="arrow">→</span></div>
+      <div class="ref"><span class="rtype">Materiaal</span><div><b>Gesprekskaarten en spelmateriaal</b><small>Onder meer via de uitleendienst van Artevelde.</small></div><span class="arrow">→</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= B4 FICHES BIJ DIT DOEL (nieuw) ======================= -->
+<section class="block">
+  <span class="tag-new">Nieuw · B4</span>
+  <div class="wrap">
+    <div class="blockhead">
+      <span class="section-label">Aan de slag</span>
+      <h2>Fiches die aanzetten tot doen</h2>
+      <p class="sub">Fiches uit alle initiatieven samen, zolang ze bewoners zelf laten meedoen.</p>
+    </div>
+    <div class="chips">
+      <span class="chip on">Alle</span>
+      <span class="chip">Diamantjes</span>
+      <span class="chip">Voor kleine groepen</span>
+      <span class="chip">Individueel</span>
+      <span class="chip">Nieuw deze maand</span>
+    </div>
+    <div class="fiches">
+      <article class="fiche">
+        <h3>Zingen en luisteren in Café Chantant</h3>
+        <p class="fdesc">Café Chantant legt de focus op reminiscentie en gezelligheid creëren in de ruimte.</p>
+        <div class="fmeta"><span class="avatar">PM</span> Pieter Meyskens <span class="hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 26</span></div>
+      </article>
+      <article class="fiche">
+        <h3>Laat bewoners medewerkers bedanken</h3>
+        <p class="fdesc">Organiseer een bedankingsactiviteit met bewoners.</p>
+        <div class="fmeta"><span class="avatar">FM</span> Freja Maenhout <span class="hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 19</span></div>
+      </article>
+      <article class="fiche">
+        <h3>Organiseer een photobooth en maak postkaartjes voor familie</h3>
+        <p class="fdesc">De benodigdheden knutsel je zelf met de bewoners, nadien maak je postkaartjes om te versturen.</p>
+        <div class="fmeta"><span class="avatar">EV</span> Elke Verstocken <span class="hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 12</span></div>
+      </article>
+      <article class="fiche">
+        <h3>Maak samen koffie op grootmoeders wijze</h3>
+        <p class="fdesc">De geur van versgemalen bonen roept gezelligheid, warmte en huiselijkheid op.</p>
+        <div class="fmeta"><span class="avatar">LV</span> Leen Verbesselt <span class="hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 9</span></div>
+      </article>
+      <article class="fiche">
+        <span class="dia"><span class="gem">D</span> Diamantje</span>
+        <h3>Maak samen een lichtslinger van kaarsen</h3>
+        <p class="fdesc">Tover de tuin en voorgevel om tot een lichtspektakel als teken van verbondenheid.</p>
+        <div class="fmeta"><span class="avatar">TR</span> Tania Rathe <span class="hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 2</span></div>
+      </article>
+      <article class="fiche">
+        <span class="dia"><span class="gem">D</span> Diamantje</span>
+        <h3>Maak een fietstocht met een Riksja</h3>
+        <p class="fdesc">Gezellig samen een tochtje maken buiten het WZC met een Riksja, duofiets of rolstoelfiets.</p>
+        <div class="fmeta"><span class="avatar">ES</span> Elien Saey-Van Peteghem</div>
+      </article>
+    </div>
+    <div class="fiches-foot">
+      <a class="cta-link" href="#">Bekijk alle 87 fiches bij doen</a>
+      <span class="note">Automatisch gekoppeld op basis van de fiche-inhoud.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= INITIATIEVEN (blijft, zakt naar onder) ======================= -->
+<section class="block bg-subtle">
+  <span class="tag-stays">Blijft · zakt naar onder</span>
+  <div class="wrap">
+    <div class="blockhead">
+      <span class="section-label">Inspiratie</span>
+      <h2>Liever per thema bladeren?</h2>
+      <p class="sub">Zes initiatieven bundelen fiches die aanzetten tot doen.</p>
+    </div>
+    <div class="inits">
+      <a class="init" href="#"><img src="assets/beweging-fit-thumb.webp" alt="Beweging &amp; fit"><span class="ttl">Beweging &amp; fit<span>→</span></span></a>
+      <a class="init" href="#"><img src="assets/creatief-atelier-thumb.webp" alt="Creatief atelier"><span class="ttl">Creatief atelier<span>→</span></span></a>
+      <a class="init" href="#"><img src="assets/handwerken-thumb.webp" alt="Handwerken"><span class="ttl">Handwerken<span>→</span></span></a>
+      <a class="init" href="#"><img src="assets/samen-koken-thumb.webp" alt="Samen koken"><span class="ttl">Samen koken<span>→</span></span></a>
+      <a class="init" href="#"><img src="assets/tekenen-schilderen-thumb.webp" alt="Tekenen &amp; schilderen"><span class="ttl">Tekenen &amp; schilderen<span>→</span></span></a>
+      <a class="init" href="#"><img src="assets/tuinieren-thumb.webp" alt="Tuinieren"><span class="ttl">Tuinieren<span>→</span></span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= VERWANTE DOELSTELLINGEN (blijft) ======================= -->
+<section class="block bg-cream related">
+  <span class="tag-stays">Blijft</span>
+  <div class="wrap">
+    <div class="blockhead">
+      <span class="section-label">DIAMANT-kompas</span>
+      <h2>Verwante doelstellingen</h2>
+    </div>
+    <p class="intro">Doen wordt krachtiger als het vertrekt vanuit <strong>Talent</strong> — wat kan deze persoon? En als de activiteit aansluit bij het levensverhaal, raak je ook <strong>Mensgericht</strong>.</p>
+    <div class="rel-grid">
+      <a class="rel" href="#"><span class="gem md g-tal">T</span><div><b>Talent</b> <span>· Krachten laten schitteren</span></div></a>
+      <a class="rel" href="#"><span class="gem md g-mens">M</span><div><b>Mensgericht</b> <span>· Bij het levensverhaal</span></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FOOTER (blijft) ======================= -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="logo">
+          <svg class="heart" viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg>
+          <span>hartverwarmers</span>
+        </div>
+        <p>Inspiratie voor activiteitenbegeleiders in de ouderenzorg.</p>
+        <div class="stat"><b>411</b> fiches</div>
+        <div class="stat"><b>153</b> bijdragers</div>
+        <div class="stat"><b>92</b> organisaties</div>
+      </div>
+      <div class="foot-col">
+        <h4>Ontdek</h4>
+        <a href="#">Alle initiatieven</a>
+        <a href="#">Themakalender</a>
+        <a href="#">Bijdragers</a>
+        <a href="#">Diamantjes – Sterke fiches</a>
+        <a href="#">Wat is er nieuw</a>
+      </div>
+      <div class="foot-col">
+        <h4>Leren</h4>
+        <a href="#">DIAMANT-kompas</a>
+        <a href="#">Videolessen</a>
+        <a href="#">Workshops</a>
+        <a href="#">Gidsen en tools</a>
+      </div>
+      <div class="foot-col">
+        <h4>Meedoen</h4>
+        <a href="#">Registreer</a>
+        <a href="#">Inloggen</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Hartverwarmers</span>
+      <span>Contact · Over ons · Privacybeleid · Gebruiksvoorwaarden · Auteursrecht</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
