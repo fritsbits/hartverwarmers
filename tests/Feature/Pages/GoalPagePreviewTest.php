@@ -41,7 +41,7 @@ class GoalPagePreviewTest extends TestCase
     {
         $this->get('/doelen/doen')
             ->assertOk()
-            ->assertDontSee('Zo maak je een diamantje van een klassieker');
+            ->assertDontSee('Waar zit Doen in een gewone wandeling?');
     }
 
     public function test_the_klassiekers_block_shows_all_three_with_preview(): void
@@ -49,13 +49,65 @@ class GoalPagePreviewTest extends TestCase
         $this->previewing()
             ->get('/doelen/doen')
             ->assertOk()
-            ->assertSee('Zo maak je een diamantje van een klassieker')
+            ->assertSee('Klassiekers')
+            ->assertSee('Waar zit Doen in een gewone wandeling?')
+            ->assertSee('Die vier principes komen terug in elke activiteit die je al draait.')
+            ->assertSee('Drie kleine verschuivingen. Je hoeft er geen nieuwe activiteit voor te bedenken.')
             ->assertSee('De klassieke wandeling')
             ->assertSee('De klassieke knutselnamiddag')
             ->assertSee('Het klassieke koffiemoment')
             ->assertSee('Louis duwt zelf een stuk van de weg.')
-            ->assertSee('Zelf doen')
             ->assertSee('Eén mogelijke versie. Niet de juiste.', false);
+    }
+
+    public function test_the_old_klassiekers_copy_is_gone(): void
+    {
+        $this->previewing()
+            ->get('/doelen/doen')
+            ->assertOk()
+            ->assertDontSee('Zo maak je een diamantje van een klassieker')
+            ->assertDontSee('Zo kan het schitteren')
+            ->assertDontSee('diamantje van een klassieker');
+    }
+
+    /**
+     * Ingeklapt moet de rij allebei de helften van het paar tonen: de klassieke
+     * versie achter NIET en de principes achter WEL. Staat het WEL-deel alleen
+     * in de uitgeklapte body, dan leest de rij als een aanklacht zonder hulp.
+     */
+    public function test_a_collapsed_klassieker_shows_its_principes_as_chips(): void
+    {
+        $response = $this->previewing()->get('/doelen/doen')->assertOk();
+
+        $this->assertSame(
+            9,
+            substr_count($response->getContent(), 'class="klassieker-chip"'),
+            'Verwachtte drie principechips op elk van de drie ingeklapte rijen.'
+        );
+
+        // Het koffiemoment verschuift op Aangepast materiaal, Zelf doen en Kleine
+        // stapjes; de chips staan in legendevolgorde, niet in die van de content.
+        $this->assertMatchesRegularExpression(
+            '/Het klassieke koffiemoment.*?Zelf doen.*?Kleine stapjes.*?Aangepast materiaal/s',
+            $response->getContent()
+        );
+    }
+
+    public function test_no_klassieker_starts_open(): void
+    {
+        $this->previewing()
+            ->get('/doelen/doen')
+            ->assertOk()
+            ->assertDontSee('<details class="klassieker" open', false);
+    }
+
+    public function test_the_toggle_carries_both_labels_so_it_works_without_js(): void
+    {
+        $this->previewing()
+            ->get('/doelen/doen')
+            ->assertOk()
+            ->assertSee('Toon 3 verschuivingen')
+            ->assertSee('Toon minder');
     }
 
     public function test_a_goal_without_content_shows_no_klassiekers(): void
@@ -63,7 +115,7 @@ class GoalPagePreviewTest extends TestCase
         $this->previewing()
             ->get('/doelen/talent')
             ->assertOk()
-            ->assertDontSee('Zo maak je een diamantje van een klassieker');
+            ->assertDontSee('Waar zit Talent in een gewone wandeling?');
     }
 
     public function test_a_klassieker_missing_icon_and_shifts_still_renders(): void
@@ -255,16 +307,52 @@ class GoalPagePreviewTest extends TestCase
 
         $response->assertOk()->assertSee('De klassieke bingo');
 
-        // De klassiekers-gem is de enige `size="xxs"` (font-size 40) gem op deze
-        // pagina; de navigatie en verwante-doelenlijst gebruiken andere maten.
-        $this->assertMatchesRegularExpression(
-            '/font-size="40"[^>]*>I<\/text>/',
-            $response->getContent(),
-            'Verwachtte de I-letter (Inclusief) op de klassiekers-gem, niet een hardgecodeerde D.'
-        );
+        // Eén edelsteen: de legende en de chips delen dezelfde omlijnde ruit, en
+        // de massieve letterruit die hier vroeger stond is weg. Die droeg een
+        // hardgecodeerde D, dus ook op Inclusief.
         $this->assertDoesNotMatchRegularExpression(
-            '/font-size="40"[^>]*>D<\/text>/',
-            $response->getContent()
+            '/font-size="40"[^>]*>[A-Z]<\/text>/',
+            $response->getContent(),
+            'De klassiekerrij hoort de gedeelde principe-ruit te gebruiken, geen letterruit.'
         );
+        $this->assertStringContainsString('class="principe-gem"', $response->getContent());
+    }
+
+    public function test_the_paper_becomes_the_principe_legend_in_preview(): void
+    {
+        $this->previewing()
+            ->get('/doelen/doen')
+            ->assertOk()
+            ->assertSee('De vier van Doen')
+            ->assertSee('ook als het trager gaat')
+            ->assertSee('zo blijft zelf doen mogelijk')
+            ->assertDontSee('Checklist');
+    }
+
+    public function test_the_paper_keeps_its_checklist_without_preview(): void
+    {
+        $this->get('/doelen/doen')
+            ->assertOk()
+            ->assertSee('Checklist')
+            ->assertDontSee('De vier van Doen');
+    }
+
+    /**
+     * Het papier stond twee keer in de bron, byte-identiek op de wrapper na.
+     */
+    public function test_the_paper_is_rendered_once(): void
+    {
+        $response = $this->previewing()->get('/doelen/doen')->assertOk();
+
+        $this->assertSame(1, substr_count($response->getContent(), 'quote-paper-lg'));
+    }
+
+    public function test_a_goal_without_principes_keeps_its_reflection_questions(): void
+    {
+        $this->previewing()
+            ->get('/doelen/talent')
+            ->assertOk()
+            ->assertSee('Checklist')
+            ->assertDontSee('De vier van');
     }
 }

@@ -94,6 +94,21 @@ class GoalTest extends TestCase
         $response->assertSee('vertrekken vanuit krachten');
     }
 
+    /**
+     * De hero knipt de beschrijving af op de eerste zin. Bevat een beschrijving
+     * geen ". ", dan geeft Str::before de hele string terug, die al op een punt
+     * eindigt, en komt er een tweede bij.
+     */
+    public function test_goals_show_never_renders_a_double_period_in_the_hero(): void
+    {
+        foreach (array_keys(config('diamant.facets')) as $slug) {
+            $response = $this->get(route('goals.show', $slug));
+
+            $response->assertStatus(200);
+            $response->assertDontSee('..</p>', false);
+        }
+    }
+
     public function test_goals_show_returns_404_for_invalid_slug(): void
     {
         $response = $this->get(route('goals.show', 'ongeldig'));

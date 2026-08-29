@@ -19,6 +19,10 @@
   /* Colors - Primary */
   --color-primary: #E8764B;
   --color-primary-hover: #D4683F;
+  /* Oranje dat als tekst door WCAG AA komt: 5,46:1 op wit, 5,00:1 op
+     accent-light. Dezelfde tint, donkerder. --color-primary zelf haalt 2,95:1
+     en blijft dus voor vlakken, lijnen en iconen. */
+  --color-primary-text: #A9501C;
 
   /* Colors - Secondary */
   --color-secondary: #4CB7C5;
@@ -280,7 +284,7 @@
   .section-label {
     @apply inline-flex items-center gap-2 font-semibold uppercase tracking-widest mb-0;
     font-size: 1.125rem;
-    color: var(--color-primary);
+    color: var(--color-primary-text);
     letter-spacing: 0.12em;
   }
 
@@ -516,9 +520,39 @@
     line-height: 30px;
     padding-top: 0;
     margin-bottom: 30px;
-    color: var(--color-primary);
+    color: var(--color-primary-text);
     font-weight: 600;
     text-transform: uppercase;
+  }
+
+  /* Legendevariant: het papier draagt de principenamen in dezelfde letter en
+     gewicht als de chips op de klassiekerrijen. Naam en toelichting houden
+     allebei line-height 30px, anders lopen de lijntjes niet meer mee. */
+  .quote-paper-lg .principe-regel {
+    margin-bottom: 30px;
+  }
+
+  .quote-paper-lg .principe-regel:last-child {
+    margin-bottom: 0;
+  }
+
+  .quote-paper-lg .principe-naam {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 30px;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 30px;
+    color: var(--color-text-primary);
+  }
+
+  .quote-paper-lg .principe-toelichting {
+    margin-left: 26px;
+    font-family: 'Nanum Pen Script', cursive;
+    font-size: 1.3125rem;
+    line-height: 30px;
+    color: var(--color-text-secondary);
   }
 
   .quote-paper-lg .checklist-item {
@@ -1101,26 +1135,74 @@
     border: 1px solid color-mix(in srgb, var(--color-primary) 20%, transparent);
   }
 
-  /* Klassiekers op de doelenpagina */
+  /* Klassiekers op de doelenpagina.
+     Ingeklapt toont een rij allebei de helften van het paar: de klassieke
+     versie achter NIET, de principechips achter WEL. De klik ruilt de chips
+     voor de concrete voorbeelden. */
   .klassieker {
+    --klassieker-goot: 56px;
+    --klassieker-inspring: 106px;
+    position: relative;
     border: 1px solid var(--color-border-light);
     border-radius: 12px;
-    background: #FFFDF9;
+    background: var(--color-bg-cream);
     overflow: hidden;
+    interpolate-size: allow-keywords;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      box-shadow 150ms ease,
+      transform 150ms ease;
+  }
+
+  .klassieker:hover {
+    border-color: var(--color-border-hover);
+    background: var(--color-bg-white);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(35, 30, 26, 0.05), 0 8px 22px rgba(35, 30, 26, 0.07);
+  }
+
+  .klassieker:hover .klassieker-toggle {
+    color: var(--color-primary-text);
   }
 
   .klassieker[open] {
+    border-color: var(--color-border-hover);
     background: var(--color-bg-white);
     box-shadow: 0 1px 3px rgba(35, 30, 26, 0.06), 0 6px 20px rgba(35, 30, 26, 0.05);
+  }
+
+  /* Een eigen ring die de 12 px radius van de kaart volgt. De globale
+     :focus-visible-regel zou binnen de overflow-hidden kaart afgeknipt worden. */
+  .klassieker > summary:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -3px;
+    border-radius: 12px;
+  }
+
+  @supports selector(:has(*)) {
+    .klassieker > summary:focus-visible {
+      outline: none;
+    }
+
+    .klassieker:has(> summary:focus-visible) {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
   }
 
   .klassieker > summary {
     list-style: none;
     cursor: pointer;
-    padding: 18px 22px;
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
+    padding: 20px 22px;
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "schijf titel  schakel"
+      "schijf lijf   schakel";
+    column-gap: 20px;
+    row-gap: 12px;
+    align-items: start;
   }
 
   .klassieker > summary::-webkit-details-marker {
@@ -1128,9 +1210,9 @@
   }
 
   .klassieker-disc {
+    grid-area: schijf;
     width: 64px;
     height: 64px;
-    flex: 0 0 64px;
     border-radius: 9999px;
     display: inline-flex;
     align-items: center;
@@ -1138,28 +1220,112 @@
   }
 
   .klassieker-titel {
+    grid-area: titel;
     display: block;
     font-family: 'Aleo', Georgia, serif;
     font-weight: 700;
-    font-size: 19px;
-    line-height: 1.2;
+    font-size: 20px;
+    line-height: 24px;
+  }
+
+  .klassieker-lijf {
+    grid-area: lijf;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .klassieker-statement {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    min-width: 0;
+  }
+
+  .klassieker-badge {
+    flex: 0 0 var(--klassieker-goot);
+    width: var(--klassieker-goot);
+    text-align: center;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 20px;
+  }
+
+  .klassieker-badge-niet {
+    background: var(--color-bg-subtle);
+    color: #52525B;
+  }
+
+  .klassieker-badge-wel {
+    background: var(--color-bg-accent-light);
+    color: var(--color-primary-text);
   }
 
   .klassieker-klassiek {
     display: block;
-    margin-top: 5px;
-    font-weight: 400;
-    font-size: 16px;
+    max-width: 60ch;
+    font-size: 16.5px;
+    line-height: 26px;
     color: var(--color-text-secondary);
   }
 
-  .klassieker-chev {
-    margin-left: auto;
-    flex: 0 0 auto;
-    font-size: 20px;
-    line-height: 1;
+  .klassieker-belofte {
+    align-items: flex-start;
+  }
+
+  .klassieker-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .klassieker-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px 4px 9px;
+    border-radius: 9999px;
+    background: var(--color-bg-accent-light);
+    border: 1px solid color-mix(in srgb, var(--color-primary) 24%, transparent);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    color: var(--color-primary-text);
+  }
+
+  .klassieker[open] .klassieker-belofte {
+    display: none;
+  }
+
+  .klassieker-toggle {
+    grid-area: schakel;
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
     color: var(--color-text-secondary);
-    transition: transform 0.2s ease;
+    transition: color 150ms ease;
+  }
+
+  .klassieker-label-open,
+  .klassieker[open] .klassieker-label-dicht {
+    display: none;
+  }
+
+  .klassieker[open] .klassieker-label-open {
+    display: inline;
+  }
+
+  .klassieker-chev {
+    flex: 0 0 16px;
+    transition: transform 150ms ease;
   }
 
   .klassieker[open] .klassieker-chev {
@@ -1167,17 +1333,33 @@
   }
 
   .klassieker-body {
-    padding: 4px 22px 22px;
+    padding: 0 22px 22px var(--klassieker-inspring);
+  }
+
+  .klassieker-body .klassieker-statement {
+    align-items: flex-start;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .klassieker-body .klassieker-badge {
+    margin-top: 3px;
+  }
+
+  .klassieker-verschuivingen {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
   .verschuiving {
     display: grid;
     grid-template-columns: 1fr;
     gap: 6px 28px;
-    padding: 15px 0;
-    border-top: 1px solid var(--color-border-light);
-    font-weight: 400;
     font-size: 16.5px;
+    line-height: 26.4px;
   }
 
   @media (min-width: 768px) {
@@ -1189,10 +1371,15 @@
 
   .verschuiving-principe {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: baseline;
     font-size: 15px;
+    line-height: 24px;
     color: var(--color-text-secondary);
+  }
+
+  .verschuiving-principe .principe-gem {
+    transform: translateY(2px);
   }
 
   .verschuiving-principe b {
@@ -1201,11 +1388,108 @@
   }
 
   .klassieker-slot {
-    margin-top: 18px;
+    margin-top: 4px;
     font-family: 'Aleo', Georgia, serif;
     font-style: italic;
-    font-size: 15.5px;
+    font-size: 15px;
+    line-height: 24.8px;
     color: var(--color-text-secondary);
+  }
+
+  /* Het openen was een sprong van 276 px op desktop en 470 px op mobiel. */
+  @media (prefers-reduced-motion: no-preference) {
+    .klassieker-body {
+      animation: klassieker-openen 200ms ease-out;
+    }
+
+    @supports (interpolate-size: allow-keywords) {
+      .klassieker-body {
+        animation: none;
+      }
+
+      .klassieker::details-content {
+        block-size: 0;
+        overflow: hidden;
+        transition:
+          block-size 240ms ease,
+          content-visibility 240ms allow-discrete;
+      }
+
+      .klassieker[open]::details-content {
+        block-size: auto;
+      }
+    }
+  }
+
+  @keyframes klassieker-openen {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Op 390 px zakt de schijf naast de titel en wordt het openen een knop van
+     44 px onderaan de kaart in plaats van een chevron in de hoek. */
+  @media (max-width: 767px) {
+    .klassieker {
+      --klassieker-goot: 52px;
+    }
+
+    .klassieker > summary {
+      padding: 16px;
+      grid-template-columns: 44px minmax(0, 1fr);
+      grid-template-areas:
+        "schijf  titel"
+        "lijf    lijf"
+        "schakel schakel";
+      column-gap: 12px;
+      row-gap: 14px;
+      align-items: center;
+    }
+
+    .klassieker-disc {
+      width: 44px;
+      height: 44px;
+    }
+
+    .klassieker-disc svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .klassieker-titel {
+      font-size: 19px;
+    }
+
+    /* De schakelaar hoort onderaan de kaart, ook uitgeklapt. Ze staat in de
+       summary en kan dus niet achter de body geordend worden; absoluut
+       positioneren doet dat wel, en de klik blijft op de summary landen. */
+    .klassieker-toggle {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 0;
+      height: 56px;
+      justify-content: center;
+      align-items: center;
+      border-top: 1px solid var(--color-border-light);
+    }
+
+    .klassieker > summary {
+      padding-bottom: 72px;
+    }
+
+    .klassieker[open] > summary {
+      padding-bottom: 16px;
+    }
+
+    .klassieker-body {
+      padding: 0 16px 72px;
+    }
   }
 
   .verhaal-nav {

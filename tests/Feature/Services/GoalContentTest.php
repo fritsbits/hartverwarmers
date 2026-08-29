@@ -16,7 +16,46 @@ class GoalContentTest extends TestCase
             'verhalen' => [],
             'klassiekers' => [],
             'referenties' => [],
+            'principes' => [],
         ], $content);
+    }
+
+    public function test_doen_lists_its_four_principes_in_legend_order(): void
+    {
+        $principes = GoalContent::for('doen')['principes'];
+
+        $this->assertSame(
+            ['Zelf doen', 'Kleine stapjes', 'Waardering', 'Aangepast materiaal'],
+            array_column($principes, 'naam')
+        );
+
+        foreach ($principes as $principe) {
+            $this->assertArrayHasKey('naam', $principe);
+            $this->assertArrayHasKey('toelichting', $principe);
+            $this->assertNotEmpty($principe['toelichting']);
+        }
+    }
+
+    public function test_a_goal_without_principes_gets_an_empty_list(): void
+    {
+        $this->assertSame([], GoalContent::for('inclusief')['principes']);
+    }
+
+    /**
+     * De legende op het papier en de chips op de klassiekerrijen tonen dezelfde
+     * vier namen. Drijft een principe uit een verschuiving weg van de legende,
+     * dan valt die herkenning stil en is het hele blok zinloos.
+     */
+    public function test_every_principe_in_a_verschuiving_appears_in_the_legend(): void
+    {
+        $content = GoalContent::for('doen');
+        $namen = array_column($content['principes'], 'naam');
+
+        foreach ($content['klassiekers'] as $klassieker) {
+            foreach ($klassieker['verschuivingen'] as $verschuiving) {
+                $this->assertContains($verschuiving['principe'], $namen);
+            }
+        }
     }
 
     public function test_doen_has_content_for_every_block(): void

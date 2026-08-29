@@ -4,12 +4,12 @@ namespace App\Services;
 
 class GoalContent
 {
-    private const BLOCKS = ['schoolvoorbeelden', 'verhalen', 'klassiekers', 'referenties'];
+    private const BLOCKS = ['schoolvoorbeelden', 'verhalen', 'klassiekers', 'referenties', 'principes'];
 
     /**
      * De content van één doel, met altijd alle blokken aanwezig.
      *
-     * @return array{schoolvoorbeelden: array, verhalen: array, klassiekers: array, referenties: array}
+     * @return array{schoolvoorbeelden: array, verhalen: array, klassiekers: array, referenties: array, principes: array<array{naam: string, toelichting: string}>}
      */
     public static function for(string $facetSlug): array
     {

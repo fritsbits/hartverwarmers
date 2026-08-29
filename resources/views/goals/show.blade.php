@@ -13,7 +13,7 @@
                 <h1 class="text-5xl mt-1 mb-6">{{ $facet['keyword'] }}</h1>
 
                 <div class="text-2xl leading-relaxed font-light text-[var(--color-text-secondary)] lg:w-1/2">
-                    <p>{{ Str::before($facet['description'], '. ') . '.' }}</p>
+                    <p>{{ Str::finish(Str::before($facet['description'], '. '), '.') }}</p>
                 </div>
             </div>
         </div>
@@ -40,62 +40,25 @@
                                 <p class="text-xl font-light text-[var(--color-text-secondary)] line-through">{{ ucfirst($niet) }}</p>
                             </div>
                             <div class="flex items-baseline gap-3">
-                                <span class="w-14 shrink-0 inline-block bg-[var(--color-bg-accent-light)] text-[var(--color-primary)] text-sm font-semibold px-2.5 py-0.5 rounded text-center">WEL</span>
+                                <span class="w-14 shrink-0 inline-block bg-[var(--color-bg-accent-light)] text-[var(--color-primary-text)] text-sm font-semibold px-2.5 py-0.5 rounded text-center">WEL</span>
                                 <p class="text-xl font-light text-[var(--color-text-primary)]">{{ ucfirst($maar) }}</p>
                             </div>
                         </div>
                     @endif
                 </div>
 
-                {{-- Right: Paper checklist (pulled up into hero) --}}
-                @if(!empty($facet['reflection_questions']))
-                    <div class="hidden lg:block lg:-translate-y-[30%] px-8">
-                        <div class="quote-paper quote-paper-lg">
-                            <span class="checklist-label">Checklist</span>
-                            @foreach($facet['reflection_questions'] as $question)
-                                <div class="checklist-item">
-                                    <span class="question-badge">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                                            <polygon points="30,0 70,0 100,35 50,100 0,35" fill="none" stroke="var(--color-primary)" stroke-width="8" stroke-linejoin="round" />
-                                            <line x1="0" y1="35" x2="100" y2="35" stroke="var(--color-primary)" stroke-width="4" />
-                                            <line x1="30" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" />
-                                            <line x1="70" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" />
-                                            <line x1="25" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" />
-                                            <line x1="75" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" />
-                                        </svg>
-                                    </span>
-                                    <p class="font-body font-light">{{ $question }}</p>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    {{-- Mobile: inline --}}
-                    <div class="lg:hidden px-8">
-                        <div class="quote-paper quote-paper-lg">
-                            <span class="checklist-label">Checklist</span>
-                            @foreach($facet['reflection_questions'] as $question)
-                                <div class="checklist-item">
-                                    <span class="question-badge">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                                            <polygon points="30,0 70,0 100,35 50,100 0,35" fill="none" stroke="var(--color-primary)" stroke-width="8" stroke-linejoin="round" />
-                                            <line x1="0" y1="35" x2="100" y2="35" stroke="var(--color-primary)" stroke-width="4" />
-                                            <line x1="30" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" />
-                                            <line x1="70" y1="0" x2="50" y2="35" stroke="var(--color-primary)" stroke-width="4" />
-                                            <line x1="25" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" />
-                                            <line x1="75" y1="35" x2="50" y2="100" stroke="var(--color-primary)" stroke-width="4" />
-                                        </svg>
-                                    </span>
-                                    <p class="font-body font-light">{{ $question }}</p>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
+                {{-- Right: het papier — legende bij een doel met principes, anders de checklist --}}
+                <x-goal.papier
+                    :principes="$showGoalPreview ? $goalContent['principes'] : []"
+                    :reflection-questions="$facet['reflection_questions'] ?? []"
+                    :facet-keyword="$facet['keyword']" />
             </div>
 
             @if($showGoalPreview)
-                <x-goal.klassiekers :items="$goalContent['klassiekers']" :facet-letter="$facet['letter']" />
+                <x-goal.klassiekers
+                    :items="$goalContent['klassiekers']"
+                    :principes="$goalContent['principes']"
+                    :facet-keyword="$facet['keyword']" />
             @endif
         </div>
     </section>
