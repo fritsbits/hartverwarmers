@@ -54,13 +54,22 @@ class PreviewModeTest extends TestCase
         $this->assertFalse(session()->has(PreviewMode::SESSION_KEY));
     }
 
-    public function test_an_admin_sees_the_preview_without_the_link(): void
+    public function test_an_admin_sees_no_preview_without_the_link(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
 
-        $this->actingAs($admin)->get('/doelen/doen')->assertOk();
+        $this->actingAs($admin)->get('/doelen/doen')->assertOk()->assertDontSee('Klassiekers');
 
-        $this->assertTrue(PreviewMode::doelenpagina());
+        $this->assertFalse(PreviewMode::doelenpagina());
+    }
+
+    public function test_a_curator_sees_no_preview_without_the_link(): void
+    {
+        $curator = User::factory()->create(['role' => 'curator']);
+
+        $this->actingAs($curator)->get('/doelen/doen')->assertOk()->assertDontSee('Klassiekers');
+
+        $this->assertFalse(PreviewMode::doelenpagina());
     }
 
     public function test_an_array_shaped_preview_parameter_does_not_error(): void

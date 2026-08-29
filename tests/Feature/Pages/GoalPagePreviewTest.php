@@ -50,7 +50,7 @@ class GoalPagePreviewTest extends TestCase
             ->get('/doelen/doen')
             ->assertOk()
             ->assertSee('Klassiekers')
-            ->assertSee('Waar zit Doen in een gewone wandeling?')
+            ->assertSee('Waar zit <em>Doen</em> in een gewone wandeling?', false)
             ->assertSee('Die vier principes komen terug in elke activiteit die je al draait.')
             ->assertSee('Drie kleine verschuivingen. Je hoeft er geen nieuwe activiteit voor te bedenken.')
             ->assertSee('De klassieke wandeling')
@@ -171,7 +171,7 @@ class GoalPagePreviewTest extends TestCase
         $this->previewing()
             ->get('/doelen/doen')
             ->assertOk()
-            ->assertSee('Wil je dieper graven rond doen?')
+            ->assertSee('Wil je dieper graven rond <em>Doen</em>?', false)
             ->assertSee('Studio Bomma over participatie')
             ->assertSee('Gesprekskaarten en spelmateriaal')
             ->assertSee('<span class="referentie-type">podcast</span>', false);
@@ -196,7 +196,7 @@ class GoalPagePreviewTest extends TestCase
         $this->previewing()
             ->get('/doelen/doen')
             ->assertOk()
-            ->assertSee('Zo ziet doen eruit')
+            ->assertSee('Zo ziet <em>Doen</em> eruit', false)
             ->assertSee('Zelf de soep opdienen')
             ->assertSee('Zij schept zelf op, niemand doet het voor haar.');
     }
@@ -323,10 +323,10 @@ class GoalPagePreviewTest extends TestCase
         $this->previewing()
             ->get('/doelen/doen')
             ->assertOk()
-            ->assertSee('De vier van Doen')
+            ->assertSee('Checklist')
             ->assertSee('ook als het trager gaat')
             ->assertSee('zo blijft zelf doen mogelijk')
-            ->assertDontSee('Checklist');
+            ->assertDontSee('Bouw activiteiten op in kleine stapjes');
     }
 
     public function test_the_paper_keeps_its_checklist_without_preview(): void
@@ -334,7 +334,8 @@ class GoalPagePreviewTest extends TestCase
         $this->get('/doelen/doen')
             ->assertOk()
             ->assertSee('Checklist')
-            ->assertDontSee('De vier van Doen');
+            ->assertSee('Bouw activiteiten op in kleine stapjes')
+            ->assertDontSee('ook als het trager gaat');
     }
 
     /**
@@ -353,6 +354,6 @@ class GoalPagePreviewTest extends TestCase
             ->get('/doelen/talent')
             ->assertOk()
             ->assertSee('Checklist')
-            ->assertDontSee('De vier van');
+            ->assertDontSee('ook als het trager gaat');
     }
 }
