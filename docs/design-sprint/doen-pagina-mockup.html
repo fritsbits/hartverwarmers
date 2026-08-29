@@ -5,12 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>De Doen-pagina, volledig · mockup</title>
 <link rel="preconnect" href="https://fonts.bunny.net">
-<link href="https://fonts.bunny.net/css?family=aleo:700,700i|fira-sans:300,300i,400,500,600,700" rel="stylesheet">
+<link href="https://fonts.bunny.net/css?family=aleo:400,400i,700,700i|fira-sans:300,300i,400,400i,500,600,700|nanum-pen-script:400" rel="stylesheet">
 <style>
 /* ==========================================================================
    Mockup van /doelen/doen, volledig uitgebouwd volgens de bekrachtigde
-   bouwlijst van 28 augustus 2026. Tokens identiek aan resources/css/app.css.
-   Alle fiches, namen, kudos en aantallen komen uit de echte database.
+   bouwlijst van 28 augustus 2026, herwerkt na de review van Frederik.
+   Tokens identiek aan resources/css/app.css.
+   Fiches, namen, kudos en aantallen komen uit de echte database.
    ========================================================================== */
 
 :root {
@@ -35,8 +36,12 @@
   --norm:        #8AA96B;  --norm-light:  #EEF3E6;  --norm-deep:  #55703C;
   --tal:         #5E7FA8;  --tal-light:   #ECF0F6;  --tal-deep:   #3F5C82;
 
+  --yellow:        #F4C44E;
+  --teal:          #4CB7C5;
+
   --heading: 'Aleo', Georgia, serif;
   --body: 'Fira Sans', system-ui, sans-serif;
+  --hand: 'Nanum Pen Script', cursive;
   --shadow-card: 0 1px 3px rgba(35,30,26,.06), 0 6px 20px rgba(35,30,26,.05);
   --shadow-hover: 0 2px 6px rgba(35,30,26,.08), 0 14px 30px rgba(35,30,26,.09);
   --shadow-paper: 0 1px 2px rgba(35,30,26,.10), 0 10px 24px rgba(35,30,26,.08);
@@ -49,7 +54,7 @@ body {
   color: var(--ink); background: var(--white);
   -webkit-font-smoothing: antialiased;
 }
-h1, h2, h3 { font-family: var(--heading); font-weight: 700; line-height: 1.18; }
+h1, h2, h3, h4 { font-family: var(--heading); font-weight: 700; line-height: 1.18; }
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 ::selection { background: #F4C44E; color: var(--ink); }
@@ -112,10 +117,39 @@ section { position: relative; }
 .hero h1 { font-size: 52px; margin-bottom: 24px; }
 .hero .desc { font-size: 24px; line-height: 1.55; font-weight: 300; color: var(--ink-soft); max-width: 34ch; }
 
-/* --- vraag je af + checklist --- */
-.ask .wrap { display: grid; grid-template-columns: 1fr; gap: 48px; padding-top: 48px; padding-bottom: 48px; align-items: start; }
-@media (min-width: 920px) { .ask .wrap { grid-template-columns: 1.05fr .95fr; } }
-.ask h2 { font-size: 32px; margin: 4px 0 24px; max-width: 24ch; }
+/* --- generieke sectiekoppen --- */
+section.block .wrap { padding-top: 64px; padding-bottom: 64px; }
+.bg-cream { background: var(--cream); }
+.bg-subtle { background: var(--subtle); }
+.blockhead h2 { font-size: 32px; margin: 4px 0 8px; }
+.blockhead .sub { color: var(--ink-soft); font-weight: 400; margin-bottom: 32px; max-width: 62ch; }
+
+/* gem: het facet-diamantje */
+.gem {
+  display: inline-flex; align-items: center; justify-content: center;
+  clip-path: polygon(30% 0, 70% 0, 100% 35%, 50% 100%, 0 35%);
+  background: var(--doen); color: #fff;
+  font-family: var(--heading); font-weight: 700;
+  width: 24px; height: 24px; font-size: 11px; padding-bottom: .3em;
+  flex: 0 0 auto;
+}
+.gem.sm { width: 17px; height: 17px; font-size: 8px; }
+.gem.md { width: 34px; height: 34px; font-size: 15px; }
+.gem.ghost { background: var(--doen-light); color: var(--doen-deep); }
+.gem.g-auto { background: var(--auto); color: var(--ink); }
+.gem.g-norm { background: var(--norm); color: var(--ink); }
+.gem.g-mens { background: var(--mens); }
+.gem.g-tal { background: var(--tal); }
+
+/* ==========================================================================
+   SECTIE 1 — vraag je af, met de klassiekers als toepassing eronder.
+   Eén witte sectie, geen kaders. De klassiekers zijn het vervolg van
+   dezelfde gedachte, geen apart blok.
+   ========================================================================== */
+.ask .wrap { padding-top: 56px; padding-bottom: 72px; }
+.ask-top { display: grid; grid-template-columns: 1fr; gap: 48px; align-items: start; }
+@media (min-width: 920px) { .ask-top { grid-template-columns: 1.05fr .95fr; } }
+.ask-top h2 { font-size: 32px; margin: 4px 0 24px; max-width: 24ch; }
 .nw-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
 .nw-badge {
   width: 56px; flex: 0 0 auto; text-align: center; font-size: 13.5px; font-weight: 600;
@@ -133,40 +167,149 @@ section { position: relative; }
   box-shadow: var(--shadow-paper); padding: 26px 30px 30px;
   transform: rotate(-1.2deg); max-width: 480px; justify-self: center;
 }
-@media (min-width: 920px) { .checklist { margin-top: -76px; } }
+@media (min-width: 920px) { .checklist { margin-top: -20px; } }
 .checklist .cl-label {
   font-family: var(--heading); font-style: italic; font-weight: 700; font-size: 14px;
   letter-spacing: .18em; text-transform: uppercase; color: var(--orange);
   display: block; margin-bottom: 14px;
 }
 .checklist .cl-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; font-weight: 400; font-size: 16px; line-height: 1.55; }
+.checklist .cl-item .gem { margin-top: 4px; }
 .checklist .cl-item:last-child { margin-bottom: 0; }
 
-/* gem: het facet-diamantje */
-.gem {
-  display: inline-flex; align-items: center; justify-content: center;
-  clip-path: polygon(30% 0, 70% 0, 100% 35%, 50% 100%, 0 35%);
-  background: var(--doen); color: #fff;
-  font-family: var(--heading); font-weight: 700;
-  width: 24px; height: 24px; font-size: 11px; padding-bottom: .3em;
-  flex: 0 0 auto;
+/* de toepassing: subsectie binnen 'vraag je af', geen eigen sectie */
+.apply { margin-top: 54px; }
+.apply h3 { font-size: 24px; margin-bottom: 6px; }
+.apply .sub { color: var(--ink-soft); font-weight: 400; font-size: 17px; }
+
+.klassiekers { margin-top: 26px; display: flex; flex-direction: column; gap: 12px; }
+.kl {
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--paper); overflow: hidden;
 }
-.gem.sm { width: 17px; height: 17px; font-size: 8px; margin-top: 4px; }
-.gem.md { width: 34px; height: 34px; font-size: 15px; }
-.gem.ghost { background: var(--doen-light); color: var(--doen-deep); }
-.gem.g-auto { background: var(--auto); color: var(--ink); }
-.gem.g-norm { background: var(--norm); color: var(--ink); }
-.gem.g-mens { background: var(--mens); }
-.gem.g-tal { background: var(--tal); }
+.kl[open] { background: var(--white); box-shadow: var(--shadow-card); }
+.kl > summary {
+  list-style: none; cursor: pointer; padding: 18px 22px;
+  display: flex; gap: 20px; align-items: flex-start;
+}
+.kl .beeld {
+  width: 84px; height: 84px; flex: 0 0 84px; border-radius: 12px;
+  background: var(--tint, var(--yellow));
+  background-image: radial-gradient(circle at 32% 28%, rgba(255,255,255,.42), transparent 62%);
+}
+.kl.t-geel  { --tint: var(--yellow); }
+.kl.t-rood  { --tint: #C2666F; }
+.kl.t-blauw { --tint: var(--teal); }
+@media (max-width: 560px) { .kl .beeld { width: 60px; height: 60px; flex-basis: 60px; } }
+.kl > summary::-webkit-details-marker { display: none; }
+.kl .kl-t { font-family: var(--heading); font-weight: 700; font-size: 19px; display: block; }
+.kl .kl-c { font-size: 16px; font-weight: 400; color: var(--ink-soft); margin-top: 5px; max-width: 70ch; }
+.kl .chev { margin-left: auto; color: var(--ink-soft); flex: 0 0 auto; font-size: 20px; line-height: 1; transition: transform .2s ease; }
+.kl[open] .chev { transform: rotate(180deg); }
 
-/* --- generieke sectiekoppen --- */
-section.block .wrap { padding-top: 64px; padding-bottom: 64px; }
-.bg-cream { background: var(--cream); }
-.bg-subtle { background: var(--subtle); }
-.blockhead h2 { font-size: 32px; margin: 4px 0 8px; }
-.blockhead .sub { color: var(--ink-soft); font-weight: 400; margin-bottom: 32px; max-width: 62ch; }
+.kl-body { padding: 4px 22px 22px; }
+.kl-kop {
+  font-size: 15px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--orange); margin-bottom: 6px;
+}
+.shift { display: grid; grid-template-columns: 1fr; gap: 6px 28px; padding: 15px 0; border-top: 1px solid var(--border); }
+@media (min-width: 760px) { .shift { grid-template-columns: 1.15fr .85fr; align-items: baseline; } }
+.shift .voorbeeld { font-size: 16.5px; font-weight: 400; }
+.shift .doel { display: flex; gap: 10px; align-items: baseline; font-size: 15px; font-weight: 400; color: var(--ink-soft); }
+.shift .doel .gem { position: relative; top: 2px; }
+.shift .doel b { font-weight: 600; color: var(--ink); }
+.beeld-noot { margin-top: 16px; font-size: 14px; color: var(--ink-faint); font-weight: 400; }
+.kl .slot { margin-top: 18px; font-family: var(--heading); font-style: italic; font-size: 15.5px; color: var(--ink-soft); }
 
-/* --- B1 schoolvoorbeelden --- */
+/* ==========================================================================
+   SECTIE 2 — verhalen (carrousel) naast verder kijken. 50/50 op groot scherm.
+   ========================================================================== */
+.split { display: grid; grid-template-columns: 1fr; gap: 56px; align-items: start; }
+@media (min-width: 940px) { .split { grid-template-columns: 1fr 1fr; gap: 64px; } }
+.split > * { min-width: 0; }
+.split h2 { font-size: 26px; margin: 4px 0 8px; }
+.split .sub { color: var(--ink-soft); font-weight: 400; font-size: 16px; margin-bottom: 24px; max-width: 46ch; }
+
+/* verhaal als quote */
+.carousel { position: relative; }
+.track {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 100%;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; padding: 26px 0 18px;
+}
+.track::-webkit-scrollbar { display: none; }
+.story { scroll-snap-align: start; min-width: 0; padding: 0 6px; }
+
+/* .quote-paper uit resources/css/app.css */
+.quote-paper {
+  position: relative; background: var(--white);
+  box-shadow: 8px 12px 30px rgba(120, 90, 60, .25);
+  padding: 28px 32px 20px;
+  transform: rotate(-1.8deg);
+  background-image: repeating-linear-gradient(
+    to bottom, transparent, transparent 31px,
+    color-mix(in srgb, var(--orange) 18%, transparent) 31px,
+    color-mix(in srgb, var(--orange) 18%, transparent) 32px);
+  background-position: 0 24px;
+}
+.quote-paper p {
+  font-family: var(--hand); font-weight: 400;
+  font-size: 1.5rem; line-height: 32px; color: var(--ink);
+}
+.quote-paper p + p { margin-top: 0; }
+.quote-paper .mark {
+  position: absolute; user-select: none;
+  font-family: 'Garamond', Georgia, 'Times New Roman', serif;
+  font-size: 7rem; line-height: .5; top: -.5rem; left: -.5rem; z-index: 0;
+  color: var(--orange); transform: rotate(180deg);
+}
+.quote-paper .bron {
+  display: block; margin-top: 14px; font-family: var(--body);
+  font-size: 13.5px; font-weight: 400; color: var(--ink-soft);
+}
+.quote-paper .bron.todo { color: var(--ink-faint); font-style: italic; }
+
+.car-foot { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+.dots { display: flex; gap: 7px; }
+.dots button {
+  width: 8px; height: 8px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+  background: var(--border-hover);
+}
+.dots button[aria-current="true"] { background: var(--orange); }
+.car-nav { margin-left: auto; display: flex; gap: 8px; }
+.car-nav button {
+  width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--border-hover); background: var(--white);
+  color: var(--ink-soft); font-size: 15px; line-height: 1;
+}
+.car-nav button:hover { border-color: var(--orange); color: var(--orange); }
+
+/* verder kijken */
+.refs { display: flex; flex-direction: column; }
+.ref {
+  display: flex; gap: 15px; align-items: center;
+  padding: 15px 4px; border-bottom: 1px solid var(--border);
+}
+.ref:last-child { border-bottom: 0; }
+.ref .ric {
+  width: 40px; height: 40px; flex: 0 0 auto; border-radius: 50%;
+  background: var(--accent-light); color: var(--orange);
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.ref .ric svg { width: 21px; height: 21px; }
+.ref .rtype {
+  display: block; font-size: 11.5px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--orange);
+  margin-bottom: 2px;
+}
+.ref b { font-weight: 600; font-size: 16.5px; display: block; line-height: 1.35; }
+.ref small { display: block; color: var(--ink-soft); font-size: 14.5px; font-weight: 400; }
+.ref .arrow { margin-left: auto; color: var(--ink-faint); }
+.refs-foot { margin-top: 18px; font-size: 14px; color: var(--ink-faint); font-weight: 400; }
+
+/* ==========================================================================
+   SECTIE 3 — uitgelichte fiches
+   ========================================================================== */
 .exemplars { display: grid; gap: 24px; grid-template-columns: 1fr; }
 @media (min-width: 760px) { .exemplars { grid-template-columns: repeat(3, 1fr); } }
 .exemplar {
@@ -183,159 +326,8 @@ section.block .wrap { padding-top: 64px; padding-bottom: 64px; }
   margin-top: auto; background: var(--accent-light);
   border-radius: 8px; padding: 10px 14px; font-size: 15px; font-weight: 400; line-height: 1.55;
 }
-.exemplar .ex-why b { font-weight: 600; color: var(--orange-deep); }
-
-/* --- B2 verhaal --- */
-.story-board {
-  background:
-    radial-gradient(circle at 18% 22%, rgba(232,118,75,.07), transparent 42%),
-    radial-gradient(circle at 82% 80%, rgba(244,196,78,.09), transparent 45%),
-    #F6EEE5;
-  border: 1px solid var(--border); border-radius: 16px;
-  padding: clamp(24px, 4vw, 44px); position: relative;
-}
-.story-board .pin {
-  position: absolute; left: 50%; top: 12px; width: 11px; height: 11px; border-radius: 50%;
-  background: var(--orange); box-shadow: 0 1px 3px rgba(35,30,26,.35);
-}
-.story-row { display: flex; flex-wrap: wrap; gap: clamp(24px, 4vw, 48px); align-items: center; }
-.polaroid {
-  background: #fff; padding: 10px 10px 18px; width: 250px; flex: 0 0 auto;
-  box-shadow: 0 3px 8px rgba(35,30,26,.15); border-radius: 2px;
-  transform: rotate(-2.2deg); text-align: center; margin: 0 auto;
-}
-.polaroid .ph {
-  aspect-ratio: 4/3; border-radius: 2px; margin-bottom: 10px;
-  background: linear-gradient(135deg, #D7EDF1, #4CB7C5);
-  display: flex; align-items: center; justify-content: center; font-size: 52px;
-}
-.polaroid figcaption { font-family: var(--heading); font-weight: 700; font-size: 15px; }
-.polaroid figcaption small { display: block; font-family: var(--body); font-weight: 400; font-size: 12.5px; color: var(--ink-soft); margin-top: 3px; }
-.story-txt { flex: 1 1 340px; min-width: 0; }
-.story-txt .story-kicker {
-  font-family: var(--heading); font-style: italic; font-size: 14px; font-weight: 700;
-  color: var(--mens-deep); letter-spacing: .06em; margin-bottom: 8px; display: block;
-}
-.story-txt h3 { font-size: 27px; margin-bottom: 14px; }
-.story-txt p { font-weight: 400; max-width: 58ch; }
-.story-txt p + p { margin-top: 12px; }
-.story-txt .story-foot { margin-top: 16px; font-family: var(--heading); font-style: italic; font-size: 16px; color: var(--ink-soft); }
-
-/* --- B5 schittergallerij-strook --- */
-.gallery-strip {
-  border: 1px solid var(--border);
-  border-radius: 12px; background: var(--white); box-shadow: var(--shadow-card);
-  margin-top: 40px; overflow: hidden;
-}
-.gallery-strip summary {
-  display: flex; align-items: center; gap: 16px; padding: 20px 24px;
-  cursor: pointer; list-style: none;
-}
-.gallery-strip summary::-webkit-details-marker { display: none; }
-.gallery-strip summary .gs-kop { font-family: var(--heading); font-weight: 700; font-size: 20px; display: block; }
-.gallery-strip summary .gs-sub { color: var(--ink-soft); font-size: 15px; font-weight: 400; }
-.gallery-strip summary .chev { margin-left: auto; color: var(--ink-faint); transition: transform .2s ease; font-size: 15px; }
-.gallery-strip[open] summary .chev { transform: rotate(180deg); }
-.gallery-strip[open] summary { border-bottom: 1px solid var(--border); }
-.gs-body { padding: 26px 24px 24px; }
-.gs-title { font-family: var(--heading); font-weight: 700; font-size: 21px; margin-bottom: 4px; }
-.gs-when { color: var(--ink-soft); font-size: 15px; font-weight: 400; margin-bottom: 18px; }
-.ba { display: grid; gap: 16px; grid-template-columns: 1fr; }
-@media (min-width: 760px) { .ba { grid-template-columns: 1fr 1fr; } }
-.ba-col { border-radius: 12px; padding: 18px 20px; font-weight: 400; font-size: 16px; line-height: 1.6; }
-.ba-col .kolomkop {
-  font-size: 12px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase;
-  margin-bottom: 10px;
-}
-.ba-col.voor { background: var(--subtle); color: var(--ink-soft); border: 1px solid var(--border); }
-.ba-col.voor .kolomkop { color: var(--ink-faint); }
-.ba-col.na { background: var(--cream); border: 1px solid var(--orange); }
-.ba-col.na .kolomkop { color: var(--orange-deep); }
-mark.hl {
-  background: var(--hl-bg, var(--accent-light)); color: inherit;
-  padding: 1px 3px; border-radius: 3px; border-bottom: 2px solid var(--hl-line, var(--orange));
-  box-decoration-break: clone; -webkit-box-decoration-break: clone;
-  position: relative; cursor: help;
-}
-mark.hl.m-auto { --hl-bg: var(--auto-light); --hl-line: var(--auto); }
-mark.hl.m-norm { --hl-bg: var(--norm-light); --hl-line: var(--norm); }
-mark.hl.m-doen { --hl-bg: var(--doen-light); --hl-line: var(--doen); }
-mark.hl[data-tip]:hover::after {
-  content: attr(data-tip);
-  position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 20;
-  width: max-content; max-width: min(280px, 72vw);
-  background: var(--ink); color: #F5EEE8; font-weight: 400; font-size: 13px; line-height: 1.45;
-  padding: 8px 12px; border-radius: 8px; box-shadow: 0 3px 8px rgba(35,30,26,.25);
-}
-.gs-slot { margin-top: 14px; font-family: var(--heading); font-style: italic; font-size: 15.5px; color: var(--ink-soft); }
-.gs-next { display: flex; flex-direction: column; gap: 8px; margin-top: 22px; }
-.gs-next .nx {
-  display: flex; align-items: center; gap: 12px;
-  border: 1px dashed var(--border-hover); border-radius: 10px;
-  padding: 12px 16px; font-size: 15px; font-weight: 400; color: var(--ink-soft);
-}
-.gs-next .nx b { font-family: var(--heading); font-weight: 700; color: var(--ink); font-size: 16px; }
-.gs-next .nx .wacht { margin-left: auto; font-size: 12.5px; color: var(--ink-faint); font-style: italic; }
-@media (max-width: 600px) { .gs-next .nx .wacht { display: none; } }
-
-/* --- B3 verder kijken --- */
-.refs { display: flex; flex-direction: column; max-width: 760px; }
-.ref {
-  display: flex; gap: 18px; align-items: flex-start;
-  padding: 16px 4px; border-bottom: 1px solid var(--border);
-}
-.ref:last-child { border-bottom: 0; }
-.ref .rtype {
-  flex: 0 0 92px; text-align: center; font-size: 11.5px; font-weight: 700;
-  letter-spacing: .09em; text-transform: uppercase; color: var(--ink-soft);
-  border: 1.5px solid var(--border-hover); border-radius: 999px; padding: 4px 0; margin-top: 3px;
-}
-.ref b { font-weight: 600; font-size: 17px; }
-.ref small { display: block; color: var(--ink-soft); font-size: 15px; font-weight: 400; }
-.ref .arrow { margin-left: auto; color: var(--ink-faint); align-self: center; }
-
-/* --- B4 fiches --- */
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
-.chip {
-  display: inline-flex; align-items: center; gap: 7px;
-  border: 1.5px solid var(--border-hover); color: var(--ink-soft);
-  font-size: 14px; font-weight: 600; border-radius: 999px;
-  padding: 7px 16px; background: var(--white);
-}
-.chip.on { border-color: var(--orange); color: var(--orange-deep); background: var(--accent-light); }
-.fiches { display: grid; gap: 24px; grid-template-columns: 1fr; }
-@media (min-width: 680px) { .fiches { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1000px) { .fiches { grid-template-columns: repeat(3, 1fr); } }
-.fiche {
-  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
-  padding: 20px; box-shadow: var(--shadow-card); display: flex; flex-direction: column;
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-.fiche:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); border-color: var(--border-hover); }
-.fiche .dia {
-  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
-  font-size: 12px; font-weight: 700; color: var(--orange-deep);
-  background: var(--accent-light); border-radius: 999px; padding: 3px 11px; margin-bottom: 10px;
-}
-.fiche .dia .gem { width: 13px; height: 13px; font-size: 6px; }
-.fiche h3 { font-family: var(--body); font-weight: 600; font-size: 17.5px; line-height: 1.35; }
-.fiche .fdesc {
-  margin-top: 6px; font-size: 14.5px; font-weight: 400; color: var(--ink-soft);
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-.fiche .fmeta {
-  display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 13px;
-  border-top: 1px solid var(--border); font-size: 14px; color: var(--ink-soft); font-weight: 400;
-}
-.fiche .avatar {
-  width: 26px; height: 26px; border-radius: 50%; flex: 0 0 auto;
-  background: var(--subtle); color: var(--ink-soft);
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 600;
-}
-.fiche .hearts { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
-.fiche .hearts svg { width: 16px; height: 16px; }
-.fiches-foot { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: baseline; }
+.exemplar .ex-why b { font-weight: 600; color: var(--orange); }
+.fiches-foot { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: baseline; }
 .cta-link {
   display: inline-flex; align-items: center; gap: 5px;
   font-weight: 600; color: var(--orange); font-size: 16px;
@@ -345,32 +337,12 @@ mark.hl[data-tip]:hover::after {
 .cta-link:hover::after { transform: translateX(3px); }
 .fiches-foot .note { font-size: 14px; color: var(--ink-faint); font-weight: 400; }
 
-/* --- initiatieven --- */
-.inits { display: grid; gap: 24px; grid-template-columns: 1fr; }
-@media (min-width: 680px) { .inits { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1000px) { .inits { grid-template-columns: repeat(3, 1fr); } }
-.init {
-  position: relative; border-radius: 12px; overflow: hidden;
-  border: 1px solid var(--border); box-shadow: var(--shadow-card);
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-.init:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
-.init img { aspect-ratio: 16/10; object-fit: cover; width: 100%; }
-.init .ttl {
-  position: absolute; bottom: 16px; left: 16px;
-  background: #fff; padding: 6px 12px; border-radius: 6px;
-  font-family: var(--heading); font-weight: 700; font-size: 17px; line-height: 1.3;
-}
-.init .ttl span { color: var(--orange); margin-left: 4px; }
-
 /* --- verwante doelstellingen --- */
 .related p.intro { font-size: 17px; font-weight: 400; color: var(--ink-soft); max-width: 62ch; margin-bottom: 28px; }
 .related p.intro strong { font-weight: 600; color: var(--ink); }
 .rel-grid { display: grid; gap: 12px; grid-template-columns: 1fr; max-width: 860px; }
 @media (min-width: 720px) { .rel-grid { grid-template-columns: 1fr 1fr; } }
-.rel {
-  display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 12px;
-}
+.rel { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 12px; }
 .rel:hover { background: var(--subtle); }
 .rel b { font-weight: 600; }
 .rel span { color: var(--ink-soft); font-weight: 400; }
@@ -400,6 +372,8 @@ footer .wrap { padding-top: 48px; padding-bottom: 24px; }
 
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
+  html { scroll-behavior: auto; }
+  .track { scroll-behavior: auto; }
 }
 </style>
 </head>
@@ -409,7 +383,7 @@ footer .wrap { padding-top: 48px; padding-bottom: 24px; }
 <div class="brief-bar">
   <b>Mockup</b><span class="dot-sep">·</span>
   <span>zo kan <b>/doelen/doen</b> eruitzien, volledig uitgebouwd volgens de bouwlijst van 28 augustus</span>
-  <span class="right">Alle fiches, namen, foto's en cijfers zijn echt en komen uit de database</span>
+  <span class="right">Fiches, namen en cijfers zijn echt en komen uit de database</span>
 </div>
 
 <!-- ======================= NAV (blijft) ======================= -->
@@ -435,42 +409,205 @@ footer .wrap { padding-top: 48px; padding-bottom: 24px; }
     <div class="crumbs">Home <span class="sep">›</span> DIAMANT-kompas <span class="sep">›</span> Doen</div>
     <span class="section-label">Doelstelling</span>
     <h1>Doen</h1>
-    <p class="desc">De D van Doen staat voor activerend werken — bewoners zelf laten doen, in kleine stapjes, zodat ze vertrouwen opbouwen en het plezier van het bezig zijn zelf ervaren.</p>
+    <p class="desc">De D van Doen staat voor activerend werken: bewoners zelf laten doen, in kleine stapjes, zodat ze vertrouwen opbouwen en het plezier van het bezig zijn zelf ervaren.</p>
   </div>
 </header>
 
-<!-- ======================= VRAAG JE AF + CHECKLIST (blijft) ======================= -->
+<!-- =====================================================================
+     SECTIE 1 · vraag je af + de klassiekers als toepassing.
+     Eén witte sectie. De klassiekers zitten binnen dezelfde gedachte.
+     ===================================================================== -->
 <section class="ask">
-  <span class="tag-stays">Blijft</span>
+  <span class="tag-new">Blijft + nieuw · B5</span>
   <div class="wrap">
-    <div>
-      <span class="section-label">Vraag je af</span>
-      <h2>Doen je bewoners vandaag iets dat hen energie geeft — of vullen ze de dag zonder het zelf te merken?</h2>
-      <div class="nw-row niet"><span class="nw-badge niet">NIET</span><p>We moeten de bewoner bezighouden</p></div>
-      <div class="nw-row"><span class="nw-badge wel">WEL</span><p>Wat wil deze persoon vandaag ondernemen?</p></div>
+
+    <div class="ask-top">
+      <div>
+        <span class="section-label">Vraag je af</span>
+        <h2>Doen je bewoners vandaag iets dat hen energie geeft, of vullen ze de dag zonder het zelf te merken?</h2>
+        <div class="nw-row niet"><span class="nw-badge niet">NIET</span><p>We moeten de bewoner bezighouden</p></div>
+        <div class="nw-row"><span class="nw-badge wel">WEL</span><p>Wat wil deze persoon vandaag ondernemen?</p></div>
+      </div>
+      <div class="checklist">
+        <span class="cl-label">Checklist</span>
+        <div class="cl-item"><span class="gem sm ghost">D</span><p>Laat bewoners zelf doen, ook als het langzamer gaat. Zelfs één handeling is al een succes.</p></div>
+        <div class="cl-item"><span class="gem sm ghost">D</span><p>Bouw activiteiten op in kleine stapjes die succeservaringen opleveren.</p></div>
+        <div class="cl-item"><span class="gem sm ghost">D</span><p>Geef expliciet waardering voor elke bijdrage, hoe klein ook.</p></div>
+        <div class="cl-item"><span class="gem sm ghost">D</span><p>Pas materiaal of omgeving aan zodat zelf doen mogelijk blijft.</p></div>
+      </div>
     </div>
-    <div class="checklist">
-      <span class="cl-label">Checklist</span>
-      <div class="cl-item"><span class="gem sm ghost">D</span><p>Laat bewoners zelf doen, ook als het langzamer gaat. Zelfs één handeling is al een succes.</p></div>
-      <div class="cl-item"><span class="gem sm ghost">D</span><p>Bouw activiteiten op in kleine stapjes die succeservaringen opleveren.</p></div>
-      <div class="cl-item"><span class="gem sm ghost">D</span><p>Geef expliciet waardering voor elke bijdrage, hoe klein ook.</p></div>
-      <div class="cl-item"><span class="gem sm ghost">D</span><p>Pas materiaal of omgeving aan zodat zelf doen mogelijk blijft.</p></div>
+
+    <div class="apply">
+      <h3>Zo maak je een diamantje van een klassieker</h3>
+      <p class="sub">Je hoeft er geen nieuwe activiteit voor te bedenken.</p>
+
+      <div class="klassiekers">
+
+        <details class="kl t-geel" open>
+          <summary>
+            <span class="beeld" aria-hidden="true"></span>
+            <span>
+              <span class="kl-t">De klassieke wandeling</span>
+              <span class="kl-c">De route ligt vast en de begeleidster duwt. Er wordt kort gestapt en daarna gaat iedereen terug naar binnen.</span>
+            </span>
+            <span class="chev">▾</span>
+          </summary>
+          <div class="kl-body">
+            <p class="kl-kop">Zo kan het schitteren</p>
+            <div class="shift">
+              <p class="voorbeeld">Louis duwt zelf een stuk van de weg.</p>
+              <p class="doel"><span class="gem sm">D</span><span><b>Zelf doen</b> · ook als het trager gaat</span></p>
+            </div>
+            <div class="shift">
+              <p class="voorbeeld">Onderweg wordt er brood gehaald, en wie wil draagt de tas.</p>
+              <p class="doel"><span class="gem sm">D</span><span><b>Kleine stapjes</b> · één handeling is al een succes</span></p>
+            </div>
+            <div class="shift">
+              <p class="voorbeeld">Binnen zegt de begeleidster luidop wie het brood heeft meegedragen.</p>
+              <p class="doel"><span class="gem sm">D</span><span><b>Waardering</b> · benoem wat iemand gedaan heeft</span></p>
+            </div>
+            <p class="slot">Eén mogelijke versie. Niet de juiste.</p>
+          </div>
+        </details>
+
+        <details class="kl t-rood">
+          <summary>
+            <span class="beeld" aria-hidden="true"></span>
+            <span>
+              <span class="kl-t">De klassieke knutselnamiddag</span>
+              <span class="kl-c">Alles ligt voorgeknipt klaar. De bewoners plakken de stukken op hun plaats en de begeleidster maakt af wat niet lukt.</span>
+            </span>
+            <span class="chev">▾</span>
+          </summary>
+          <div class="kl-body">
+            <p class="kl-kop">Zo kan het schitteren</p>
+            <div class="shift">
+              <p class="voorbeeld">Het materiaal ligt in het midden, iedereen neemt zelf wat hij nodig heeft.</p>
+              <p class="doel"><span class="gem sm">D</span><span><b>Zelf doen</b> · ook als het trager gaat</span></p>
+            </div>
+            <div class="shift">
+              <p class="voorbeeld">Wie niet meer kan knippen, scheurt het papier of kiest de kleuren.</p>
+              <p class="doel"><span class="gem sm">D</span><span><b>Aangepast materiaal</b> · zo blijft zelf doen mogelijk</span></p>
+            </div>
+            <div class="shift">
+              <p class="voorbeeld">Wat af is hangt aan de muur, met de naam erbij van wie het maakte.</p>
+              <p class="doel"><span class="gem sm">D</span><span><b>Waardering</b> · benoem wat iemand gedaan heeft</span></p>
+            </div>
+            <p class="slot">Eén mogelijke versie. Niet de juiste.</p>
+          </div>
+        </details>
+
+        <details class="kl t-blauw">
+          <summary>
+            <span class="beeld" aria-hidden="true"></span>
+            <span>
+              <span class="kl-t">Het klassieke koffiemoment</span>
+              <span class="kl-c">De koffie staat ingeschonken op tafel als de bewoners binnenkomen, en na een halfuur wordt alles weer afgeruimd.</span>
+            </span>
+            <span class="chev">▾</span>
+          </summary>
+          <div class="kl-body">
+            <p class="kl-kop">Zo kan het schitteren</p>
+            <div class="shift">
+              <p class="voorbeeld">De kan staat op tafel in plaats van op het dienblad achteraan.</p>
+              <p class="doel"><span class="gem sm">D</span><span><b>Aangepast materiaal</b> · zo blijft zelf doen mogelijk</span></p>
+            </div>
+            <div class="shift">
+              <p class="voorbeeld">Wie het nog kan, schenkt in voor zichzelf en voor de buur.</p>
+              <p class="doel"><span class="gem sm">D</span><span><b>Zelf doen</b> · ook al gaat er al eens iets naast</span></p>
+            </div>
+            <div class="shift">
+              <p class="voorbeeld">Mie deelt de koekjes rond. Dat is haar taak geworden.</p>
+              <p class="doel"><span class="gem sm">D</span><span><b>Kleine stapjes</b> · één handeling is al een succes</span></p>
+            </div>
+            <p class="slot">Eén mogelijke versie. Niet de juiste.</p>
+          </div>
+        </details>
+
+      </div>
+      <p class="beeld-noot">De beelden worden in Pikto gemaakt, in één stijl voor hartverwarmers.</p>
     </div>
+
   </div>
 </section>
 
-<!-- ======================= B1 SCHOOLVOORBEELDEN (nieuw) ======================= -->
+<!-- =====================================================================
+     SECTIE 2 · verhalen (carrousel) naast verder kijken
+     ===================================================================== -->
 <section class="block bg-cream">
+  <span class="tag-new">Nieuw · B2 + B3</span>
+  <div class="wrap split">
+
+    <div>
+      <span class="section-label">Verder kijken</span>
+      <h2>Wil je dieper graven rond doen?</h2>
+      <p class="sub">Vijf vertrekpunten. Alles op dit lijstje wordt in de vormingen gebruikt of aanbevolen.</p>
+      <div class="refs">
+        <div class="ref"><span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z"/></svg></span><div><span class="rtype">Podcast</span><b>Studio Bomma over participatie</b><small>Luister onderweg, 40 minuten.</small></div><span class="arrow">&rarr;</span></div>
+        <div class="ref"><span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span><div><span class="rtype">Gids</span><b>De participatiegids "Jij, wij, samen"</b><small>Gratis te downloaden.</small></div><span class="arrow">&rarr;</span></div>
+        <div class="ref"><span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z"/></svg></span><div><span class="rtype">Methodiek</span><b>Verven: piepkleine betekenisvolle momenten</b><small>Onderzoek van Artevelde, uitgetest in het werkveld.</small></div><span class="arrow">&rarr;</span></div>
+        <div class="ref"><span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 0 1-.657.643 48.39 48.39 0 0 1-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 0 1-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 0 0-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 0 1-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 0 0 .657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 0 1-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 0 0 5.427-.63 48.05 48.05 0 0 0 .582-4.717.532.532 0 0 0-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 0 0 .658-.663 48.422 48.422 0 0 0-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 0 1-.61-.58v0Z"/></svg></span><div><span class="rtype">Methodiek</span><b>Object handling</b><small>Voorwerpen als opstap naar interactie.</small></div><span class="arrow">&rarr;</span></div>
+        <div class="ref"><span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span><div><span class="rtype">Materiaal</span><b>Gesprekskaarten en spelmateriaal</b><small>Onder meer via de uitleendienst van Artevelde.</small></div><span class="arrow">&rarr;</span></div>
+      </div>
+      <p class="refs-foot">Het lijstje groeit het jaar door. Stuur gerust iets door.</p>
+    </div>
+
+    <div>
+      <span class="section-label">Verhalen uit de praktijk</span>
+      <h2>Het begon telkens klein</h2>
+      <p class="sub">Drie keer echt gebeurd, in een huis zoals het jouwe.</p>
+
+      <div class="carousel">
+        <div class="track" id="verhalen">
+          <div class="story">
+            <figure class="quote-paper">
+              <span class="mark" aria-hidden="true">&rdquo;</span>
+              <p>&ldquo;Wie leerde jou eigenlijk zwemmen?&rdquo; Eén vraag aan tafel, en heel de groep begon te vertellen. Nu gaan ze opnieuw zwemmen, in een bad met een lift.</p>
+              <figcaption class="bron">Begint bij een verhaal, eindigt in doen.</figcaption>
+            </figure>
+          </div>
+          <div class="story">
+            <figure class="quote-paper">
+              <span class="mark" aria-hidden="true">&rdquo;</span>
+              <p>Hij poetste elke fiets van het huis. Een leven lang met fietsen bezig geweest, en hier opnieuw een taak die van hem was.</p>
+              <figcaption class="bron todo">Het volledige verhaal moet nog opgetekend worden.</figcaption>
+            </figure>
+          </div>
+          <div class="story">
+            <figure class="quote-paper">
+              <span class="mark" aria-hidden="true">&rdquo;</span>
+              <p>Wiske zong al jaren niet meer. Tot ze het eerste lied van het koor mocht kiezen.</p>
+              <figcaption class="bron todo">Het volledige verhaal moet nog opgetekend worden.</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="car-foot">
+          <div class="dots" id="verhalen-dots"></div>
+          <div class="car-nav">
+            <button type="button" data-dir="-1" aria-label="Vorig verhaal">‹</button>
+            <button type="button" data-dir="1" aria-label="Volgend verhaal">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- =====================================================================
+     SECTIE 3 · uitgelichte fiches (was B1, staat nu onderaan)
+     ===================================================================== -->
+<section class="block">
   <span class="tag-new">Nieuw · B1</span>
   <div class="wrap">
     <div class="blockhead">
-      <span class="section-label">Uitgelicht door het team</span>
+      <span class="section-label">Uitgelicht</span>
       <h2>Zo ziet doen eruit</h2>
-      <p class="sub">Deze fiches zijn schoolvoorbeelden van bewoners die zelf meedoen. Gekozen door Maite en Nadine, met telkens één zin waarom.</p>
+      <p class="sub">Drie fiches waarin bewoners echt zelf aan zet zijn, met telkens één zin waarom.</p>
     </div>
     <div class="exemplars">
       <article class="exemplar">
-        <img src="assets/samen-koken.webp" alt="Samen koken">
+        <img src="assets/samen-koken.webp" alt="">
         <div class="ex-body">
           <h3>Een oude passie opnieuw beleven: naar de beenhouwerij</h3>
           <p class="ex-meta">Tinneke Maes · Samen koken</p>
@@ -478,15 +615,15 @@ footer .wrap { padding-top: 48px; padding-bottom: 24px; }
         </div>
       </article>
       <article class="exemplar">
-        <img src="assets/herinneringen-delen.webp" alt="Meubels renoveren">
+        <img src="assets/handwerken-thumb.webp" alt="">
         <div class="ex-body">
-          <h3>Meubels renoveren</h3>
-          <p class="ex-meta">Frederik Vincx · Herinneringen delen</p>
-          <p class="ex-why"><b>Waarom:</b> schuren en verven brengt klussers weer echt aan het werk, en het resultaat blijft in huis staan.</p>
+          <h3>Knus, frutsel schootdekentje</h3>
+          <p class="ex-meta">Joke Liebens · Handwerken</p>
+          <p class="ex-why"><b>Waarom:</b> wie nog kan haken maakt een dekentje voor wie dat niet meer kan. Zorgen voor elkaar in plaats van bezig zijn.</p>
         </div>
       </article>
       <article class="exemplar">
-        <img src="assets/feesten-vieren.webp" alt="Feesten vieren">
+        <img src="assets/feesten-vieren.webp" alt="">
         <div class="ex-body">
           <h3>Intrede van de Sint georganiseerd door bewoners</h3>
           <p class="ex-meta">Tina Geens · Feesten vieren</p>
@@ -494,155 +631,9 @@ footer .wrap { padding-top: 48px; padding-bottom: 24px; }
         </div>
       </article>
     </div>
-  </div>
-</section>
-
-<!-- ======================= B2 VERHAAL + B5 GALERIJ (nieuw) ======================= -->
-<section class="block">
-  <span class="tag-new">Nieuw · B2 + B5</span>
-  <div class="wrap">
-
-    <div class="story-board">
-      <span class="pin"></span>
-      <div class="story-row">
-        <figure class="polaroid">
-          <div class="ph">🏊</div>
-          <figcaption>Het zwembad van Marcella<small>foto volgt van het team</small></figcaption>
-        </figure>
-        <div class="story-txt">
-          <span class="story-kicker">Verhaal uit de praktijk</span>
-          <h3>"Wie leerde jou eigenlijk zwemmen?"</h3>
-          <p>Eén vraag tijdens een gesprekskaartenmoment, en de tafel stond in vuur en vlam. Zoveel bewoners die tot op late leeftijd zijn blijven zwemmen.</p>
-          <p>Dus belde het team een revalidatiecentrum met een lift tot in het bad. En gingen ze opnieuw zwemmen.</p>
-          <p class="story-foot">Begint bij een verhaal, eindigt in doen.</p>
-        </div>
-      </div>
-    </div>
-
-    <details class="gallery-strip" open>
-      <summary>
-        <span>
-          <span class="gs-kop">Drie klassiekers die aanzetten tot doen</span>
-          <span class="gs-sub">Dezelfde namiddag, twee keer verteld. Kijk wat er verschuift.</span>
-        </span>
-        <span class="chev">▾</span>
-      </summary>
-      <div class="gs-body">
-        <h3 class="gs-title">De wandeling</h3>
-        <p class="gs-when">Elke weekdag na het middagmaal.</p>
-        <div class="ba">
-          <div class="ba-col voor">
-            <div class="kolomkop">Zoals het vaak gaat</div>
-            <p>De route ligt vast en de begeleidster duwt. Er wordt een halfuur gestapt en daarna gaat iedereen terug naar binnen.</p>
-          </div>
-          <div class="ba-col na">
-            <div class="kolomkop">Zo kan het schitteren</div>
-            <p><mark class="hl m-auto" data-tip="Autonomie: de keuze ligt bij hen, ook onderweg.">De groep beslist onderweg welke kant het opgaat.</mark> <mark class="hl m-norm" data-tip="Normalisatie: een wandeling met een reden, zoals iedereen die maakt.">Onderweg wordt er iets gehaald</mark>, brood of een krant. <mark class="hl m-doen" data-tip="Doen: zelf doen, ook al gaat het trager.">Louis duwt een stukje zelf.</mark></p>
-          </div>
-        </div>
-        <p class="gs-slot">Eén mogelijke versie. Niet de juiste.</p>
-        <div class="gs-next">
-          <div class="nx"><span class="gem sm">D</span><span><b>De knutselnamiddag</b> · in dezelfde vorm</span><span class="wacht">tekst volgt, voorstel ligt bij het team</span></div>
-          <div class="nx"><span class="gem sm">D</span><span><b>Het koffiemoment</b> · in dezelfde vorm</span><span class="wacht">tekst volgt, voorstel ligt bij het team</span></div>
-        </div>
-      </div>
-    </details>
-
-  </div>
-</section>
-
-<!-- ======================= B3 VERDER KIJKEN (nieuw) ======================= -->
-<section class="block bg-cream">
-  <span class="tag-new">Nieuw · B3</span>
-  <div class="wrap">
-    <div class="blockhead">
-      <span class="section-label">Verder kijken</span>
-      <h2>Wil je dieper graven rond doen?</h2>
-      <p class="sub">Vijf vertrekpunten, gekozen door het team. Alles op dit lijstje wordt in de vormingen gebruikt of aanbevolen.</p>
-    </div>
-    <div class="refs">
-      <div class="ref"><span class="rtype">Podcast</span><div><b>Studio Bomma over participatie</b><small>Luister onderweg, 40 minuten.</small></div><span class="arrow">→</span></div>
-      <div class="ref"><span class="rtype">Gids</span><div><b>De participatiegids "Jij, wij, samen"</b><small>Gratis te downloaden, veel gebruikt in de vormingen.</small></div><span class="arrow">→</span></div>
-      <div class="ref"><span class="rtype">Methodiek</span><div><b>Verven: piepkleine betekenisvolle momenten in de zorg</b><small>Onderzoek van Artevelde, uitgetest in het werkveld.</small></div><span class="arrow">→</span></div>
-      <div class="ref"><span class="rtype">Methodiek</span><div><b>Object handling</b><small>Voorwerpen als opstap naar interactie.</small></div><span class="arrow">→</span></div>
-      <div class="ref"><span class="rtype">Materiaal</span><div><b>Gesprekskaarten en spelmateriaal</b><small>Onder meer via de uitleendienst van Artevelde.</small></div><span class="arrow">→</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ======================= B4 FICHES BIJ DIT DOEL (nieuw) ======================= -->
-<section class="block">
-  <span class="tag-new">Nieuw · B4</span>
-  <div class="wrap">
-    <div class="blockhead">
-      <span class="section-label">Aan de slag</span>
-      <h2>Fiches die aanzetten tot doen</h2>
-      <p class="sub">Fiches uit alle initiatieven samen, zolang ze bewoners zelf laten meedoen.</p>
-    </div>
-    <div class="chips">
-      <span class="chip on">Alle</span>
-      <span class="chip">Diamantjes</span>
-      <span class="chip">Voor kleine groepen</span>
-      <span class="chip">Individueel</span>
-      <span class="chip">Nieuw deze maand</span>
-    </div>
-    <div class="fiches">
-      <article class="fiche">
-        <h3>Zingen en luisteren in Café Chantant</h3>
-        <p class="fdesc">Café Chantant legt de focus op reminiscentie en gezelligheid creëren in de ruimte.</p>
-        <div class="fmeta"><span class="avatar">PM</span> Pieter Meyskens <span class="hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 26</span></div>
-      </article>
-      <article class="fiche">
-        <h3>Laat bewoners medewerkers bedanken</h3>
-        <p class="fdesc">Organiseer een bedankingsactiviteit met bewoners.</p>
-        <div class="fmeta"><span class="avatar">FM</span> Freja Maenhout <span class="hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 19</span></div>
-      </article>
-      <article class="fiche">
-        <h3>Organiseer een photobooth en maak postkaartjes voor familie</h3>
-        <p class="fdesc">De benodigdheden knutsel je zelf met de bewoners, nadien maak je postkaartjes om te versturen.</p>
-        <div class="fmeta"><span class="avatar">EV</span> Elke Verstocken <span class="hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 12</span></div>
-      </article>
-      <article class="fiche">
-        <h3>Maak samen koffie op grootmoeders wijze</h3>
-        <p class="fdesc">De geur van versgemalen bonen roept gezelligheid, warmte en huiselijkheid op.</p>
-        <div class="fmeta"><span class="avatar">LV</span> Leen Verbesselt <span class="hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 9</span></div>
-      </article>
-      <article class="fiche">
-        <span class="dia"><span class="gem">D</span> Diamantje</span>
-        <h3>Maak samen een lichtslinger van kaarsen</h3>
-        <p class="fdesc">Tover de tuin en voorgevel om tot een lichtspektakel als teken van verbondenheid.</p>
-        <div class="fmeta"><span class="avatar">TR</span> Tania Rathe <span class="hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg> 2</span></div>
-      </article>
-      <article class="fiche">
-        <span class="dia"><span class="gem">D</span> Diamantje</span>
-        <h3>Maak een fietstocht met een Riksja</h3>
-        <p class="fdesc">Gezellig samen een tochtje maken buiten het WZC met een Riksja, duofiets of rolstoelfiets.</p>
-        <div class="fmeta"><span class="avatar">ES</span> Elien Saey-Van Peteghem</div>
-      </article>
-    </div>
     <div class="fiches-foot">
-      <a class="cta-link" href="#">Bekijk alle 87 fiches bij doen</a>
-      <span class="note">Automatisch gekoppeld op basis van de fiche-inhoud.</span>
-    </div>
-  </div>
-</section>
-
-<!-- ======================= INITIATIEVEN (blijft, zakt naar onder) ======================= -->
-<section class="block bg-subtle">
-  <span class="tag-stays">Blijft · zakt naar onder</span>
-  <div class="wrap">
-    <div class="blockhead">
-      <span class="section-label">Inspiratie</span>
-      <h2>Liever per thema bladeren?</h2>
-      <p class="sub">Zes initiatieven bundelen fiches die aanzetten tot doen.</p>
-    </div>
-    <div class="inits">
-      <a class="init" href="#"><img src="assets/beweging-fit-thumb.webp" alt="Beweging &amp; fit"><span class="ttl">Beweging &amp; fit<span>→</span></span></a>
-      <a class="init" href="#"><img src="assets/creatief-atelier-thumb.webp" alt="Creatief atelier"><span class="ttl">Creatief atelier<span>→</span></span></a>
-      <a class="init" href="#"><img src="assets/handwerken-thumb.webp" alt="Handwerken"><span class="ttl">Handwerken<span>→</span></span></a>
-      <a class="init" href="#"><img src="assets/samen-koken-thumb.webp" alt="Samen koken"><span class="ttl">Samen koken<span>→</span></span></a>
-      <a class="init" href="#"><img src="assets/tekenen-schilderen-thumb.webp" alt="Tekenen &amp; schilderen"><span class="ttl">Tekenen &amp; schilderen<span>→</span></span></a>
-      <a class="init" href="#"><img src="assets/tuinieren-thumb.webp" alt="Tuinieren"><span class="ttl">Tuinieren<span>→</span></span></a>
+      <a class="cta-link" href="#">Bekijk alle fiches over doen</a>
+      <span class="note">Filteren gebeurt op de fichepagina. Die moet nog gemaakt worden.</span>
     </div>
   </div>
 </section>
@@ -655,7 +646,7 @@ footer .wrap { padding-top: 48px; padding-bottom: 24px; }
       <span class="section-label">DIAMANT-kompas</span>
       <h2>Verwante doelstellingen</h2>
     </div>
-    <p class="intro">Doen wordt krachtiger als het vertrekt vanuit <strong>Talent</strong> — wat kan deze persoon? En als de activiteit aansluit bij het levensverhaal, raak je ook <strong>Mensgericht</strong>.</p>
+    <p class="intro">Doen wordt krachtiger als het vertrekt vanuit <strong>Talent</strong>: wat kan deze persoon? En als de activiteit aansluit bij het levensverhaal, raak je ook <strong>Mensgericht</strong>.</p>
     <div class="rel-grid">
       <a class="rel" href="#"><span class="gem md g-tal">T</span><div><b>Talent</b> <span>· Krachten laten schitteren</span></div></a>
       <a class="rel" href="#"><span class="gem md g-mens">M</span><div><b>Mensgericht</b> <span>· Bij het levensverhaal</span></div></a>
@@ -704,6 +695,44 @@ footer .wrap { padding-top: 48px; padding-bottom: 24px; }
     </div>
   </div>
 </footer>
+
+<script>
+(function () {
+  var track = document.getElementById('verhalen');
+  var dots = document.getElementById('verhalen-dots');
+  if (!track || !dots) { return; }
+  var slides = Array.prototype.slice.call(track.children);
+
+  slides.forEach(function (slide, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', 'Verhaal ' + (i + 1));
+    b.addEventListener('click', function () { go(i); });
+    dots.appendChild(b);
+  });
+
+  function current() {
+    return Math.round(track.scrollLeft / track.clientWidth);
+  }
+  function go(i) {
+    var n = Math.max(0, Math.min(slides.length - 1, i));
+    track.scrollTo({ left: n * track.clientWidth, behavior: 'smooth' });
+  }
+  function paint() {
+    var n = current();
+    Array.prototype.forEach.call(dots.children, function (b, i) {
+      b.setAttribute('aria-current', i === n ? 'true' : 'false');
+    });
+  }
+
+  document.querySelectorAll('.car-nav button').forEach(function (b) {
+    b.addEventListener('click', function () { go(current() + Number(b.dataset.dir)); });
+  });
+  track.addEventListener('scroll', paint, { passive: true });
+  window.addEventListener('resize', paint);
+  paint();
+})();
+</script>
 
 </body>
 </html>
