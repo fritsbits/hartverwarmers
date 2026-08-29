@@ -4,7 +4,7 @@
     <section>
         <div class="max-w-6xl mx-auto px-6 py-16">
             <span class="section-label">Uitgelicht</span>
-            <h2 class="mt-1 mb-2">Zo ziet {{ mb_strtolower($facetKeyword) }} eruit</h2>
+            <h2 class="mt-1 mb-2">Zo ziet <em>{{ $facetKeyword }}</em> eruit</h2>
             <p class="text-[var(--color-text-secondary)] font-light mb-8 max-w-2xl">
                 Fiches waarin bewoners echt zelf aan zet zijn, met telkens één zin waarom.
             </p>
@@ -42,7 +42,7 @@
             </div>
 
             <p class="mt-7 text-sm text-[var(--color-text-tertiary)] font-normal">
-                Meer fiches over {{ mb_strtolower($facetKeyword) }} volgen zodra de fichepagina met filters er is.
+                Meer fiches over <em>{{ $facetKeyword }}</em> volgen zodra de fichepagina met filters er is.
             </p>
         </div>
     </section>

@@ -50,8 +50,7 @@
                 {{-- Right: het papier — legende bij een doel met principes, anders de checklist --}}
                 <x-goal.papier
                     :principes="$showGoalPreview ? $goalContent['principes'] : []"
-                    :reflection-questions="$facet['reflection_questions'] ?? []"
-                    :facet-keyword="$facet['keyword']" />
+                    :reflection-questions="$facet['reflection_questions'] ?? []" />
             </div>
 
             @if($showGoalPreview)

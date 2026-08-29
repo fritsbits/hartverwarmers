@@ -284,7 +284,7 @@
   .section-label {
     @apply inline-flex items-center gap-2 font-semibold uppercase tracking-widest mb-0;
     font-size: 1.125rem;
-    color: var(--color-primary-text);
+    color: var(--color-primary);
     letter-spacing: 0.12em;
   }
 
@@ -599,7 +599,7 @@
     font-family: 'Garamond', 'Georgia', 'Times New Roman', serif;
     font-size: 7rem;
     line-height: 0.5;
-    top: -0.5rem;
+    top: -1.5rem;
     left: -0.5rem;
     z-index: 0;
     color: var(--color-primary);

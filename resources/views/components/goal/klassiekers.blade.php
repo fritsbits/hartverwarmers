@@ -13,7 +13,7 @@
     <div class="mt-16">
         <div class="max-w-[720px]">
             <span class="section-label">Klassiekers</span>
-            <h2 class="mt-1 mb-3">Waar zit {{ $facetKeyword }} in een gewone wandeling?</h2>
+            <h2 class="mt-1 mb-3">Waar zit <em>{{ $facetKeyword }}</em> in een gewone wandeling?</h2>
             <p class="text-lg">Die vier principes komen terug in elke activiteit die je al draait.</p>
             <p class="text-lg font-light text-[var(--color-text-secondary)]">Drie kleine verschuivingen. Je hoeft er geen nieuwe activiteit voor te bedenken.</p>
         </div>

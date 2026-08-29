@@ -3,7 +3,7 @@
 @if(!empty($items))
     <div>
         <span class="section-label">Verder kijken</span>
-        <h2 class="mt-1 mb-2 font-heading font-bold text-[26px]">Wil je dieper graven rond {{ mb_strtolower($facetKeyword) }}?</h2>
+        <h2 class="mt-1 mb-2 font-heading font-bold text-[26px]">Wil je dieper graven rond <em>{{ $facetKeyword }}</em>?</h2>
         <p class="text-[var(--color-text-secondary)] font-light mb-6">Alles op dit lijstje wordt in de vormingen gebruikt of aanbevolen.</p>
 
         <div class="flex flex-col">

@@ -1,7 +1,6 @@
 @props([
     'principes' => [],
     'reflectionQuestions' => [],
-    'facetKeyword' => '',
 ])
 
 @php
@@ -14,11 +13,11 @@
 @endphp
 
 @if($isLegende || ! empty($reflectionQuestions))
-    <div class="px-8 lg:-translate-y-[14px]">
+    <div class="px-8 lg:-translate-y-12">
         <div class="quote-paper quote-paper-lg">
-            @if($isLegende)
-                <span class="checklist-label">De vier van {{ $facetKeyword }}</span>
+            <span class="checklist-label">Checklist</span>
 
+            @if($isLegende)
                 @foreach($principes as $principe)
                     <div class="principe-regel">
                         <span class="principe-naam">
@@ -29,8 +28,6 @@
                     </div>
                 @endforeach
             @else
-                <span class="checklist-label">Checklist</span>
-
                 @foreach($reflectionQuestions as $question)
                     <div class="checklist-item">
                         <span class="question-badge">
