@@ -8,6 +8,13 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class MonthlyDigestNotification extends BaseMailNotification
 {
+    /**
+     * How many themes stay in the running for the subject line. Wide enough
+     * that a day's cohorts do not all read the same thing, narrow enough that
+     * the weakest candidate never headlines.
+     */
+    private const SHORTLIST_SIZE = 3;
+
     public function __construct(public Payload $payload, public int $cycle = 1) {}
 
     public function via(object $notifiable): array
@@ -74,16 +81,15 @@ class MonthlyDigestNotification extends BaseMailNotification
     }
 
     /**
-     * Build the subject line from the freshest thing this digest carries, so
-     * the inbox never shows the same line twice in a row. An upcoming theme is
-     * the strongest, most concrete hook; then the fiche of the month; then the
-     * count of freshly shared fiches; and only an empty digest falls back to
-     * the evergreen line.
+     * Build the subject line from the freshest thing this digest carries. An
+     * upcoming theme is the strongest, most concrete hook; then the fiche of
+     * the month; then the count of freshly shared fiches; and only an empty
+     * digest falls back to the evergreen line.
      */
     private function subjectLine(): string
     {
         if ($theme = $this->featuredTheme()) {
-            return "{$theme->theme->title} komt eraan — verse ideeën liggen klaar";
+            return $this->themeSubject($theme);
         }
 
         if ($diamond = $this->payload->diamond) {
@@ -104,16 +110,58 @@ class MonthlyDigestNotification extends BaseMailNotification
     }
 
     /**
-     * Pick the theme to feature in the subject. Awareness-day titles vary wildly
-     * in length ("Dierendag" versus "Internationale dag van de vriendschap"), so
-     * we feature the shortest upcoming one — it survives mobile truncation and
-     * reads punchiest. Ties keep chronological order (the collection is already
-     * sorted by start date).
+     * Word the theme hook to match what is actually behind it. A theme that
+     * carries fiches may promise them and say how many; one that carries none
+     * asks for an idea instead, so the subject is never a promise the digest
+     * cannot keep.
+     */
+    private function themeSubject(ThemeOccurrence $occurrence): string
+    {
+        $title = $occurrence->theme->title;
+        $fiches = $this->ficheCount($occurrence);
+
+        return match (true) {
+            $fiches >= 2 => "{$title} komt eraan — {$fiches} fiches liggen klaar",
+            $fiches === 1 => "{$title} komt eraan — 1 fiche ligt klaar",
+            default => "{$title} komt eraan — heb jij al een idee?",
+        };
+    }
+
+    /**
+     * Pick the theme to feature in the subject. Editorial weight decides the
+     * order: a theme carrying fiches outranks an empty one, more fiches outrank
+     * fewer, and an equal pair is settled by whichever comes first.
+     *
+     * The best few are kept as a shortlist and the recipient's digest cycle
+     * picks one of them. The send runs daily against a different cohort, so
+     * without that rotation one line would head every mail for as long as its
+     * theme sits in the 30-day window — up to a month. Rotating on the cycle
+     * spreads the shortlist across each day's recipients and moves a returning
+     * reader one slot on, so nobody gets the same line twice in a row.
      */
     private function featuredTheme(): ?ThemeOccurrence
     {
-        return $this->payload->themes
-            ->sortBy(fn (ThemeOccurrence $occurrence): int => mb_strlen($occurrence->theme->title))
-            ->first();
+        $shortlist = $this->payload->themes
+            ->sortBy([
+                fn (ThemeOccurrence $a, ThemeOccurrence $b): int => $this->ficheCount($b) <=> $this->ficheCount($a),
+                fn (ThemeOccurrence $a, ThemeOccurrence $b): int => $a->start_date <=> $b->start_date,
+            ])
+            ->values()
+            ->take(self::SHORTLIST_SIZE);
+
+        if ($shortlist->isEmpty()) {
+            return null;
+        }
+
+        return $shortlist[$this->cycle % $shortlist->count()];
+    }
+
+    /**
+     * Published fiches behind an occurrence's theme. Composer eager-loads this
+     * count; anything that hands over a theme without it is treated as empty.
+     */
+    private function ficheCount(ThemeOccurrence $occurrence): int
+    {
+        return (int) ($occurrence->theme->fiches_count ?? 0);
     }
 }
