@@ -1757,6 +1757,12 @@
       "end_date": null
     },
     {
+      "theme_slug": "ronde-van-frankrijk",
+      "year": 2027,
+      "start_date": "2027-07-02",
+      "end_date": "2027-07-25"
+    },
+    {
       "theme_slug": "wereld-chocoladedag",
       "year": 2027,
       "start_date": "2027-07-07",
@@ -1989,6 +1995,12 @@
       "year": 2027,
       "start_date": "2027-10-27",
       "end_date": null
+    },
+    {
+      "theme_slug": "herfstvakantie",
+      "year": 2027,
+      "start_date": "2027-10-30",
+      "end_date": "2027-11-07"
     },
     {
       "theme_slug": "halloween",
