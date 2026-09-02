@@ -8,7 +8,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('themes:rollover')->daily()->at('00:05');
 Schedule::command('fiches:assign-icons')->everyFiveMinutes();
 Schedule::command('fiches:assess-quality --limit=20')->hourly()->withoutOverlapping();
 Schedule::command('file:cleanup-orphans')->daily()->at('03:00');

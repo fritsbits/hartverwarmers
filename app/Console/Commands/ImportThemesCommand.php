@@ -14,7 +14,8 @@ class ImportThemesCommand extends Command
 {
     protected $signature = 'themes:import
         {--file=database/seeders/data/themes.json : Path to the import JSON, absolute or relative to base_path}
-        {--dry-run : Roll back all changes at the end so nothing is persisted. Useful to preview against production.}';
+        {--dry-run : Roll back all changes at the end so nothing is persisted. Useful to preview against production.}
+        {--allow-unknown-slugs : Warn about fiche slugs that cannot be resolved instead of aborting the import.}';
 
     protected $description = 'Import or update themes, occurrences, and fiche links from a JSON file. Idempotent.';
 
@@ -22,6 +23,7 @@ class ImportThemesCommand extends Command
     {
         $path = $this->resolvePath($this->option('file'));
         $dryRun = (bool) $this->option('dry-run');
+        $allowUnknownSlugs = (bool) $this->option('allow-unknown-slugs');
 
         if (! is_file($path)) {
             $this->error("Bestand niet gevonden: {$path}");
@@ -48,9 +50,12 @@ class ImportThemesCommand extends Command
             'unknown_fiche_slugs' => 0,
         ];
 
+        /** @var array<string, list<string>> $unknownSlugsByTheme */
+        $unknownSlugsByTheme = [];
+
         DB::beginTransaction();
         try {
-            (function () use ($data, &$stats) {
+            (function () use ($data, &$stats, &$unknownSlugsByTheme) {
                 foreach ($data['themes'] as $row) {
                     $rawRule = $row['recurrence_rule'] ?? '(ontbreekt)';
                     $rule = ThemeRecurrenceRule::tryFrom($rawRule);
@@ -94,7 +99,7 @@ class ImportThemesCommand extends Command
 
                     foreach ($slugs as $slug) {
                         if (! $found->has($slug)) {
-                            $this->warn("Onbekende fiche-slug bij thema {$row['slug']}: {$slug}");
+                            $unknownSlugsByTheme[$row['slug']][] = $slug;
                             $stats['unknown_fiche_slugs']++;
                         }
                     }
@@ -125,6 +130,14 @@ class ImportThemesCommand extends Command
                 }
             })();
 
+            if ($unknownSlugsByTheme !== [] && ! $allowUnknownSlugs) {
+                DB::rollBack();
+                $this->reportUnknownSlugs($unknownSlugsByTheme);
+                $this->error('Import afgebroken: er zijn onbekende fiche-slugs. Gebruik --allow-unknown-slugs om ze te negeren.');
+
+                return self::FAILURE;
+            }
+
             if ($dryRun) {
                 DB::rollBack();
             } else {
@@ -141,6 +154,10 @@ class ImportThemesCommand extends Command
             ThemeCache::flush();
         }
 
+        if ($unknownSlugsByTheme !== []) {
+            $this->reportUnknownSlugs($unknownSlugsByTheme);
+        }
+
         $this->newLine();
         $this->info(sprintf(
             "%sThema's: %d aangemaakt, %d bijgewerkt. Occurrences: %d. Fiche-links: %d gekoppeld, %d onbekende slugs.",
@@ -150,6 +167,18 @@ class ImportThemesCommand extends Command
         ));
 
         return self::SUCCESS;
+    }
+
+    /**
+     * @param  array<string, list<string>>  $unknownSlugsByTheme
+     */
+    private function reportUnknownSlugs(array $unknownSlugsByTheme): void
+    {
+        foreach ($unknownSlugsByTheme as $themeSlug => $slugs) {
+            foreach ($slugs as $slug) {
+                $this->warn("Onbekende fiche-slug bij thema {$themeSlug}: {$slug}");
+            }
+        }
     }
 
     private function resolvePath(string $option): string

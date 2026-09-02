@@ -19,8 +19,19 @@ class ImportThemesCommandTest extends TestCase
         $this->fixturePath = base_path('tests/fixtures/themes/sample-import.json');
     }
 
+    /**
+     * Create every fiche the sample fixture links to, so a strict import succeeds.
+     */
+    private function createFixtureFiches(): void
+    {
+        Fiche::factory()->create(['slug' => 'yoga-voor-bewoners']);
+        Fiche::factory()->create(['slug' => 'stoel-yoga-quiz']);
+    }
+
     public function test_imports_themes_and_occurrences(): void
     {
+        $this->createFixtureFiches();
+
         $this->artisan('themes:import', ['--file' => $this->fixturePath])
             ->assertExitCode(0);
 
@@ -37,6 +48,8 @@ class ImportThemesCommandTest extends TestCase
 
     public function test_is_idempotent(): void
     {
+        $this->createFixtureFiches();
+
         $this->artisan('themes:import', ['--file' => $this->fixturePath])->assertExitCode(0);
         $this->artisan('themes:import', ['--file' => $this->fixturePath])->assertExitCode(0);
 
@@ -46,6 +59,8 @@ class ImportThemesCommandTest extends TestCase
 
     public function test_updates_changed_theme_fields_on_reimport(): void
     {
+        $this->createFixtureFiches();
+
         $this->artisan('themes:import', ['--file' => $this->fixturePath])->assertExitCode(0);
 
         Theme::where('slug', 'wereldyogadag')->update(['description' => 'manual edit']);
@@ -90,16 +105,46 @@ class ImportThemesCommandTest extends TestCase
         );
     }
 
-    public function test_unknown_fiche_slugs_warn_but_do_not_fail(): void
+    public function test_unknown_fiche_slug_fails_and_leaves_fiche_theme_untouched(): void
+    {
+        Fiche::factory()->create(['slug' => 'yoga-voor-bewoners']);
+        $trashed = Fiche::factory()->create(['slug' => 'stoel-yoga-quiz']);
+
+        $this->artisan('themes:import', ['--file' => $this->fixturePath])->assertExitCode(0);
+        $this->assertDatabaseCount('fiche_theme', 2);
+
+        $trashed->delete();
+
+        $this->artisan('themes:import', ['--file' => $this->fixturePath])
+            ->expectsOutputToContain('bij thema wereldyogadag: stoel-yoga-quiz')
+            ->assertFailed();
+
+        $this->assertDatabaseCount('fiche_theme', 2);
+        $this->assertDatabaseHas('fiche_theme', ['fiche_id' => $trashed->id]);
+    }
+
+    public function test_unknown_fiche_slug_on_fresh_database_creates_nothing(): void
     {
         Fiche::factory()->create(['slug' => 'yoga-voor-bewoners']);
 
-        $this->artisan('themes:import', ['--file' => $this->fixturePath])
+        $this->artisan('themes:import', ['--file' => $this->fixturePath])->assertFailed();
+
+        $this->assertDatabaseCount('themes', 0);
+        $this->assertDatabaseCount('theme_occurrences', 0);
+        $this->assertDatabaseCount('fiche_theme', 0);
+    }
+
+    public function test_allow_unknown_slugs_links_the_resolvable_slugs(): void
+    {
+        Fiche::factory()->create(['slug' => 'yoga-voor-bewoners']);
+
+        $this->artisan('themes:import', ['--file' => $this->fixturePath, '--allow-unknown-slugs' => true])
             ->expectsOutputToContain('stoel-yoga-quiz')
             ->assertExitCode(0);
 
         $theme = Theme::where('slug', 'wereldyogadag')->first();
         $this->assertCount(1, $theme->fiches);
+        $this->assertSame('yoga-voor-bewoners', $theme->fiches->first()->slug);
     }
 
     public function test_sync_removes_pivot_when_slug_is_removed_from_json(): void

@@ -6,7 +6,8 @@
       "description": "Bespreek het belang van bloed geven of haal verhalen op bij bewoners die ooit gegeven hebben.",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 06-14"
+      "recurrence_detail": "Fixed: month-day 06-14",
+      "fiche_slugs": []
     },
     {
       "title": "Dag tegen ouderenmisbehandeling",
@@ -452,7 +453,8 @@
       "description": "Trouwfoto’s erbij: snorren, bakkebaarden, en de verhalen erachter.",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 09-02"
+      "recurrence_detail": "Fixed: month-day 09-02",
+      "fiche_slugs": []
     },
     {
       "title": "Dag tegen kanker",
@@ -502,7 +504,8 @@
       "description": "Zelf kiezen wat je eet, aandoet, wanneer je slaapt. Klein maar wezenlijk.",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 12-10"
+      "recurrence_detail": "Fixed: month-day 12-10",
+      "fiche_slugs": []
     },
     {
       "title": "Dag van de migrant",
@@ -523,7 +526,8 @@
       "description": "Onnozele kinderen: vroeger mochten de kleinsten die dag de baas spelen.",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 12-28"
+      "recurrence_detail": "Fixed: month-day 12-28",
+      "fiche_slugs": []
     },
     {
       "title": "Dag van de ouderen",
@@ -592,7 +596,6 @@
         "bedank-de-medewerkers",
         "laat-bewoners-medewerkers-bedanken",
         "raad-de-medewerker",
-        "installeer-een-massagestoel",
         "maak-een-overzicht-van-alle-steunbetuigingen",
         "nodig-een-vertrouwenspersoon-uit-voor-medewerkers"
       ]
@@ -1064,7 +1067,8 @@
       "description": "Suikervrij hoeft niet smaakloos. Vraag het aan de keuken.",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 11-14"
+      "recurrence_detail": "Fixed: month-day 11-14",
+      "fiche_slugs": []
     },
     {
       "title": "Wereld dovendag",
@@ -1072,7 +1076,8 @@
       "description": "Praat trager, niet luider. Vandaag een goed moment om te oefenen.",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 09-23"
+      "recurrence_detail": "Fixed: month-day 09-23",
+      "fiche_slugs": []
     },
     {
       "title": "Wereld hartdag",
@@ -1155,7 +1160,8 @@
       "description": "Een uur langer donker. Kaarsen op tafel bij het avondmaal.",
       "is_month": false,
       "recurrence_rule": "nth_weekday",
-      "recurrence_detail": "Last Sunday of October"
+      "recurrence_detail": "Last Sunday of October",
+      "fiche_slugs": []
     }
   ],
   "occurrences_2026": [
