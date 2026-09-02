@@ -413,6 +413,7 @@
 
                         <h3 class="mb-4">Fiche List (compact)</h3>
                         <p class="text-meta mb-4">Card-stijl rijen voor compacte fiche-lijst op initiatief-detailpagina's. Elk item toont een <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">&lt;x-fiche-icon&gt;</code> — een gekleurd schijfje met een contextueel Lucide-icoon, automatisch toegewezen via AI. Kleur wordt bepaald door <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">fiche->id % 6</code>. Klassen: <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-list-item</code>, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-list-icon</code>, <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-list-kudos</code>.</p>
+                        <p class="text-meta mb-4">Rechts van de titel staat <code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">&lt;x-fiche-date :date="$fiche->created_at" /&gt;</code>. Jonger dan {{ App\Support\PostedMoment::FRESH_DAYS }} dagen krijgt een oranje stipje met "vandaag", "gisteren" of "4 dagen geleden" (<code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-date-fresh</code>); ouder werk zakt naar een grijze maandnaam als "augustus" of "november 2025" (<code class="text-sm bg-zinc-100 px-1.5 py-0.5 rounded">.fiche-date-quiet</code>). Zo springt nieuw werk eruit zonder dat een lange lijst volloopt met "1 maand geleden".</p>
 
                         {{-- Fiche icon component demo: sizes --}}
                         <h4 class="text-sm font-semibold text-[var(--color-text-secondary)] mb-3">Fiche Icon — formaten</h4>
@@ -452,8 +453,9 @@
                                     <x-fiche-icon :fiche="$demoFiche" class="fiche-list-icon" />
                                     <div class="flex flex-col gap-0.5 min-w-0 flex-1">
                                         <span class="font-body font-semibold text-lg text-[var(--color-text-primary)] truncate">{{ $demoFiche->title }}</span>
-                                        <span class="text-xs text-[var(--color-text-secondary)]">{{ $demoFiche->user?->full_name }}@if($demoFiche->user?->organisation), {{ $demoFiche->user->organisation }}@endif</span>
+                                        <span class="text-xs text-[var(--color-text-secondary)]">{{ $demoFiche->user?->full_name }}</span>
                                     </div>
+                                    <x-fiche-date :date="$demoFiche->created_at" />
                                     <span class="fiche-list-kudos {{ $demoFiche->kudos_count > 0 ? 'fiche-list-kudos-active' : '' }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/></svg>
                                         {{ $demoFiche->kudos_count }}

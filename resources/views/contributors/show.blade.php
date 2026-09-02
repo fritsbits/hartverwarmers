@@ -96,8 +96,12 @@
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <span class="font-body font-semibold text-lg text-[var(--color-text-primary)] truncate">{{ $fiche->title }}</span>
                                 </div>
-                                <span class="text-xs text-[var(--color-text-secondary)]">{{ $fiche->initiative?->title }} · {{ $fiche->created_at->translatedFormat('M Y') }}</span>
+                                <span class="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0 text-xs text-[var(--color-text-secondary)]">
+                                    <span class="truncate">{{ $fiche->initiative?->title }}</span>
+                                    <x-fiche-date :date="$fiche->created_at" class="sm:hidden" />
+                                </span>
                             </div>
+                            <x-fiche-date :date="$fiche->created_at" class="hidden sm:inline-flex" />
                             <span class="flex items-center gap-2.5 shrink-0">
                                 @auth
                                     @if(auth()->id() === $fiche->user_id && $fiche->shouldShowSuggestionNudge())

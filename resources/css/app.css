@@ -908,6 +908,31 @@
     color: var(--color-text-tertiary);
   }
 
+  /* Postmoment in een fiche-rij: vers werk licht op, ouder werk zwijgt */
+  .fiche-date-fresh {
+    @apply inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-bg-accent-light);
+    color: var(--color-primary-text);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .fiche-date-dot {
+    @apply shrink-0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-primary);
+  }
+
+  .fiche-date-quiet {
+    @apply shrink-0 whitespace-nowrap;
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+  }
+
   .fiche-list-expand {
     @apply inline-flex items-center justify-center;
     background: var(--color-bg-subtle);
