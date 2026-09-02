@@ -22,6 +22,11 @@ class SuggestThemeFiches extends Command
     /**
      * A theme keeps whatever links it already has unless the run finds at least
      * one match, so a bad AI day can never empty a hand-curated list.
+     *
+     * A run over the whole calendar also moves fiche_match_watermark to today:
+     * themes:health-check counts the fiches published after that date as
+     * "not yet matched". A run limited with --slug leaves the stamp alone,
+     * because the new fiches were only held against some of the themes.
      */
     public function handle(): int
     {
@@ -109,6 +114,10 @@ class SuggestThemeFiches extends Command
             $this->info('Niets gewijzigd.');
 
             return self::SUCCESS;
+        }
+
+        if ($only === []) {
+            $data = $this->stampWatermark($data);
         }
 
         file_put_contents($path, $this->encode($data));
@@ -227,6 +236,26 @@ class SuggestThemeFiches extends Command
             $this->newLine();
             $this->warn('Mislukt ('.count($failed).'): '.implode(', ', $failed));
         }
+    }
+
+    /**
+     * Keep the stamp as the first key so it stays visible at the top of the
+     * file, whether it was already there or is added for the first time.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function stampWatermark(array $data): array
+    {
+        $today = now()->toDateString();
+
+        if (array_key_exists('fiche_match_watermark', $data)) {
+            $data['fiche_match_watermark'] = $today;
+
+            return $data;
+        }
+
+        return ['fiche_match_watermark' => $today] + $data;
     }
 
     /**

@@ -286,6 +286,63 @@ class SuggestThemeFichesTest extends TestCase
         $this->assertDatabaseCount('fiche_theme', 1);
     }
 
+    public function test_a_finished_round_stamps_the_watermark_with_today(): void
+    {
+        $this->travelTo('2026-10-05 10:00:00');
+
+        Fiche::factory()->published()->create(['slug' => 'kaarsen-maken']);
+
+        $this->writeThemes([$this->theme('baarddag', 'Baarddag')]);
+
+        ThemeFicheMatchAgent::fake([
+            ['matches' => [['slug' => 'kaarsen-maken', 'reason' => 'past']]],
+        ]);
+
+        $this->artisan('themes:suggest-fiches', ['--file' => $this->path])->assertSuccessful();
+
+        $this->assertSame('2026-10-05', $this->watermark());
+    }
+
+    public function test_the_watermark_stays_the_first_key_when_the_file_is_rewritten(): void
+    {
+        $this->travelTo('2026-10-05 10:00:00');
+
+        Fiche::factory()->published()->create(['slug' => 'kaarsen-maken']);
+
+        $this->writeThemes([$this->theme('baarddag', 'Baarddag')], '2026-09-01');
+
+        ThemeFicheMatchAgent::fake([
+            ['matches' => [['slug' => 'kaarsen-maken', 'reason' => 'past']]],
+        ]);
+
+        $this->artisan('themes:suggest-fiches', ['--file' => $this->path])->assertSuccessful();
+
+        $this->assertSame('2026-10-05', $this->watermark());
+        $this->assertStringStartsWith("{\n  \"fiche_match_watermark\": \"2026-10-05\",\n  \"themes\": [\n", File::get($this->path));
+    }
+
+    public function test_a_round_limited_to_some_slugs_leaves_the_watermark_alone(): void
+    {
+        $this->travelTo('2026-10-05 10:00:00');
+
+        Fiche::factory()->published()->create(['slug' => 'kaarsen-maken']);
+
+        $this->writeThemes([
+            $this->theme('baarddag', 'Baarddag'),
+            $this->theme('dierendag', 'Dierendag'),
+        ], '2026-09-01');
+
+        ThemeFicheMatchAgent::fake([
+            ['matches' => [['slug' => 'kaarsen-maken', 'reason' => 'past']]],
+        ]);
+
+        $this->artisan('themes:suggest-fiches', ['--file' => $this->path, '--slug' => ['dierendag']])
+            ->assertSuccessful();
+
+        $this->assertSame(['kaarsen-maken'], $this->themeIn('dierendag')['fiche_slugs']);
+        $this->assertSame('2026-09-01', $this->watermark());
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -304,10 +361,18 @@ class SuggestThemeFichesTest extends TestCase
     /**
      * @param  list<array<string, mixed>>  $themes
      */
-    private function writeThemes(array $themes): void
+    private function writeThemes(array $themes, ?string $watermark = null): void
     {
+        $data = $watermark === null ? [] : ['fiche_match_watermark' => $watermark];
+        $data['themes'] = $themes;
+
         File::ensureDirectoryExists(dirname($this->path));
-        File::put($this->path, json_encode(['themes' => $themes], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");
+        File::put($this->path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)."\n");
+    }
+
+    private function watermark(): ?string
+    {
+        return json_decode(File::get($this->path), true)['fiche_match_watermark'] ?? null;
     }
 
     /**

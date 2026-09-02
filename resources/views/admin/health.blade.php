@@ -18,6 +18,13 @@
     if (! $heartbeatOk) $problems->push('Achtergrondtaken gestopt');
     if ($queue['failed'] > 0) $problems->push($queue['failed'] . ' mislukte ' . ($queue['failed'] === 1 ? 'taak' : 'taken'));
 
+    // Themakalender: momentopname van themes:health-check, wekelijks op maandag
+    $themesExceeded = collect($themesHealth['exceeded'] ?? []);
+    $themesCheckedAt = isset($themesHealth['checked_at']) ? \Illuminate\Support\Carbon::parse($themesHealth['checked_at']) : null;
+    $themesCheckStale = $themesCheckedAt !== null && $themesCheckedAt->lt(now()->subDays(8));
+    if ($themesExceeded->isNotEmpty()) $problems->push('Themakalender vraagt aandacht');
+    if ($themesCheckStale) $problems->push('Themakalender-controle draait niet meer');
+
     $hasProblems = $problems->isNotEmpty();
     $hasCritical = in_array('red', [$memStatus, $diskStatus, $loadStatus]) || ! $heartbeatOk;
 
@@ -248,6 +255,81 @@
         </flux:card>
 
     </div>
+
+    {{-- Themakalender card (full width) --}}
+    <flux:card class="mt-6">
+        <div class="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1 mb-4">
+            <flux:heading size="lg" class="font-heading font-bold">Themakalender</flux:heading>
+            @if($themesCheckedAt)
+                <span class="text-xs text-[var(--color-text-tertiary)] tabular-nums">
+                    Laatste controle: {{ ServerHealth::relativeTime($themesCheckedAt->toDateTimeString()) }} ({{ $themesCheckedAt->format('j M Y \o\m H:i') }})
+                </span>
+            @endif
+        </div>
+
+        @if(! $themesHealth)
+            <p class="text-sm text-[var(--color-text-secondary)]">De controle <code class="text-xs">themes:health-check</code> heeft nog nooit gedraaid. Ze staat wekelijks gepland op maandag om 09:00.</p>
+        @else
+            @if($themesCheckStale)
+                <div class="border-l-3 border-[var(--color-primary)] bg-[var(--color-primary)]/5 rounded-r-lg px-3 py-2.5 -mx-px mb-2">
+                    <p class="text-sm text-[var(--color-text-secondary)]">De laatste controle is meer dan een week oud. Ze hoort elke maandag te draaien.</p>
+                    <p class="text-sm mt-1"><strong class="text-[var(--color-primary)]">Wat te doen:</strong> Controleer in Forge of de scheduler nog draait, of start <code class="text-xs">themes:health-check</code> met de hand.</p>
+                </div>
+            @endif
+
+            <div class="divide-y divide-[var(--color-border-light)]">
+                <div class="flex items-center justify-between gap-3 py-2.5">
+                    <span class="text-sm text-[var(--color-text-secondary)]">Horizon van de gelegenheden</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium tabular-nums">
+                            @if($themesHealth['horizon_days'] === null)
+                                geen gelegenheden
+                            @else
+                                {{ $themesHealth['horizon_days'] }} dagen
+                                <span class="text-[var(--color-text-tertiary)] font-normal">(tot {{ $themesHealth['horizon_date'] }})</span>
+                            @endif
+                        </span>
+                        <flux:badge size="sm" :color="$themesExceeded->contains('horizon') ? 'red' : 'green'" inset="top bottom">{{ $themesExceeded->contains('horizon') ? 'Aandacht' : 'OK' }}</flux:badge>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-3 py-2.5">
+                    <span class="text-sm text-[var(--color-text-secondary)]">Aankomende thema's zonder gepubliceerde fiches</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium tabular-nums">{{ count($themesHealth['empty_upcoming']) }}</span>
+                        <flux:badge size="sm" :color="$themesExceeded->contains('empty_upcoming') ? 'red' : 'green'" inset="top bottom">{{ $themesExceeded->contains('empty_upcoming') ? 'Aandacht' : 'OK' }}</flux:badge>
+                    </div>
+                </div>
+                @if(count($themesHealth['empty_upcoming']) > 0)
+                    <p class="text-xs text-[var(--color-text-tertiary)] py-2">{{ implode(', ', $themesHealth['empty_upcoming']) }}</p>
+                @endif
+
+                <div class="flex items-center justify-between gap-3 py-2.5">
+                    <span class="text-sm text-[var(--color-text-secondary)]">Verschil tussen themes.json en de databank</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium tabular-nums">{{ $themesHealth['drift']['count'] }}</span>
+                        <flux:badge size="sm" :color="$themesExceeded->contains('drift') ? 'red' : 'green'" inset="top bottom">{{ $themesExceeded->contains('drift') ? 'Aandacht' : 'OK' }}</flux:badge>
+                    </div>
+                </div>
+                @if($themesHealth['drift']['count'] > 0)
+                    <p class="text-xs text-[var(--color-text-tertiary)] py-2">{{ $themesHealth['drift']['summary'] }}. Draai <code>themes:import</code> op productie.</p>
+                @endif
+
+                <div class="flex items-center justify-between gap-3 py-2.5">
+                    <span class="text-sm text-[var(--color-text-secondary)]">
+                        Gepubliceerde fiches na de datumstempel
+                        @if($themesHealth['watermark'])
+                            <span class="text-[var(--color-text-tertiary)]">({{ $themesHealth['watermark'] }})</span>
+                        @endif
+                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-medium tabular-nums">{{ $themesHealth['fiches_after_watermark'] ?? 'geen datumstempel' }}</span>
+                        <flux:badge size="sm" :color="$themesExceeded->contains('fiches_after_watermark') ? 'red' : 'green'" inset="top bottom">{{ $themesExceeded->contains('fiches_after_watermark') ? 'Aandacht' : 'OK' }}</flux:badge>
+                    </div>
+                </div>
+            </div>
+        @endif
+    </flux:card>
 
     {{-- Failed jobs card (full width) --}}
     @if($queue['failed'] > 0)

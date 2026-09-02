@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Console\Commands\CheckThemesHealth;
 use App\Http\Controllers\Controller;
 use App\Services\ServerHealth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class HealthController extends Controller
@@ -20,6 +22,7 @@ class HealthController extends Controller
             'errors' => ServerHealth::recentErrors(),
             'failedSummary' => ServerHealth::failedJobsSummary(),
             'latestFailed' => ServerHealth::latestFailedJob(),
+            'themesHealth' => Cache::get(CheckThemesHealth::SNAPSHOT_KEY),
             'uptime' => trim((string) @shell_exec('uptime -p 2>/dev/null') ?: ''),
             'phpVersion' => PHP_VERSION,
             'laravelVersion' => app()->version(),
