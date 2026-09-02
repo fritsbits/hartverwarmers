@@ -1262,12 +1262,6 @@
       "end_date": null
     },
     {
-      "theme_slug": "wereldemojidag",
-      "year": 2026,
-      "start_date": "2026-07-17",
-      "end_date": null
-    },
-    {
       "theme_slug": "nationale-feestdag",
       "year": 2026,
       "start_date": "2026-07-21",
@@ -1448,12 +1442,6 @@
       "end_date": null
     },
     {
-      "theme_slug": "coming-out-day",
-      "year": 2026,
-      "start_date": "2026-10-11",
-      "end_date": null
-    },
-    {
       "theme_slug": "reumadag",
       "year": 2026,
       "start_date": "2026-10-11",
@@ -1466,19 +1454,7 @@
       "end_date": null
     },
     {
-      "theme_slug": "balletdag",
-      "year": 2026,
-      "start_date": "2026-10-19",
-      "end_date": null
-    },
-    {
       "theme_slug": "dag-van-de-verzorgenden-en-zorgkundigen",
-      "year": 2026,
-      "start_date": "2026-10-20",
-      "end_date": null
-    },
-    {
-      "theme_slug": "dag-van-de-jeugdbeweging",
       "year": 2026,
       "start_date": "2026-10-20",
       "end_date": null
@@ -1580,24 +1556,6 @@
       "end_date": null
     },
     {
-      "theme_slug": "wereld-toiletdag",
-      "year": 2026,
-      "start_date": "2026-11-19",
-      "end_date": null
-    },
-    {
-      "theme_slug": "kinderrechtendag",
-      "year": 2026,
-      "start_date": "2026-11-20",
-      "end_date": null
-    },
-    {
-      "theme_slug": "transgender-gedenkdag",
-      "year": 2026,
-      "start_date": "2026-11-20",
-      "end_date": null
-    },
-    {
       "theme_slug": "voorleesweek",
       "year": 2026,
       "start_date": "2026-11-20",
@@ -1622,33 +1580,9 @@
       "end_date": null
     },
     {
-      "theme_slug": "dag-voor-de-uitbanning-van-geweld-tegen-vrouwen",
-      "year": 2026,
-      "start_date": "2026-11-25",
-      "end_date": null
-    },
-    {
-      "theme_slug": "e-mailloze-vrijdag",
-      "year": 2026,
-      "start_date": "2026-11-27",
-      "end_date": null
-    },
-    {
-      "theme_slug": "black-friday",
-      "year": 2026,
-      "start_date": "2026-11-27",
-      "end_date": null
-    },
-    {
       "theme_slug": "dag-van-de-wetenschap",
       "year": 2026,
       "start_date": "2026-11-28",
-      "end_date": null
-    },
-    {
-      "theme_slug": "cyber-monday",
-      "year": 2026,
-      "start_date": "2026-11-30",
       "end_date": null
     },
     {
