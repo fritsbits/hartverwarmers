@@ -283,7 +283,7 @@
     {
       "title": "Pinksteren",
       "slug": "pinksteren",
-      "description": "Pinksteren — een dag voor samenzijn en een rustig moment. Een lied uit vroeger past hier mooi bij.",
+      "description": "Een rustige zondag, een lied van vroeger. Voor wie gelooft, betekent hij meer.",
       "is_month": false,
       "recurrence_rule": "easter",
       "recurrence_detail": "Easter + 49 days",
@@ -386,18 +386,6 @@
       ]
     },
     {
-      "title": "Wereldemojidag 😄",
-      "slug": "wereldemojidag",
-      "description": "Wat is jouw lievelingssmiley? Een klein, ludiek gespreksonderwerp voor onderweg.",
-      "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 07-17",
-      "fiche_slugs": [
-        "speel-whatsapp-spelletjes",
-        "babbelen-met-de-kletspot"
-      ]
-    },
-    {
       "title": "Wereldyogadag",
       "slug": "wereldyogadag",
       "description": "Stoelyoga, ademhalingsoefeningen, een rustig moment. Yoga past bij elk lichaam, op elk tempo.",
@@ -416,7 +404,7 @@
     {
       "title": "10 daagse van de veerkracht",
       "slug": "10-daagse-van-de-veerkracht",
-      "description": "Tijdens de 10 daagse van de veerkracht vieren we de veerkracht van mensen en zetten we ons in voor het ondersteunen en ontwikkelen van veerkracht bij mensen die te maken hebben met stress, trauma en andere uitdagingen.",
+      "description": "Tien dagen veerkracht, ook die van jouw team. Begin daar eens.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-01",
@@ -432,7 +420,7 @@
     {
       "title": "Allerheiligen",
       "slug": "allerheiligen",
-      "description": "Op Allerheiligen staan we stil bij onze overleden dierbaren en zetten we ons in voor de erkenning en waardering van hun leven en hun nagedachtenis en voor troost en steun voor degenen die achterblijven.",
+      "description": "Voor sommige bewoners is dit de zwaarste dag van het jaar. Maak ruimte om namen hardop te noemen: een kaars per gemis, een boekje waarin ze zelf mogen schrijven.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-01",
@@ -445,7 +433,7 @@
     {
       "title": "Alzheimerdag",
       "slug": "alzheimerdag",
-      "description": "Op Alzheimerdag staan we stil bij het belang van goede zorg voor mensen met Alzheimer en zetten we ons in voor hun erkenning en waardering en voor onderzoek naar de oorzaken en behandeling van deze ziekte.",
+      "description": "Vandaag mag het over jullie huis zelf gaan. Wat loopt al goed voor bewoners met dementie, en wat schuurt nog? Een halfuur teamgesprek telt evenveel als een activiteit.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 09-21",
@@ -461,53 +449,15 @@
     {
       "title": "Baarddag",
       "slug": "baarddag",
-      "description": "Baarddag is een dag waarop we onze baard laten staan en ons inzetten voor de erkenning en waardering van mannen met baarden en voor de gezondheid en verzorging van onze baarden.",
+      "description": "Trouwfoto’s erbij: snorren, bakkebaarden, en de verhalen erachter.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 09-02"
     },
     {
-      "title": "Balletdag",
-      "slug": "balletdag",
-      "description": "Op Balletdag vieren we de elegantie en kracht van ballet en zetten we ons in voor de erkenning en waardering van balletdansers en ballet als kunstvorm en voor de toegankelijkheid van ballet voor iedereen.",
-      "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 10-19"
-    },
-    {
-      "title": "Black Friday",
-      "slug": "black-friday",
-      "description": "Op Black Friday kunnen we profiteren van aanbiedingen en kortingen in winkels. Deze dag is ingevoerd door de Amerikaanse winkelindustrie in de jaren 1950 om aandacht te vragen voor de start van het winkelseizoen en om klanten te verleiden om te winkelen en geld te spenderen.",
-      "is_month": false,
-      "recurrence_rule": "nth_weekday",
-      "recurrence_detail": "4th Friday of November",
-      "fiche_slugs": [
-        "hoeveel-kost-het"
-      ]
-    },
-    {
-      "title": "Coming Out Day",
-      "slug": "coming-out-day",
-      "description": "Coming Out Day is een dag waarop we de mogelijkheid om onszelf te zijn en lief te hebben vieren en zetten we ons in voor de erkenning en waardering van LGBTQ+ mensen en voor gelijkheid en respect voor iedereen.",
-      "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 10-11"
-    },
-    {
-      "title": "Cyber Monday",
-      "slug": "cyber-monday",
-      "description": "Op Cyber Monday kunnen we profiteren van aanbiedingen en kortingen Deze dag is ingevoerd door de Amerikaanse e-commerce industrie in 2005 om aandacht te vragen voor de voordelen van online winkelen en om klanten te verleiden om online te winkelen en geld te spenderen. Cyber Monday is de drukste onli",
-      "is_month": false,
-      "recurrence_rule": "nth_weekday",
-      "recurrence_detail": "Monday after 4th Friday of November",
-      "fiche_slugs": [
-        "uitleg-phishing"
-      ]
-    },
-    {
       "title": "Dag tegen kanker",
       "slug": "dag-tegen-kanker",
-      "description": "Op Dag tegen kanker staan we stil bij de mogelijkheid om te herstellen van kanker en engageren we ons voor de erkenning en waardering van mensen die te maken hebben met kanker en voor onderzoek naar de oorzaken en behandeling van kanker.",
+      "description": "Bijna elke bewoner heeft iemand verloren, of is zelf ziek geweest. Vraag hoe erover gesproken werd bij hen thuis. Toen zweeg men, vandaag mag het gezegd worden.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-21",
@@ -518,7 +468,7 @@
     {
       "title": "Dag van de ergotherapeut",
       "slug": "dag-van-de-ergotherapeut",
-      "description": "We vieren we de mogelijkheid om te genezen en te herstellen door middel van ergotherapie en creatief denken. We engageren ons voor de erkenning en waardering van ergotherapeuten en voor de toegang tot hun professionele ondersteuning en begeleiding.",
+      "description": "De ergo’s in jullie huis maken dingen mogelijk die niemand ziet: de aangepaste lepel, de goede stoel, het schort dat rust brengt. Zeg het hen vandaag eens hardop.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-27",
@@ -531,17 +481,9 @@
       ]
     },
     {
-      "title": "Dag van de jeugdbeweging",
-      "slug": "dag-van-de-jeugdbeweging",
-      "description": "Op Dag van de jeugdbeweging vieren we de mogelijkheid voor kinderen en jongeren om zich te ontwikkelen door middel van activiteiten en avonturen in de natuur en zetten we ons in voor de erkenning en waardering van jeugdbewegingen en voor de toegankelijkheid van jeugdbewegingen voor iedereen.",
-      "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 10-20"
-    },
-    {
       "title": "Dag van de koffie",
       "slug": "dag-van-de-koffie",
-      "description": "Op Dag van de koffie vieren we de heerlijke smaak en aroma van koffie en zetten we ons in voor de erkenning en waardering van koffiebonen en koffiebereiding als kunst en vakmanschap.",
+      "description": "Hoe dronken ze koffie thuis: filter, percolator, cichorei?",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 09-26",
@@ -557,7 +499,7 @@
     {
       "title": "Dag van de mensenrechten",
       "slug": "dag-van-de-mensenrechten",
-      "description": "Dit is de dag waarop in 1948 door de Verenigde Naties de Universele Verklaring van de Rechten van de Mens werd aanvaard.",
+      "description": "Zelf kiezen wat je eet, aandoet, wanneer je slaapt. Klein maar wezenlijk.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-10"
@@ -565,7 +507,7 @@
     {
       "title": "Dag van de migrant",
       "slug": "dag-van-de-migrant",
-      "description": "Deze dag herinnert de ondertekening van de Internationale Conventie voor de bescherming van de rechten van alle arbeidsmigranten en hun gezinsleden.",
+      "description": "Veel collega’s kwamen van ver. Vraag hen eens naar thuis.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-18",
@@ -578,7 +520,7 @@
     {
       "title": "Dag van de onschuldige kinderen",
       "slug": "dag-van-de-onschuldige-kinderen",
-      "description": "Op Dag van de onschuldige kinderen staan we stil bij het lijden en de dood van de onschuldige kinderen. De dag is ingevoerd door de Verenigde Naties in 1989 om aandacht te vragen voor de wreedheid en de onrechtvaardigheid van oorlog en geweld tegen kinderen en om mensen te informeren over de situati",
+      "description": "Onnozele kinderen: vroeger mochten de kleinsten die dag de baas spelen.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-28"
@@ -586,7 +528,7 @@
     {
       "title": "Dag van de ouderen",
       "slug": "dag-van-de-ouderen",
-      "description": "Op Dag van de ouderen eren we ouderen en zetten we ons in voor hun erkenning en waardering en voor toegang tot kwalitatief hoogstaande zorg en ondersteuning.",
+      "description": "Zet vandaag hun leven van vroeger in beeld: het beroep dat ze uitoefenden, een portret, de oude kiekjes uit de doos. Er komt altijd meer los dan je verwacht.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-01",
@@ -602,7 +544,7 @@
     {
       "title": "Dag van de palliatieve zorg",
       "slug": "dag-van-de-palliatieve-zorg",
-      "description": "Op Dag van de palliatieve zorg vieren we de mogelijkheid om mensen met een levensbedreigende ziekte comfortabel en met waardigheid te begeleiden en zetten we ons in voor de erkenning en waardering van de mensen die zich inzetten voor palliatieve zorg.",
+      "description": "Een dag voor wat jullie stil en goed doen. Geef het team de kans er eens over te praten, en vraag aan bewoners zelf wat comfort voor hen betekent.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-09",
@@ -617,7 +559,7 @@
     {
       "title": "Dag van de thee",
       "slug": "dag-van-de-thee",
-      "description": "Het doel van deze dag is om wereldwijd aandacht te vragen (van zowel burgers als overheden) voor de impact van de wereldwijde theehandel op arbeiders en telers in de thee-industrie. Ook is er extra aandacht voor prijsondersteuning en eerlijke handel.",
+      "description": "Een high tea met echt servies. Kleine moeite, grote indruk.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-15",
@@ -630,7 +572,7 @@
     {
       "title": "Dag van de tolerantie",
       "slug": "dag-van-de-tolerantie",
-      "description": "Op Dag van de tolerantie vieren we de waarde en noodzaak van tolerantie en zetten we ons in voor de erkenning en waardering van tolerantie en voor een samenleving waarin mensen met verschillende overtuigingen en achtergronden respectvol en in harmonie samenleven.",
+      "description": "Wie voelt zich hier minder thuis dan de rest? Begin daar.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-16",
@@ -642,7 +584,7 @@
     {
       "title": "Dag van de verzorgenden en zorgkundigen",
       "slug": "dag-van-de-verzorgenden-en-zorgkundigen",
-      "description": "Op Dag van de verzorgenden en zorgkundigen vieren we de professionele vaardigheden en menselijkheid van verzorgenden en zorgkundigen en engageren we ons voor hun erkenning en waardering en voor hun toegang tot kwalitatief hoogstaande opleiding en ondersteuning.",
+      "description": "Zij houden het huis draaiende, vaak zonder dat iemand het benoemt. Laat bewoners vandaag zeggen wat zij zien: een kaart, een naam, een dankwoord.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-20",
@@ -658,7 +600,7 @@
     {
       "title": "Dag van de wetenschap",
       "slug": "dag-van-de-wetenschap",
-      "description": "Deze dag is ingevoerd door de Verenigde Naties in 2001 om aandacht te vragen voor de betekenis en het belang van wetenschap en technologie en om mensen te inspireren om deel te nemen aan wetenschappelijke activiteiten en om te leren over wetenschap",
+      "description": "Van phishing tot bijen: uitleg die vandaag nog van pas komt.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-28",
@@ -671,7 +613,7 @@
     {
       "title": "Dag van de witte stok",
       "slug": "dag-van-de-witte-stok",
-      "description": "Op Dag van de witte stok zetten we ons in voor de erkenning en waardering van mensen met een visuele beperking en voor hun toegang tot ondersteuning en hulpmiddelen.",
+      "description": "Doe eens iets zonder te kijken: voelbingo, geluiden raden, luisteren.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-15",
@@ -687,7 +629,7 @@
     {
       "title": "Dag van het therapiedier",
       "slug": "dag-van-het-therapiedier",
-      "description": "Op Dag van het therapiedier vieren we de positieve effecten van dieren op de gezondheid en het welzijn van mensen en zetten we ons in voor de erkenning en waardering van therapiedieren en voor de toegankelijkheid van therapiedieren voor mensen met fysieke, mentale en emotionele uitdagingen.",
+      "description": "Een hond op schoot doet wat geen gesprek doet.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-17",
@@ -700,7 +642,7 @@
     {
       "title": "Dag van mensen met een beperking",
       "slug": "dag-van-mensen-met-een-beperking",
-      "description": "Deze dag is bedoeld als aanmoediging om de discussie over mensenrechten en gelijke kansen voor mensen met een functiebeperking op de agenda te houden.",
+      "description": "Kijk vandaag eens naar jullie eigen gebouw: waar botst een rolstoel, waar hangt iets te hoog? Één drempel wegnemen doet meer dan één activiteit.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-03",
@@ -711,17 +653,9 @@
       ]
     },
     {
-      "title": "Dag voor de uitbanning van geweld tegen vrouwen",
-      "slug": "dag-voor-de-uitbanning-van-geweld-tegen-vrouwen",
-      "description": "Deze dag is ingevoerd door de Verenigde Naties in 1999 om aandacht te vragen voor de omvang en de gevolgen van geweld tegen vrouwen en om mensen te mobiliseren om actie te ondernemen voor de preventie en de bestrijding van geweld tegen vrouwen.",
-      "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 11-25"
-    },
-    {
       "title": "Dierendag",
       "slug": "dierendag",
-      "description": "Dierendag is een dag waarop we ons engageren voor het welzijn van dieren en voor de erkenning en waardering van dieren als belangrijke leden van onze samenleving.",
+      "description": "Welk dier hadden ze thuis? Bijna iedereen heeft een naam klaar.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-04",
@@ -737,7 +671,7 @@
     {
       "title": "Duurzame dinsdag",
       "slug": "duurzame-dinsdag",
-      "description": "Duurzame dinsdag is een dag waarop we stilstaan bij de impact van onze levensstijl op het milieu en ons inzetten voor duurzame oplossingen en gedragsverandering.",
+      "description": "Vroeger gooide niemand iets weg. Een namiddag herstellen dus.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 09-05",
@@ -751,17 +685,9 @@
       ]
     },
     {
-      "title": "E-mailloze vrijdag",
-      "slug": "e-mailloze-vrijdag",
-      "description": "Deze dag is ingevoerd in 2012 door een Nederlands bedrijf om aandacht te vragen voor de overbelasting van e-mails en om mensen te helpen om beter te communiceren en te werken zonder overmatig gebruik van e-mails.",
-      "is_month": false,
-      "recurrence_rule": "nth_weekday",
-      "recurrence_detail": "Last Friday of November (approx)"
-    },
-    {
       "title": "Eerste Kerstdag",
       "slug": "eerste-kerstdag",
-      "description": "Het is een christelijke religieuze feestdag.  Eerste kerstdag wordt meestal thuis in familiekring gevierd met een kerstdiner.",
+      "description": "Voor wie geen bezoek krijgt is dit een lange dag. Zorg dat er de hele dag iets is: muziek in de gang, een tafel die gedekt blijft, iemand die aanschuift.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-25",
@@ -777,7 +703,7 @@
     {
       "title": "Halloween",
       "slug": "halloween",
-      "description": "Op Halloween kunnen we ons verkleden als onze favoriete spook en lekkere snoepjes halen en zetten we ons in voor de erkenning en waardering van deze leuke en spannende feestdag.",
+      "description": "Vlaamse spookverhalen slaan beter aan dan pompoenen. Probeer maar.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-31",
@@ -791,7 +717,7 @@
     {
       "title": "Herfst",
       "slug": "herfst",
-      "description": "In de herfst vieren we de overgang van de zomer naar de winter en genieten we van de veranderende kleuren van de natuur en de oogst van de landbouw.",
+      "description": "Kastanjes, pompoenen en de eerste avonden binnen. Een seizoen dat de activiteiten bijna zelf aanreikt.",
       "is_month": true,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 09-21",
@@ -807,7 +733,7 @@
     {
       "title": "Herfstvakantie",
       "slug": "herfstvakantie",
-      "description": "Tijdens de Herfstvakantie kunnen we lekker genieten van het mooie herfstweer en leuke dingen doen met vrienden en familie en zetten we ons in voor de erkenning en waardering van vakantie en tijd voor ontspanning en plezier.",
+      "description": "Kleinkinderen op bezoek. Zet iets klaar dat samen kan.",
       "is_month": false,
       "recurrence_rule": "school_calendar",
       "recurrence_detail": "Flemish school calendar (set by gov)",
@@ -819,7 +745,7 @@
     {
       "title": "Kerstavond",
       "slug": "kerstavond",
-      "description": "Christenen houden op kerstavond vaak een kerstnachtdienst om de geboorte van Jezus Christus te vieren.",
+      "description": "De avond weegt zwaarder dan de dag zelf. Kaarsen, liedjes die ze van buiten kennen, en iemand die blijft zitten tot ze slapen.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-24",
@@ -831,17 +757,9 @@
       ]
     },
     {
-      "title": "Kinderrechtendag",
-      "slug": "kinderrechtendag",
-      "description": "Op Kinderrechtendag vieren we de rechten van kinderen en staan we stil bij de verantwoordelijkheid van volwassenen om de rechten van kinderen te beschermen en te respecteren. Deze dag is ingevoerd door de Verenigde Naties in 1989 om aandacht te vragen voor de situatie van kinderen over de hele werel",
-      "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 11-20"
-    },
-    {
       "title": "Lichtjesdag",
       "slug": "lichtjesdag",
-      "description": "Elk jaar op de tweede zondag in december wordt Wereld Lichtjesdag georganiseerd. Dan staan we met elkaar stil bij alle kinderen die, op welke leeftijd en om welke reden dan ook, zijn overleden.",
+      "description": "Sommige bewoners hebben een kind verloren, soms tientallen jaren geleden. Een kaars en een naam die hardop mag klinken: meer moet het niet zijn.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-11",
@@ -854,7 +772,7 @@
     {
       "title": "Muziekdag",
       "slug": "muziekdag",
-      "description": "Op Muziekdag vieren we de kracht van muziek en zetten we ons in voor de erkenning en waardering van muzikanten en muziek en voor de toegankelijkheid van muziek voor iedereen.",
+      "description": "Zet de plaat op die iedereen meezingt. Je weet welke.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-01",
@@ -870,7 +788,7 @@
     {
       "title": "Nacht van de duisternis",
       "slug": "nacht-van-de-duisternis",
-      "description": "Nacht van de duisternis is een periode waarin we stilstaan bij de waarde van duisternis en zetten we ons in voor het behoud van donkere nachten en voor de erkenning en waardering van de natuur en het leven in de nacht.",
+      "description": "Licht uit, kaarsen aan. Verhalen klinken anders in het donker.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-09",
@@ -883,7 +801,7 @@
     {
       "title": "Open monumentendag",
       "slug": "open-monumentendag",
-      "description": "Op Open monumentendag openen we historische gebouwen en monumenten voor het publiek en organiseren we activiteiten om de geschiedenis en culturele waarde ervan te delen en te vieren.",
+      "description": "Welk gebouw uit hun dorp staat er nog? Zoek het samen op.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 09-14",
@@ -897,7 +815,7 @@
     {
       "title": "Oudejaarsavond",
       "slug": "oudejaarsavond",
-      "description": "Oudejaarsavond (ook wel Silvester, vernoemd naar de heilige paus Silvester). Het is de vooravond van de oorspronkelijk christelijke dag om het nieuwe jaar in te luiden volgens de christelijke kalender.",
+      "description": "Niet iedereen haalt middernacht, en dat hoeft ook niet. Vier vroeger op de avond: een toost om acht uur, muziek uit hun jaren, en tijd om terug te kijken.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-31",
@@ -911,7 +829,7 @@
     {
       "title": "Reumadag",
       "slug": "reumadag",
-      "description": "Op Reumadag vieren we de mogelijkheid om te leven met reuma en zetten we ons in voor de erkenning en waardering van mensen met reuma en voor onderzoek naar de oorzaken en behandeling van reuma.",
+      "description": "Stijve handen, pijnlijke ochtenden. Een handmassage zegt meer dan uitleg.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-11",
@@ -925,7 +843,7 @@
     {
       "title": "Sint Elooi",
       "slug": "sint-elooi",
-      "description": "Deze dag is ingevoerd in de Lage Landen in de middeleeuwen om aandacht te vragen voor de waarde en het belang van goudsmeden en goudsmedenkunst en om mensen te inspireren om te leren over goudsmeden en goudsmedenkunst. Weetje: Sint Elooi is de patroonheilige van de goudsmeden en wordt afgebeeld met ",
+      "description": "Het feest van de ambachten. Welk beroep deden zij vroeger?",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-01",
@@ -938,7 +856,7 @@
     {
       "title": "Sint Maarten",
       "slug": "sint-maarten",
-      "description": "Op Sint-Maarten vieren we de traditionele legende van Sint-Maarten die zijn mantel deelde met een arm en verkleumd kind en zetten we ons in voor de erkenning en waardering van goedheid en mededogen en voor vriendschap en samenwerking.",
+      "description": "Een lampionnentocht in eigen tuin, net nu het vroeg donker wordt.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-11",
@@ -951,7 +869,7 @@
     {
       "title": "Sinterklaas",
       "slug": "sinterklaas",
-      "description": "Sinterklaas is gebaseerd op de bisschop Nicolaas van Myra, een Griekse heilige die in de derde eeuw na Christus in Lycië in Klein-Azië leefde.",
+      "description": "De Sint hoeft niet te komen om dit te laten werken. Speculaas, mandarijnen, en de vraag wat ze vroeger in hun schoen vonden: daar zit het hele gesprek in.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-06",
@@ -964,7 +882,7 @@
     {
       "title": "Terug naar school",
       "slug": "terug-naar-school",
-      "description": "Terug naar school is een periode waarin kinderen en jongeren na hun vakantie terugkeren naar school en zich voorbereiden op een nieuw schooljaar vol leren en ontwikkeling.",
+      "description": "Lei, griffel, en de juf die ze nooit vergaten.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 09-01",
@@ -976,17 +894,9 @@
       ]
     },
     {
-      "title": "Transgender Gedenkdag",
-      "slug": "transgender-gedenkdag",
-      "description": "Op Transgender Gedenkdag staan we stil bij de situatie en de rechten van transgender mensen en zetten we ons in voor de erkenning en waardering van transgender mensen en voor gelijke behandeling en respect voor transgender mensen. Deze dag is ingevoerd in 1998 door transgender activisten om aandacht",
-      "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 11-20"
-    },
-    {
       "title": "Vegan Dag",
       "slug": "vegan-dag",
-      "description": "Vegan day viert de voordelen van een veganistisch dieet voor onze gezondheid en het milieu. Deze dag is in 1994 gestart in de Verenigde Staten om de levensstijl te bevorderen en te laten zien dat plantaardige voeding lekker, gezond en duurzaam kan zijn.",
+      "description": "Een dag helemaal zonder dierlijke producten. Doet de keuken mee?",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-01",
@@ -998,7 +908,7 @@
     {
       "title": "Veggiedag",
       "slug": "veggiedag",
-      "description": "Veggiedag is een dag waarop we ons engageren voor het bevorderen van plantaardige voeding en voor het bewustmaken van de voordelen van een vegetarisch dieet voor onze gezondheid en het milieu.",
+      "description": "Eén dag zonder vlees. Soep van het seizoen volstaat.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-01",
@@ -1010,7 +920,7 @@
     {
       "title": "Verjaardag Adolphe Sax",
       "slug": "verjaardag-adolphe-sax",
-      "description": "We vieren de uitvinding van de saxofoon door de Belgische instrumentenbouwer Adolphe Sax in 1846.  Hij werd geboren in Dinant in 1814 en groeide op in een muzikale familie. Hij studeerde muziek en instrumentenbouw en ontwikkelde een aantal nieuwe instrumenten, waaronder de saxofoon die hij patenteer",
+      "description": "De saxofoon is een Belgische uitvinding. Zet er eens een op.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-06",
@@ -1022,7 +932,7 @@
     {
       "title": "Verjaardag Pablo Picasso",
       "slug": "verjaardag-pablo-picasso",
-      "description": "Op Verjaardag Pablo Picasso vieren we de geweldige kunstenaar en zijn kleurrijke en expressieve werken en engageren we ons voor de erkenning en waardering van zijn bijdragen aan de kunstwereld en voor de inspiratie die hij geeft aan kunstenaars over de hele wereld.",
+      "description": "Schilderen zonder dat het moet lijken. Dat bevrijdt sommigen.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-25",
@@ -1037,7 +947,7 @@
     {
       "title": "Voorleesweek",
       "slug": "voorleesweek",
-      "description": "Tijdens de Voorleesweek kunnen we genieten van leuke en spannende verhalen en staan we stil bij het belang van voorlezen voor de ontwikkeling en het welzijn van kinderen. Deze week is ingevoerd door de Vereniging van Openbare Bibliotheken om aandacht te vragen voor het voorlezen als een leuke en waa",
+      "description": "Lees voor uit de krant of een oud kookboek. Luisteren telt ook.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-20",
@@ -1053,7 +963,7 @@
     {
       "title": "Vrijwilligersdag",
       "slug": "vrijwilligersdag",
-      "description": "Deze dag is bedoeld om wereldwijd het vrijwilligerswerk respect te tonen en het te promoten.  Vrijwilligersdag is ingevoerd door de Verenigde Naties in 1985 om aandacht te vragen voor de waarde en het belang van vrijwilligerswerk en om mensen te inspireren om vrijwilligerswerk te doen en om te leren",
+      "description": "Zonder hen valt de helft van jullie activiteiten weg. Zet ze vandaag in het zonnetje: een filmpje, een plaatje op de radio, hun naam hardop genoemd.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-07",
@@ -1066,7 +976,7 @@
     {
       "title": "Wapenstilstand",
       "slug": "wapenstilstand",
-      "description": "Op Wapenstilstand herdenken we de einde van de Eerste Wereldoorlog in 1918 en zetten we ons in voor de erkenning en waardering van de oorlogsslachtoffers en veteranen en voor vrede en verzoening tussen landen en mensen.",
+      "description": "Twee minuten stil om elf uur. Daarna komen de verhalen.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-11",
@@ -1078,7 +988,7 @@
     {
       "title": "Week tegen pijn",
       "slug": "week-tegen-pijn",
-      "description": "Tijdens de Week tegen pijn staan we stil bij de mogelijkheid om pijn te beheersen en zetten we ons in voor de erkenning en waardering van mensen met chronische pijn en voor onderzoek naar pijnbestrijding en -behandeling.",
+      "description": "Veel bewoners klagen niet, ook niet als het pijn doet. Vraag deze week gericht na, en bied wat verlicht zonder pillen: een handmassage, een voetbad, warmte.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 10-09",
@@ -1093,7 +1003,7 @@
     {
       "title": "Week van de geletterdheid",
       "slug": "week-van-de-geletterdheid",
-      "description": "Tijdens de Week van de geletterdheid staan we stil bij het belang van goed lezen, schrijven en begrijpen en zetten we ons in voor de ontwikkeling en ondersteuning van deze vaardigheden.",
+      "description": "Niet iedereen leerde vlot lezen. Voorlezen sluit niemand uit.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 09-07",
@@ -1109,7 +1019,7 @@
     {
       "title": "Week van de ouderen",
       "slug": "week-van-de-ouderen",
-      "description": "Tijdens de Week van de ouderen staan we stil bij de waarde en bijdrage van ouderen in onze samenleving en zetten we ons in voor de erkenning en waardering van ouderen en voor hun toegang tot kwalitatief hoogstaande zorg en ondersteuning.",
+      "description": "Deze week gaat het over jouw bewoners, niet over het thema. Zet er elke dag één in de kijker: een verhaal, een foto in de gang, een applaus aan tafel.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-20",
@@ -1124,7 +1034,7 @@
     {
       "title": "Week van smaak",
       "slug": "week-van-smaak",
-      "description": "Tijdens de Week van smaak staan we stil bij de verscheidenheid en heerlijkheid van voedsel en zetten we ons in voor de erkenning en waardering van lekker eten en voor gezonde en duurzame voeding.",
+      "description": "Proeven wekt meer op dan kijken. Zoet, zuur, zout, bitter.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-20",
@@ -1140,7 +1050,7 @@
     {
       "title": "Wereld Aidsdag",
       "slug": "wereld-aidsdag",
-      "description": "Deze dag is ingevoerd door de Verenigde Naties in 1988 om aandacht te vragen voor de toenemende prevalentie van HIV en AIDS en om mensen te informeren over HIV en AIDS en om stigma en discriminatie tegen mensen met HIV en AIDS te verminderen. Wereld aidsdag valt elk jaar op 1 december, ter herdenkin",
+      "description": "Hoe sprak men vroeger over ziekte? Meestal fluisterend.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-01",
@@ -1151,26 +1061,15 @@
     {
       "title": "Wereld Diabetes Dag",
       "slug": "wereld-diabetes-dag",
-      "description": "Op Wereld Diabetes Dag staan we stil bij de toenemende prevalentie van diabetes en zetten we ons in voor de erkenning en waardering van mensen met diabetes en voor onderzoek naar de oorzakens en behandeling van diabetes.",
+      "description": "Suikervrij hoeft niet smaakloos. Vraag het aan de keuken.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-14"
     },
     {
-      "title": "Wereld Toiletdag",
-      "slug": "wereld-toiletdag",
-      "description": "De dag richt zich op het belang van goede sanitaire voorzieningen en voor toegang tot schone en veilige toiletten voor iedereen. Wereld Toiletdag is ingevoerd door de Wereldgezondheidsorganisatie en de Verenigde Naties in 2001 om aandacht te vragen voor de uitdagingen en de kansen van de sanitaire s",
-      "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 11-19",
-      "fiche_slugs": [
-        "doe-cursus-handen-wassen"
-      ]
-    },
-    {
       "title": "Wereld dovendag",
       "slug": "wereld-dovendag",
-      "description": "Op Wereld dovendag eren we doven en hardhorenden en zetten we ons in voor hun erkenning en waardering en voor de toegankelijkheid van informatie en communicatie voor hen.",
+      "description": "Praat trager, niet luider. Vandaag een goed moment om te oefenen.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 09-23"
@@ -1178,7 +1077,7 @@
     {
       "title": "Wereld hartdag",
       "slug": "wereld-hartdag",
-      "description": "Op Wereld hartdag staan we stil bij het belang van een gezond hart en zetten we ons in voor de preventie en behandeling van hartaandoeningen en voor de erkenning en waardering van mensen met een gezond hart.",
+      "description": "Bewegen mag zittend. Een kwartier telt ook.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 09-29",
@@ -1193,7 +1092,7 @@
     {
       "title": "Wereld knuffeldag",
       "slug": "wereld-knuffeldag",
-      "description": "Op Wereld knuffeldag kunnen we lekker knuffelen met onze geliefden en staan we stil bij de positieve effecten van knuffelen op onze gezondheid en het welzijn. Deze dag is ingevoerd in 1986 door een Amerikaans stel om aandacht te vragen voor de waarde en het belang van knuffelen en om mensen te verle",
+      "description": "Wie kreeg vandaag al een hand vast? Begin daar.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-21",
@@ -1207,7 +1106,7 @@
     {
       "title": "Wereld vriendelijkheidsdag",
       "slug": "wereld-vriendelijkheidsdag",
-      "description": "Op Wereld vriendelijkheidsdag vieren we de waarde van vriendelijkheid en zetten we ons in voor de erkenning en waardering van vriendelijke mensen en voor een wereld waarin vriendelijkheid de norm is.",
+      "description": "Een kaart voor wie nooit post krijgt. Je weet wie.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-13",
@@ -1222,7 +1121,7 @@
     {
       "title": "Wereldmannendag",
       "slug": "wereldmannendag",
-      "description": "Op Wereldmannendag vieren we de positieve eigenschappen en bijdragen van mannen en zetten we ons in voor de erkenning en waardering van mannen en voor gendergelijkheid en respect voor iedereen.",
+      "description": "De mannen zijn hier vaak in de minderheid. Vandaag niet.",
       "is_month": false,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 11-19",
@@ -1237,7 +1136,7 @@
     {
       "title": "Winter",
       "slug": "winter",
-      "description": "De winter begint op het noordelijk halfrond meestal op 21 december en eindigt meestal op 21 maart.",
+      "description": "Donker buiten, warm binnen. Weken voor kaarsen, kerstliedjes en trage namiddagen aan tafel.",
       "is_month": true,
       "recurrence_rule": "fixed",
       "recurrence_detail": "Fixed: month-day 12-21",
@@ -1253,7 +1152,7 @@
     {
       "title": "Winteruur",
       "slug": "winteruur",
-      "description": "Op Winteruur vieren we het extra licht in de ochtend en zetten we ons in voor het behoud van een gezonde slaap-waakritme en voor de erkenning en waardering van de natuur en het leven in de winter.",
+      "description": "Een uur langer donker. Kaarsen op tafel bij het avondmaal.",
       "is_month": false,
       "recurrence_rule": "nth_weekday",
       "recurrence_detail": "Last Sunday of October"
