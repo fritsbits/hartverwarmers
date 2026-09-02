@@ -20,16 +20,10 @@ class ComposerTest extends TestCase
         Carbon::setTestNow('2026-05-13 08:00:00');
 
         foreach ([3, 7, 14, 21, 28, 29] as $daysAhead) {
-            ThemeOccurrence::factory()->create([
-                'year' => 2026,
-                'start_date' => now()->addDays($daysAhead),
-            ]);
+            $this->occurrenceWithPublishedFiche(now()->addDays($daysAhead));
         }
 
-        ThemeOccurrence::factory()->create([
-            'year' => 2026,
-            'start_date' => now()->addDays(40),
-        ]);
+        $this->occurrenceWithPublishedFiche(now()->addDays(40));
 
         $payload = app(Composer::class)->compose(now());
 
@@ -100,15 +94,37 @@ class ComposerTest extends TestCase
 
         // 7 occurrences in window, each on a different theme (since (theme_id, year) is unique)
         for ($i = 0; $i < 7; $i++) {
-            ThemeOccurrence::factory()
-                ->for(Theme::factory()->create())
-                ->create(['year' => 2026, 'start_date' => now()->addDays(3 + $i)]);
+            $this->occurrenceWithPublishedFiche(now()->addDays(3 + $i));
         }
 
         $payload = app(Composer::class)->compose(now());
 
         $this->assertCount(5, $payload->themes, 'themes collection should be capped at 5');
         $this->assertSame(7, $payload->upcomingThemeCount, 'upcomingThemeCount should reflect the true total');
+    }
+
+    public function test_excludes_occurrences_whose_theme_has_no_published_fiches(): void
+    {
+        Carbon::setTestNow('2026-05-13 08:00:00');
+
+        $withFiche = $this->occurrenceWithPublishedFiche(now()->addDays(3));
+
+        $unpublishedOnly = ThemeOccurrence::factory()->create(['year' => 2026, 'start_date' => now()->addDays(5)]);
+        $unpublishedOnly->theme->fiches()->attach(Fiche::factory()->create(['published' => false]));
+
+        $trashedOnly = ThemeOccurrence::factory()->create(['year' => 2026, 'start_date' => now()->addDays(7)]);
+        $trashedFiche = Fiche::factory()->published()->create();
+        $trashedOnly->theme->fiches()->attach($trashedFiche);
+        $trashedFiche->delete();
+
+        ThemeOccurrence::factory()->create(['year' => 2026, 'start_date' => now()->addDays(9)]);
+
+        $payload = app(Composer::class)->compose(now());
+
+        $this->assertCount(1, $payload->themes);
+        $this->assertTrue($payload->themes->first()->is($withFiche));
+        $this->assertSame(1, $payload->themes->first()->theme->fiches_count);
+        $this->assertSame(1, $payload->upcomingThemeCount);
     }
 
     public function test_compose_includes_latest_fresh_product_update(): void
@@ -139,5 +155,20 @@ class ComposerTest extends TestCase
         $payload = app(Composer::class)->compose(Carbon::parse('2026-05-13 08:00:00'));
 
         $this->assertNull($payload->productUpdate);
+    }
+
+    /**
+     * An occurrence in the given window whose theme carries one published
+     * fiche, so it survives Composer's empty-theme filter.
+     */
+    private function occurrenceWithPublishedFiche(Carbon $startDate): ThemeOccurrence
+    {
+        $occurrence = ThemeOccurrence::factory()
+            ->for(Theme::factory()->create())
+            ->create(['year' => $startDate->year, 'start_date' => $startDate]);
+
+        $occurrence->theme->fiches()->attach(Fiche::factory()->published()->create());
+
+        return $occurrence;
     }
 }

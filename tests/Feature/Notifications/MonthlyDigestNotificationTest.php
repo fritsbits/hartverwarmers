@@ -7,10 +7,12 @@ use App\Models\Theme;
 use App\Models\ThemeOccurrence;
 use App\Models\User;
 use App\Notifications\MonthlyDigestNotification;
+use App\Services\MonthlyDigest\Composer;
 use App\Services\MonthlyDigest\Payload;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -370,6 +372,33 @@ class MonthlyDigestNotificationTest extends TestCase
         $html = (new MonthlyDigestNotification($payload))->toMail($user)->render();
 
         $this->assertStringNotContainsString("Thema's om alvast in te plannen", $html);
+    }
+
+    public function test_composed_window_of_empty_themes_renders_no_themes_section(): void
+    {
+        Carbon::setTestNow('2026-09-02 08:00:00');
+
+        foreach (['Bloeddonordag' => 3, 'Baarddag' => 10, 'Winteruur' => 20] as $title => $daysAhead) {
+            ThemeOccurrence::factory()
+                ->for(Theme::factory()->create(['title' => $title, 'slug' => Str::slug($title)]))
+                ->create(['year' => 2026, 'start_date' => now()->addDays($daysAhead)]);
+        }
+
+        Fiche::factory()->published()->count(4)->create(['created_at' => now()->subDays(2)]);
+
+        $payload = app(Composer::class)->compose(now());
+        $user = User::factory()->create();
+        $mail = (new MonthlyDigestNotification($payload))->toMail($user);
+        $html = $mail->render();
+
+        $this->assertTrue($payload->themes->isEmpty());
+        $this->assertSame(0, $payload->upcomingThemeCount);
+        $this->assertStringNotContainsString("Thema's om alvast in te plannen", $html);
+        $this->assertStringNotContainsString('0 fiches beschikbaar', $html);
+        $this->assertStringNotContainsString('Bloeddonordag', $html);
+        $this->assertStringNotContainsString("thema's</strong> op de kalender", $html);
+        $this->assertSame('4 nieuwe fiches uit andere woonzorgcentra', $mail->subject);
+        $this->assertSame('4 nieuwe fiches uit andere woonzorgcentra om uit te putten.', $mail->metadata['preview_text'] ?? null);
     }
 
     public function test_diamond_section_renders_title_author_and_excerpt(): void

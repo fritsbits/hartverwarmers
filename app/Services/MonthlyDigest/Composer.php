@@ -5,6 +5,7 @@ namespace App\Services\MonthlyDigest;
 use App\Models\Fiche;
 use App\Models\ThemeOccurrence;
 use App\Services\ProductUpdates;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 class Composer
@@ -15,15 +16,13 @@ class Composer
         $themesWindowEnd = $now->copy()->addDays(30)->endOfDay();
         $ficheWindowStart = $now->copy()->subDays(30);
 
-        $themes = ThemeOccurrence::query()
-            ->whereBetween('start_date', [$themesWindowStart, $themesWindowEnd])
+        $themes = $this->upcomingOccurrencesWithFiches($themesWindowStart, $themesWindowEnd)
             ->orderBy('start_date')
             ->with(['theme' => fn ($q) => $q->withCount(['fiches' => fn ($q) => $q->published()])])
             ->limit(5)
             ->get();
 
-        $upcomingThemeCount = ThemeOccurrence::query()
-            ->whereBetween('start_date', [$themesWindowStart, $themesWindowEnd])
+        $upcomingThemeCount = $this->upcomingOccurrencesWithFiches($themesWindowStart, $themesWindowEnd)
             ->count();
 
         $diamond = Fiche::query()
@@ -56,5 +55,19 @@ class Composer
             sentAt: $now,
             productUpdate: ProductUpdates::latestFresh($now),
         );
+    }
+
+    /**
+     * Occurrences in the window whose theme carries at least one published
+     * fiche. A theme with none is left out of the digest altogether, so the
+     * zero stays an internal signal instead of a line every reader sees.
+     *
+     * @return Builder<ThemeOccurrence>
+     */
+    private function upcomingOccurrencesWithFiches(Carbon $windowStart, Carbon $windowEnd): Builder
+    {
+        return ThemeOccurrence::query()
+            ->whereBetween('start_date', [$windowStart, $windowEnd])
+            ->whereHas('theme.fiches', fn ($q) => $q->published());
     }
 }

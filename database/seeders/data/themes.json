@@ -1675,5 +1675,505 @@
       "start_date": "2026-12-31",
       "end_date": null
     }
+  ],
+  "occurrences_2027": [
+    {
+      "theme_slug": "onze-lieve-heer-hemelvaart",
+      "year": 2027,
+      "start_date": "2027-05-06",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-verpleegkundige",
+      "year": 2027,
+      "start_date": "2027-05-12",
+      "end_date": null
+    },
+    {
+      "theme_slug": "pinksteren",
+      "year": 2027,
+      "start_date": "2027-05-16",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-bijendag",
+      "year": 2027,
+      "start_date": "2027-05-20",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-culturele-diversiteit",
+      "year": 2027,
+      "start_date": "2027-05-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-buren",
+      "year": 2027,
+      "start_date": "2027-05-26",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-ms-dag",
+      "year": 2027,
+      "start_date": "2027-05-30",
+      "end_date": null
+    },
+    {
+      "theme_slug": "vaderdag",
+      "year": 2027,
+      "start_date": "2027-06-13",
+      "end_date": null
+    },
+    {
+      "theme_slug": "bloeddonordag",
+      "year": 2027,
+      "start_date": "2027-06-14",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-tegen-ouderenmisbehandeling",
+      "year": 2027,
+      "start_date": "2027-06-15",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereldyogadag",
+      "year": 2027,
+      "start_date": "2027-06-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-mantelzorger",
+      "year": 2027,
+      "start_date": "2027-06-23",
+      "end_date": null
+    },
+    {
+      "theme_slug": "nationale-kappersdag",
+      "year": 2027,
+      "start_date": "2027-06-30",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-chocoladedag",
+      "year": 2027,
+      "start_date": "2027-07-07",
+      "end_date": null
+    },
+    {
+      "theme_slug": "vlaamse-feestdag",
+      "year": 2027,
+      "start_date": "2027-07-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "french-fries-day",
+      "year": 2027,
+      "start_date": "2027-07-13",
+      "end_date": null
+    },
+    {
+      "theme_slug": "nationale-feestdag",
+      "year": 2027,
+      "start_date": "2027-07-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-animator",
+      "year": 2027,
+      "start_date": "2027-07-27",
+      "end_date": null
+    },
+    {
+      "theme_slug": "internationale-dag-van-de-vriendschap",
+      "year": 2027,
+      "start_date": "2027-07-30",
+      "end_date": null
+    },
+    {
+      "theme_slug": "nationale-frietjesdag",
+      "year": 2027,
+      "start_date": "2027-08-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "internationale-dag-van-het-bier",
+      "year": 2027,
+      "start_date": "2027-08-05",
+      "end_date": null
+    },
+    {
+      "theme_slug": "internationale-kattendag",
+      "year": 2027,
+      "start_date": "2027-08-08",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-jeugd",
+      "year": 2027,
+      "start_date": "2027-08-12",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-linkshandigen",
+      "year": 2027,
+      "start_date": "2027-08-13",
+      "end_date": null
+    },
+    {
+      "theme_slug": "moederdag-antwerpen",
+      "year": 2027,
+      "start_date": "2027-08-15",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-fotografie",
+      "year": 2027,
+      "start_date": "2027-08-19",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-humanitaire-dag",
+      "year": 2027,
+      "start_date": "2027-08-19",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-senioren",
+      "year": 2027,
+      "start_date": "2027-08-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "terug-naar-school",
+      "year": 2027,
+      "start_date": "2027-09-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "baarddag",
+      "year": 2027,
+      "start_date": "2027-09-02",
+      "end_date": null
+    },
+    {
+      "theme_slug": "duurzame-dinsdag",
+      "year": 2027,
+      "start_date": "2027-09-05",
+      "end_date": null
+    },
+    {
+      "theme_slug": "week-van-de-geletterdheid",
+      "year": 2027,
+      "start_date": "2027-09-07",
+      "end_date": null
+    },
+    {
+      "theme_slug": "open-monumentendag",
+      "year": 2027,
+      "start_date": "2027-09-14",
+      "end_date": "2027-09-15"
+    },
+    {
+      "theme_slug": "alzheimerdag",
+      "year": 2027,
+      "start_date": "2027-09-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "herfst",
+      "year": 2027,
+      "start_date": "2027-09-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-dovendag",
+      "year": 2027,
+      "start_date": "2027-09-23",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-koffie",
+      "year": 2027,
+      "start_date": "2027-09-26",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-hartdag",
+      "year": 2027,
+      "start_date": "2027-09-29",
+      "end_date": null
+    },
+    {
+      "theme_slug": "10-daagse-van-de-veerkracht",
+      "year": 2027,
+      "start_date": "2027-10-01",
+      "end_date": "2027-10-10"
+    },
+    {
+      "theme_slug": "dag-van-de-ouderen",
+      "year": 2027,
+      "start_date": "2027-10-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "muziekdag",
+      "year": 2027,
+      "start_date": "2027-10-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "veggiedag",
+      "year": 2027,
+      "start_date": "2027-10-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dierendag",
+      "year": 2027,
+      "start_date": "2027-10-04",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-palliatieve-zorg",
+      "year": 2027,
+      "start_date": "2027-10-09",
+      "end_date": null
+    },
+    {
+      "theme_slug": "nacht-van-de-duisternis",
+      "year": 2027,
+      "start_date": "2027-10-09",
+      "end_date": null
+    },
+    {
+      "theme_slug": "week-tegen-pijn",
+      "year": 2027,
+      "start_date": "2027-10-09",
+      "end_date": "2027-10-15"
+    },
+    {
+      "theme_slug": "reumadag",
+      "year": 2027,
+      "start_date": "2027-10-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-witte-stok",
+      "year": 2027,
+      "start_date": "2027-10-15",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-verzorgenden-en-zorgkundigen",
+      "year": 2027,
+      "start_date": "2027-10-20",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-tegen-kanker",
+      "year": 2027,
+      "start_date": "2027-10-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "verjaardag-pablo-picasso",
+      "year": 2027,
+      "start_date": "2027-10-25",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-ergotherapeut",
+      "year": 2027,
+      "start_date": "2027-10-27",
+      "end_date": null
+    },
+    {
+      "theme_slug": "halloween",
+      "year": 2027,
+      "start_date": "2027-10-31",
+      "end_date": null
+    },
+    {
+      "theme_slug": "winteruur",
+      "year": 2027,
+      "start_date": "2027-10-31",
+      "end_date": null
+    },
+    {
+      "theme_slug": "allerheiligen",
+      "year": 2027,
+      "start_date": "2027-11-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "vegan-dag",
+      "year": 2027,
+      "start_date": "2027-11-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "verjaardag-adolphe-sax",
+      "year": 2027,
+      "start_date": "2027-11-06",
+      "end_date": null
+    },
+    {
+      "theme_slug": "sint-maarten",
+      "year": 2027,
+      "start_date": "2027-11-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wapenstilstand",
+      "year": 2027,
+      "start_date": "2027-11-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-vriendelijkheidsdag",
+      "year": 2027,
+      "start_date": "2027-11-13",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-diabetes-dag",
+      "year": 2027,
+      "start_date": "2027-11-14",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-tolerantie",
+      "year": 2027,
+      "start_date": "2027-11-16",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-het-therapiedier",
+      "year": 2027,
+      "start_date": "2027-11-17",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereldmannendag",
+      "year": 2027,
+      "start_date": "2027-11-19",
+      "end_date": null
+    },
+    {
+      "theme_slug": "voorleesweek",
+      "year": 2027,
+      "start_date": "2027-11-20",
+      "end_date": "2027-11-28"
+    },
+    {
+      "theme_slug": "week-van-de-ouderen",
+      "year": 2027,
+      "start_date": "2027-11-20",
+      "end_date": "2027-11-26"
+    },
+    {
+      "theme_slug": "week-van-smaak",
+      "year": 2027,
+      "start_date": "2027-11-20",
+      "end_date": "2027-11-26"
+    },
+    {
+      "theme_slug": "wereld-knuffeldag",
+      "year": 2027,
+      "start_date": "2027-11-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-wetenschap",
+      "year": 2027,
+      "start_date": "2027-11-28",
+      "end_date": null
+    },
+    {
+      "theme_slug": "sint-elooi",
+      "year": 2027,
+      "start_date": "2027-12-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-aidsdag",
+      "year": 2027,
+      "start_date": "2027-12-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-mensen-met-een-beperking",
+      "year": 2027,
+      "start_date": "2027-12-03",
+      "end_date": null
+    },
+    {
+      "theme_slug": "sinterklaas",
+      "year": 2027,
+      "start_date": "2027-12-06",
+      "end_date": null
+    },
+    {
+      "theme_slug": "vrijwilligersdag",
+      "year": 2027,
+      "start_date": "2027-12-07",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-mensenrechten",
+      "year": 2027,
+      "start_date": "2027-12-10",
+      "end_date": null
+    },
+    {
+      "theme_slug": "lichtjesdag",
+      "year": 2027,
+      "start_date": "2027-12-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-thee",
+      "year": 2027,
+      "start_date": "2027-12-15",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-migrant",
+      "year": 2027,
+      "start_date": "2027-12-18",
+      "end_date": null
+    },
+    {
+      "theme_slug": "winter",
+      "year": 2027,
+      "start_date": "2027-12-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "kerstavond",
+      "year": 2027,
+      "start_date": "2027-12-24",
+      "end_date": null
+    },
+    {
+      "theme_slug": "eerste-kerstdag",
+      "year": 2027,
+      "start_date": "2027-12-25",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-onschuldige-kinderen",
+      "year": 2027,
+      "start_date": "2027-12-28",
+      "end_date": null
+    },
+    {
+      "theme_slug": "oudejaarsavond",
+      "year": 2027,
+      "start_date": "2027-12-31",
+      "end_date": null
+    }
   ]
 }
