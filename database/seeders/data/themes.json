@@ -43,8 +43,8 @@
       "slug": "dag-van-de-buren",
       "description": "Nodig de buurt binnen: kinderen, vrijwilligers, familie. Een koffie, een terrasmoment, een gezellig kletsje.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 05-26",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Een vrijdag eind mei (lafetedesvoisins.be)",
       "fiche_slugs": [
         "een-samentuin-die-generaties-en-buurten-verbindt",
         "generatietuin",
@@ -167,8 +167,8 @@
       "slug": "french-fries-day",
       "description": "Patatten, frietjes, mayonaise — maak er een feestje van met een bakje voor iedereen.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 07-13",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Amerikaanse dag, bronnen spreken elkaar tegen (13 juli of tweede vrijdag van juli)",
       "fiche_slugs": [
         "organiseer-een-smoutebollenbak",
         "culinaire-quiz"
@@ -197,8 +197,8 @@
       "slug": "internationale-dag-van-het-bier",
       "description": "Een proeverij met Belgische bieren en een terrasmoment — voor wie er trek in heeft.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 08-05",
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "1st Friday of August",
       "fiche_slugs": [
         "bierproeverij-met-bijpassende-hapjes",
         "apero"
@@ -238,8 +238,8 @@
       "slug": "nationale-frietjesdag",
       "description": "België eet frietjes. Een bakje voor iedereen — en herinneringen aan de friettent van vroeger.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 08-01",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Geen bron gevonden, zie docs/research/themakalender-2027-bronnen.md",
       "fiche_slugs": [
         "organiseer-een-smoutebollenbak",
         "culinaire-quiz"
@@ -263,8 +263,8 @@
       "slug": "nationale-kappersdag",
       "description": "Een dag voor de kappers in jullie huis, of voor de kapsels van vroeger. Foto's, herinneringen, een handmassage.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 06-30",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Geen bron gevonden, zie docs/research/themakalender-2027-bronnen.md",
       "fiche_slugs": [
         "geef-een-handmassage",
         "bekijk-en-bespreek-beeldmateriaal-van-vroeger",
@@ -453,8 +453,8 @@
       "slug": "baarddag",
       "description": "Trouwfoto’s erbij: snorren, bakkebaarden, en de verhalen erachter.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 09-02",
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "1st Saturday of September",
       "fiche_slugs": []
     },
     {
@@ -462,8 +462,8 @@
       "slug": "dag-tegen-kanker",
       "description": "Bijna elke bewoner heeft iemand verloren, of is zelf ziek geweest. Vraag hoe erover gesproken werd bij hen thuis. Toen zweeg men, vandaag mag het gezegd worden.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 10-21",
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "3rd Thursday of October",
       "fiche_slugs": [
         "reminisceer-over-hoe-men-vroeger-met-ziekte-omging"
       ]
@@ -489,7 +489,7 @@
       "description": "Hoe dronken ze koffie thuis: filter, percolator, cichorei?",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 09-26",
+      "recurrence_detail": "Fixed: month-day 10-01",
       "fiche_slugs": [
         "maak-samen-koffie-op-grootmoeders-wijze",
         "het-tovervisje-johann-sebastian-back-koffieverhaal-alles-te-vinden-op-het-internet",
@@ -551,8 +551,8 @@
       "slug": "dag-van-de-palliatieve-zorg",
       "description": "Een dag voor wat jullie stil en goed doen. Geef het team de kans er eens over te praten, en vraag aan bewoners zelf wat comfort voor hen betekent.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 10-09",
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "2nd Saturday of October",
       "fiche_slugs": [
         "samen-op-zoek-naar-symbolen-en-rituelen",
         "de-koffer-van-je-leven",
@@ -591,8 +591,8 @@
       "slug": "dag-van-de-verzorgenden-en-zorgkundigen",
       "description": "Zij houden het huis draaiende, vaak zonder dat iemand het benoemt. Laat bewoners vandaag zeggen wat zij zien: een kaart, een naam, een dankwoord.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 10-20",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Geen bron gevonden, zie docs/research/themakalender-2027-bronnen.md",
       "fiche_slugs": [
         "bedank-de-medewerkers",
         "laat-bewoners-medewerkers-bedanken",
@@ -606,8 +606,8 @@
       "slug": "dag-van-de-wetenschap",
       "description": "Van phishing tot bijen: uitleg die vandaag nog van pas komt.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 11-28",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Een zondag in november (dagvandewetenschap.be)",
       "fiche_slugs": [
         "wereld-bijendag",
         "natuur-en-inclusie-binnen-en-buiten-gebracht-door-mensen-met-een-beperking",
@@ -677,8 +677,8 @@
       "slug": "duurzame-dinsdag",
       "description": "Vroeger gooide niemand iets weg. Een namiddag herstellen dus.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 09-05",
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "1st Tuesday of September",
       "fiche_slugs": [
         "meubels-renoveren",
         "creatief-met-restjes-wol",
@@ -723,8 +723,8 @@
       "slug": "herfst",
       "description": "Kastanjes, pompoenen en de eerste avonden binnen. Een seizoen dat de activiteiten bijna zelf aanreikt.",
       "is_month": true,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 09-21",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Astronomisch begin van de herfst (septemberequinox, 22 of 23 september)",
       "fiche_slugs": [
         "haal-samen-herfst-herinneringen-op",
         "herfstkrans-knutselen",
@@ -765,8 +765,8 @@
       "slug": "lichtjesdag",
       "description": "Sommige bewoners hebben een kind verloren, soms tientallen jaren geleden. Een kaars en een naam die hardop mag klinken: meer moet het niet zijn.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 12-11",
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "2nd Sunday of December",
       "fiche_slugs": [
         "maak-samen-een-lichtslinger-van-kaarsen",
         "wandelen-tussen-de-lichtjes-in-eigen-tuin",
@@ -794,8 +794,8 @@
       "slug": "nacht-van-de-duisternis",
       "description": "Licht uit, kaarsen aan. Verhalen klinken anders in het donker.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 10-09",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Een zaterdag in oktober (levendenacht.be)",
       "fiche_slugs": [
         "wandelen-tussen-de-lichtjes-in-eigen-tuin",
         "maak-samen-een-lichtslinger-van-kaarsen",
@@ -807,8 +807,8 @@
       "slug": "open-monumentendag",
       "description": "Welk gebouw uit hun dorp staat er nog? Zoek het samen op.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 09-14",
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "2nd Sunday of September",
       "fiche_slugs": [
         "doe-een-virtueel-museumbezoek",
         "organiseer-een-wandeltentoonstelling-ism-scholen",
@@ -836,7 +836,7 @@
       "description": "Stijve handen, pijnlijke ochtenden. Een handmassage zegt meer dan uitleg.",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 10-11",
+      "recurrence_detail": "Fixed: month-day 10-12",
       "fiche_slugs": [
         "stoelyoga-2",
         "geef-een-handmassage",
@@ -953,8 +953,8 @@
       "slug": "voorleesweek",
       "description": "Lees voor uit de krant of een oud kookboek. Luisteren telt ook.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 11-20",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Laatste volledige week van november, zaterdag tot en met zondag (Iedereen Leest)",
       "fiche_slugs": [
         "lees-voor-aan-de-bewoners",
         "lees-voor-aan-bewoners-met-de-voorleespakketten-van-linc-vzw",
@@ -970,7 +970,7 @@
       "description": "Zonder hen valt de helft van jullie activiteiten weg. Zet ze vandaag in het zonnetje: een filmpje, een plaatje op de radio, hun naam hardop genoemd.",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 12-07",
+      "recurrence_detail": "Fixed: month-day 12-05",
       "fiche_slugs": [
         "bedankt-de-vrijwilligers-via-een-filmpje",
         "plaatje-aanvragen-voor-een-vrijwilliger",
@@ -994,8 +994,8 @@
       "slug": "week-tegen-pijn",
       "description": "Veel bewoners klagen niet, ook niet als het pijn doet. Vraag deze week gericht na, en bied wat verlicht zonder pillen: een handmassage, een voetbad, warmte.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 10-09",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Geen bron gevonden, zie docs/research/themakalender-2027-bronnen.md",
       "fiche_slugs": [
         "geef-zelfmassage-sessies",
         "geef-een-handmassage",
@@ -1009,8 +1009,8 @@
       "slug": "week-van-de-geletterdheid",
       "description": "Niet iedereen leerde vlot lezen. Voorlezen sluit niemand uit.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 09-07",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Begin september, datum niet bevestigd (organisatorsite onbereikbaar)",
       "fiche_slugs": [
         "lees-voor-aan-bewoners-met-de-voorleespakketten-van-linc-vzw",
         "werk-samen-met-de-zorgbib",
@@ -1025,8 +1025,8 @@
       "slug": "week-van-de-ouderen",
       "description": "Deze week gaat het over jouw bewoners, niet over het thema. Zet er elke dag één in de kijker: een verhaal, een foto in de gang, een applaus aan tafel.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 11-20",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Geen bron gevonden, zie docs/research/themakalender-2027-bronnen.md",
       "fiche_slugs": [
         "maak-een-podcast-voor-bewoners-medewerkers-en-familie",
         "maak-een-eigen-tv-programma",
@@ -1040,8 +1040,8 @@
       "slug": "week-van-smaak",
       "description": "Proeven wekt meer op dan kijken. Zoet, zuur, zout, bitter.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 11-20",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Eind oktober of begin november (weekvandesmaak.be)",
       "fiche_slugs": [
         "stimuleer-geur-en-smaakzin-bij-ouderen-met-dementie",
         "maak-samen-een-driegangen-menu",
@@ -1076,8 +1076,8 @@
       "slug": "wereld-dovendag",
       "description": "Praat trager, niet luider. Vandaag een goed moment om te oefenen.",
       "is_month": false,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 09-23",
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "Last Saturday of September",
       "fiche_slugs": []
     },
     {
@@ -1101,7 +1101,7 @@
       "description": "Wie kreeg vandaag al een hand vast? Begin daar.",
       "is_month": false,
       "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 11-21",
+      "recurrence_detail": "Fixed: month-day 01-21",
       "fiche_slugs": [
         "geef-zelfmassage-sessies",
         "geef-een-handmassage",
@@ -1144,8 +1144,8 @@
       "slug": "winter",
       "description": "Donker buiten, warm binnen. Weken voor kaarsen, kerstliedjes en trage namiddagen aan tafel.",
       "is_month": true,
-      "recurrence_rule": "fixed",
-      "recurrence_detail": "Fixed: month-day 12-21",
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Astronomisch begin van de winter (decemberzonnewende, 21 of 22 december)",
       "fiche_slugs": [
         "winterwandeling-in-het-wzc",
         "maak-een-winter-landschap",
@@ -1163,9 +1163,276 @@
       "recurrence_rule": "nth_weekday",
       "recurrence_detail": "Last Sunday of October",
       "fiche_slugs": []
+    },
+    {
+      "title": "Nieuwjaar",
+      "slug": "nieuwjaar",
+      "description": "Klink samen op het nieuwe jaar. Wie las vroeger een nieuwjaarsbrief voor aan peter of meter, en kent er nog een stukje van?",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 01-01",
+      "fiche_slugs": [
+        "nieuwjaarsquiz",
+        "schenk-hoopvolle-wensen",
+        "de-wensboom"
+      ]
+    },
+    {
+      "title": "Driekoningen",
+      "slug": "driekoningen",
+      "description": "Zet een koningentaart op tafel en kroon wie de boon vindt. Wie trok er als kind met de ster zingend langs de deuren?",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 01-06",
+      "fiche_slugs": [
+        "3-koningen-pwp"
+      ]
+    },
+    {
+      "title": "Verloren maandag",
+      "slug": "verloren-maandag",
+      "description": "Worstenbrood en appelbollen bij de koffie. Vraag bewoners uit de Antwerpse streek hoe hun familie deze maandag vierde.",
+      "is_month": false,
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Maandag na de eerste zondag na Driekoningen (Antwerpse traditie)",
+      "fiche_slugs": [
+        "reminiscentie-activiteit-verloren-maandag"
+      ]
+    },
+    {
+      "title": "Poëzieweek",
+      "slug": "poezieweek",
+      "description": "Hang gedichten op in de gang en vraag bewoners welk versje van school ze nog van buiten kennen.",
+      "is_month": false,
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "Last Thursday of January",
+      "fiche_slugs": [
+        "schrijf-poezie-in-de-poezieweek",
+        "lucht-je-hart-met-poezie",
+        "maak-een-raamgedicht",
+        "poeziemaand"
+      ]
+    },
+    {
+      "title": "Lichtmis",
+      "slug": "lichtmis",
+      "description": "Bak pannenkoeken in de leefruimte en laat de geur door de gang trekken. Wie draait er nog een pannenkoek om met een muntstuk in de hand?",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 02-02",
+      "fiche_slugs": [
+        "lichtmis",
+        "gespreksnamiddag-maria-lichtmis"
+      ]
+    },
+    {
+      "title": "Carnaval",
+      "slug": "carnaval",
+      "description": "Haal hoedjes, maskers en schlagers boven. Wie ging er vroeger verkleed naar de stoet, en als wat?",
+      "is_month": false,
+      "recurrence_rule": "easter",
+      "recurrence_detail": "Easter - 49 days (carnavalszondag tot en met vastenavond)",
+      "fiche_slugs": [
+        "muzikaal-pak-thema-carnaval",
+        "ontstaan-carnaval-quiz",
+        "een-eigen-videoclip-voor-carnaval"
+      ]
+    },
+    {
+      "title": "Krokusvakantie",
+      "slug": "krokusvakantie",
+      "description": "Kleinkinderen hebben vrij. Zet een spel of een knutseltafel klaar waar jong en oud samen aan schuiven.",
+      "is_month": false,
+      "recurrence_rule": "school_calendar",
+      "recurrence_detail": "Flemish school calendar (set by gov)",
+      "fiche_slugs": [
+        "ik-ga-op-vakantie-en-ik-neem-mee",
+        "speel-eenvoudige-spelletjes-met-bewoners-met-dementie"
+      ]
+    },
+    {
+      "title": "Valentijn",
+      "slug": "valentijn",
+      "description": "Hoe leerden bewoners hun lief kennen? Een doos oude trouwfoto's en een kop koffie brengen de mooiste verhalen boven.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 02-14",
+      "fiche_slugs": [
+        "reminiscentie-valentijn",
+        "valentijnsquiz",
+        "valentijnsbingo-muziek",
+        "crea-valentijn-deurhangers",
+        "breinfitness-de-valentijn-editie",
+        "muziekbingo-valentijn-liefde"
+      ]
+    },
+    {
+      "title": "Week van de Vrijwilliger",
+      "slug": "week-van-de-vrijwilliger",
+      "description": "Zeg dank aan wie elke week komt helpen. Laat bewoners een kaartje schrijven of zet een extra koffiemoment klaar voor de vrijwilligers.",
+      "is_month": false,
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Eind februari of begin maart, negen dagen (Vlaanderen Vrijwilligt)",
+      "fiche_slugs": [
+        "bedankt-de-vrijwilligers-via-een-filmpje",
+        "plaatje-aanvragen-voor-een-vrijwilliger",
+        "sprookjes-lezen-met-vrijwilligers"
+      ]
+    },
+    {
+      "title": "Internationale Vrouwendag",
+      "slug": "internationale-vrouwendag",
+      "description": "Welke vrouwen maakten indruk op de bewoners? Een moeder, een juf, een buurvrouw met lef. Laat de verhalen rond de koffietafel gaan.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 03-08",
+      "fiche_slugs": [
+        "vrouwendag-bekende-vrouwen-pp",
+        "muzikale-bingo-nederlandstalige-vrouwen-jaren-506070"
+      ]
+    },
+    {
+      "title": "Lente",
+      "slug": "lente",
+      "description": "Zet de ramen open en ga naar buiten zodra de zon het toelaat. Wie spot het eerste narcisje in de tuin?",
+      "is_month": true,
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Astronomisch begin van de lente (maartequinox, 20 of 21 maart)",
+      "fiche_slugs": [
+        "lentequiz",
+        "belevingsmoment-lente",
+        "lente-abc",
+        "memory-lente",
+        "lente-hanzenbord",
+        "borduur-en-naai-zelf-lentecanvassen"
+      ]
+    },
+    {
+      "title": "Dag van de Zorg",
+      "slug": "dag-van-de-zorg",
+      "description": "Zet de deuren open voor de buurt. Laat bewoners zelf vertellen wat een goede dag in jullie huis voor hen betekent.",
+      "is_month": false,
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Een weekend in maart (dagvandezorg.be)",
+      "fiche_slugs": [
+        "nodig-bewoners-en-hun-familieleden-uit-op-een-koffie-en-theehuisje",
+        "laat-bewoners-hun-levenswijsheden-delen-met-de-buitenwereld",
+        "laat-bewoners-medewerkers-bedanken",
+        "bedank-de-medewerkers"
+      ]
+    },
+    {
+      "title": "Pasen",
+      "slug": "pasen",
+      "description": "Verstop eieren in de tuin of de leefruimte en laat de kleinkinderen zoeken. Welke paastradities hadden bewoners thuis?",
+      "is_month": false,
+      "recurrence_rule": "easter",
+      "recurrence_detail": "Easter + 0 days",
+      "fiche_slugs": [
+        "paasactiviteit-met-kinderen",
+        "paasquiz",
+        "paaseieren-bingo",
+        "geheugentraining-pasen",
+        "verstuur-wenskaarten-voor-pasen",
+        "sport-en-spelactiviteit-thema-pasen"
+      ]
+    },
+    {
+      "title": "Paasvakantie",
+      "slug": "paasvakantie",
+      "description": "Twee weken vrij voor de kleinkinderen. Plan een namiddag waarop jong en oud samen spelen, knutselen of de tuin intrekken.",
+      "is_month": false,
+      "recurrence_rule": "school_calendar",
+      "recurrence_detail": "Flemish school calendar (set by gov)",
+      "fiche_slugs": [
+        "ik-ga-op-vakantie-en-ik-neem-mee",
+        "speel-eenvoudige-spelletjes-met-bewoners-met-dementie"
+      ]
+    },
+    {
+      "title": "1 april",
+      "slug": "1-april",
+      "description": "Een papieren vis op iemands rug, een onschuldige grap aan tafel. Welke aprilgrap kregen bewoners ooit zelf gelapt?",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 04-01",
+      "fiche_slugs": [
+        "lachyoga",
+        "waar-of-niet-waar"
+      ]
+    },
+    {
+      "title": "Wereld Parkinsondag",
+      "slug": "wereld-parkinsondag",
+      "description": "Vraag bewoners met parkinson wat hen helpt op een moeilijke dag. Beweeg samen op muziek, op het tempo van wie het traagst gaat.",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 04-11",
+      "fiche_slugs": []
+    },
+    {
+      "title": "Erfgoeddag",
+      "slug": "erfgoeddag",
+      "description": "Haal oude voorwerpen boven: een strijkijzer, een melkkan, een kantklosje. Wie herkent wat, en wie gebruikte het nog zelf?",
+      "is_month": false,
+      "recurrence_rule": "variable_annual",
+      "recurrence_detail": "Eerste zondag na de paasvakantie (FARO)",
+      "fiche_slugs": [
+        "doe-een-virtueel-museumbezoek",
+        "kwartet-de-tijd-van-vroeger",
+        "bekijk-en-bespreek-beeldmateriaal-van-vroeger",
+        "reminiscentie-hoe-deed-ik-dit-vroeger-spel"
+      ]
+    },
+    {
+      "title": "Dag van de Aarde",
+      "slug": "dag-van-de-aarde",
+      "description": "Zaai bloemen in bakken op het terras of hang een vogeltraktatie op. Hoe ging men thuis vroeger zuinig om met water en restjes?",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 04-22",
+      "fiche_slugs": [
+        "zaai-bloemen",
+        "planten-van-bloembollen",
+        "verwen-de-vogels-met-een-traktatie",
+        "knutselen-met-natuurelementen"
+      ]
+    },
+    {
+      "title": "Wereldboekendag",
+      "slug": "wereldboekendag",
+      "description": "Lees voor in de leefruimte of zet een ruilkast met boeken in de gang. Welk boek lazen bewoners als kind stuk?",
+      "is_month": false,
+      "recurrence_rule": "fixed",
+      "recurrence_detail": "Fixed: month-day 04-23",
+      "fiche_slugs": [
+        "lees-voor-aan-de-bewoners",
+        "lees-voor-aan-bewoners-met-de-voorleespakketten-van-linc-vzw",
+        "ontspan-met-een-audioverhaal"
+      ]
+    },
+    {
+      "title": "Moederdag",
+      "slug": "moederdag",
+      "description": "Een bloemetje op tafel en verhalen over moeder. Wat kookte zij op zondag, en welk zinnetje van haar herhalen bewoners nog altijd?",
+      "is_month": false,
+      "recurrence_rule": "nth_weekday",
+      "recurrence_detail": "2nd Sunday of May",
+      "fiche_slugs": [
+        "moederdag-reminiscentie",
+        "reminiscentie-moederdag",
+        "schenk-een-moederdagcadeau-om-naar-uit-te-kijken",
+        "maak-samen-koffie-op-grootmoeders-wijze"
+      ]
     }
   ],
   "occurrences_2026": [
+    {
+      "theme_slug": "wereld-knuffeldag",
+      "year": 2026,
+      "start_date": "2026-01-21",
+      "end_date": null
+    },
     {
       "theme_slug": "dag-van-de-verpleegkundige",
       "year": 2026,
@@ -1199,7 +1466,7 @@
     {
       "theme_slug": "dag-van-de-buren",
       "year": 2026,
-      "start_date": "2026-05-26",
+      "start_date": "2026-05-29",
       "end_date": null
     },
     {
@@ -1295,7 +1562,7 @@
     {
       "theme_slug": "internationale-dag-van-het-bier",
       "year": 2026,
-      "start_date": "2026-08-05",
+      "start_date": "2026-08-07",
       "end_date": null
     },
     {
@@ -1347,13 +1614,13 @@
       "end_date": null
     },
     {
-      "theme_slug": "baarddag",
+      "theme_slug": "duurzame-dinsdag",
       "year": 2026,
-      "start_date": "2026-09-02",
+      "start_date": "2026-09-01",
       "end_date": null
     },
     {
-      "theme_slug": "duurzame-dinsdag",
+      "theme_slug": "baarddag",
       "year": 2026,
       "start_date": "2026-09-05",
       "end_date": null
@@ -1367,13 +1634,7 @@
     {
       "theme_slug": "open-monumentendag",
       "year": 2026,
-      "start_date": "2026-09-14",
-      "end_date": "2026-09-15"
-    },
-    {
-      "theme_slug": "herfst",
-      "year": 2026,
-      "start_date": "2026-09-21",
+      "start_date": "2026-09-13",
       "end_date": null
     },
     {
@@ -1383,13 +1644,13 @@
       "end_date": null
     },
     {
-      "theme_slug": "wereld-dovendag",
+      "theme_slug": "herfst",
       "year": 2026,
       "start_date": "2026-09-23",
       "end_date": null
     },
     {
-      "theme_slug": "dag-van-de-koffie",
+      "theme_slug": "wereld-dovendag",
       "year": 2026,
       "start_date": "2026-09-26",
       "end_date": null
@@ -1398,6 +1659,12 @@
       "theme_slug": "wereld-hartdag",
       "year": 2026,
       "start_date": "2026-09-29",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-koffie",
+      "year": 2026,
+      "start_date": "2026-10-01",
       "end_date": null
     },
     {
@@ -1439,19 +1706,19 @@
     {
       "theme_slug": "nacht-van-de-duisternis",
       "year": 2026,
-      "start_date": "2026-10-09",
+      "start_date": "2026-10-10",
       "end_date": null
     },
     {
       "theme_slug": "dag-van-de-palliatieve-zorg",
       "year": 2026,
-      "start_date": "2026-10-09",
+      "start_date": "2026-10-10",
       "end_date": null
     },
     {
       "theme_slug": "reumadag",
       "year": 2026,
-      "start_date": "2026-10-11",
+      "start_date": "2026-10-12",
       "end_date": null
     },
     {
@@ -1461,15 +1728,15 @@
       "end_date": null
     },
     {
-      "theme_slug": "dag-van-de-verzorgenden-en-zorgkundigen",
+      "theme_slug": "dag-tegen-kanker",
       "year": 2026,
-      "start_date": "2026-10-20",
+      "start_date": "2026-10-15",
       "end_date": null
     },
     {
-      "theme_slug": "dag-tegen-kanker",
+      "theme_slug": "dag-van-de-verzorgenden-en-zorgkundigen",
       "year": 2026,
-      "start_date": "2026-10-21",
+      "start_date": "2026-10-20",
       "end_date": null
     },
     {
@@ -1485,6 +1752,12 @@
       "end_date": null
     },
     {
+      "theme_slug": "week-van-smaak",
+      "year": 2026,
+      "start_date": "2026-10-26",
+      "end_date": "2026-11-01"
+    },
+    {
       "theme_slug": "dag-van-de-ergotherapeut",
       "year": 2026,
       "start_date": "2026-10-27",
@@ -1497,12 +1770,6 @@
       "end_date": null
     },
     {
-      "theme_slug": "herfstvakantie",
-      "year": 2026,
-      "start_date": "2026-10-31",
-      "end_date": "2026-11-08"
-    },
-    {
       "theme_slug": "allerheiligen",
       "year": 2026,
       "start_date": "2026-11-01",
@@ -1513,6 +1780,12 @@
       "year": 2026,
       "start_date": "2026-11-01",
       "end_date": null
+    },
+    {
+      "theme_slug": "herfstvakantie",
+      "year": 2026,
+      "start_date": "2026-11-02",
+      "end_date": "2026-11-08"
     },
     {
       "theme_slug": "verjaardag-adolphe-sax",
@@ -1545,6 +1818,12 @@
       "end_date": null
     },
     {
+      "theme_slug": "dag-van-de-wetenschap",
+      "year": 2026,
+      "start_date": "2026-11-15",
+      "end_date": null
+    },
+    {
       "theme_slug": "dag-van-de-tolerantie",
       "year": 2026,
       "start_date": "2026-11-16",
@@ -1563,34 +1842,16 @@
       "end_date": null
     },
     {
-      "theme_slug": "voorleesweek",
-      "year": 2026,
-      "start_date": "2026-11-20",
-      "end_date": "2026-11-28"
-    },
-    {
       "theme_slug": "week-van-de-ouderen",
       "year": 2026,
       "start_date": "2026-11-20",
       "end_date": "2026-11-26"
     },
     {
-      "theme_slug": "week-van-smaak",
-      "year": 2026,
-      "start_date": "2026-11-20",
-      "end_date": "2026-11-26"
-    },
-    {
-      "theme_slug": "wereld-knuffeldag",
+      "theme_slug": "voorleesweek",
       "year": 2026,
       "start_date": "2026-11-21",
-      "end_date": null
-    },
-    {
-      "theme_slug": "dag-van-de-wetenschap",
-      "year": 2026,
-      "start_date": "2026-11-28",
-      "end_date": null
+      "end_date": "2026-11-29"
     },
     {
       "theme_slug": "sint-elooi",
@@ -1611,15 +1872,15 @@
       "end_date": null
     },
     {
-      "theme_slug": "sinterklaas",
+      "theme_slug": "vrijwilligersdag",
       "year": 2026,
-      "start_date": "2026-12-06",
+      "start_date": "2026-12-05",
       "end_date": null
     },
     {
-      "theme_slug": "vrijwilligersdag",
+      "theme_slug": "sinterklaas",
       "year": 2026,
-      "start_date": "2026-12-07",
+      "start_date": "2026-12-06",
       "end_date": null
     },
     {
@@ -1631,7 +1892,7 @@
     {
       "theme_slug": "lichtjesdag",
       "year": 2026,
-      "start_date": "2026-12-11",
+      "start_date": "2026-12-13",
       "end_date": null
     },
     {
@@ -1679,9 +1940,135 @@
   ],
   "occurrences_2027": [
     {
+      "theme_slug": "nieuwjaar",
+      "year": 2027,
+      "start_date": "2027-01-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "driekoningen",
+      "year": 2027,
+      "start_date": "2027-01-06",
+      "end_date": null
+    },
+    {
+      "theme_slug": "verloren-maandag",
+      "year": 2027,
+      "start_date": "2027-01-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-knuffeldag",
+      "year": 2027,
+      "start_date": "2027-01-21",
+      "end_date": null
+    },
+    {
+      "theme_slug": "poezieweek",
+      "year": 2027,
+      "start_date": "2027-01-28",
+      "end_date": "2027-02-03"
+    },
+    {
+      "theme_slug": "lichtmis",
+      "year": 2027,
+      "start_date": "2027-02-02",
+      "end_date": null
+    },
+    {
+      "theme_slug": "carnaval",
+      "year": 2027,
+      "start_date": "2027-02-07",
+      "end_date": "2027-02-09"
+    },
+    {
+      "theme_slug": "krokusvakantie",
+      "year": 2027,
+      "start_date": "2027-02-08",
+      "end_date": "2027-02-14"
+    },
+    {
+      "theme_slug": "valentijn",
+      "year": 2027,
+      "start_date": "2027-02-14",
+      "end_date": null
+    },
+    {
+      "theme_slug": "week-van-de-vrijwilliger",
+      "year": 2027,
+      "start_date": "2027-02-27",
+      "end_date": "2027-03-07"
+    },
+    {
+      "theme_slug": "internationale-vrouwendag",
+      "year": 2027,
+      "start_date": "2027-03-08",
+      "end_date": null
+    },
+    {
+      "theme_slug": "lente",
+      "year": 2027,
+      "start_date": "2027-03-20",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-zorg",
+      "year": 2027,
+      "start_date": "2027-03-20",
+      "end_date": "2027-03-21"
+    },
+    {
+      "theme_slug": "pasen",
+      "year": 2027,
+      "start_date": "2027-03-28",
+      "end_date": null
+    },
+    {
+      "theme_slug": "paasvakantie",
+      "year": 2027,
+      "start_date": "2027-03-29",
+      "end_date": "2027-04-11"
+    },
+    {
+      "theme_slug": "1-april",
+      "year": 2027,
+      "start_date": "2027-04-01",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereld-parkinsondag",
+      "year": 2027,
+      "start_date": "2027-04-11",
+      "end_date": null
+    },
+    {
+      "theme_slug": "erfgoeddag",
+      "year": 2027,
+      "start_date": "2027-04-18",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-aarde",
+      "year": 2027,
+      "start_date": "2027-04-22",
+      "end_date": null
+    },
+    {
+      "theme_slug": "wereldboekendag",
+      "year": 2027,
+      "start_date": "2027-04-23",
+      "end_date": null
+    },
+    {
       "theme_slug": "onze-lieve-heer-hemelvaart",
       "year": 2027,
       "start_date": "2027-05-06",
+      "end_date": null
+    },
+    {
+      "theme_slug": "moederdag",
+      "year": 2027,
+      "start_date": "2027-05-09",
       "end_date": null
     },
     {
@@ -1706,12 +2093,6 @@
       "theme_slug": "dag-van-de-culturele-diversiteit",
       "year": 2027,
       "start_date": "2027-05-21",
-      "end_date": null
-    },
-    {
-      "theme_slug": "dag-van-de-buren",
-      "year": 2027,
-      "start_date": "2027-05-26",
       "end_date": null
     },
     {
@@ -1751,12 +2132,6 @@
       "end_date": null
     },
     {
-      "theme_slug": "nationale-kappersdag",
-      "year": 2027,
-      "start_date": "2027-06-30",
-      "end_date": null
-    },
-    {
       "theme_slug": "ronde-van-frankrijk",
       "year": 2027,
       "start_date": "2027-07-02",
@@ -1772,12 +2147,6 @@
       "theme_slug": "vlaamse-feestdag",
       "year": 2027,
       "start_date": "2027-07-11",
-      "end_date": null
-    },
-    {
-      "theme_slug": "french-fries-day",
-      "year": 2027,
-      "start_date": "2027-07-13",
       "end_date": null
     },
     {
@@ -1799,15 +2168,9 @@
       "end_date": null
     },
     {
-      "theme_slug": "nationale-frietjesdag",
-      "year": 2027,
-      "start_date": "2027-08-01",
-      "end_date": null
-    },
-    {
       "theme_slug": "internationale-dag-van-het-bier",
       "year": 2027,
-      "start_date": "2027-08-05",
+      "start_date": "2027-08-06",
       "end_date": null
     },
     {
@@ -1861,17 +2224,11 @@
     {
       "theme_slug": "baarddag",
       "year": 2027,
-      "start_date": "2027-09-02",
+      "start_date": "2027-09-04",
       "end_date": null
     },
     {
       "theme_slug": "duurzame-dinsdag",
-      "year": 2027,
-      "start_date": "2027-09-05",
-      "end_date": null
-    },
-    {
-      "theme_slug": "week-van-de-geletterdheid",
       "year": 2027,
       "start_date": "2027-09-07",
       "end_date": null
@@ -1879,8 +2236,8 @@
     {
       "theme_slug": "open-monumentendag",
       "year": 2027,
-      "start_date": "2027-09-14",
-      "end_date": "2027-09-15"
+      "start_date": "2027-09-12",
+      "end_date": null
     },
     {
       "theme_slug": "alzheimerdag",
@@ -1891,25 +2248,25 @@
     {
       "theme_slug": "herfst",
       "year": 2027,
-      "start_date": "2027-09-21",
+      "start_date": "2027-09-23",
       "end_date": null
     },
     {
       "theme_slug": "wereld-dovendag",
       "year": 2027,
-      "start_date": "2027-09-23",
-      "end_date": null
-    },
-    {
-      "theme_slug": "dag-van-de-koffie",
-      "year": 2027,
-      "start_date": "2027-09-26",
+      "start_date": "2027-09-25",
       "end_date": null
     },
     {
       "theme_slug": "wereld-hartdag",
       "year": 2027,
       "start_date": "2027-09-29",
+      "end_date": null
+    },
+    {
+      "theme_slug": "dag-van-de-koffie",
+      "year": 2027,
+      "start_date": "2027-10-01",
       "end_date": null
     },
     {
@@ -1949,33 +2306,15 @@
       "end_date": null
     },
     {
-      "theme_slug": "nacht-van-de-duisternis",
-      "year": 2027,
-      "start_date": "2027-10-09",
-      "end_date": null
-    },
-    {
-      "theme_slug": "week-tegen-pijn",
-      "year": 2027,
-      "start_date": "2027-10-09",
-      "end_date": "2027-10-15"
-    },
-    {
       "theme_slug": "reumadag",
       "year": 2027,
-      "start_date": "2027-10-11",
+      "start_date": "2027-10-12",
       "end_date": null
     },
     {
       "theme_slug": "dag-van-de-witte-stok",
       "year": 2027,
       "start_date": "2027-10-15",
-      "end_date": null
-    },
-    {
-      "theme_slug": "dag-van-de-verzorgenden-en-zorgkundigen",
-      "year": 2027,
-      "start_date": "2027-10-20",
       "end_date": null
     },
     {
@@ -1997,12 +2336,6 @@
       "end_date": null
     },
     {
-      "theme_slug": "herfstvakantie",
-      "year": 2027,
-      "start_date": "2027-10-30",
-      "end_date": "2027-11-07"
-    },
-    {
       "theme_slug": "halloween",
       "year": 2027,
       "start_date": "2027-10-31",
@@ -2013,6 +2346,12 @@
       "year": 2027,
       "start_date": "2027-10-31",
       "end_date": null
+    },
+    {
+      "theme_slug": "herfstvakantie",
+      "year": 2027,
+      "start_date": "2027-11-01",
+      "end_date": "2027-11-07"
     },
     {
       "theme_slug": "allerheiligen",
@@ -2081,30 +2420,6 @@
       "end_date": "2027-11-28"
     },
     {
-      "theme_slug": "week-van-de-ouderen",
-      "year": 2027,
-      "start_date": "2027-11-20",
-      "end_date": "2027-11-26"
-    },
-    {
-      "theme_slug": "week-van-smaak",
-      "year": 2027,
-      "start_date": "2027-11-20",
-      "end_date": "2027-11-26"
-    },
-    {
-      "theme_slug": "wereld-knuffeldag",
-      "year": 2027,
-      "start_date": "2027-11-21",
-      "end_date": null
-    },
-    {
-      "theme_slug": "dag-van-de-wetenschap",
-      "year": 2027,
-      "start_date": "2027-11-28",
-      "end_date": null
-    },
-    {
       "theme_slug": "sint-elooi",
       "year": 2027,
       "start_date": "2027-12-01",
@@ -2123,15 +2438,15 @@
       "end_date": null
     },
     {
-      "theme_slug": "sinterklaas",
+      "theme_slug": "vrijwilligersdag",
       "year": 2027,
-      "start_date": "2027-12-06",
+      "start_date": "2027-12-05",
       "end_date": null
     },
     {
-      "theme_slug": "vrijwilligersdag",
+      "theme_slug": "sinterklaas",
       "year": 2027,
-      "start_date": "2027-12-07",
+      "start_date": "2027-12-06",
       "end_date": null
     },
     {
@@ -2143,7 +2458,7 @@
     {
       "theme_slug": "lichtjesdag",
       "year": 2027,
-      "start_date": "2027-12-11",
+      "start_date": "2027-12-12",
       "end_date": null
     },
     {
@@ -2161,7 +2476,7 @@
     {
       "theme_slug": "winter",
       "year": 2027,
-      "start_date": "2027-12-21",
+      "start_date": "2027-12-22",
       "end_date": null
     },
     {

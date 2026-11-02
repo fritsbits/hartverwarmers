@@ -43,8 +43,8 @@ class Theme extends Model
 
     public function scopeForMonth(Builder $query, int $year, int $month): Builder
     {
-        $first = CarbonImmutable::create($year, $month, 1)->startOfDay();
-        $last = $first->endOfMonth();
+        $first = CarbonImmutable::create($year, $month, 1)->toDateString();
+        $last = CarbonImmutable::create($year, $month, 1)->endOfMonth()->toDateString();
 
         return $query->whereHas('occurrences', function (Builder $q) use ($first, $last) {
             $q->where('start_date', '<=', $last)

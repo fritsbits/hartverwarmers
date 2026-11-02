@@ -8,7 +8,7 @@
 
     $entriesByDate = $dayThemes
         ->filter(fn ($t) => $t->occurrences->first()?->start_date !== null)
-        ->groupBy(fn ($t) => $t->occurrences->first()->start_date->format('Y-m-d'))
+        ->groupBy(fn ($t) => $t->occurrences->first()->start_date->max($first)->format('Y-m-d'))
         ->map(fn ($group) => $group->map(function ($t) {
             $occ = $t->occurrences->first();
             $isRange = $occ->end_date && ! $occ->end_date->equalTo($occ->start_date);

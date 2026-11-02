@@ -46,6 +46,7 @@ class ImportThemesCommand extends Command
             'themes_created' => 0,
             'themes_updated' => 0,
             'occurrences_upserted' => 0,
+            'occurrences_deleted' => 0,
             'fiche_links_synced' => 0,
             'unknown_fiche_slugs' => 0,
         ];
@@ -127,6 +128,8 @@ class ImportThemesCommand extends Command
                         );
                         $stats['occurrences_upserted']++;
                     }
+
+                    $stats['occurrences_deleted'] += $this->deleteOccurrencesMissingFromBlock($key, $rows, $data['themes']);
                 }
             })();
 
@@ -160,13 +163,43 @@ class ImportThemesCommand extends Command
 
         $this->newLine();
         $this->info(sprintf(
-            "%sThema's: %d aangemaakt, %d bijgewerkt. Occurrences: %d. Fiche-links: %d gekoppeld, %d onbekende slugs.",
+            "%sThema's: %d aangemaakt, %d bijgewerkt. Occurrences: %d, %d verwijderd. Fiche-links: %d gekoppeld, %d onbekende slugs.",
             $dryRun ? '[dry-run] ' : 'Klaar. ',
-            $stats['themes_created'], $stats['themes_updated'], $stats['occurrences_upserted'],
+            $stats['themes_created'], $stats['themes_updated'], $stats['occurrences_upserted'], $stats['occurrences_deleted'],
             $stats['fiche_links_synced'], $stats['unknown_fiche_slugs'],
         ));
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Een jaarblok is de volledige lijst voor dat jaar: een thema uit het bestand
+     * zonder rij in het blok verliest zijn occurrence van dat jaar. Jaren zonder
+     * blok en thema's die niet in het bestand staan blijven onaangeroerd.
+     *
+     * @param  list<array<string, mixed>>  $rows
+     * @param  list<array<string, mixed>>  $themes
+     */
+    private function deleteOccurrencesMissingFromBlock(string $key, array $rows, array $themes): int
+    {
+        if (! preg_match('/^occurrences_(\d{4})$/', $key, $match)) {
+            return 0;
+        }
+
+        $missingSlugs = array_diff(array_column($themes, 'slug'), array_column($rows, 'theme_slug'));
+
+        $stale = ThemeOccurrence::query()
+            ->where('year', (int) $match[1])
+            ->whereHas('theme', fn ($q) => $q->whereIn('slug', $missingSlugs))
+            ->with('theme:id,slug')
+            ->get();
+
+        foreach ($stale as $occurrence) {
+            $this->warn("Occurrence verwijderd: {$occurrence->theme->slug} ({$occurrence->year})");
+            $occurrence->delete();
+        }
+
+        return $stale->count();
     }
 
     /**

@@ -66,6 +66,29 @@ class ThemePrintPageTest extends TestCase
         $response->assertOk()->assertSee('t/m 26 juli');
     }
 
+    public function test_theme_continuing_from_previous_month_sits_on_the_first_day(): void
+    {
+        $theme = Theme::factory()->create(['title' => 'Poëzieweek', 'is_month' => false]);
+        ThemeOccurrence::factory()->for($theme)->create([
+            'year' => 2027, 'start_date' => '2027-01-28', 'end_date' => '2027-02-03',
+        ]);
+
+        $response = $this->get(route('themes.print', ['maand' => '2027-02']));
+
+        $response->assertOk()->assertSeeInOrder(['cell-day">1<', 'Poëzieweek', 't/m 3 februari', 'cell-day">2<'], false);
+    }
+
+    public function test_theme_starting_on_the_first_of_the_month_is_shown(): void
+    {
+        $theme = Theme::factory()->create(['title' => 'Nieuwjaar', 'is_month' => false]);
+        ThemeOccurrence::factory()->for($theme)->create([
+            'year' => 2027, 'start_date' => '2027-01-01', 'end_date' => null,
+        ]);
+
+        $this->get(route('themes.print', ['maand' => '2027-01']))->assertOk()->assertSee('Nieuwjaar');
+        $this->get(route('themes.index', ['maand' => '2027-01']))->assertOk()->assertSee('Nieuwjaar');
+    }
+
     public function test_season_theme_renders_in_season_band(): void
     {
         $season = Theme::factory()->season()->create(['title' => 'Zomer']);

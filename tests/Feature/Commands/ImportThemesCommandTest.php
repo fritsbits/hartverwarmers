@@ -4,6 +4,7 @@ namespace Tests\Feature\Commands;
 
 use App\Models\Fiche;
 use App\Models\Theme;
+use App\Models\ThemeOccurrence;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -164,6 +165,62 @@ class ImportThemesCommandTest extends TestCase
 
         $this->assertCount(1, Theme::where('slug', 'wereldyogadag')->first()->fiches);
         @unlink($shrunken);
+    }
+
+    public function test_occurrence_removed_from_a_year_block_is_deleted(): void
+    {
+        $this->createFixtureFiches();
+
+        $this->artisan('themes:import', ['--file' => $this->fixturePath])->assertExitCode(0);
+
+        $shrunken = tempnam(sys_get_temp_dir(), 'themes-shrunken');
+        $payload = json_decode(file_get_contents($this->fixturePath), true);
+        $payload['occurrences_2026'] = [$payload['occurrences_2026'][0]];
+        file_put_contents($shrunken, json_encode($payload));
+
+        $this->artisan('themes:import', ['--file' => $shrunken])
+            ->expectsOutputToContain('Occurrence verwijderd: zomer (2026)')
+            ->assertExitCode(0);
+
+        $this->assertSame(0, Theme::where('slug', 'zomer')->first()->occurrences()->count());
+        $this->assertSame(1, Theme::where('slug', 'wereldyogadag')->first()->occurrences()->count());
+        @unlink($shrunken);
+    }
+
+    public function test_dry_run_keeps_an_occurrence_removed_from_a_year_block(): void
+    {
+        $this->createFixtureFiches();
+
+        $this->artisan('themes:import', ['--file' => $this->fixturePath])->assertExitCode(0);
+
+        $shrunken = tempnam(sys_get_temp_dir(), 'themes-shrunken');
+        $payload = json_decode(file_get_contents($this->fixturePath), true);
+        $payload['occurrences_2026'] = [$payload['occurrences_2026'][0]];
+        file_put_contents($shrunken, json_encode($payload));
+
+        $this->artisan('themes:import', ['--file' => $shrunken, '--dry-run' => true])
+            ->expectsOutputToContain('Occurrence verwijderd: zomer (2026)')
+            ->assertExitCode(0);
+
+        $this->assertSame(1, Theme::where('slug', 'zomer')->first()->occurrences()->count());
+        @unlink($shrunken);
+    }
+
+    public function test_occurrences_outside_the_json_year_blocks_and_themes_are_kept(): void
+    {
+        $this->createFixtureFiches();
+
+        $this->artisan('themes:import', ['--file' => $this->fixturePath])->assertExitCode(0);
+
+        $yoga = Theme::where('slug', 'wereldyogadag')->first();
+        ThemeOccurrence::factory()->for($yoga)->create(['year' => 2025, 'start_date' => '2025-06-21']);
+        $removedTheme = Theme::factory()->create(['slug' => 'geschrapt-thema']);
+        ThemeOccurrence::factory()->for($removedTheme)->create(['year' => 2026, 'start_date' => '2026-03-01']);
+
+        $this->artisan('themes:import', ['--file' => $this->fixturePath])->assertExitCode(0);
+
+        $this->assertSame(2, $yoga->occurrences()->count());
+        $this->assertSame(1, $removedTheme->occurrences()->count());
     }
 
     public function test_theme_without_fiche_slugs_key_keeps_existing_links(): void
