@@ -137,4 +137,57 @@ class ProductUpdatesTest extends TestCase
         $this->assertNull(ProductUpdates::renderContent(['body' => 'Enkel een teaser.']));
         $this->assertNull(ProductUpdates::renderContent(['content' => '   ']));
     }
+
+    public function test_promoted_returns_an_update_until_its_promote_date_passes(): void
+    {
+        $this->putUpdate('2026-11-kalender', '2026-11-02', [
+            'promote' => ['until' => '2027-01-31', 'label' => 'Download de kalender'],
+        ]);
+
+        $this->assertSame('2026-11-kalender', ProductUpdates::promoted(Carbon::parse('2027-01-31 18:00'))['uid']);
+        $this->assertNull(ProductUpdates::promoted(Carbon::parse('2027-02-01 08:00')));
+    }
+
+    public function test_promoted_ignores_an_update_published_in_the_future(): void
+    {
+        $this->putUpdate('2026-11-kalender', '2026-11-20', [
+            'promote' => ['until' => '2027-01-31', 'label' => 'Download de kalender'],
+        ]);
+
+        $this->assertNull(ProductUpdates::promoted(Carbon::parse('2026-11-10')));
+    }
+
+    public function test_promoted_ignores_updates_without_a_complete_promote_block(): void
+    {
+        $this->putUpdate('2026-11-zonder-label', '2026-11-02', ['promote' => ['until' => '2027-01-31']]);
+        $this->putUpdate('2026-11-gewoon', '2026-11-01');
+
+        $this->assertNull(ProductUpdates::promoted(Carbon::parse('2026-11-10')));
+    }
+
+    public function test_latest_fresh_skips_the_promoted_update(): void
+    {
+        $this->putUpdate('2026-11-kalender', '2026-11-02', [
+            'promote' => ['until' => '2027-01-31', 'label' => 'Download de kalender'],
+        ]);
+        $this->putUpdate('2026-10-gewoon', '2026-10-15');
+
+        $now = Carbon::parse('2026-11-10');
+
+        $this->assertSame('2026-10-gewoon', ProductUpdates::latestFresh($now)['uid']);
+        $this->assertSame('2026-11-kalender', ProductUpdates::promoted($now)['uid']);
+    }
+
+    public function test_a_newer_update_does_not_push_out_the_promoted_one(): void
+    {
+        $this->putUpdate('2026-11-kalender', '2026-11-02', [
+            'promote' => ['until' => '2027-01-31', 'label' => 'Download de kalender'],
+        ]);
+        $this->putUpdate('2026-12-nieuwer', '2026-12-01');
+
+        $now = Carbon::parse('2026-12-10');
+
+        $this->assertSame('2026-12-nieuwer', ProductUpdates::latestFresh($now)['uid']);
+        $this->assertSame('2026-11-kalender', ProductUpdates::promoted($now)['uid']);
+    }
 }

@@ -54,10 +54,10 @@ class SendMonthlyCohortNewsletter extends Command
                         $user->forceFill(['last_digest_diamond_fiche_id' => $userPayload->diamond->id])->saveQuietly();
                     }
 
-                    if ($userPayload->productUpdate) {
+                    foreach (array_filter([$userPayload->productUpdate, $userPayload->promotedUpdate]) as $update) {
                         ProductUpdateSend::firstOrCreate([
                             'user_id' => $user->id,
-                            'update_uid' => $userPayload->productUpdate['uid'],
+                            'update_uid' => $update['uid'],
                         ], [
                             'sent_at' => now(),
                         ]);

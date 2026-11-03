@@ -311,4 +311,79 @@ class SendMonthlyCohortNewsletterTest extends TestCase
         $this->assertStringContainsString('Titel 2026-05-vers', $html);
         $this->assertStringContainsString('Bekijk de themakalender', $html);
     }
+
+    private function putPromotedUpdate(string $uid, string $publishedAt, string $until): void
+    {
+        Storage::disk('content')->put("updates/{$uid}.json", json_encode([
+            'uid' => $uid,
+            'published_at' => $publishedAt,
+            'title' => "Titel {$uid}",
+            'body' => 'Korte tekst.',
+            'link' => ['url' => '/downloads/kalender.pdf', 'label' => 'Download de kalender (pdf)'],
+            'promote' => ['until' => $until, 'label' => 'Bekijk en download de kalender'],
+        ]));
+    }
+
+    public function test_promoted_update_travels_alongside_a_newer_regular_update(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2026-12-10 08:00:00');
+        Storage::fake('content');
+        $this->putPromotedUpdate('2026-11-kalender', '2026-11-02', '2027-01-31');
+        $this->putProductUpdate('2026-12-nieuwer', '2026-12-01');
+
+        Fiche::factory()->published()->create();
+        $user = User::factory()->create(['created_at' => now()->subDays(30)]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        Notification::assertSentTo(
+            $user,
+            MonthlyDigestNotification::class,
+            fn (MonthlyDigestNotification $notification) => $notification->payload->promotedUpdate['uid'] === '2026-11-kalender'
+                && $notification->payload->productUpdate['uid'] === '2026-12-nieuwer'
+        );
+        $this->assertDatabaseHas('product_update_sends', ['user_id' => $user->id, 'update_uid' => '2026-11-kalender']);
+        $this->assertDatabaseHas('product_update_sends', ['user_id' => $user->id, 'update_uid' => '2026-12-nieuwer']);
+    }
+
+    public function test_promoted_update_is_never_sent_twice_to_the_same_user(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2026-12-10 08:00:00');
+        Storage::fake('content');
+        $this->putPromotedUpdate('2026-11-kalender', '2026-11-02', '2027-01-31');
+
+        Fiche::factory()->published()->create();
+        $user = User::factory()->create(['created_at' => now()->subDays(60)]);
+        ProductUpdateSend::create(['user_id' => $user->id, 'update_uid' => '2026-11-kalender', 'sent_at' => now()->subDays(30)]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        Notification::assertSentTo(
+            $user,
+            MonthlyDigestNotification::class,
+            fn (MonthlyDigestNotification $notification) => $notification->payload->promotedUpdate === null
+        );
+        $this->assertDatabaseCount('product_update_sends', 1);
+    }
+
+    public function test_promoted_update_leaves_the_digest_after_its_promote_date(): void
+    {
+        Notification::fake();
+        Carbon::setTestNow('2027-02-01 08:00:00');
+        Storage::fake('content');
+        $this->putPromotedUpdate('2026-11-kalender', '2026-11-02', '2027-01-31');
+
+        Fiche::factory()->published()->create();
+        $user = User::factory()->create(['created_at' => now()->subDays(30)]);
+
+        $this->artisan('newsletter:send-monthly-cohort')->assertSuccessful();
+
+        Notification::assertSentTo(
+            $user,
+            MonthlyDigestNotification::class,
+            fn (MonthlyDigestNotification $notification) => $notification->payload->promotedUpdate === null
+        );
+    }
 }

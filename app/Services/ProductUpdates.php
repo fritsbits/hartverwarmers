@@ -13,7 +13,7 @@ class ProductUpdates
     /**
      * All product updates from the content disk, newest first.
      *
-     * @return Collection<int, array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}}>
+     * @return Collection<int, array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}, promote?: array{until: string, label: string}}>
      */
     public static function all(): Collection
     {
@@ -28,7 +28,7 @@ class ProductUpdates
     /**
      * A single update by uid, or null when it does not exist.
      *
-     * @return array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}}|null
+     * @return array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}, promote?: array{until: string, label: string}}|null
      */
     public static function find(string $uid): ?array
     {
@@ -36,13 +36,15 @@ class ProductUpdates
     }
 
     /**
-     * The newest update, or null when there is none or it is older than 60 days.
+     * The newest update that is not promoted right now, or null when there is
+     * none or it is older than 60 days. A promoted update has its own digest
+     * block, so it does not also take this slot.
      *
-     * @return array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}}|null
+     * @return array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}, promote?: array{until: string, label: string}}|null
      */
     public static function latestFresh(Carbon $now): ?array
     {
-        $update = self::all()->first();
+        $update = self::all()->first(fn (array $update) => ! self::isPromoted($update, $now));
 
         if ($update === null) {
             return null;
@@ -56,9 +58,36 @@ class ProductUpdates
     }
 
     /**
+     * The newest published update whose `promote.until` date has not passed.
+     * It gets a standalone block in the monthly digest that links to its
+     * announcement page, so a newer update cannot push it out of the mail.
+     *
+     * @return array{uid: string, published_at: string, title: string, body: string, promote: array{until: string, label: string}}|null
+     */
+    public static function promoted(Carbon $now): ?array
+    {
+        return self::all()->first(fn (array $update) => self::isPromoted($update, $now));
+    }
+
+    /**
+     * @param  array{published_at: string, promote?: array{until?: string}}  $update
+     */
+    private static function isPromoted(array $update, Carbon $now): bool
+    {
+        $until = $update['promote']['until'] ?? null;
+
+        if (! is_string($until) || ! isset($update['promote']['label'])) {
+            return false;
+        }
+
+        return Carbon::parse($update['published_at'])->lte($now)
+            && Carbon::parse($until)->endOfDay()->gte($now);
+    }
+
+    /**
      * The update published just after $uid (newer), or null at the top of the list.
      *
-     * @return array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}}|null
+     * @return array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}, promote?: array{until: string, label: string}}|null
      */
     public static function newerThan(string $uid): ?array
     {
@@ -71,7 +100,7 @@ class ProductUpdates
     /**
      * The update published just before $uid (older), or null at the bottom of the list.
      *
-     * @return array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}}|null
+     * @return array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}, promote?: array{until: string, label: string}}|null
      */
     public static function olderThan(string $uid): ?array
     {
@@ -84,7 +113,7 @@ class ProductUpdates
     /**
      * Write an update to the content disk as updates/{uid}.json.
      *
-     * @param  array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}}  $update
+     * @param  array{uid: string, published_at: string, title: string, body: string, content?: string, image?: array{src: string, alt: string}, link?: array{url: string, label: string}, promote?: array{until: string, label: string}}  $update
      */
     public static function save(array $update): void
     {

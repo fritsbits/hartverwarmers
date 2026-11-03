@@ -79,6 +79,24 @@
                     </td>
                 </tr>
                 @endif
+                @if ($payload->promotedUpdate)
+                <tr>
+                    <td style="padding:0 0 36px 0">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="card" style="background:#FDF3EE;border:1px solid #EBE4DE;border-top:4px solid #E8764B;border-radius:10px">
+                            <tr>
+                                <td style="padding:22px">
+                                    <div class="section-label" style="margin-bottom:10px">Gratis voor jullie team</div>
+                                    <div class="heading-serif" style="font-size:21px;line-height:1.25;margin-bottom:10px">{{ $payload->promotedUpdate['title'] }}</div>
+                                    <p style="margin:0;color:#231E1A;font-size:14px;line-height:1.6">{{ $payload->promotedUpdate['body'] }}</p>
+                                    <div style="margin-top:16px">
+                                        <a href="{{ \App\Support\NewsletterLink::tracked($notifiable, \App\Support\EmailLink::to(route('whats-new.show', $payload->promotedUpdate['uid']), 'monthly-digest', 'newsletter', 'promoted-update')) }}" style="color:#E8764B;font-weight:600;font-size:14px;text-decoration:none">{{ $payload->promotedUpdate['promote']['label'] }} &rarr;</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                @endif
                 @if ($payload->diamond)
                 <tr>
                     <td style="padding:0 0 36px 0">

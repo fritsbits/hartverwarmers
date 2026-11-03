@@ -119,6 +119,9 @@ class AdminProductUpdates extends Component
             'link' => trim($this->linkUrl) !== ''
                 ? ['url' => trim($this->linkUrl), 'label' => trim($this->linkLabel)]
                 : null,
+            'promote' => $this->originalUid !== null
+                ? (ProductUpdates::find($this->originalUid)['promote'] ?? null)
+                : null,
         ]));
 
         Flux::toast($this->originalUid !== null ? 'Update aangepast.' : 'Update toegevoegd.', variant: 'success');

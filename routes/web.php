@@ -158,6 +158,7 @@ Route::get('/{slug}', [ContentController::class, 'content'])
 // What's new (product updates)
 Route::get('/wat-is-er-nieuw', [WhatsNewController::class, 'index'])->name('whats-new');
 Route::get('/wat-is-er-nieuw/{uid}', [WhatsNewController::class, 'show'])->name('whats-new.show');
+Route::redirect('/jaarkalender', '/wat-is-er-nieuw/2026-11-themakalender-2027')->name('year-calendar');
 
 // About
 Route::view('/over-ons', 'about')->name('about');

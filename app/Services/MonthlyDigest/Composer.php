@@ -54,6 +54,7 @@ class Composer
             newFicheCount: $newFicheCount,
             sentAt: $now,
             productUpdate: ProductUpdates::latestFresh($now),
+            promotedUpdate: ProductUpdates::promoted($now),
         );
     }
 

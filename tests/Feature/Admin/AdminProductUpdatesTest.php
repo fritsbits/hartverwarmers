@@ -226,6 +226,24 @@ class AdminProductUpdatesTest extends TestCase
         $this->assertSame(['url' => '/themas', 'label' => 'Bekijk de themakalender'], $saved['link']);
     }
 
+    public function test_editing_an_update_keeps_its_promote_block(): void
+    {
+        Storage::fake('content');
+        $this->putUpdate('2026-11-kalender', '2026-11-02', 'Themakalender 2027', [
+            'promote' => ['until' => '2027-01-31', 'label' => 'Bekijk en download de kalender'],
+        ]);
+
+        Livewire::actingAs($this->createAdmin())
+            ->test(AdminProductUpdates::class)
+            ->call('edit', '2026-11-kalender')
+            ->set('title', 'Themakalender 2027 om af te drukken')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $saved = json_decode(Storage::disk('content')->get('updates/2026-11-kalender.json'), true);
+        $this->assertSame(['until' => '2027-01-31', 'label' => 'Bekijk en download de kalender'], $saved['promote']);
+    }
+
     public function test_admin_can_delete_an_update(): void
     {
         Storage::fake('content');

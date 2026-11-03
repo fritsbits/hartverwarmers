@@ -796,4 +796,30 @@ class MonthlyDigestNotificationTest extends TestCase
             sentAt: now(),
         );
     }
+
+    public function test_promoted_update_links_to_its_announcement_page_not_the_download(): void
+    {
+        $payload = $this->emptyPayload();
+        $payload->promotedUpdate = [
+            'uid' => '2026-11-themakalender-2027',
+            'published_at' => '2026-11-02',
+            'title' => 'Themakalender 2027 om af te drukken',
+            'body' => 'Het hele jaar in één gratis pdf.',
+            'link' => ['url' => '/downloads/hartverwarmers-themakalender-2027.pdf', 'label' => 'Download de kalender (pdf)'],
+            'promote' => ['until' => '2027-01-31', 'label' => 'Bekijk en download de kalender'],
+        ];
+
+        $html = (new MonthlyDigestNotification($payload))->toMail(User::factory()->create())->render();
+
+        $this->assertStringContainsString('Gratis voor jullie team', $html);
+        $this->assertStringContainsString('Themakalender 2027 om af te drukken', $html);
+        $this->assertStringContainsString('Bekijk en download de kalender', $html);
+        preg_match_all('/[?&]amp;to=([^&"]+)|[?&]to=([^&"]+)/', $html, $matches);
+        $destinations = collect(array_merge($matches[1], $matches[2]))
+            ->filter()
+            ->map(fn (string $encoded): string => base64_decode(urldecode($encoded)));
+
+        $this->assertTrue($destinations->contains(fn (string $url): bool => str_contains($url, '/wat-is-er-nieuw/2026-11-themakalender-2027')));
+        $this->assertFalse($destinations->contains(fn (string $url): bool => str_contains($url, '.pdf')));
+    }
 }

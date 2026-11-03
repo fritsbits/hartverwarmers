@@ -3,6 +3,7 @@
 namespace Tests\Feature\Pages;
 
 use App\Models\User;
+use App\Services\ProductUpdates;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -216,5 +217,23 @@ class WhatsNewPageTest extends TestCase
 
         $response->assertDontSee('Hartverwarmers is volledig vernieuwd');
         $response->assertSee('Dit kan je nu allemaal');
+    }
+
+    public function test_year_calendar_short_link_redirects_to_its_announcement(): void
+    {
+        $this->get('/jaarkalender')->assertRedirect('/wat-is-er-nieuw/2026-11-themakalender-2027');
+    }
+
+    public function test_year_calendar_announcement_points_its_button_at_the_pdf(): void
+    {
+        $update = ProductUpdates::find('2026-11-themakalender-2027');
+
+        $this->assertNotNull($update);
+        $this->assertFileExists(public_path($update['link']['url']));
+        $this->assertFileExists(public_path($update['image']['src']));
+
+        $this->get(route('whats-new.show', $update['uid']))
+            ->assertOk()
+            ->assertSee('href="'.url($update['link']['url']).'"', false);
     }
 }

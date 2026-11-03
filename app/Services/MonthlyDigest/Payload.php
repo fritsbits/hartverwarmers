@@ -22,6 +22,7 @@ class Payload
         public int $newFicheCount,
         public Carbon $sentAt,
         public ?array $productUpdate = null,
+        public ?array $promotedUpdate = null,
     ) {}
 
     public function isEmpty(): bool
@@ -32,14 +33,15 @@ class Payload
     /**
      * Personalise the shared payload for one recipient. A user never sees
      * the same diamond in two consecutive digests, and never receives the
-     * same product update twice.
+     * same product update twice, promoted or not.
      */
     public function forUser(User $user): self
     {
         $dropDiamond = $this->diamond && $this->diamond->id === $user->last_digest_diamond_fiche_id;
         $dropUpdate = $this->productUpdate && $user->hasSeenProductUpdate($this->productUpdate['uid']);
+        $dropPromoted = $this->promotedUpdate && $user->hasSeenProductUpdate($this->promotedUpdate['uid']);
 
-        if (! $dropDiamond && ! $dropUpdate) {
+        if (! $dropDiamond && ! $dropUpdate && ! $dropPromoted) {
             return $this;
         }
 
@@ -51,6 +53,10 @@ class Payload
 
         if ($dropUpdate) {
             $personalised->productUpdate = null;
+        }
+
+        if ($dropPromoted) {
+            $personalised->promotedUpdate = null;
         }
 
         return $personalised;

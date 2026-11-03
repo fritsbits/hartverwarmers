@@ -3,20 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Theme;
-use App\Services\JsonContent;
+use App\Services\ThemeCalendar;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class ThemeController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, ThemeCalendar $calendar): View
     {
         $month = $this->parseMonth($request->query('maand'));
 
-        $themes = $this->themesForMonth($month);
+        $themes = $calendar->themesForMonth($month);
 
         [$seasonThemes, $dayThemes] = $themes->partition(fn (Theme $t) => $t->is_month);
 
@@ -36,7 +34,7 @@ class ThemeController extends Controller
 
         return view('themes.index', [
             'month' => $month,
-            'monthIntro' => $this->loadMonthIntro($month->month),
+            'monthIntro' => $calendar->monthIntro($month->month),
             'seasonThemes' => $seasonThemes->values(),
             'dayThemes' => $dayThemes->values(),
             'themesByDate' => $themesByDate,
@@ -44,58 +42,9 @@ class ThemeController extends Controller
         ]);
     }
 
-    public function print(Request $request): View
+    public function print(Request $request, ThemeCalendar $calendar): View
     {
-        $month = $this->parseMonth($request->query('maand'));
-
-        $themes = $this->themesForMonth($month);
-
-        [$seasonThemes, $dayThemes] = $themes->partition(fn (Theme $t) => $t->is_month);
-
-        return view('themes.print', [
-            'month' => $month,
-            'monthIntro' => $this->loadMonthIntro($month->month),
-            'seasonThemes' => $seasonThemes->values(),
-            'dayThemes' => $dayThemes->values(),
-        ]);
-    }
-
-    private function themesForMonth(CarbonImmutable $month): Collection
-    {
-        return Cache::remember(
-            'themes:index:'.$month->format('Y-m'),
-            now()->addMinutes(15),
-            fn () => Theme::query()
-                ->forMonth($month->year, $month->month)
-                ->with([
-                    'occurrences' => fn ($q) => $q->where('year', $month->year),
-                    'fiches' => fn ($q) => $q->published()->with('initiative', 'user')->withCount('comments'),
-                ])
-                ->get()
-                ->sortBy(fn (Theme $t) => optional($t->occurrences->first())->start_date)
-                ->values()
-        );
-    }
-
-    /**
-     * @return array{title: string, intro: string}|null
-     */
-    private function loadMonthIntro(int $month): ?array
-    {
-        $all = Cache::rememberForever(
-            'themes:monthly-intros',
-            fn () => JsonContent::getContent('themes/monthly-intros') ?: []
-        );
-        if (! is_array($all) || ! isset($all[(string) $month])) {
-            return null;
-        }
-
-        $entry = $all[(string) $month];
-        if (! is_array($entry) || empty($entry['title']) || empty($entry['intro'])) {
-            return null;
-        }
-
-        return ['title' => $entry['title'], 'intro' => $entry['intro']];
+        return view('themes.print', $calendar->printSheet($this->parseMonth($request->query('maand'))));
     }
 
     private function parseMonth(?string $input): CarbonImmutable
