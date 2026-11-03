@@ -7,15 +7,15 @@ use App\Models\Initiative;
 use App\Models\InteractionEvent;
 use App\Models\UserInteraction;
 use App\Services\FicheInteractionService;
+use App\Services\FicheStorage\DownloadBusy;
+use App\Services\FicheStorage\FicheDownloader;
+use App\Services\FicheStorage\ObjectMissing;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use ZipArchive;
 
 class FicheController extends Controller
 {
@@ -97,7 +97,7 @@ class FicheController extends Controller
         ]);
     }
 
-    public function downloadFiles(Initiative $initiative, Fiche $fiche): BinaryFileResponse|StreamedResponse
+    public function downloadFiles(Initiative $initiative, Fiche $fiche, FicheDownloader $downloader): BinaryFileResponse|RedirectResponse
     {
         if (! $initiative->published || ! $fiche->published) {
             abort(404);
@@ -107,6 +107,18 @@ class FicheController extends Controller
 
         if ($files->isEmpty()) {
             abort(404);
+        }
+
+        try {
+            $response = $downloader->respond($fiche, $files);
+        } catch (DownloadBusy) {
+            return redirect()->route('fiches.show', [$initiative, $fiche])
+                ->with('toast', ['text' => 'Het is even druk. Probeer het binnen een minuutje opnieuw.', 'variant' => 'warning']);
+        } catch (ObjectMissing $e) {
+            report($e);
+
+            return redirect()->route('fiches.show', [$initiative, $fiche])
+                ->with('toast', ['text' => 'Een bestand van deze fiche ontbreekt. We kijken het na.', 'variant' => 'danger']);
         }
 
         $fiche->increment('download_count');
@@ -124,37 +136,7 @@ class FicheController extends Controller
             'fiche_id' => $fiche->id,
         ]);
 
-        if ($files->count() === 1) {
-            $file = $files->first();
-
-            return response()->download(
-                Storage::disk('public')->path($file->path),
-                $file->original_filename,
-            );
-        }
-
-        // Multi-file: serve pre-built ZIP or fall back to on-the-fly
-        if ($fiche->zip_path && Storage::disk('public')->exists($fiche->zip_path)) {
-            return response()->download(
-                Storage::disk('public')->path($fiche->zip_path),
-                $fiche->slug.'-bestanden.zip',
-            );
-        }
-
-        // Fallback: generate on-the-fly (for fiches without pre-built ZIP)
-        $tempPath = tempnam(sys_get_temp_dir(), 'fiche-zip-');
-        $zip = new ZipArchive;
-        $zip->open($tempPath, ZipArchive::OVERWRITE);
-
-        foreach ($files as $file) {
-            $zip->addFile(Storage::disk('public')->path($file->path), $file->original_filename);
-        }
-
-        $zip->close();
-
-        return response()->download($tempPath, $fiche->slug.'-bestanden.zip', [
-            'Content-Type' => 'application/zip',
-        ])->deleteFileAfterSend();
+        return $response;
     }
 
     public function downloadGate(Initiative $initiative, Fiche $fiche): RedirectResponse

@@ -14,20 +14,22 @@ use App\Models\Tag;
 use App\Models\Theme;
 use App\Models\User;
 use App\Services\FichePurger;
+use App\Services\FicheStorage\MigrationRegister;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
+use League\Flysystem\UnableToDeleteFile;
 use Livewire\Livewire;
+use Tests\Concerns\FakesFicheStorage;
 use Tests\TestCase;
 
 class FichePurgeTest extends TestCase
 {
-    use RefreshDatabase;
+    use FakesFicheStorage, RefreshDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        Storage::fake('public');
+        $this->fakeFicheStorage();
     }
 
     /**
@@ -51,14 +53,14 @@ class FichePurgeTest extends TestCase
             'total_slides' => 43,
         ]);
 
-        Storage::disk('public')->put($file->path, 'pdf-bytes');
-        Storage::disk('public')->put($fiche->zip_path, 'zip-bytes');
+        $this->localFiles()->put($file->path, 'pdf-bytes');
+        $this->localFiles()->put($fiche->zip_path, 'zip-bytes');
 
         foreach ($file->preview_images as $preview) {
-            Storage::disk('public')->put($preview, 'jpg-bytes');
+            $this->localFiles()->put($preview, 'jpg-bytes');
         }
         foreach ($file->thumbnailPaths() as $thumb) {
-            Storage::disk('public')->put($thumb, 'jpg-bytes');
+            $this->localFiles()->put($thumb, 'jpg-bytes');
         }
 
         return $fiche->fresh();
@@ -70,12 +72,12 @@ class FichePurgeTest extends TestCase
 
         app(FichePurger::class)->purge($fiche);
 
-        Storage::disk('public')->assertMissing('files/media/4506/Actuaquiz-2023.pdf');
-        Storage::disk('public')->assertMissing('file-previews/4506/slide-001.jpg');
-        Storage::disk('public')->assertMissing('file-previews/4506/slide-002.jpg');
-        Storage::disk('public')->assertMissing('file-previews/4506/slide-001-thumb.jpg');
-        Storage::disk('public')->assertMissing('file-previews/4506/slide-002-thumb.jpg');
-        Storage::disk('public')->assertMissing('fiche-zips/actuaquiz.zip');
+        $this->localFiles()->assertMissing('files/media/4506/Actuaquiz-2023.pdf');
+        $this->localFiles()->assertMissing('file-previews/4506/slide-001.jpg');
+        $this->localFiles()->assertMissing('file-previews/4506/slide-002.jpg');
+        $this->localFiles()->assertMissing('file-previews/4506/slide-001-thumb.jpg');
+        $this->localFiles()->assertMissing('file-previews/4506/slide-002-thumb.jpg');
+        $this->localFiles()->assertMissing('fiche-zips/actuaquiz.zip');
     }
 
     public function test_purge_removes_the_emptied_media_directory(): void
@@ -86,18 +88,18 @@ class FichePurgeTest extends TestCase
 
         $this->assertNotContains(
             'files/media/4506',
-            Storage::disk('public')->directories('files/media'),
+            $this->localFiles()->directories('files/media'),
         );
     }
 
     public function test_purge_keeps_a_directory_that_still_holds_another_fiches_file(): void
     {
         $fiche = $this->ficheWithArtifacts();
-        Storage::disk('public')->put('files/media/4506/andere-fiche.pdf', 'pdf-bytes');
+        $this->localFiles()->put('files/media/4506/andere-fiche.pdf', 'pdf-bytes');
 
         app(FichePurger::class)->purge($fiche);
 
-        Storage::disk('public')->assertExists('files/media/4506/andere-fiche.pdf');
+        $this->localFiles()->assertExists('files/media/4506/andere-fiche.pdf');
     }
 
     public function test_purge_hard_deletes_the_fiche_and_its_file_rows(): void
@@ -117,13 +119,13 @@ class FichePurgeTest extends TestCase
         $source = File::factory()->pptx()->create(['fiche_id' => $fiche->id]);
         $generated = File::factory()->generatedPdf($source)->create();
 
-        Storage::disk('public')->put($source->path, 'pptx-bytes');
-        Storage::disk('public')->put($generated->path, 'pdf-bytes');
+        $this->localFiles()->put($source->path, 'pptx-bytes');
+        $this->localFiles()->put($generated->path, 'pdf-bytes');
 
         app(FichePurger::class)->purge($fiche->fresh());
 
-        Storage::disk('public')->assertMissing($source->path);
-        Storage::disk('public')->assertMissing($generated->path);
+        $this->localFiles()->assertMissing($source->path);
+        $this->localFiles()->assertMissing($generated->path);
         $this->assertDatabaseMissing('files', ['id' => $generated->id]);
     }
 
@@ -182,14 +184,14 @@ class FichePurgeTest extends TestCase
 
         $survivor = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
         $survivorFile = File::factory()->create(['fiche_id' => $survivor->id]);
-        Storage::disk('public')->put($survivorFile->path, 'pdf-bytes');
+        $this->localFiles()->put($survivorFile->path, 'pdf-bytes');
 
         app(FichePurger::class)->purge($target);
 
         $this->assertDatabaseHas('fiches', ['id' => $survivor->id]);
         $this->assertDatabaseHas('files', ['id' => $survivorFile->id]);
         $this->assertDatabaseHas('initiatives', ['id' => $initiative->id]);
-        Storage::disk('public')->assertExists($survivorFile->path);
+        $this->localFiles()->assertExists($survivorFile->path);
     }
 
     public function test_purge_reports_what_it_removed(): void
@@ -219,8 +221,8 @@ class FichePurgeTest extends TestCase
 
         app(FichePurger::class)->purgeFile($file);
 
-        Storage::disk('public')->assertMissing($file->path);
-        Storage::disk('public')->assertMissing('file-previews/4506/slide-001-thumb.jpg');
+        $this->localFiles()->assertMissing($file->path);
+        $this->localFiles()->assertMissing('file-previews/4506/slide-001-thumb.jpg');
         $this->assertDatabaseMissing('files', ['id' => $file->id]);
         $this->assertDatabaseHas('fiches', ['id' => $fiche->id]);
     }
@@ -228,7 +230,7 @@ class FichePurgeTest extends TestCase
     public function test_purge_survives_artifacts_that_are_already_gone_from_disk(): void
     {
         $fiche = $this->ficheWithArtifacts();
-        Storage::disk('public')->delete($fiche->files->first()->path);
+        $this->localFiles()->delete($fiche->files->first()->path);
 
         $summary = app(FichePurger::class)->purge($fiche);
 
@@ -268,7 +270,7 @@ class FichePurgeTest extends TestCase
             ->assertHasNoErrors();
 
         $this->assertDatabaseMissing('fiches', ['id' => $fiche->id]);
-        Storage::disk('public')->assertMissing('files/media/4506/Actuaquiz-2023.pdf');
+        $this->localFiles()->assertMissing('files/media/4506/Actuaquiz-2023.pdf');
     }
 
     public function test_purge_does_nothing_without_the_exact_confirmation_word(): void
@@ -284,7 +286,7 @@ class FichePurgeTest extends TestCase
             ->assertHasErrors('purgeConfirmation');
 
         $this->assertDatabaseHas('fiches', ['id' => $fiche->id]);
-        Storage::disk('public')->assertExists('files/media/4506/Actuaquiz-2023.pdf');
+        $this->localFiles()->assertExists('files/media/4506/Actuaquiz-2023.pdf');
     }
 
     public function test_non_admin_cannot_purge_a_fiche(): void
@@ -318,15 +320,15 @@ class FichePurgeTest extends TestCase
 
         $live = Fiche::factory()->published()->create();
         $liveFile = File::factory()->create(['fiche_id' => $live->id]);
-        Storage::disk('public')->put($liveFile->path, 'pdf-bytes');
+        $this->localFiles()->put($liveFile->path, 'pdf-bytes');
 
         $this->artisan('fiche:purge-trashed --force')->assertSuccessful();
 
         $this->assertDatabaseMissing('fiches', ['id' => $trashed->id]);
-        Storage::disk('public')->assertMissing('files/media/4506/Actuaquiz-2023.pdf');
+        $this->localFiles()->assertMissing('files/media/4506/Actuaquiz-2023.pdf');
 
         $this->assertDatabaseHas('fiches', ['id' => $live->id]);
-        Storage::disk('public')->assertExists($liveFile->path);
+        $this->localFiles()->assertExists($liveFile->path);
     }
 
     public function test_purge_trashed_command_reports_when_there_is_nothing_to_do(): void
@@ -336,5 +338,83 @@ class FichePurgeTest extends TestCase
         $this->artisan('fiche:purge-trashed --force')
             ->expectsOutputToContain('Geen verwijderde fiches gevonden.')
             ->assertSuccessful();
+    }
+
+    /**
+     * Put the same bytes on the local and the remote disks, as mirror mode does.
+     */
+    private function mirrorArtifacts(Fiche $fiche): void
+    {
+        $file = $fiche->files->first();
+
+        $this->remoteFiles()->put($file->path, 'pdf-bytes');
+
+        foreach ([...$file->preview_images, ...$file->thumbnailPaths()] as $preview) {
+            $this->remotePreviews()->put($preview, 'jpg-bytes');
+        }
+    }
+
+    public function test_mirror_purge_removes_every_artifact_from_both_disks_and_all_versions(): void
+    {
+        $this->fakeFicheStorage('mirror');
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = $this->ficheWithArtifacts($initiative);
+        $this->mirrorArtifacts($fiche);
+
+        $survivor = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);
+        $survivorFile = File::factory()->create(['fiche_id' => $survivor->id]);
+        $this->localFiles()->put($survivorFile->path, 'keep');
+        $this->remoteFiles()->put($survivorFile->path, 'keep');
+
+        app(FichePurger::class)->purge($fiche);
+
+        $original = 'files/media/4506/Actuaquiz-2023.pdf';
+        $previews = ['file-previews/4506/slide-001.jpg', 'file-previews/4506/slide-002.jpg', 'file-previews/4506/slide-001-thumb.jpg', 'file-previews/4506/slide-002-thumb.jpg'];
+
+        $this->localFiles()->assertMissing($original);
+        $this->remoteFiles()->assertMissing($original);
+        $this->localFiles()->assertMissing('fiche-zips/actuaquiz.zip');
+        foreach ($previews as $preview) {
+            $this->localPreviews()->assertMissing($preview);
+            $this->remotePreviews()->assertMissing($preview);
+        }
+
+        $this->assertEqualsCanonicalizing([$original, ...$previews], $this->objectVersions->purged);
+        $this->localFiles()->assertExists($survivorFile->path);
+        $this->remoteFiles()->assertExists($survivorFile->path);
+        $this->assertNotContains($survivorFile->path, $this->objectVersions->purged);
+    }
+
+    public function test_mirror_purge_marks_the_objects_deleted_in_the_register(): void
+    {
+        $this->fakeFicheStorage('mirror');
+        $fiche = $this->ficheWithArtifacts();
+        $this->mirrorArtifacts($fiche);
+
+        app(FichePurger::class)->purge($fiche);
+
+        $register = app(MigrationRegister::class);
+        $this->assertSame(MigrationRegister::STATE_DELETED, $register->object('files', 'files/media/4506/Actuaquiz-2023.pdf')->state);
+        $this->assertSame(MigrationRegister::STATE_DELETED, $register->object('previews', 'file-previews/4506/slide-001-thumb.jpg')->state);
+    }
+
+    public function test_purge_throws_and_keeps_the_rows_when_the_remote_delete_fails(): void
+    {
+        $this->fakeFicheStorage('mirror');
+        $fiche = $this->ficheWithArtifacts();
+        $fileId = $fiche->files->first()->id;
+        $this->mirrorArtifacts($fiche);
+        $this->breakRemote('fiche-files-s3', 'delete');
+
+        $thrown = null;
+        try {
+            app(FichePurger::class)->purge($fiche);
+        } catch (UnableToDeleteFile $e) {
+            $thrown = $e;
+        }
+
+        $this->assertNotNull($thrown, 'The purge must surface the failed remote delete.');
+        $this->assertDatabaseHas('fiches', ['id' => $fiche->id]);
+        $this->assertDatabaseHas('files', ['id' => $fileId]);
     }
 }

@@ -9,14 +9,14 @@ use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
+use Tests\Concerns\FakesFicheStorage;
 use Tests\TestCase;
 
 class FicheEditTest extends TestCase
 {
-    use RefreshDatabase;
+    use FakesFicheStorage, RefreshDatabase;
 
     public function test_guest_is_redirected_to_login(): void
     {
@@ -136,7 +136,7 @@ class FicheEditTest extends TestCase
 
     public function test_edit_rejects_invalid_file_types_with_dutch_message(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $fiche = Fiche::factory()->published()->create(['user_id' => $user->id]);
 
@@ -153,7 +153,7 @@ class FicheEditTest extends TestCase
 
     public function test_edit_rejects_oversized_files_with_dutch_message(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $fiche = Fiche::factory()->published()->create(['user_id' => $user->id]);
 
@@ -222,5 +222,26 @@ class FicheEditTest extends TestCase
 
         $fiche->refresh();
         $this->assertEquals('Een activiteit met warme touch.', $fiche->description);
+    }
+
+    public function test_edit_upload_extracts_text_and_stores_the_file_on_both_disks_in_mirror_mode(): void
+    {
+        $this->fakeFicheStorage('mirror');
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->published()->create(['user_id' => $user->id]);
+
+        $upload = UploadedFile::fake()->create('sample.docx', 10, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        file_put_contents($upload->getRealPath(), file_get_contents(base_path('tests/fixtures/sample.docx')));
+
+        Livewire::actingAs($user)
+            ->test(FicheEdit::class, ['fiche' => $fiche])
+            ->set('newUploads', [$upload])
+            ->assertHasNoErrors();
+
+        $file = $fiche->files()->first();
+        $this->assertNotNull($file);
+        $this->assertStringContainsString('Hello DOCX Test', (string) $file->extracted_text);
+        $this->localFiles()->assertExists($file->path);
+        $this->remoteFiles()->assertExists($file->path);
     }
 }

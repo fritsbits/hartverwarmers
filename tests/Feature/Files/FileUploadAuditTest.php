@@ -8,17 +8,17 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
+use Tests\Concerns\FakesFicheStorage;
 use Tests\TestCase;
 
 class FileUploadAuditTest extends TestCase
 {
-    use RefreshDatabase;
+    use FakesFicheStorage, RefreshDatabase;
 
     public function test_step1_requires_disclaimer_when_files_uploaded(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         Queue::fake();
         $user = User::factory()->create();
 
@@ -32,7 +32,7 @@ class FileUploadAuditTest extends TestCase
 
     public function test_step1_proceeds_when_disclaimer_accepted(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         Queue::fake();
         $user = User::factory()->create();
 
@@ -47,7 +47,7 @@ class FileUploadAuditTest extends TestCase
 
     public function test_upload_creates_audit_record(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         Queue::fake();
         $user = User::factory()->create();
 
@@ -65,7 +65,7 @@ class FileUploadAuditTest extends TestCase
 
     public function test_disclaimer_backfills_accepted_at_on_submit(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         Queue::fake();
         $user = User::factory()->create();
 
@@ -81,7 +81,7 @@ class FileUploadAuditTest extends TestCase
 
     public function test_audit_record_contains_sha256_hash(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         Queue::fake();
         $user = User::factory()->create();
 
@@ -95,7 +95,7 @@ class FileUploadAuditTest extends TestCase
 
     public function test_multiple_uploads_create_multiple_audit_records(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         Queue::fake();
         $user = User::factory()->create();
 

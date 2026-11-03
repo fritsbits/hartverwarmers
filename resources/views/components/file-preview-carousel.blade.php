@@ -5,6 +5,7 @@
     $dummies = [];
     $totalSlides = null;
     $pageUnit = 'slides';
+    $ficheStorage = app(\App\Services\FicheStorage\FicheStorage::class);
     foreach ($files as $file) {
         if ($file->hasPreviewImages()) {
             if ($totalSlides === null) {
@@ -12,7 +13,7 @@
                 $pageUnit = $file->pageUnitLabel();
             }
             foreach ($file->preview_images as $path) {
-                $previews[] = ['type' => 'preview', 'url' => Storage::url($path), 'filename' => $file->original_filename];
+                $previews[] = ['type' => 'preview', 'url' => $ficheStorage->previewUrl($path), 'filename' => $file->original_filename];
             }
         } else {
             $dummies[] = ['type' => 'dummy', 'file' => $file];

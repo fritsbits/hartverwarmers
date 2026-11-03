@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Services\FicheStorage\FicheStorage;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class ImportFiles extends Command
 {
@@ -58,7 +58,7 @@ class ImportFiles extends Command
                 }
 
                 // Verify file exists on disk
-                if (! Storage::disk('public')->exists($path)) {
+                if (! app(FicheStorage::class)->exists(FicheStorage::FILES, $path)) {
                     $this->warn("Missing file: {$path}");
                     $skippedMissing++;
 

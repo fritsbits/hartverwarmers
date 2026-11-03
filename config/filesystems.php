@@ -52,6 +52,64 @@ return [
             'root' => resource_path('content'),
         ],
 
+        /*
+         * Fiche files and previews. The local roots are exactly the public
+         * disk root because stored keys already start with files/ or
+         * file-previews/. Pick a disk through App\Services\FicheStorage\FicheStorage,
+         * never directly from business code.
+         */
+
+        'fiche-files-local' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'visibility' => 'public',
+            'throw' => true,
+            'report' => false,
+        ],
+
+        'fiche-previews-local' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'url' => rtrim(env('APP_URL', ''), '/').'/storage',
+            'visibility' => 'public',
+            'throw' => true,
+            'report' => false,
+        ],
+
+        'fiche-files-s3' => [
+            'driver' => 's3',
+            'key' => env('FICHE_STORAGE_ACCESS_KEY_ID'),
+            'secret' => env('FICHE_STORAGE_SECRET_ACCESS_KEY'),
+            'region' => env('FICHE_STORAGE_REGION', 'fsn1'),
+            'bucket' => env('FICHE_STORAGE_FILES_BUCKET'),
+            'endpoint' => env('FICHE_STORAGE_ENDPOINT', 'https://fsn1.your-objectstorage.com'),
+            'use_path_style_endpoint' => false,
+            'visibility' => 'private',
+            'request_checksum_calculation' => 'when_required',
+            'response_checksum_validation' => 'when_required',
+            'http' => ['connect_timeout' => 10, 'timeout' => 120],
+            'retries' => ['mode' => 'standard', 'max_attempts' => 3],
+            'throw' => true,
+            'report' => false,
+        ],
+
+        'fiche-previews-s3' => [
+            'driver' => 's3',
+            'key' => env('FICHE_STORAGE_ACCESS_KEY_ID'),
+            'secret' => env('FICHE_STORAGE_SECRET_ACCESS_KEY'),
+            'region' => env('FICHE_STORAGE_REGION', 'fsn1'),
+            'bucket' => env('FICHE_STORAGE_PREVIEWS_BUCKET'),
+            'endpoint' => env('FICHE_STORAGE_ENDPOINT', 'https://fsn1.your-objectstorage.com'),
+            'use_path_style_endpoint' => false,
+            'visibility' => 'public',
+            'request_checksum_calculation' => 'when_required',
+            'response_checksum_validation' => 'when_required',
+            'http' => ['connect_timeout' => 10, 'timeout' => 120],
+            'retries' => ['mode' => 'standard', 'max_attempts' => 3],
+            'throw' => true,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

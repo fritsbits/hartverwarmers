@@ -3,10 +3,10 @@
 namespace App\Jobs;
 
 use App\Models\File;
+use App\Services\FicheStorage\FicheStorage;
 use App\Services\FileTextExtractor;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Storage;
 
 class ExtractFileText implements ShouldQueue
 {
@@ -16,7 +16,7 @@ class ExtractFileText implements ShouldQueue
         public int $fileId,
     ) {}
 
-    public function handle(): void
+    public function handle(FicheStorage $storage, FileTextExtractor $extractor): void
     {
         $file = File::find($this->fileId);
 
@@ -24,9 +24,7 @@ class ExtractFileText implements ShouldQueue
             return;
         }
 
-        $extractor = app(FileTextExtractor::class);
-        $storagePath = Storage::disk('public')->path($file->path);
-        $text = $extractor->extract($storagePath, $file->mime_type);
+        $text = $storage->withLocalCopy(FicheStorage::FILES, $file->path, fn (string $path) => $extractor->extract($path, $file->mime_type));
 
         if ($text) {
             $file->update(['extracted_text' => $text]);

@@ -11,6 +11,7 @@ Artisan::command('inspire', function () {
 Schedule::command('fiches:assign-icons')->everyFiveMinutes();
 Schedule::command('fiches:assess-quality --limit=20')->hourly()->withoutOverlapping();
 Schedule::command('file:cleanup-orphans')->daily()->at('03:00');
+Schedule::command('files:storage-supervise')->everyMinute()->withoutOverlapping();
 Schedule::command('queue:heartbeat')->everyFiveMinutes();
 Schedule::command('queue:prune-failed --hours=168')->daily();
 Schedule::command('server:health-check')->everyFiveMinutes();

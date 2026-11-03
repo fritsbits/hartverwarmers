@@ -8,12 +8,12 @@ use App\Models\Initiative;
 use App\Models\InteractionEvent;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
+use Tests\Concerns\FakesFicheStorage;
 use Tests\TestCase;
 
 class InteractionEventTest extends TestCase
 {
-    use RefreshDatabase;
+    use FakesFicheStorage, RefreshDatabase;
 
     private Initiative $initiative;
 
@@ -25,7 +25,7 @@ class InteractionEventTest extends TestCase
     {
         parent::setUp();
 
-        Storage::fake('public');
+        $this->fakeFicheStorage();
 
         $this->user = User::factory()->create();
         $this->initiative = Initiative::factory()->published()->create();
@@ -61,7 +61,7 @@ class InteractionEventTest extends TestCase
             'path' => 'files/test-file.pdf',
             'mime_type' => 'application/pdf',
         ]);
-        Storage::disk('public')->put($file->path, 'fake pdf content');
+        $this->localFiles()->put($file->path, 'fake pdf content');
 
         $this->actingAs($this->user)->get(route('fiches.download', [$this->initiative, $this->fiche]));
         $this->actingAs($this->user)->get(route('fiches.download', [$this->initiative, $this->fiche]));

@@ -7,6 +7,8 @@ use App\Listeners\SendFicheCommentNotification;
 use App\Listeners\SendWelcomeNotification;
 use App\Models\User;
 use App\Notifications\QueueJobFailedNotification;
+use App\Services\FicheStorage\MigrationRegister;
+use App\Services\FicheStorage\WriterDrain;
 use App\View\Composers\AboutComposer;
 use App\View\Composers\FooterComposer;
 use Illuminate\Auth\Events\Verified;
@@ -32,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(MigrationRegister::class);
     }
 
     /**
@@ -55,6 +57,8 @@ class AppServiceProvider extends ServiceProvider
         );
 
         $this->listenForFailedJobs();
+
+        Queue::looping(fn () => app(WriterDrain::class)->recordWorker());
 
         $this->customizeMailNotifications();
 

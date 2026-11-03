@@ -6,12 +6,11 @@ use App\Services\PdfConverter;
 
 trait ConvertsDocumentsViaSoffice
 {
-    private function convertToPdf(string $sourcePath): ?string
+    private function convertToPdf(string $sourcePath, string $outputDir): ?string
     {
         $this->info('  Converting to PDF via LibreOffice...');
 
-        $converter = app(PdfConverter::class);
-        $pdfPath = $converter->convert($sourcePath);
+        $pdfPath = app(PdfConverter::class)->convert($sourcePath, $outputDir);
 
         if (! $pdfPath) {
             $this->error('  LibreOffice conversion failed.');

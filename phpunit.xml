@@ -27,6 +27,9 @@
         <env name="DB_DATABASE" value=":memory:"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="FICHE_STORAGE_MODE" value="local"/>
+        <env name="FICHE_STORAGE_REGISTER_DATABASE" value=":memory:"/>
+        <env name="FICHE_STORAGE_WORKSPACE" value="/tmp/hartverwarmers-test-workspaces"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>

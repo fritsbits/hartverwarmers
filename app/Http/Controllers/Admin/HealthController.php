@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Console\Commands\CheckThemesHealth;
 use App\Http\Controllers\Controller;
+use App\Services\FicheStorage\StorageStatus;
 use App\Services\ServerHealth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Artisan;
@@ -12,7 +13,7 @@ use Illuminate\View\View;
 
 class HealthController extends Controller
 {
-    public function index(): View
+    public function index(StorageStatus $storageStatus): View
     {
         return view('admin.health', [
             'memory' => ServerHealth::memory(),
@@ -23,6 +24,7 @@ class HealthController extends Controller
             'failedSummary' => ServerHealth::failedJobsSummary(),
             'latestFailed' => ServerHealth::latestFailedJob(),
             'themesHealth' => Cache::get(CheckThemesHealth::SNAPSHOT_KEY),
+            'ficheStorage' => $storageStatus->report(),
             'uptime' => trim((string) @shell_exec('uptime -p 2>/dev/null') ?: ''),
             'phpVersion' => PHP_VERSION,
             'laravelVersion' => app()->version(),

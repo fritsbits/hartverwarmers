@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Process\Exceptions\ProcessTimedOutException;
+use Illuminate\Support\Facades\Process;
 use ZipArchive;
 
 class FileTextExtractor
@@ -43,14 +45,17 @@ class FileTextExtractor
 
     private function extractFromPdf(string $path): ?string
     {
-        $command = sprintf('pdftotext %s -', escapeshellarg($path));
-        exec($command, $output, $exitCode);
-
-        if ($exitCode !== 0) {
+        try {
+            $result = Process::timeout(60)->run(['pdftotext', $path, '-']);
+        } catch (ProcessTimedOutException) {
             return null;
         }
 
-        return implode("\n", $output);
+        if (! $result->successful()) {
+            return null;
+        }
+
+        return $result->output();
     }
 
     private function extractFromPptx(string $path): ?string

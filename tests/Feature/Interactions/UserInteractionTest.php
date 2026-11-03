@@ -10,12 +10,12 @@ use App\Models\UserInteraction;
 use App\Services\FicheInteractionService;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
+use Tests\Concerns\FakesFicheStorage;
 use Tests\TestCase;
 
 class UserInteractionTest extends TestCase
 {
-    use RefreshDatabase;
+    use FakesFicheStorage, RefreshDatabase;
 
     public function test_can_create_view_interaction(): void
     {
@@ -191,8 +191,8 @@ class UserInteractionTest extends TestCase
 
     public function test_downloading_fiche_creates_download_interaction(): void
     {
-        Storage::fake('public');
-        Storage::disk('public')->put('files/test-file.pdf', 'test content');
+        $this->fakeFicheStorage();
+        $this->localFiles()->put('files/test-file.pdf', 'test content');
 
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
@@ -211,8 +211,8 @@ class UserInteractionTest extends TestCase
 
     public function test_downloading_fiche_also_increments_global_download_count(): void
     {
-        Storage::fake('public');
-        Storage::disk('public')->put('files/test-file.pdf', 'test content');
+        $this->fakeFicheStorage();
+        $this->localFiles()->put('files/test-file.pdf', 'test content');
 
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
@@ -281,8 +281,8 @@ class UserInteractionTest extends TestCase
 
     public function test_guest_downloading_fiche_is_redirected_to_login_and_creates_no_interaction(): void
     {
-        Storage::fake('public');
-        Storage::disk('public')->put('files/test-file.pdf', 'test content');
+        $this->fakeFicheStorage();
+        $this->localFiles()->put('files/test-file.pdf', 'test content');
 
         $initiative = Initiative::factory()->published()->create();
         $fiche = Fiche::factory()->published()->create(['initiative_id' => $initiative->id]);

@@ -12,6 +12,7 @@
         "laravel/framework": "^13.0",
         "laravel/pennant": "^1.20",
         "laravel/tinker": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.0",
         "livewire/flux": "^2.11",
         "livewire/flux-pro": "^2.12",
         "livewire/livewire": "^4.0",
@@ -66,6 +67,9 @@
             "@php artisan config:clear --ansi",
             "@php artisan test --parallel"
         ],
+        "pre-autoload-dump": [
+            "Aws\\Script\\Composer\\Composer::removeUnusedServices"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -91,7 +95,10 @@
             "dont-discover": [
                 "laravel-notification-channels/telegram"
             ]
-        }
+        },
+        "aws/aws-sdk-php": [
+            "S3"
+        ]
     },
     "config": {
         "optimize-autoloader": true,

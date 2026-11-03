@@ -4,9 +4,13 @@ namespace App\Console\Commands;
 
 use App\Concerns\ConvertsDocumentsViaSoffice;
 use App\Models\File;
+use App\Services\FicheStorage\FicheStorage;
+use App\Services\FicheStorage\ObjectMissing;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Imagick;
+use Throwable;
 
 class GenerateFilePreviewsCommand extends Command
 {
@@ -19,6 +23,11 @@ class GenerateFilePreviewsCommand extends Command
         {--thumbnails-only : Generate thumbnails for existing preview images}';
 
     protected $description = 'Generate preview images for uploaded files (PPTX, DOCX, PDF, images)';
+
+    public function __construct(private FicheStorage $storage)
+    {
+        parent::__construct();
+    }
 
     public function handle(): int
     {
@@ -83,17 +92,15 @@ class GenerateFilePreviewsCommand extends Command
         }
     }
 
+    /**
+     * Render previews in a private workspace, upload every image and
+     * thumbnail, and only then publish the list on the file record. A
+     * failure leaves the previous previews in place and returns false, so
+     * the queued job retries.
+     */
     private function processFile(File $file, int $maxSlides): bool
     {
         $this->info("Processing: {$file->original_filename} (ID: {$file->id})");
-
-        $storagePath = Storage::disk('public')->path($file->path);
-
-        if (! file_exists($storagePath)) {
-            $this->error("  File not found on disk: {$storagePath}");
-
-            return false;
-        }
 
         $isPptx = str_contains($file->mime_type, 'presentation') || str_contains($file->mime_type, 'powerpoint');
         $isDocx = str_contains($file->mime_type, 'word') || str_contains($file->mime_type, 'document');
@@ -103,53 +110,38 @@ class GenerateFilePreviewsCommand extends Command
         if (! $isPptx && ! $isDocx && ! $isPdf && ! $isImage) {
             $this->warn("  Skipping: unsupported file type ({$file->mime_type})");
 
-            return false;
+            return true;
         }
 
         try {
-            if ($isImage) {
-                return $this->processImage($storagePath, $file);
-            }
+            return Cache::lock("fiche-file:{$file->id}:previews", 600)->block(60, fn () => $this->storage->withWorkspace(function (string $workspace) use ($file, $maxSlides, $isImage, $isPptx, $isDocx) {
+                $result = $isImage
+                    ? $this->storage->withLocalCopy(FicheStorage::FILES, $file->path, fn (string $source) => $this->renderImage($source, $workspace, $file->id))
+                    : $this->renderDocument($file, $workspace, $maxSlides, $isPptx || $isDocx);
 
-            $pdfPath = $storagePath;
-            $reusedExistingPdf = false;
+                if ($result === null || $result['paths'] === []) {
+                    $this->error('  No preview images generated.');
 
-            if ($isPptx || $isDocx) {
-                $existingPdf = File::where('source_file_id', $file->id)->first();
-
-                if ($existingPdf) {
-                    $pdfPath = Storage::disk('public')->path($existingPdf->path);
-                    $reusedExistingPdf = true;
-                    $this->info('  Reusing existing PDF version.');
-                } else {
-                    $pdfPath = $this->convertToPdf($storagePath);
-
-                    if (! $pdfPath) {
-                        return false;
-                    }
+                    return false;
                 }
-            }
 
-            $result = $this->generateSlideImages($pdfPath, $file->id, $maxSlides);
+                foreach ($result['outputs'] as $relativePath => $localPath) {
+                    $this->storage->putFile(FicheStorage::PREVIEWS, $relativePath, $localPath);
+                }
 
-            if (($isPptx || $isDocx) && ! $reusedExistingPdf && $pdfPath !== $storagePath) {
-                @unlink($pdfPath);
-            }
+                $file->update([
+                    'preview_images' => $result['paths'],
+                    'total_slides' => $result['totalPages'],
+                ]);
+                $this->info('  Generated '.count($result['paths']).' preview images (total: '.$result['totalPages'].' pages).');
 
-            if (empty($result['paths'])) {
-                $this->error('  No preview images generated.');
+                return true;
+            }));
+        } catch (ObjectMissing) {
+            $this->error("  File not found in storage: {$file->path}");
 
-                return false;
-            }
-
-            $file->update([
-                'preview_images' => $result['paths'],
-                'total_slides' => $result['totalPages'],
-            ]);
-            $this->info('  Generated '.count($result['paths']).' preview images (total: '.$result['totalPages'].' pages).');
-
-            return true;
-        } catch (\Throwable $e) {
+            return false;
+        } catch (Throwable $e) {
             $this->error("  Failed: {$e->getMessage()}");
             report($e);
 
@@ -157,47 +149,70 @@ class GenerateFilePreviewsCommand extends Command
         }
     }
 
-    private function processImage(string $storagePath, File $file): bool
+    /**
+     * @return array{paths: array<int, string>, totalPages: int, outputs: array<string, string>}|null
+     */
+    private function renderDocument(File $file, string $workspace, int $maxSlides, bool $needsPdf): ?array
     {
-        $this->info('  Processing image...');
+        $existingPdf = $needsPdf ? File::where('source_file_id', $file->id)->first() : null;
 
-        $previewDir = "file-previews/{$file->id}";
-        Storage::disk('public')->makeDirectory($previewDir);
-
-        $relativePath = "{$previewDir}/slide-001.jpg";
-        $absolutePath = Storage::disk('public')->path($relativePath);
-
-        $im = new Imagick($storagePath);
-        $im->setImageFormat('jpeg');
-        $im->setImageCompressionQuality(85);
-
-        $width = $im->getImageWidth();
-        if ($width > 1280) {
-            $im->resizeImage(1280, 0, Imagick::FILTER_LANCZOS, 1);
+        if ($existingPdf) {
+            $this->info('  Reusing existing PDF version.');
         }
 
-        $im->writeImage($absolutePath);
-        $im->destroy();
+        $source = $existingPdf ? $existingPdf->path : $file->path;
 
-        $this->generateThumbnail($absolutePath);
+        return $this->storage->withLocalCopy(FicheStorage::FILES, $source, function (string $sourcePath) use ($file, $workspace, $maxSlides, $needsPdf, $existingPdf) {
+            $pdfPath = $needsPdf && ! $existingPdf ? $this->convertToPdf($sourcePath, $workspace) : $sourcePath;
 
-        $file->update(['preview_images' => [$relativePath], 'total_slides' => 1]);
-        $this->info('  Generated 1 preview image.');
+            if (! $pdfPath) {
+                return null;
+            }
 
-        return true;
+            return $this->renderSlides($pdfPath, $workspace, $file->id, $maxSlides);
+        });
     }
 
     /**
-     * @return array{paths: string[], totalPages: int}
+     * @return array{paths: array<int, string>, totalPages: int, outputs: array<string, string>}
      */
-    private function generateSlideImages(string $pdfPath, int $fileId, int $maxSlides): array
+    private function renderImage(string $sourcePath, string $workspace, int $fileId): array
+    {
+        $this->info('  Processing image...');
+
+        $relativePath = "file-previews/{$fileId}/slide-001.jpg";
+        $localPath = $workspace.'/slide-001.jpg';
+
+        $im = new Imagick($sourcePath);
+        $im->setImageFormat('jpeg');
+        $im->setImageCompressionQuality(85);
+
+        if ($im->getImageWidth() > 1280) {
+            $im->resizeImage(1280, 0, Imagick::FILTER_LANCZOS, 1);
+        }
+
+        $im->writeImage($localPath);
+        $im->destroy();
+
+        return [
+            'paths' => [$relativePath],
+            'totalPages' => 1,
+            'outputs' => [
+                $relativePath => $localPath,
+                $this->thumbnailPath($relativePath) => $this->generateThumbnail($localPath, $this->thumbnailPath($localPath)),
+            ],
+        ];
+    }
+
+    /**
+     * @return array{paths: array<int, string>, totalPages: int, outputs: array<string, string>}
+     */
+    private function renderSlides(string $pdfPath, string $workspace, int $fileId, int $maxSlides): array
     {
         $this->info('  Generating slide images from PDF...');
 
-        $previewDir = "file-previews/{$fileId}";
-        Storage::disk('public')->makeDirectory($previewDir);
-
         $paths = [];
+        $outputs = [];
 
         $imagick = new Imagick;
         $imagick->setResolution(200, 200);
@@ -218,36 +233,39 @@ class GenerateFilePreviewsCommand extends Command
             $im->setImageFormat('jpeg');
             $im->setImageCompressionQuality(85);
 
-            $width = $im->getImageWidth();
-
-            if ($width > 1280) {
+            if ($im->getImageWidth() > 1280) {
                 $im->resizeImage(1280, 0, Imagick::FILTER_LANCZOS, 1);
             }
 
             $slideNum = str_pad($i + 1, 3, '0', STR_PAD_LEFT);
-            $relativePath = "{$previewDir}/slide-{$slideNum}.jpg";
-            $absolutePath = Storage::disk('public')->path($relativePath);
+            $relativePath = "file-previews/{$fileId}/slide-{$slideNum}.jpg";
+            $localPath = "{$workspace}/slide-{$slideNum}.jpg";
 
-            $im->writeImage($absolutePath);
+            $im->writeImage($localPath);
             $im->destroy();
 
-            $this->generateThumbnail($absolutePath);
-
+            $outputs[$relativePath] = $localPath;
+            $outputs[$this->thumbnailPath($relativePath)] = $this->generateThumbnail($localPath, $this->thumbnailPath($localPath));
             $paths[] = $relativePath;
         }
 
-        return ['paths' => $paths, 'totalPages' => $totalPages];
+        return ['paths' => $paths, 'totalPages' => $totalPages, 'outputs' => $outputs];
     }
 
-    private function generateThumbnail(string $fullSizePath): void
+    private function generateThumbnail(string $fullSizePath, string $thumbPath): string
     {
-        $thumbPath = preg_replace('/\.jpg$/', '-thumb.jpg', $fullSizePath);
-
         $im = new Imagick($fullSizePath);
         $im->resizeImage(400, 0, Imagick::FILTER_LANCZOS, 1);
         $im->setImageCompressionQuality(80);
         $im->writeImage($thumbPath);
         $im->destroy();
+
+        return $thumbPath;
+    }
+
+    private function thumbnailPath(string $path): string
+    {
+        return Str::replaceLast('.jpg', '-thumb.jpg', $path);
     }
 
     private function backfillThumbnails(): int
@@ -256,31 +274,37 @@ class GenerateFilePreviewsCommand extends Command
         $this->info("Checking {$files->count()} files for missing thumbnails...");
 
         $generated = 0;
+        $failed = 0;
 
         foreach ($files as $file) {
             foreach ($file->preview_images as $path) {
-                $thumbPath = \Illuminate\Support\Str::replaceLast('.jpg', '-thumb.jpg', $path);
-                $absoluteThumb = Storage::disk('public')->path($thumbPath);
+                $thumbPath = $this->thumbnailPath($path);
 
-                if (file_exists($absoluteThumb)) {
-                    continue;
-                }
+                try {
+                    if ($this->storage->exists(FicheStorage::PREVIEWS, $thumbPath)) {
+                        continue;
+                    }
 
-                $absoluteFull = Storage::disk('public')->path($path);
-
-                if (! file_exists($absoluteFull)) {
+                    $this->storage->withLocalCopy(FicheStorage::PREVIEWS, $path, fn (string $fullPath) => $this->storage->withWorkspace(
+                        fn (string $workspace) => $this->storage->putFile(
+                            FicheStorage::PREVIEWS,
+                            $thumbPath,
+                            $this->generateThumbnail($fullPath, $workspace.'/thumb.jpg'),
+                        ),
+                    ));
+                    $generated++;
+                } catch (ObjectMissing) {
                     $this->warn("  Full-size missing: {$path}");
-
-                    continue;
+                } catch (Throwable $e) {
+                    $this->error("  Failed for {$path}: {$e->getMessage()}");
+                    report($e);
+                    $failed++;
                 }
-
-                $this->generateThumbnail($absoluteFull);
-                $generated++;
             }
         }
 
         $this->info("Generated {$generated} thumbnails.");
 
-        return self::SUCCESS;
+        return $failed > 0 ? self::FAILURE : self::SUCCESS;
     }
 }
