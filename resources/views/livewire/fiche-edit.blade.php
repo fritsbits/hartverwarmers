@@ -27,7 +27,6 @@
                     <div class="lg:col-span-5">
                         <x-ai-suggestion-panel
                             :suggestion="e($aiSuggestions['title'])"
-                            :rawSuggestion="$aiSuggestions['title']"
                             field="title"
                             :is-applied="$isTitleApplied"
                         />
@@ -60,7 +59,6 @@
                             :suggestion="$aiSuggestions['description']"
                             field="description"
                             :is-applied="$isDescriptionApplied"
-                            :rawSuggestion="$aiSuggestions['description']"
                         />
                     </div>
                 @endif
@@ -109,6 +107,7 @@
                                 <flux:description class="text-sm">Wat moet er klaargezet of voorbereid worden?</flux:description>
                                 <div
                                     x-data="{ expanded: @js(!empty($preparation)) }"
+                                x-effect="if ($wire.preparation) expanded = true"
                                     @click="expanded = true"
                                     class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
                                     :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
@@ -123,7 +122,6 @@
                                     :suggestion="$aiSuggestions['preparation']"
                                     field="preparation"
                                     :is-applied="$isPreparationApplied"
-                                    :rawSuggestion="$aiSuggestions['preparation']"
                                 />
                             </div>
                         @endif
@@ -142,6 +140,7 @@
                                 <flux:description class="text-sm">Welke materialen heb je nodig?</flux:description>
                                 <div
                                     x-data="{ expanded: @js(!empty($inventory)) }"
+                                x-effect="if ($wire.inventory) expanded = true"
                                     @click="expanded = true"
                                     class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
                                     :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
@@ -156,7 +155,6 @@
                                     :suggestion="$aiSuggestions['inventory']"
                                     field="inventory"
                                     :is-applied="$isInventoryApplied"
-                                    :rawSuggestion="$aiSuggestions['inventory']"
                                 />
                             </div>
                         @endif
@@ -175,6 +173,7 @@
                                 <flux:description class="text-sm">Beschrijf stap voor stap hoe de activiteit verloopt.</flux:description>
                                 <div
                                     x-data="{ expanded: @js(!empty($process)) }"
+                                x-effect="if ($wire.process) expanded = true"
                                     @click="expanded = true"
                                     class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
                                     :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
@@ -189,7 +188,6 @@
                                     :suggestion="$aiSuggestions['process']"
                                     field="process"
                                     :is-applied="$isProcessApplied"
-                                    :rawSuggestion="$aiSuggestions['process']"
                                 />
                             </div>
                         @endif

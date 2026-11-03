@@ -400,7 +400,22 @@ class FicheWizardTest extends TestCase
         $this->assertNull($component->get('processingFailReason'));
     }
 
-    public function test_apply_suggestion_appends_ai_value_to_empty_field(): void
+    public function test_suggestion_buttons_are_wired_to_the_matching_takeover_action(): void
+    {
+        $component = Livewire::actingAs(User::factory()->create())->test(FicheWizard::class)
+            ->set('currentStep', 3)
+            ->set('aiTitle', 'Nieuwe titel')
+            ->set('aiDescription', '<p>Beschrijving</p>')
+            ->set('aiPreparation', '<p>Voorbereiding</p>')
+            ->set('aiInventory', '<p>Benodigdheden</p>')
+            ->set('aiProcess', '<p>Werkwijze</p>');
+
+        foreach (['title', 'description', 'preparation', 'inventory', 'process'] as $field) {
+            $component->assertSeeHtml('wire:click="applySuggestion(\''.$field.'\')"');
+        }
+    }
+
+    public function test_apply_suggestion_fills_empty_description_as_plain_text(): void
     {
         $user = User::factory()->create();
 
@@ -408,11 +423,11 @@ class FicheWizardTest extends TestCase
             ->test(FicheWizard::class)
             ->set('aiDescription', '<p>AI beschrijving</p>')
             ->call('applySuggestion', 'description')
-            ->assertSet('description', '<p>AI beschrijving</p>')
+            ->assertSet('description', 'AI beschrijving')
             ->assertSet('appliedSuggestions', ['description']);
     }
 
-    public function test_apply_suggestion_appends_to_existing_content(): void
+    public function test_apply_suggestion_replaces_existing_description(): void
     {
         $user = User::factory()->create();
 
@@ -421,8 +436,42 @@ class FicheWizardTest extends TestCase
             ->set('description', '<p>Mijn tekst</p>')
             ->set('aiDescription', '<p>AI beschrijving</p>')
             ->call('applySuggestion', 'description')
-            ->assertSet('description', "<p>Mijn tekst</p>\n<p>AI beschrijving</p>")
+            ->assertSet('description', 'AI beschrijving')
             ->assertSet('appliedSuggestions', ['description']);
+    }
+
+    public function test_apply_suggestion_replaces_title_and_rich_text_without_duplicates(): void
+    {
+        $user = User::factory()->create();
+
+        $component = Livewire::actingAs($user)->test(FicheWizard::class)
+            ->set('title', 'Mijn titel')
+            ->set('aiTitle', 'Nieuwe titel')
+            ->call('applySuggestion', 'title')
+            ->assertSet('title', 'Nieuwe titel');
+
+        foreach (['preparation' => 'aiPreparation', 'inventory' => 'aiInventory', 'process' => 'aiProcess'] as $field => $aiProperty) {
+            $component->set($field, '<p>Mijn tekst</p>')
+                ->set($aiProperty, '<ul><li>Suggestie</li></ul>')
+                ->call('applySuggestion', $field)
+                ->call('applySuggestion', $field)
+                ->assertSet($field, '<ul><li>Suggestie</li></ul>');
+        }
+    }
+
+    public function test_description_takeover_preserves_readable_text_and_line_breaks(): void
+    {
+        Livewire::actingAs(User::factory()->create())->test(FicheWizard::class)
+            ->set('aiDescription', '<p>Samen &amp; gezellig.</p><p>Tweede zin.<br>Derde zin.</p>')
+            ->call('applySuggestion', 'description')
+            ->assertSet('description', "Samen & gezellig.\nTweede zin.\nDerde zin.");
+    }
+
+    public function test_invalid_suggestion_is_not_marked_as_applied(): void
+    {
+        Livewire::actingAs(User::factory()->create())->test(FicheWizard::class)
+            ->call('applySuggestion', 'aanleiding')
+            ->assertSet('appliedSuggestions', []);
     }
 
     public function test_apply_suggestion_does_not_dismiss_card(): void
@@ -468,7 +517,7 @@ class FicheWizardTest extends TestCase
             ->set('aiDescription', null)
             ->call('applySuggestion', 'description')
             ->assertSet('description', 'Mijn tekst')
-            ->assertSet('appliedSuggestions', ['description']);
+            ->assertSet('appliedSuggestions', []);
     }
 
     public function test_publish_saves_field_values_directly(): void
@@ -495,7 +544,7 @@ class FicheWizardTest extends TestCase
         ]);
     }
 
-    public function test_publish_after_apply_saves_appended_value(): void
+    public function test_publish_after_apply_saves_replacement_value(): void
     {
         Storage::fake('public');
         $user = User::factory()->create();
@@ -515,7 +564,7 @@ class FicheWizardTest extends TestCase
 
         $this->assertDatabaseHas('fiches', [
             'title' => 'Mijn titel',
-            'description' => "Mijn beschrijving\nAI beschrijving",
+            'description' => 'AI beschrijving',
             'user_id' => $user->id,
             'published' => true,
         ]);

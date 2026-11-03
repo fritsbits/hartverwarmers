@@ -594,18 +594,18 @@ class FicheWizard extends Component
             'process' => ['ai' => 'aiProcess', 'user' => 'process'],
         ];
 
-        if (isset($map[$field]) && $this->{$map[$field]['ai']} !== null) {
-            $aiValue = $this->{$map[$field]['ai']};
-
-            if ($field === 'title') {
-                $this->{$map[$field]['user']} = $aiValue;
-            } else {
-                $currentValue = trim($this->{$map[$field]['user']});
-                $this->{$map[$field]['user']} = $currentValue !== ''
-                    ? $currentValue."\n".$aiValue
-                    : $aiValue;
-            }
+        if (! isset($map[$field]) || empty($this->{$map[$field]['ai']})) {
+            return;
         }
+
+        $aiValue = $this->{$map[$field]['ai']};
+
+        if ($field === 'description') {
+            $aiValue = preg_replace('/<br\s*\/?\s*>|<\/(?:p|div|li|h[1-6])>/i', "\n", $aiValue);
+            $aiValue = trim(html_entity_decode(strip_tags($aiValue), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }
+
+        $this->{$map[$field]['user']} = $aiValue;
 
         if (! in_array($field, $this->appliedSuggestions)) {
             $this->appliedSuggestions[] = $field;
