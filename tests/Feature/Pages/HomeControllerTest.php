@@ -55,6 +55,36 @@ class HomeControllerTest extends TestCase
         $response->assertSee('Diamantje');
     }
 
+    public function test_an_unpublished_fiche_leaves_the_home_page_immediately(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'title' => 'Snoezelen met geurzakjes',
+        ]);
+
+        $this->get('/')->assertOk()->assertSee('Snoezelen met geurzakjes');
+
+        $fiche->update(['published' => false]);
+
+        $this->get('/')->assertOk()->assertDontSee('Snoezelen met geurzakjes');
+    }
+
+    public function test_a_deleted_fiche_leaves_the_home_page_immediately(): void
+    {
+        $initiative = Initiative::factory()->published()->create();
+        $fiche = Fiche::factory()->published()->create([
+            'initiative_id' => $initiative->id,
+            'title' => 'Snoezelen met geurzakjes',
+        ]);
+
+        $this->get('/')->assertOk()->assertSee('Snoezelen met geurzakjes');
+
+        $fiche->delete();
+
+        $this->get('/')->assertOk()->assertDontSee('Snoezelen met geurzakjes');
+    }
+
     public function test_home_page_passes_goals_data_to_view(): void
     {
         // Create 3 initiatives for a goal so at least one is eligible

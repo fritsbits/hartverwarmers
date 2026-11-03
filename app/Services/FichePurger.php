@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\Fiche;
 use App\Models\File;
+use App\Models\InteractionEvent;
 use App\Models\PendingNotification;
+use App\Models\UserInteraction;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 
@@ -46,6 +48,10 @@ class FichePurger
         $fiche->tags()->detach();
         $fiche->themes()->detach();
         PendingNotification::where('fiche_id', $fiche->id)->delete();
+        InteractionEvent::where('fiche_id', $fiche->id)->delete();
+        UserInteraction::where('interactable_type', $fiche->getMorphClass())
+            ->where('interactable_id', $fiche->id)
+            ->delete();
 
         $fiche->files()->delete();
         $fiche->forceDelete();

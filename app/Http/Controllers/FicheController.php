@@ -9,7 +9,6 @@ use App\Models\UserInteraction;
 use App\Services\FicheInteractionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -180,8 +179,6 @@ class FicheController extends Controller
             'has_diamond' => $awarding,
             'diamond_awarded_at' => $awarding ? now() : null,
         ]);
-
-        Cache::forget('home:recent-diamond');
 
         $status = $fiche->has_diamond ? 'toegekend aan' : 'verwijderd van';
 

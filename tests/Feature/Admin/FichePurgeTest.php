@@ -8,11 +8,13 @@ use App\Models\Fiche;
 use App\Models\File;
 use App\Models\FileUpload;
 use App\Models\Initiative;
+use App\Models\InteractionEvent;
 use App\Models\Like;
 use App\Models\PendingNotification;
 use App\Models\Tag;
 use App\Models\Theme;
 use App\Models\User;
+use App\Models\UserInteraction;
 use App\Services\FichePurger;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -163,6 +165,30 @@ class FichePurgeTest extends TestCase
         $this->assertDatabaseMissing('fiche_theme', ['fiche_id' => $fiche->id]);
         $this->assertDatabaseMissing('pending_notifications', ['id' => $notification->id]);
         $this->assertDatabaseHas('tags', ['id' => $tag->id]);
+    }
+
+    public function test_purge_succeeds_for_a_fiche_that_was_viewed_and_bookmarked(): void
+    {
+        $fiche = $this->ficheWithArtifacts();
+        $viewer = User::factory()->create();
+
+        $event = InteractionEvent::create([
+            'user_id' => $viewer->id,
+            'type' => 'view',
+            'fiche_id' => $fiche->id,
+        ]);
+        $interaction = UserInteraction::create([
+            'user_id' => $viewer->id,
+            'interactable_type' => Fiche::class,
+            'interactable_id' => $fiche->id,
+            'type' => 'view',
+        ]);
+
+        app(FichePurger::class)->purge($fiche);
+
+        $this->assertDatabaseMissing('fiches', ['id' => $fiche->id]);
+        $this->assertDatabaseMissing('interaction_events', ['id' => $event->id]);
+        $this->assertDatabaseMissing('user_interactions', ['id' => $interaction->id]);
     }
 
     public function test_purge_removes_the_upload_audit_rows_of_its_files(): void
