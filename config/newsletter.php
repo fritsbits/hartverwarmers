@@ -22,4 +22,11 @@ return [
     'milestone_call_target' => 500,
 
     'milestone_call_mail_key' => 'naar-500-2026-11',
+
+    /*
+     * Temporary homepage block counting down to the same target. Replaces
+     * the featured initiatives while on; stays as a thank-you once reached,
+     * until switched off.
+     */
+    'homepage_milestone_active' => env('HOMEPAGE_MILESTONE_ACTIVE', false),
 ];
