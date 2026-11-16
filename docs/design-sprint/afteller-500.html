@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="nl" data-lavish-annotate="on">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Afteller naar 500 · beslisblad</title>
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=aleo:400,700,700i|fira-sans:300,400,500,600,700" rel="stylesheet">
+<style>
+  :root{
+    --primary:#E8764B;--primary-hover:#D4683F;--teal:#4CB7C5;--yellow:#F4C44E;--purple:#B57BB3;
+    --text:#231E1A;--text2:#756C65;--text3:#C0B5AE;
+    --white:#fff;--cream:#FEF8F4;--subtle:#F5F0EC;--accent-light:#FDF3EE;
+    --border:#EBE4DE;--border-hover:#DDD5CD;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--subtle);color:var(--text);font:400 16px/1.55 'Fira Sans',sans-serif}
+  h1,h2,h3{font-family:'Aleo',serif;font-weight:700;margin:0;line-height:1.15}
+  .wrap{max-width:1180px;margin:0 auto;padding:40px 24px 80px}
+  .label{font:600 13px 'Fira Sans';letter-spacing:.14em;text-transform:uppercase;color:var(--primary)}
+  .muted{color:var(--text2)}
+  .small{font-size:14px}
+  header.top{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px;align-items:start;margin-bottom:40px}
+  header.top h1{font-size:38px;margin:6px 0 12px}
+  .facts{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+  .facts dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:0;font-size:14px}
+  .facts dt{color:var(--text2)}
+  .facts dd{margin:0}
+  .now img{width:100%;border-radius:10px;border:1px solid var(--border);display:block}
+  .opt{background:var(--white);border:1px solid var(--border);border-radius:14px;margin:28px 0;overflow:hidden;box-shadow:0 1px 3px rgba(35,30,26,.05)}
+  .opt.rec{border:2px solid var(--primary)}
+  .opt-head{display:flex;gap:14px;align-items:baseline;padding:20px 24px 4px;flex-wrap:wrap}
+  .opt-head .id{font:700 14px 'Fira Sans';color:var(--white);background:var(--text);border-radius:6px;padding:2px 8px}
+  .opt.rec .id{background:var(--primary)}
+  .opt-head h2{font-size:24px}
+  .badge{font-size:12px;font-weight:600;color:var(--primary);background:var(--accent-light);border-radius:99px;padding:3px 10px}
+  .opt-sub{padding:0 24px 16px;color:var(--text2);max-width:780px}
+  .stage{background:var(--cream);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:44px 40px}
+  .stage-inner{max-width:1000px;margin:0 auto}
+  .pros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;font-size:14px}
+  .pros > div{padding:16px 24px;border-right:1px solid var(--border);min-width:0}
+  .pros > div:last-child{border-right:0}
+  .pros h4{margin:0 0 6px;font:600 12px 'Fira Sans';letter-spacing:.1em;text-transform:uppercase;color:var(--text2)}
+  .pros ul{margin:0;padding-left:18px}
+  .pros li{margin:2px 0}
+
+  /* shared mock bits */
+  .h2mock{font-size:30px}
+  .h2mock em{font-style:italic;color:var(--primary)}
+  .btn-pill{display:inline-block;background:var(--primary);color:#fff;font-weight:600;padding:12px 24px;border-radius:99px;text-decoration:none;font-size:15px}
+  .cta-link{color:var(--primary);font-weight:600;text-decoration:none;font-size:15px}
+  .num{font-family:'Aleo',serif;font-weight:700;font-variant-numeric:tabular-nums}
+
+  /* A: thermometer */
+  .a-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end}
+  .bar{position:relative;height:22px;background:var(--white);border:1px solid var(--border);border-radius:99px;margin:28px 0 10px;overflow:visible}
+  .bar-fill{position:absolute;inset:0 auto 0 0;width:94%;border-radius:99px;background:linear-gradient(90deg,var(--yellow),var(--primary))}
+  .bar-mark{position:absolute;top:-30px;font-size:13px;color:var(--text2);transform:translateX(-50%);white-space:nowrap}
+  .bar-mark.end{right:-6px;left:auto;transform:none;color:var(--primary);font-weight:600}
+  .bar-heart{position:absolute;right:-14px;top:50%;transform:translateY(-50%);font-size:30px}
+  .ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--text3)}
+
+  /* B: 500 vakjes */
+  .b-grid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:40px;align-items:center}
+  .dots{display:grid;grid-template-columns:repeat(50,minmax(0,1fr));gap:3px}
+  .dots i{display:block;aspect-ratio:1;border-radius:2px;background:var(--primary);opacity:.85}
+  .dots i:nth-child(7n){background:var(--yellow)}
+  .dots i:nth-child(11n){background:var(--teal)}
+  .dots i:nth-child(13n){background:var(--purple)}
+  .dots i.empty{background:transparent;border:1.5px dashed var(--border-hover);opacity:1}
+  .dots i.new{outline:2px solid var(--text);outline-offset:1px}
+  .tooltip{display:inline-block;margin-top:10px;font-size:13px;background:var(--text);color:#fff;border-radius:6px;padding:4px 10px}
+
+  /* C: waar het dun is */
+  .c-top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:24px}
+  .c-count{display:flex;align-items:center;gap:18px}
+  .ring{width:96px;height:96px;flex:none}
+  .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+  .card{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border);aspect-ratio:4/3;background:#ddd}
+  .card img{width:100%;height:100%;object-fit:cover;display:block}
+  .card .tag{position:absolute;left:12px;bottom:12px;background:#fff;border-radius:4px;padding:5px 10px;font:700 15px 'Aleo';max-width:calc(100% - 24px)}
+  .card .cnt{position:absolute;right:10px;top:10px;background:var(--text);color:#fff;font-size:12px;font-weight:600;border-radius:99px;padding:3px 9px}
+
+  /* D: scheurkalender + mensen */
+  .d-grid{display:grid;grid-template-columns:auto minmax(0,1fr);gap:48px;align-items:center}
+  .tear{position:relative;width:220px;transform:rotate(-2.5deg)}
+  .tear .sheet{background:#fff;border-radius:6px;box-shadow:0 8px 20px rgba(35,30,26,.12);text-align:center;padding:0 0 22px;overflow:hidden}
+  .tear .sheet .top{background:var(--primary);color:#fff;font:600 13px 'Fira Sans';letter-spacing:.12em;text-transform:uppercase;padding:10px}
+  .tear .sheet .big{font:700 104px/1 'Aleo';color:var(--text);margin-top:14px}
+  .tear .sheet .lbl{color:var(--text2);font-size:15px}
+  .tear .under{position:absolute;inset:6px -6px -6px 6px;background:#fff;border-radius:6px;z-index:-1;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+  .tear .ring-holes{position:absolute;top:-8px;left:0;right:0;display:flex;justify-content:center;gap:60px}
+  .tear .ring-holes span{width:12px;height:22px;border-radius:6px;background:var(--text2)}
+  .people{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 22px}
+  .person{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);border-radius:99px;padding:4px 14px 4px 4px;font-size:14px}
+  .av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px}
+
+  /* decisions */
+  .decide{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:28px;margin-top:48px}
+  .decide h2{font-size:26px;margin-bottom:6px}
+  .q{border-top:1px solid var(--border);padding:20px 0}
+  .q:first-of-type{border-top:0}
+  .q h3{font:600 17px 'Fira Sans';margin:0 0 4px}
+  .q .why{font-size:14px;color:var(--text2);margin:0 0 10px}
+  .q label{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:15px}
+  .q label:hover{background:var(--cream)}
+  .q label .r{font-size:12px;font-weight:600;color:var(--primary);margin-left:6px}
+  .q input[type=radio],.q input[type=checkbox]{margin-top:4px;accent-color:var(--primary)}
+  .q textarea{width:100%;min-height:60px;border:1px solid var(--border);border-radius:8px;padding:10px;font:inherit;font-size:15px}
+  .submit{display:flex;gap:14px;align-items:center;margin-top:16px;padding-top:20px;border-top:1px solid var(--border)}
+  .submit button{background:var(--primary);color:#fff;border:0;border-radius:99px;padding:12px 26px;font:600 15px 'Fira Sans';cursor:pointer}
+  .submit button:hover{background:var(--primary-hover)}
+  .note{font-size:13px;color:var(--text2)}
+  .vtag{display:inline-block;font:600 12px 'Fira Sans';letter-spacing:.08em;text-transform:uppercase;color:var(--text2);background:var(--white);border:1px solid var(--border);border-radius:99px;padding:3px 10px;margin-bottom:18px}
+  .cards3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .fill500{position:relative;font:700 150px/1 'Aleo';letter-spacing:-.04em;width:max-content}
+  .fill500 .out{color:transparent;-webkit-text-stroke:2px var(--border-hover);display:block}
+  .fill500 .in{position:absolute;inset:0;color:var(--primary)}
+  .fill500 .cap{display:block;text-align:center;font:400 16px 'Fira Sans';color:var(--text2);letter-spacing:0;margin-top:6px}
+  .fill500 .cap strong{color:var(--text)}
+  .tape{position:relative;height:44px;background:var(--yellow);border-radius:4px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);margin-top:30px}
+  .tape-fill{position:absolute;inset:0 6% 0 0;background:var(--primary);border-radius:4px 0 0 4px}
+  .tape-ticks{position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.55) 0 1px,transparent 1px 2%);mask:linear-gradient(180deg,#000 35%,transparent 35%)}
+  .tape-now{position:absolute;top:-26px;transform:translateX(-50%);font:700 15px 'Aleo';color:var(--primary)}
+  .tape-flag{position:absolute;right:-4px;top:-30px;font:700 18px 'Aleo';color:var(--text)}
+  .bunting{display:flex;justify-content:center;gap:14px}
+  .bunting span{width:74px;height:86px;background:var(--c);clip-path:polygon(0 0,100% 0,50% 100%);color:#fff;font:700 38px/64px 'Aleo';text-align:center}
+  .bunting span:nth-child(2){transform:translateY(8px)}
+  @media (max-width:860px){
+    .c2grid{grid-template-columns:minmax(0,1fr)!important}
+    .cards3{grid-template-columns:minmax(0,1fr)}
+    header.top,.a-grid,.b-grid,.d-grid{grid-template-columns:minmax(0,1fr)}
+    .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .pros{grid-template-columns:minmax(0,1fr)}
+    .pros > div{border-right:0;border-bottom:1px solid var(--border)}
+    .stage{padding:32px 20px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <span class="label">Beslisblad · homepage</span>
+    <h1>Een feestelijke afteller naar 500 activiteiten</h1>
+    <p class="muted">Tijdelijk in de plaats van het blok <em>Inspiratie om actief mee te doen</em>.
+    Vier richtingen, van eenvoudig naar uitgesproken.
+    Onderaan kies je en stuur je het terug.</p>
+  </div>
+  <div class="facts">
+    <dl>
+      <dt>Teller</dt><dd>Gepubliceerde fiches. Dezelfde telling als de 500-oproepmail van 30/10 (<code>MilestoneCallContent</code>).</dd>
+      <dt>Lokaal nu</dt><dd><strong>470 / 500</strong>, nog 30. Productie wijkt af, de mockups gebruiken 470.</dd>
+      <dt>Al gebouwd</dt><dd>Teller, doel, de 3 rijkste en de 4 armste initiatieven. Die logica kan het blok hergebruiken.</dd>
+      <dt>Opgelet</dt><dd>De hero zegt "fiches", de mail "activiteiten". Het blok volgt best de mail.</dd>
+    </dl>
+  </div>
+</header>
+
+<div class="now">
+</div>
+
+<!-- A -->
+<section class="opt" id="opt-A">
+  <div class="opt-head"><span class="id">A</span><h2>Voortgangsbalk</h2><span class="badge">eenvoudigst</span></div>
+  <p class="opt-sub">Eén groot getal, één balk die bijna vol is, één knop. Leest in twee seconden.</p>
+  <div class="stage"><div class="stage-inner">
+    <span class="label">Samen naar 500</span>
+    <div class="a-grid">
+      <div>
+        <h2 class="h2mock">Nog <em>30 activiteiten</em> en we vieren feest</h2>
+        <div class="bar">
+          <div class="bar-fill"></div>
+          <span class="bar-mark" style="left:94%">470 nu</span>
+          <span class="bar-heart">🎉</span>
+        </div>
+        <div class="ticks"><span>0</span><span>100</span><span>200</span><span>300</span><span>400</span><span>500</span></div>
+      </div>
+      <a class="btn-pill" href="#">Deel een activiteit →</a>
+    </div>
+  </div></div>
+  <div class="pros">
+    <div><h4>Sterk</h4><ul><li>Kleinste bouw, één Blade-partial</li><li>Werkt op elk scherm</li></ul></div>
+    <div><h4>Zwak</h4><ul><li>Voelt wat als een inzamelactie</li><li>Zegt niet <em>wat</em> er ontbreekt</li></ul></div>
+    <div><h4>Past bij</h4><ul><li>Korte looptijd, weinig risico</li></ul></div>
+  </div>
+</section>
+
+<!-- B -->
+<section class="opt" id="opt-B">
+  <div class="opt-head"><span class="id">B</span><h2>Prikbord met 500 vakjes</h2><span class="badge">meest feestelijk</span></div>
+  <p class="opt-sub">Elk gedeeld idee is een gekleurd vakje, de laatste 30 zijn nog open.
+  Hover toont titel en naam van wie het deelde. Zo zie je de gemeenschap groeien, niet alleen een getal.</p>
+  <div class="stage"><div class="stage-inner">
+    <div class="b-grid">
+      <div>
+        <span class="label">Samen naar 500</span>
+        <h2 class="h2mock" style="margin:6px 0 12px"><span class="num">470</span> ideeën gedeeld door collega's</h2>
+        <p class="muted" style="margin:0 0 20px">Nog 30 open plekjes. Vul jij er eentje?</p>
+        <a class="btn-pill" href="#">Deel een activiteit →</a>
+      </div>
+      <div>
+        <div class="dots" id="dots"></div>
+        <span class="tooltip">#470 · Woorden uit de tijd van toen · Kitty</span>
+      </div>
+    </div>
+  </div></div>
+  <div class="pros">
+    <div><h4>Sterk</h4><ul><li>Past bij de prikbord-/scrapbookstijl</li><li>Elk vakje is iemand: trots en erbij horen</li></ul></div>
+    <div><h4>Zwak</h4><ul><li>500 vakjes zijn op gsm piepklein (10 kolommen dan)</li><li>Hover werkt niet op touch</li></ul></div>
+    <div><h4>Past bij</h4><ul><li>De 500ste fiche als moment vieren (vakje springt in)</li></ul></div>
+  </div>
+</section>
+
+<!-- C -->
+<section class="opt rec" id="opt-C">
+  <div class="opt-head"><span class="id">C</span><h2>Teller + waar het nog dun is</h2><span class="badge">aanbevolen</span></div>
+  <p class="opt-sub">Het blok behoudt de vorm van nu (drie of vier fotokaarten) maar toont de initiatieven met de minste fiches, met een teller erboven.
+  Dezelfde boodschap als de mail: "Bij andere vinden collega's nog bijna niets."
+  Feest én een concrete vraag.</p>
+  <div class="stage"><div class="stage-inner">
+    <div class="c-top">
+      <div class="c-count">
+        <svg class="ring" viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#EBE4DE" stroke-width="10"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#E8764B" stroke-width="10" stroke-linecap="round" stroke-dasharray="248 264" transform="rotate(-90 50 50)"/>
+          <text x="50" y="47" text-anchor="middle" font-family="Aleo" font-weight="700" font-size="24" fill="#231E1A">30</text>
+          <text x="50" y="64" text-anchor="middle" font-family="Fira Sans" font-size="11" fill="#756C65">te gaan</text>
+        </svg>
+        <div>
+          <span class="label">Samen naar 500</span>
+          <h2 class="h2mock">Hier zoeken collega's <em>nog ideeën</em></h2>
+        </div>
+      </div>
+      <a class="cta-link" href="#">Deel een activiteit →</a>
+    </div>
+    <div class="cards">
+      <div class="card"><img src="../../public/img/initiatives/film-theater.webp" alt=""><span class="cnt">3 fiches</span><span class="tag">Film &amp; theater →</span></div>
+      <div class="card"><img src="../../public/img/initiatives/geloof-spiritualiteit.webp" alt=""><span class="cnt">4 fiches</span><span class="tag">Geloof &amp; spiritualiteit →</span></div>
+      <div class="card"><img src="../../public/img/initiatives/handwerken.webp" alt=""><span class="cnt">4 fiches</span><span class="tag">Handwerken →</span></div>
+      <div class="card" style="display:grid;place-items:center;background:var(--accent-light);aspect-ratio:auto">
+        <div style="text-align:center;padding:16px">
+          <div class="num" style="font-size:44px;color:var(--primary)">470</div>
+          <div class="muted small">activiteiten gedeeld<br>door collega's</div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+  <div class="pros">
+    <div><h4>Sterk</h4><ul><li>Hergebruikt <code>MilestoneCallContent</code> (needsLove)</li><li>Stuurt bijdragen naar gaten, niet naar nog een quiz</li><li>Kaartvorm blijft, dus geen breuk op de pagina</li></ul></div>
+    <div><h4>Zwak</h4><ul><li>Minder "feest" dan B</li><li>Testdata ("Perspiciatis…") moet in productie zeker weg zijn</li></ul></div>
+    <div><h4>Past bij</h4><ul><li>Het doel achter 500: een rijkere bibliotheek, geen getal</li></ul></div>
+  </div>
+</section>
+
+<!-- C variants -->
+<section class="opt rec" id="opt-C-var">
+  <div class="opt-head"><span class="id">C+</span><h2>Vier varianten op C: 500 staat vooraan</h2><span class="badge">nieuw</span></div>
+  <p class="opt-sub">Zelfde kaarten met de initiatieven met de minste fiches, maar "500 activiteiten" zit telkens in de kop of in een groot beeld, niet in een eyebrow.</p>
+
+  <!-- C1 -->
+  <div class="stage" id="C1"><div class="stage-inner">
+    <div class="vtag">C1 · De kop zegt het</div>
+    <h2 style="font-size:44px;line-height:1.1;margin:0 0 6px">Samen naar <span style="color:var(--primary)">500 activiteiten</span></h2>
+    <p class="muted" style="font-size:19px;margin:0 0 18px">We staan op <strong class="num" style="color:var(--text)">470</strong>. Nog 30 te gaan. Hier zoeken collega's nog ideeën:</p>
+    <div class="bar" style="margin:0 0 26px;height:14px"><div class="bar-fill"></div></div>
+    <div class="cards cards3">
+      <div class="card"><img src="../../public/img/initiatives/film-theater.webp" alt=""><span class="cnt">3 fiches</span><span class="tag">Film &amp; theater →</span></div>
+      <div class="card"><img src="../../public/img/initiatives/geloof-spiritualiteit.webp" alt=""><span class="cnt">4 fiches</span><span class="tag">Geloof &amp; spiritualiteit →</span></div>
+      <div class="card"><img src="../../public/img/initiatives/handwerken.webp" alt=""><span class="cnt">4 fiches</span><span class="tag">Handwerken →</span></div>
+    </div>
+    <div style="margin-top:22px"><a class="btn-pill" href="#">Deel een activiteit →</a></div>
+  </div></div>
+
+  <!-- C2 -->
+  <div class="stage" id="C2" style="border-top:0"><div class="stage-inner">
+    <div class="vtag">C2 · Een groot 500 dat volloopt</div>
+    <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:40px;align-items:center" class="c2grid">
+      <div class="fill500" aria-label="470 van 500">
+        <span class="out">500</span>
+        <span class="in" style="clip-path:inset(6% 0 0 0)">500</span>
+        <span class="cap">nog <strong>30</strong> te gaan</span>
+      </div>
+      <div style="min-width:0">
+        <h2 class="h2mock" style="margin:0 0 6px">Help ons de <em>500 activiteiten</em> vol te maken</h2>
+        <p class="muted" style="margin:0 0 18px">470 gedeeld door collega's. Deze initiatieven kunnen er nog een paar gebruiken:</p>
+        <div class="cards cards3">
+          <div class="card"><img src="../../public/img/initiatives/film-theater.webp" alt=""><span class="cnt">3</span><span class="tag">Film &amp; theater →</span></div>
+          <div class="card"><img src="../../public/img/initiatives/geloof-spiritualiteit.webp" alt=""><span class="cnt">4</span><span class="tag">Geloof →</span></div>
+          <div class="card"><img src="../../public/img/initiatives/handwerken.webp" alt=""><span class="cnt">4</span><span class="tag">Handwerken →</span></div>
+        </div>
+      </div>
+    </div>
+  </div></div>
+
+  <!-- C3 -->
+  <div class="stage" id="C3" style="border-top:0"><div class="stage-inner">
+    <div class="vtag">C3 · Meetlint met een vlag op 500</div>
+    <div class="c-top" style="margin-bottom:8px">
+      <h2 class="h2mock">Nog <em>30 activiteiten</em> tot we er 500 hebben</h2>
+      <a class="cta-link" href="#">Deel een activiteit →</a>
+    </div>
+    <div class="tape">
+      <div class="tape-fill"></div>
+      <div class="tape-ticks"></div>
+      <span class="tape-now" style="left:94%">470</span>
+      <span class="tape-flag">🚩 500</span>
+    </div>
+    <p class="muted small" style="margin:18px 0 14px">Hier vind je nog weinig. Weet jij er iets voor?</p>
+    <div class="cards cards3">
+      <div class="card"><img src="../../public/img/initiatives/film-theater.webp" alt=""><span class="cnt">3 fiches</span><span class="tag">Film &amp; theater →</span></div>
+      <div class="card"><img src="../../public/img/initiatives/geloof-spiritualiteit.webp" alt=""><span class="cnt">4 fiches</span><span class="tag">Geloof &amp; spiritualiteit →</span></div>
+      <div class="card"><img src="../../public/img/initiatives/handwerken.webp" alt=""><span class="cnt">4 fiches</span><span class="tag">Handwerken →</span></div>
+    </div>
+  </div></div>
+
+  <!-- C4 -->
+  <div class="stage" id="C4" style="border-top:0"><div class="stage-inner" style="text-align:center">
+    <div class="vtag" style="text-align:left">C4 · Vlaggetjes, zonder feestbelofte</div>
+    <div class="bunting" aria-hidden="true">
+      <span style="--c:#E8764B">5</span><span style="--c:#F4C44E">0</span><span style="--c:#4CB7C5">0</span>
+    </div>
+    <h2 style="font-size:40px;margin:14px 0 6px">Bijna <span style="color:var(--primary)">500 activiteiten</span>!</h2>
+    <p class="muted" style="font-size:19px;margin:0 auto 24px;max-width:620px">470 ideeën van collega's staan klaar. Nog 30 en de teller staat op 500. Vooral hier is jouw idee welkom:</p>
+    <div class="cards cards3" style="text-align:left">
+      <div class="card"><img src="../../public/img/initiatives/film-theater.webp" alt=""><span class="cnt">3 fiches</span><span class="tag">Film &amp; theater →</span></div>
+      <div class="card"><img src="../../public/img/initiatives/geloof-spiritualiteit.webp" alt=""><span class="cnt">4 fiches</span><span class="tag">Geloof &amp; spiritualiteit →</span></div>
+      <div class="card"><img src="../../public/img/initiatives/handwerken.webp" alt=""><span class="cnt">4 fiches</span><span class="tag">Handwerken →</span></div>
+    </div>
+    <div style="margin-top:22px"><a class="btn-pill" href="#">Deel een activiteit →</a></div>
+  </div></div>
+
+  <div class="pros">
+    <div><h4>C1</h4><ul><li>Duidelijkst, minst nieuw ontwerp</li><li>Balk dubbelt het getal, mag ook weg</li></ul></div>
+    <div><h4>C2 · C3</h4><ul><li>C2: het 500-beeld is de teller zelf, sterk herkenbaar</li><li>C3: meetlint toont "bijna" het best, vlag = het feest</li></ul></div>
+    <div><h4>C4</h4><ul><li>Feestelijk beeld, de tekst belooft geen feest</li><li>Gecentreerd, breekt met de rest van de homepage</li></ul></div>
+  </div>
+</section>
+
+<!-- D -->
+<section class="opt" id="opt-D">
+  <div class="opt-head"><span class="id">D</span><h2>Scheurkalender + wie deelde</h2><span class="badge">meest menselijk</span></div>
+  <p class="opt-sub">Een afscheurblaadje met het aantal dat nog nodig is, naast de voornamen van wie recent deelde.
+  Bij elke nieuwe fiche gaat er een blaadje af. Verwijst naar de themakalender die er al is.</p>
+  <div class="stage"><div class="stage-inner">
+    <div class="d-grid">
+      <div class="tear">
+        <div class="ring-holes"><span></span><span></span></div>
+        <div class="under"></div>
+        <div class="sheet">
+          <div class="top">Nog</div>
+          <div class="big">30</div>
+          <div class="lbl">activiteiten tot 500</div>
+        </div>
+      </div>
+      <div>
+        <span class="label">Samen naar 500</span>
+        <h2 class="h2mock" style="margin:6px 0 4px">Elke fiche scheurt er <em>een blaadje</em> af</h2>
+        <p class="muted" style="margin:0">Net gedeeld door:</p>
+        <div class="people">
+          <span class="person"><span class="av" style="background:#E8764B">K</span>Kitty · Woorden uit de tijd van toen</span>
+          <span class="person"><span class="av" style="background:#4CB7C5">B</span>Billie · Associatie memory</span>
+          <span class="person"><span class="av" style="background:#B57BB3">B</span>Billie · Beweegbingo!</span>
+        </div>
+        <a class="btn-pill" href="#">Scheur jij het volgende af? →</a>
+      </div>
+    </div>
+  </div></div>
+  <div class="pros">
+    <div><h4>Sterk</h4><ul><li>Namen = erkenning, de kern van het merk</li><li>Uitgesproken handgemaakt</li></ul></div>
+    <div><h4>Zwak</h4><ul><li>Recente fiches zijn soms weken oud: "net gedeeld" klopt dan niet</li><li>Toont namen publiek op de homepage</li></ul></div>
+    <div><h4>Past bij</h4><ul><li>Als er nu veel binnenkomt (na de mail)</li></ul></div>
+  </div>
+</section>
+
+<!-- Decisions -->
+<section class="decide" data-lavish-annotate="off">
+  <span class="label">Jouw keuze</span>
+  <h2>Vijf beslissingen</h2>
+  <p class="muted small" style="margin:0 0 8px">Kies, en stuur alles in één keer terug.</p>
+
+  <form id="decisions" data-lavish-question="afteller-500" onsubmit="event.preventDefault();
+    const f=new FormData(this);
+    const a={richting:f.get('richting'),bij500:f.get('bij500'),einde:f.get('einde'),publiek:f.get('publiek'),extra:f.getAll('extra'),opmerking:(f.get('opmerking')||'').trim()};
+    const txt='Afteller 500 · richting '+a.richting+' · bij 500: '+a.bij500+' · einde: '+a.einde+' · publiek: '+a.publiek+(a.extra.length?' · extra: '+a.extra.join(', '):'')+(a.opmerking?' · '+a.opmerking:'');
+    window.lavish && window.lavish.queuePrompt('Bouw de afteller naar 500 op de homepage met deze keuzes: '+JSON.stringify(a),{tag:'choice',text:txt,element:this,data:a,queueKey:'afteller-500'});
+    document.getElementById('st').textContent='In de wachtrij gezet. Druk op Send to Agent.';">
+
+    <div class="q">
+      <h3>1. Welke richting?</h3>
+      <p class="why">Combineren kan: vertel het in de opmerking (bv. C met de vakjes van B als teller).</p>
+      <label><input type="radio" name="richting" value="A voortgangsbalk"> A · Voortgangsbalk</label>
+      <label><input type="radio" name="richting" value="B prikbord 500 vakjes"> B · Prikbord met 500 vakjes</label>
+      <label><input type="radio" name="richting" value="C teller + dunne initiatieven"> C · Teller + waar het nog dun is (origineel)</label>
+      <label><input type="radio" name="richting" value="C1 de kop zegt het"> C1 · De kop zegt het</label>
+      <label><input type="radio" name="richting" value="C2 groot 500 dat volloopt"> C2 · Een groot 500 dat volloopt</label>
+      <label><input type="radio" name="richting" value="C3 meetlint met vlag"> C3 · Meetlint met een vlag op 500</label>
+      <label><input type="radio" name="richting" value="C4 vlaggetjes zonder feestbelofte" checked> C4 · Vlaggetjes, zonder feestbelofte <span class="r">jouw keuze</span></label>
+      <label><input type="radio" name="richting" value="D scheurkalender + namen"> D · Scheurkalender + wie deelde</label>
+    </div>
+
+    <div class="q">
+      <h3>2. Wat gebeurt er bij 500?</h3>
+      <p class="why">Het blok weet zelf wanneer het doel bereikt is (<code>reached()</code>).</p>
+      <label><input type="radio" name="bij500" value="sober bedankje" checked> Het blok wordt een sober bedankje ("500 activiteiten, gedeeld door jullie"), zonder confetti <span class="r">aanbevolen</span></label>
+      <label><input type="radio" name="bij500" value="meteen terug naar initiatieven"> Meteen terug naar het gewone initiatievenblok</label>
+      <label><input type="radio" name="bij500" value="volgend doel 600"> Schuift door naar een volgend doel</label>
+    </div>
+
+    <div class="q">
+      <h3>3. Hoe verdwijnt het weer?</h3>
+      <p class="why">"Tijdelijk" moet ergens vastliggen, anders blijft het staan.</p>
+      <label><input type="radio" name="einde" value="automatisch 14 dagen na 500" checked> Automatisch, 14 dagen nadat 500 gehaald is <span class="r">aanbevolen</span></label>
+      <label><input type="radio" name="einde" value="env-vlag HOMEPAGE_MILESTONE_ACTIVE"> Met een .env-vlag die ik zelf uitzet in Forge</label>
+      <label><input type="radio" name="einde" value="einddatum in config"> Een vaste einddatum in config</label>
+    </div>
+
+    <div class="q">
+      <h3>4. Voor wie?</h3>
+      <label><input type="radio" name="publiek" value="iedereen" checked> Iedereen: ook bezoekers zien dat de bibliotheek groeit <span class="r">aanbevolen</span></label>
+      <label><input type="radio" name="publiek" value="alleen ingelogd"> Alleen ingelogde gebruikers, gasten zien het gewone blok</label>
+    </div>
+
+    <div class="q">
+      <h3>5. Extra's</h3>
+      <label><input type="checkbox" name="extra" value="eigen aandeel tonen"> Ingelogde bijdragers zien hun eigen aandeel ("3 daarvan zijn van jou")</label>
+      <label><input type="checkbox" name="extra" value="CTA naar fiches.create met initiatief voorgeselecteerd"> Klik op een dun initiatief opent meteen "deel een activiteit" voor dat initiatief</label>
+      <label><input type="checkbox" name="extra" value="kliks meten"> Kliks meten met dezelfde campagnecode als de mail</label>
+    </div>
+
+    <div class="q">
+      <h3>Opmerking</h3>
+      <textarea name="opmerking" placeholder="Combinaties, andere koptekst, …"></textarea>
+    </div>
+
+    <div class="submit">
+      <button type="submit">Zet keuzes in de wachtrij</button>
+      <span id="st" class="note" role="status" aria-live="polite"></span>
+    </div>
+  </form>
+</section>
+
+</div>
+<script>
+  const d=document.getElementById('dots');
+  for(let i=1;i<=500;i++){const el=document.createElement('i');if(i>470)el.className='empty';if(i===470)el.className='new';el.title=i<=470?'#'+i:'nog open';d.appendChild(el);}
+</script>
+</body>
+</html>
