@@ -1567,6 +1567,29 @@
     color: var(--color-primary);
     margin-bottom: 2px;
   }
+
+  /* Bunting: triangular pennants carrying the digits of a milestone */
+  .bunting {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .bunting-flag {
+    width: 74px;
+    height: 86px;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    color: #fff;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 38px;
+    line-height: 64px;
+    text-align: center;
+  }
+
+  .bunting-flag:nth-child(3n + 1) { background: var(--color-primary); }
+  .bunting-flag:nth-child(3n + 2) { background: var(--color-yellow); transform: translateY(8px); }
+  .bunting-flag:nth-child(3n) { background: var(--color-secondary); }
 }
 
 /* ==========================================================================

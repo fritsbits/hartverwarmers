@@ -6,11 +6,11 @@ use App\Jobs\AssessFicheQuality;
 use App\Models\Fiche;
 use App\Models\Initiative;
 use App\Services\FichePurger;
+use App\Support\HomeCache;
 use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
@@ -106,7 +106,7 @@ class AdminFicheOverview extends Component
             'diamond_awarded_at' => $awarding ? now() : null,
         ]);
 
-        Cache::forget('home:recent-diamond');
+        HomeCache::flush();
     }
 
     public function assess(int $ficheId): void
@@ -163,9 +163,6 @@ class AdminFicheOverview extends Component
         $this->closePurgeModal();
         $this->expandedFiche = null;
         $this->resetPage();
-
-        Cache::forget('home:recent-diamond');
-        Cache::forget('footer_stats');
 
         Flux::toast(
             "\"{$title}\" is definitief verwijderd, samen met {$summary['files']} bestand(en) en {$summary['images']} afbeelding(en).",

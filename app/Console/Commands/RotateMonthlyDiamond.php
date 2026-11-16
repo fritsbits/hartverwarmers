@@ -7,7 +7,6 @@ use App\Models\Fiche;
 use App\Services\DiamondRotation\CandidateFinder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 class RotateMonthlyDiamond extends Command
@@ -41,8 +40,6 @@ class RotateMonthlyDiamond extends Command
             'has_diamond' => true,
             'diamond_awarded_at' => now(),
         ]);
-
-        Cache::forget('home:recent-diamond');
 
         $rotation ??= new DiamondRotation(['month' => $month->toDateString()]);
         $rotation->chosen_via ??= 'auto';

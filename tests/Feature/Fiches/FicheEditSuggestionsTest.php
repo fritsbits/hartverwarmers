@@ -49,7 +49,7 @@ class FicheEditSuggestionsTest extends TestCase
         Livewire::actingAs($user)
             ->test(FicheEdit::class, ['fiche' => $fiche])
             ->call('applySuggestion', 'description')
-            ->assertSet('description', '<p>AI-suggestie voor de beschrijving.</p>');
+            ->assertSet('description', 'AI-suggestie voor de beschrijving.');
     }
 
     public function test_apply_title_suggestion_replaces_value(): void
@@ -66,7 +66,7 @@ class FicheEditSuggestionsTest extends TestCase
             ->assertSet('title', 'Verbeterde titel voor deze activiteit');
     }
 
-    public function test_apply_content_suggestion_appends_to_existing(): void
+    public function test_apply_content_suggestion_replaces_existing_description(): void
     {
         $user = User::factory()->create();
         $fiche = Fiche::factory()->published()->withSuggestions()->create([
@@ -77,7 +77,33 @@ class FicheEditSuggestionsTest extends TestCase
         Livewire::actingAs($user)
             ->test(FicheEdit::class, ['fiche' => $fiche])
             ->call('applySuggestion', 'description')
-            ->assertSet('description', "<p>Bestaande tekst.</p>\n<p>AI-suggestie voor de beschrijving.</p>");
+            ->assertSet('description', 'AI-suggestie voor de beschrijving.');
+    }
+
+    public function test_rich_text_suggestions_replace_existing_content_and_are_idempotent(): void
+    {
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->withSuggestions()->create(['user_id' => $user->id]);
+        $component = Livewire::actingAs($user)->test(FicheEdit::class, ['fiche' => $fiche]);
+
+        foreach (['preparation', 'inventory', 'process'] as $field) {
+            $component->set($field, '<p>Mijn tekst</p>')
+                ->set('aiSuggestions.'.$field, '<ul><li>Suggestie</li></ul>')
+                ->call('applySuggestion', $field)
+                ->call('applySuggestion', $field)
+                ->assertSet($field, '<ul><li>Suggestie</li></ul>');
+        }
+    }
+
+    public function test_description_takeover_decodes_html_and_preserves_line_breaks(): void
+    {
+        $user = User::factory()->create();
+        $fiche = Fiche::factory()->withSuggestions()->create(['user_id' => $user->id]);
+
+        Livewire::actingAs($user)->test(FicheEdit::class, ['fiche' => $fiche])
+            ->set('aiSuggestions.description', '<p>Samen &amp; gezellig.</p><p>Tweede zin.<br>Derde zin.</p>')
+            ->call('applySuggestion', 'description')
+            ->assertSet('description', "Samen & gezellig.\nTweede zin.\nDerde zin.");
     }
 
     public function test_save_persists_updated_applied_array(): void

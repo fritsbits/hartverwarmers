@@ -7,6 +7,7 @@ use App\Jobs\AssignFicheIcon;
 use App\Models\Fiche;
 use App\Models\OnboardingEmailLog;
 use App\Notifications\FicheDiamondAwardedNotification;
+use App\Support\HomeCache;
 use Illuminate\Database\UniqueConstraintViolationException;
 
 class FicheObserver
@@ -43,6 +44,21 @@ class FicheObserver
         if ($fiche->wasChanged('has_diamond') && $fiche->has_diamond) {
             $this->notifyDiamondAwarded($fiche);
         }
+    }
+
+    public function saved(Fiche $fiche): void
+    {
+        HomeCache::flush();
+    }
+
+    public function deleted(Fiche $fiche): void
+    {
+        HomeCache::flush();
+    }
+
+    public function restored(Fiche $fiche): void
+    {
+        HomeCache::flush();
     }
 
     private function notifyDiamondAwarded(Fiche $fiche): void

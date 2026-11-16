@@ -533,7 +533,6 @@
                             @if($this->aiTitle !== null)
                                 <x-ai-suggestion-panel
                                     :suggestion="e($this->aiTitle)"
-                                    :rawSuggestion="$this->aiTitle"
                                     field="title"
                                     :is-applied="$isTitleApplied"
                                 />
@@ -577,6 +576,7 @@
                                         @else
                                             <div
                                                 x-data="{ expanded: @js($fieldHasContent) }"
+                                                x-effect="if ($wire.{{ $field['userProp'] }}) expanded = true"
                                                 @click="expanded = true"
                                                 class="grid motion-safe:[transition:grid-template-rows_0.3s_cubic-bezier(0.25,1,0.5,1)]"
                                                 :class="expanded ? 'grid-rows-[1fr] overflow-visible' : 'grid-rows-[100px] overflow-hidden cursor-text'"
@@ -596,7 +596,6 @@
                                     @if($hasAiSuggestion)
                                         <x-ai-suggestion-panel
                                             :suggestion="$this->{$field['aiProp']}"
-                                            :rawSuggestion="$this->{$field['aiProp']}"
                                             :field="$field['field']"
                                             :is-applied="$isApplied"
                                         />

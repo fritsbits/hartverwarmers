@@ -34,8 +34,10 @@
     <!-- Onboarding Banner (new users only) -->
     <livewire:onboarding-banner />
 
-    <!-- Featured Initiatives -->
-    @if($initiatives->isNotEmpty())
+    <!-- Featured Initiatives, temporarily replaced by the milestone countdown -->
+    @if($milestone)
+        <x-home-milestone :content="$milestone" />
+    @elseif($initiatives->isNotEmpty())
         <section class="bg-[var(--color-bg-base)]" x-data="{
             selectedGoal: '{{ $defaultGoal }}',
             goals: @js($goals),

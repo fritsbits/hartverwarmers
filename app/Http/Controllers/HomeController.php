@@ -8,6 +8,7 @@ use App\Models\Theme;
 use App\Models\ThemeOccurrence;
 use App\Models\User;
 use App\Services\DiamantService;
+use App\Support\MilestoneCall\MilestoneCallContent;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
@@ -26,6 +27,10 @@ class HomeController extends Controller
                 ->latest()
                 ->get()
         );
+
+        $milestone = config('newsletter.homepage_milestone_active')
+            ? Cache::remember('home:milestone', now()->addMinutes(5), fn () => MilestoneCallContent::build())
+            : null;
 
         $inspiratieTitels = [
             'doen' => 'actief mee te doen',
@@ -129,6 +134,7 @@ class HomeController extends Controller
 
         return view('home', [
             'initiatives' => $initiatives,
+            'milestone' => $milestone,
             'goals' => $eligibleGoals,
             'defaultGoal' => $defaultGoal,
             'recentFiches' => $recentFiches,
