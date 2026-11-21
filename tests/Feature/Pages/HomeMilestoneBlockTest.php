@@ -119,7 +119,7 @@ class HomeMilestoneBlockTest extends TestCase
         $response->assertSee('5 activiteiten, gedeeld door jullie');
         $response->assertSee('Bedankt aan iedereen die een idee deelde.');
         $response->assertDontSee('Bijna 5 activiteiten');
-        $response->assertDontSee('Vooral hier is jouw idee welkom');
+        $response->assertDontSee('Deze thema\'s hebben nog weinig fiches');
         $response->assertDontSee('Inspiratie om');
         $response->assertSee(route('initiatives.index'));
     }
