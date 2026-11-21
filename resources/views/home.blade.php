@@ -141,6 +141,7 @@
                         Uitgewerkte fiches
                     </span>
                     <h2 class="text-3xl">Activiteiten gedeeld door collega's</h2>
+                    <a href="{{ route('fiches.index') }}" class="cta-link mt-3">Bekijk alle activiteiten</a>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">

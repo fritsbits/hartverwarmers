@@ -86,6 +86,7 @@
                         <span x-show="selectedGoals.length === 0">Praktijkfiches van collega's, gebundeld per initiatief</span>
                         <span x-show="selectedGoals.length > 0" x-text="headlineText" x-cloak></span>
                     </h1>
+                    <a href="{{ route('fiches.index') }}" class="cta-link mt-4">Liever alle activiteiten op een rij? Bekijk ze chronologisch</a>
                 </div>
 
                 {{-- Toolbar: Filter + Search + Sort --}}

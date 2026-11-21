@@ -111,6 +111,7 @@
                     <h4 class="text-sm font-semibold uppercase tracking-widest text-[var(--color-text-primary)] mb-4">Ontdek</h4>
                     <ul class="space-y-2.5 text-sm">
                         <li><a href="{{ route('initiatives.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Alle initiatieven</a></li>
+                        <li><a href="{{ route('fiches.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Alle activiteiten</a></li>
                         <li><a href="{{ route('themes.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Themakalender</a></li>
                         <li><a href="{{ route('contributors.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Bijdragers</a></li>
                         <li><a href="{{ route('diamantjes.index') }}" class="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors">Diamantjes – Sterke fiches</a></li>
@@ -152,7 +153,7 @@
             <div class="border-t border-[var(--color-border-light)] pt-6">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[var(--color-text-secondary)]">
                     <span>&copy; {{ date('Y') }} Hartverwarmers</span>
-                    <div class="flex items-center gap-6">
+                    <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
                         <a href="{{ route('contact') }}" class="hover:text-[var(--color-primary)] transition-colors">Contact</a>
                         <a href="{{ route('about') }}" class="hover:text-[var(--color-primary)] transition-colors">Over ons</a>
                         <a href="{{ route('legal.privacy') }}" class="hover:text-[var(--color-primary)] transition-colors">Privacybeleid</a>

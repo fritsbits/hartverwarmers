@@ -1,10 +1,20 @@
-@props(['fiche', 'compact' => false, 'hideDiamond' => false])
+@props(['fiche', 'compact' => false, 'hideDiamond' => false, 'showInitiative' => false, 'dateLabel' => null])
 
 
 <a href="{{ route('fiches.show', [$fiche->initiative, $fiche]) }}" class="block cursor-pointer">
 <flux:card class="fiche-card !p-0 overflow-hidden border border-[var(--color-border-light)] hover:border-[var(--color-border-hover)] hover:shadow-card-hover hover:-translate-y-0.5 active:scale-[0.99] transition-[border-color,box-shadow,transform] duration-200">
 
     <div class="fiche-card-body">
+        @if($showInitiative || $dateLabel)
+            <div class="flex items-baseline justify-between gap-3 mb-2 text-xs">
+                @if($showInitiative)
+                    <span class="font-semibold uppercase tracking-widest text-[var(--color-primary-hover)] truncate">{{ $fiche->initiative->title }}</span>
+                @endif
+                @if($dateLabel)
+                    <span class="ml-auto shrink-0 whitespace-nowrap tabular-nums text-[var(--color-text-secondary)]">{{ $dateLabel }}</span>
+                @endif
+            </div>
+        @endif
         @if($fiche->has_diamond && !$hideDiamond)
             <div class="mb-2">
                 <x-diamond-badge />

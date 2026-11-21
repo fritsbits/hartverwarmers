@@ -61,6 +61,11 @@
                                 </a>
                             @endforeach
                         </div>
+
+                        <a href="{{ route('fiches.index', ['q' => trim($query)]) }}" class="flex items-center justify-between gap-3 w-full px-4 py-3 border-t border-[var(--color-border-light)] text-sm font-semibold text-[var(--color-primary)] hover:bg-[var(--color-bg-cream)] transition-colors">
+                            Toon alle resultaten
+                            <span aria-hidden="true">&rarr;</span>
+                        </a>
                     @endif
                 @endif
             </flux:command.items>

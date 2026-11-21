@@ -65,6 +65,7 @@ Route::get('/themas', [ThemeController::class, 'index'])->name('themes.index');
 Route::get('/themas/print', [ThemeController::class, 'print'])->name('themes.print');
 
 // Contributors
+Route::view('/activiteiten', 'fiches.index')->name('fiches.index');
 Route::get('/bijdragers', [ContributorController::class, 'index'])->name('contributors.index');
 Route::get('/bijdragers/{user}', [ContributorController::class, 'show'])->name('contributors.show');
 

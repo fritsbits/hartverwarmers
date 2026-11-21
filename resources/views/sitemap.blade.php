@@ -11,6 +11,11 @@
         <priority>0.9</priority>
     </url>
     <url>
+        <loc>{{ route('fiches.index') }}</loc>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
         <loc>{{ route('goals.index') }}</loc>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
