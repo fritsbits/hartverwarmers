@@ -110,6 +110,23 @@ return [
             'report' => false,
         ],
 
+        'backups' => [
+            'driver' => 's3',
+            'key' => env('BACKUP_S3_ACCESS_KEY_ID'),
+            'secret' => env('BACKUP_S3_SECRET_ACCESS_KEY'),
+            'region' => env('BACKUP_S3_REGION', 'nbg1'),
+            'bucket' => env('BACKUP_S3_BUCKET', 'hartverwarmers-prod-backups'),
+            'endpoint' => env('BACKUP_S3_ENDPOINT', 'https://nbg1.your-objectstorage.com'),
+            'use_path_style_endpoint' => false,
+            'visibility' => 'private',
+            'request_checksum_calculation' => 'when_required',
+            'response_checksum_validation' => 'when_required',
+            'http' => ['connect_timeout' => 10, 'timeout' => 600],
+            'retries' => ['mode' => 'standard', 'max_attempts' => 3],
+            'throw' => true,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

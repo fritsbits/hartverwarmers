@@ -1,0 +1,37 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "BackupBucketMetadata",
+            "Effect": "Allow",
+            "Principal": { "AWS": "arn:aws:iam:::user/p16891953:__BACKUP_ACCESS_KEY_ID__" },
+            "Action": ["s3:ListBucket", "s3:GetBucketLocation", "s3:GetBucketVersioning"],
+            "Resource": "arn:aws:s3:::hartverwarmers-prod-backups"
+        },
+        {
+            "Sid": "EncryptedArchiveRetention",
+            "Effect": "Allow",
+            "Principal": { "AWS": "arn:aws:iam:::user/p16891953:__BACKUP_ACCESS_KEY_ID__" },
+            "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:AbortMultipartUpload", "s3:ListMultipartUploadParts"],
+            "Resource": "arn:aws:s3:::hartverwarmers-prod-backups/hartverwarmers-app/*"
+        },
+        {
+            "Sid": "PreserveObjectCopies",
+            "Effect": "Allow",
+            "Principal": { "AWS": "arn:aws:iam:::user/p16891953:__BACKUP_ACCESS_KEY_ID__" },
+            "Action": ["s3:GetObject", "s3:PutObject"],
+            "Resource": "arn:aws:s3:::hartverwarmers-prod-backups/s3-objects/*"
+        },
+        {
+            "Sid": "PrivateUploadAclOnly",
+            "Effect": "Allow",
+            "Principal": { "AWS": "arn:aws:iam:::user/p16891953:__BACKUP_ACCESS_KEY_ID__" },
+            "Action": "s3:PutObjectAcl",
+            "Resource": [
+                "arn:aws:s3:::hartverwarmers-prod-backups/hartverwarmers-app/*",
+                "arn:aws:s3:::hartverwarmers-prod-backups/s3-objects/*"
+            ],
+            "Condition": { "StringEquals": { "s3:x-amz-acl": "private" } }
+        }
+    ]
+}

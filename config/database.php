@@ -61,6 +61,15 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
+            'dump' => [
+                'dump_binary_path' => env('BACKUP_MYSQLDUMP_PATH', ''),
+                'use_single_transaction' => true,
+                'skip_lock_tables' => true,
+                'use_quick' => true,
+                'set_gtid_purged' => 'OFF',
+                'add_extra_option' => '--no-tablespaces',
+                'timeout' => 600,
+            ],
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),

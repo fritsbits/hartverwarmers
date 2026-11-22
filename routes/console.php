@@ -15,6 +15,17 @@ Schedule::command('files:storage-supervise')->everyMinute()->withoutOverlapping(
 Schedule::command('queue:heartbeat')->everyFiveMinutes();
 Schedule::command('queue:prune-failed --hours=168')->daily();
 Schedule::command('server:health-check')->everyFiveMinutes();
+
+Schedule::command('backups:daily')
+    ->dailyAt('01:00')
+    ->timezone('UTC')
+    ->when(fn (): bool => (bool) config('backups.enabled'))
+    ->withoutOverlapping(1440);
+Schedule::command('backups:monitor')
+    ->hourlyAt(30)
+    ->timezone('UTC')
+    ->when(fn (): bool => (bool) config('backups.enabled'))
+    ->withoutOverlapping(60);
 // Engagement emails are staggered across the morning so they don't pile
 // into the 08:00 inbox flood. Ordering also serves the 24h cap: rarest
 // email types (anniversary, then newsletter) fire BEFORE the wider-window
