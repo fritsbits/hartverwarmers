@@ -331,6 +331,8 @@
         @endif
     </flux:card>
 
+    @include('admin.partials.fiche-storage-health', ['storage' => $ficheStorage])
+
     {{-- Failed jobs card (full width) --}}
     @if($queue['failed'] > 0)
         <flux:card class="mt-6">

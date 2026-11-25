@@ -2,20 +2,22 @@
 
 namespace Tests\Feature\Commands;
 
+use App\Jobs\GenerateFilePreview;
 use App\Models\File;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
+use RuntimeException;
+use Tests\Concerns\FakesFicheStorage;
 use Tests\TestCase;
 
 class FilePreviewCommandTest extends TestCase
 {
-    use RefreshDatabase;
+    use FakesFicheStorage, RefreshDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        Storage::fake('public');
+        $this->fakeFicheStorage();
     }
 
     public function test_command_requires_file_or_all_flag(): void
@@ -32,17 +34,17 @@ class FilePreviewCommandTest extends TestCase
             ->assertExitCode(1);
     }
 
-    public function test_command_skips_unsupported_mime_types(): void
+    public function test_command_skips_unsupported_mime_types_without_failing(): void
     {
         $file = File::factory()->create([
             'mime_type' => 'application/zip',
             'original_filename' => 'archive.zip',
         ]);
-        Storage::disk('public')->put($file->path, 'fake content');
+        $this->localFiles()->put($file->path, 'fake content');
 
         $this->artisan('file:generate-previews', ['--file' => $file->id])
             ->expectsOutputToContain('Skipping: unsupported file type')
-            ->assertExitCode(1);
+            ->assertExitCode(0);
 
         $this->assertNull($file->fresh()->preview_images);
     }
@@ -53,7 +55,7 @@ class FilePreviewCommandTest extends TestCase
             'preview_images' => null,
             'mime_type' => 'application/zip',
         ]);
-        Storage::disk('public')->put($noPreview->path, 'fake content');
+        $this->localFiles()->put($noPreview->path, 'fake content');
 
         $hasPreview = File::factory()->withPreviews()->create();
 
@@ -72,7 +74,7 @@ class FilePreviewCommandTest extends TestCase
             'total_slides' => null,
             'mime_type' => 'application/zip',
         ]);
-        Storage::disk('public')->put($file->path, 'fake content');
+        $this->localFiles()->put($file->path, 'fake content');
 
         $this->artisan('file:generate-previews', ['--all' => true])
             ->expectsOutputToContain('Processing 1 files')
@@ -87,7 +89,60 @@ class FilePreviewCommandTest extends TestCase
         // Don't put file on disk
 
         $this->artisan('file:generate-previews', ['--file' => $file->id])
-            ->expectsOutputToContain('File not found on disk')
+            ->expectsOutputToContain('File not found in storage')
             ->assertExitCode(1);
+    }
+
+    public function test_job_throws_so_the_queue_retries_when_the_command_fails(): void
+    {
+        $file = File::factory()->create(['mime_type' => 'application/pdf']);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Preview generation failed for file {$file->id}");
+
+        (new GenerateFilePreview($file->id))->handle();
+    }
+
+    public function test_job_does_not_throw_for_an_unsupported_mime_type(): void
+    {
+        $file = File::factory()->create(['mime_type' => 'application/zip']);
+        $this->localFiles()->put($file->path, 'zip');
+
+        (new GenerateFilePreview($file->id))->handle();
+
+        $this->assertNull($file->fresh()->preview_images);
+    }
+
+    public function test_mirror_mode_writes_slides_and_thumbnails_to_both_preview_disks(): void
+    {
+        $this->fakeFicheStorage('mirror');
+        $file = File::factory()->create(['mime_type' => 'application/pdf']);
+        $this->localFiles()->put($file->path, file_get_contents(base_path('tests/fixtures/sample.pdf')));
+
+        $this->artisan('file:generate-previews', ['--file' => $file->id])->assertSuccessful();
+
+        $file->refresh();
+        $this->assertNotEmpty($file->preview_images);
+        $this->assertNotNull($file->total_slides);
+
+        foreach ([...$file->preview_images, ...$file->thumbnailPaths()] as $path) {
+            $this->localPreviews()->assertExists($path);
+            $this->remotePreviews()->assertExists($path);
+        }
+        $this->assertStringEndsWith('slide-001-thumb.jpg', $file->thumbnailPaths()[0]);
+    }
+
+    public function test_failing_remote_preview_upload_fails_the_command_and_publishes_nothing(): void
+    {
+        $this->fakeFicheStorage('mirror');
+        $this->breakRemote('fiche-previews-s3', 'writeStream');
+        $file = File::factory()->create(['mime_type' => 'application/pdf']);
+        $this->localFiles()->put($file->path, file_get_contents(base_path('tests/fixtures/sample.pdf')));
+
+        $this->artisan('file:generate-previews', ['--file' => $file->id])->assertExitCode(1);
+
+        $file->refresh();
+        $this->assertNull($file->preview_images);
+        $this->assertNull($file->total_slides);
     }
 }

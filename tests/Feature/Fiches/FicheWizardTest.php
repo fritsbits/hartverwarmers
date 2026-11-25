@@ -15,14 +15,14 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Pennant\Feature;
 use Livewire\Livewire;
+use Tests\Concerns\FakesFicheStorage;
 use Tests\TestCase;
 
 class FicheWizardTest extends TestCase
 {
-    use RefreshDatabase;
+    use FakesFicheStorage, RefreshDatabase;
 
     public function test_guest_is_redirected_to_login(): void
     {
@@ -107,7 +107,7 @@ class FicheWizardTest extends TestCase
     public function test_step1_accepts_file_uploads(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -124,7 +124,7 @@ class FicheWizardTest extends TestCase
 
     public function test_step1_rejects_invalid_file_types_with_dutch_message(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -140,7 +140,7 @@ class FicheWizardTest extends TestCase
 
     public function test_step1_rejects_oversized_files_with_dutch_message(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -158,7 +158,7 @@ class FicheWizardTest extends TestCase
     public function test_first_file_upload_dispatches_processing_with_all_file_ids(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -179,7 +179,7 @@ class FicheWizardTest extends TestCase
     public function test_step1_advances_without_dispatching(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $file = File::factory()->create(['fiche_id' => null]);
@@ -387,7 +387,7 @@ class FicheWizardTest extends TestCase
     public function test_fail_reason_cleared_on_new_upload(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -522,7 +522,7 @@ class FicheWizardTest extends TestCase
 
     public function test_publish_saves_field_values_directly(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
@@ -546,7 +546,7 @@ class FicheWizardTest extends TestCase
 
     public function test_publish_after_apply_saves_replacement_value(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
@@ -572,7 +572,7 @@ class FicheWizardTest extends TestCase
 
     public function test_publish_creates_published_fiche(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
 
@@ -600,7 +600,7 @@ class FicheWizardTest extends TestCase
 
     public function test_save_draft_creates_unpublished_fiche(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
 
@@ -669,7 +669,7 @@ class FicheWizardTest extends TestCase
 
     public function test_unique_slug_is_generated(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
 
@@ -693,7 +693,7 @@ class FicheWizardTest extends TestCase
 
     public function test_files_are_attached_to_fiche_on_save(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
 
@@ -718,7 +718,7 @@ class FicheWizardTest extends TestCase
 
     public function test_tags_are_synced_on_save(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
 
@@ -744,7 +744,7 @@ class FicheWizardTest extends TestCase
 
     public function test_save_catches_exception_and_shows_error(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
@@ -769,7 +769,7 @@ class FicheWizardTest extends TestCase
 
     public function test_slug_generation_handles_multiple_duplicates(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
 
@@ -843,7 +843,7 @@ class FicheWizardTest extends TestCase
     public function test_wizard_works_without_ai_processing(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
 
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
@@ -939,7 +939,7 @@ class FicheWizardTest extends TestCase
 
     public function test_empty_fields_are_not_auto_filled_from_ai(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
@@ -961,7 +961,8 @@ class FicheWizardTest extends TestCase
 
     public function test_title_prefills_from_first_uploaded_filename(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
+        Queue::fake();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -973,7 +974,8 @@ class FicheWizardTest extends TestCase
 
     public function test_title_prefill_does_not_overwrite_existing_title(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
+        Queue::fake();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1187,7 +1189,7 @@ class FicheWizardTest extends TestCase
     public function test_subsequent_file_uploads_redispatch_processing(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1216,7 +1218,7 @@ class FicheWizardTest extends TestCase
     public function test_subsequent_uploads_clear_ai_suggestions(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1268,7 +1270,7 @@ class FicheWizardTest extends TestCase
     public function test_subsequent_uploads_reset_processing_state(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1291,7 +1293,7 @@ class FicheWizardTest extends TestCase
     public function test_subsequent_uploads_include_all_file_ids_in_processing(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         // Upload batch 1: 2 files
@@ -1319,7 +1321,7 @@ class FicheWizardTest extends TestCase
     public function test_removing_preview_file_with_remaining_dispatches_preview(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1349,7 +1351,7 @@ class FicheWizardTest extends TestCase
     public function test_preview_badge_shown(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1362,7 +1364,7 @@ class FicheWizardTest extends TestCase
     public function test_processing_progress_visible_inline_after_upload(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1395,7 +1397,7 @@ class FicheWizardTest extends TestCase
     public function test_single_file_auto_selects_preview_no_modal(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1409,7 +1411,7 @@ class FicheWizardTest extends TestCase
     public function test_multiple_files_show_preview_modal(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1426,7 +1428,7 @@ class FicheWizardTest extends TestCase
     public function test_adding_files_to_existing_shows_modal_again(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1443,7 +1445,7 @@ class FicheWizardTest extends TestCase
     public function test_confirm_preview_file_closes_modal_and_dispatches_preview(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1466,7 +1468,7 @@ class FicheWizardTest extends TestCase
     public function test_removing_preview_file_with_two_plus_remaining_shows_modal(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1489,7 +1491,7 @@ class FicheWizardTest extends TestCase
     public function test_removing_non_preview_file_keeps_selection(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1513,7 +1515,7 @@ class FicheWizardTest extends TestCase
     public function test_removing_all_files_resets_processing(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1537,7 +1539,7 @@ class FicheWizardTest extends TestCase
     public function test_process_fiche_uploads_dispatched_with_all_file_ids(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         $component = Livewire::actingAs($user)
@@ -1661,7 +1663,7 @@ class FicheWizardTest extends TestCase
 
     public function test_session_cleared_after_publish(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
@@ -1684,7 +1686,7 @@ class FicheWizardTest extends TestCase
 
     public function test_session_cleared_after_save_draft(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
         $file = File::factory()->create(['fiche_id' => null]);
@@ -1874,7 +1876,7 @@ class FicheWizardTest extends TestCase
     public function test_similar_fiches_triggered_from_filename_autotitle(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
         $initiative = Initiative::factory()->published()->create();
 
@@ -2142,7 +2144,7 @@ class FicheWizardTest extends TestCase
 
     public function test_process_fiche_uploads_result_does_not_include_matched_initiatives(): void
     {
-        Storage::fake('public');
+        $this->fakeFicheStorage();
 
         $file = File::factory()->create([
             'fiche_id' => null,
@@ -2168,7 +2170,7 @@ class FicheWizardTest extends TestCase
     public function test_file_upload_dispatches_match_initiative_by_title_job(): void
     {
         Queue::fake();
-        Storage::fake('public');
+        $this->fakeFicheStorage();
         $user = User::factory()->create();
 
         Livewire::actingAs($user)
@@ -2262,5 +2264,24 @@ class FicheWizardTest extends TestCase
         $fiche = Fiche::where('title', 'Strip test fiche')->first();
         $this->assertNotNull($fiche);
         $this->assertEquals('Een activiteit met warme touch.', $fiche->description);
+    }
+
+    public function test_wizard_upload_creates_no_file_record_when_the_remote_write_fails(): void
+    {
+        Queue::fake();
+        $this->fakeFicheStorage('mirror');
+        $this->breakRemote('fiche-files-s3', 'writeStream');
+        $user = User::factory()->create();
+
+        try {
+            Livewire::actingAs($user)
+                ->test(FicheWizard::class)
+                ->set('uploads', [UploadedFile::fake()->create('test.pdf', 100, 'application/pdf')]);
+        } catch (\Throwable) {
+            // The storage failure may surface; only the absence of a record matters.
+        }
+
+        $this->assertSame(0, File::count());
+        Queue::assertNotPushed(ProcessFicheUploads::class);
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Str;
+use Pdo\Mysql;
 
 return [
 
@@ -43,8 +44,32 @@ return [
             'transaction_mode' => 'DEFERRED',
         ],
 
+        /*
+         * Durable register for the fiche storage migration, kept apart from
+         * the curated application database (see config/fiche-storage.php).
+         */
+        'fiche-storage-register' => [
+            'driver' => 'sqlite',
+            'database' => env('FICHE_STORAGE_REGISTER_DATABASE', storage_path('app/private/fiche-storage-migration/register.sqlite')),
+            'prefix' => '',
+            'foreign_key_constraints' => false,
+            'busy_timeout' => 15000,
+            'journal_mode' => 'wal',
+            'synchronous' => 'normal',
+            'transaction_mode' => 'IMMEDIATE',
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
+            'dump' => [
+                'dump_binary_path' => env('BACKUP_MYSQLDUMP_PATH', ''),
+                'use_single_transaction' => true,
+                'skip_lock_tables' => true,
+                'use_quick' => true,
+                'set_gtid_purged' => 'OFF',
+                'add_extra_option' => '--no-tablespaces',
+                'timeout' => 600,
+            ],
             'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
@@ -59,7 +84,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
 
@@ -94,7 +119,7 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
 

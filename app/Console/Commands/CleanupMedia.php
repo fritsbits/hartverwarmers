@@ -10,7 +10,7 @@ class CleanupMedia extends Command
 {
     protected $signature = 'app:cleanup-media {--force : Actually delete orphaned folders}';
 
-    protected $description = 'List or remove media folders not linked to any imported file';
+    protected $description = 'List or remove local media folders not linked to any imported file';
 
     public function handle(): int
     {
@@ -31,7 +31,7 @@ class CleanupMedia extends Command
             ->flip();
 
         // List all folders in files/media/
-        $allFolders = Storage::disk('public')->directories('files/media');
+        $allFolders = Storage::disk('fiche-files-local')->directories('files/media');
         $orphaned = [];
 
         foreach ($allFolders as $folder) {
@@ -71,7 +71,7 @@ class CleanupMedia extends Command
 
         $deleted = 0;
         foreach ($orphaned as $folder) {
-            Storage::disk('public')->deleteDirectory($folder);
+            Storage::disk('fiche-files-local')->deleteDirectory($folder);
             $deleted++;
         }
 

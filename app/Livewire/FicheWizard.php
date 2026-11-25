@@ -11,9 +11,9 @@ use App\Models\File;
 use App\Models\FileUpload;
 use App\Models\Initiative;
 use App\Models\Tag;
+use App\Services\FicheStorage\FicheStorage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Pennant\Feature;
@@ -301,7 +301,7 @@ class FicheWizard extends Component
         $newFileIds = [];
 
         foreach ($this->uploads as $upload) {
-            $path = $upload->store('files', 'public');
+            $path = app(FicheStorage::class)->storeUpload($upload);
 
             $file = File::create([
                 'fiche_id' => null,
@@ -382,13 +382,15 @@ class FicheWizard extends Component
         $file = File::find($fileId);
 
         if ($file && $file->fiche_id === null) {
+            $storage = app(FicheStorage::class);
             $pdfVersion = File::where('source_file_id', $fileId)->first();
             if ($pdfVersion) {
-                Storage::disk('public')->delete($pdfVersion->path);
+                $storage->delete(FicheStorage::FILES, [$pdfVersion->path]);
                 $pdfVersion->delete();
             }
 
-            Storage::disk('public')->delete($file->path);
+            $storage->delete(FicheStorage::FILES, [$file->path]);
+            $storage->delete(FicheStorage::PREVIEWS, array_merge($file->preview_images ?? [], $file->thumbnailPaths()));
             $file->delete();
             $this->uploadedFiles = array_values(
                 array_filter($this->uploadedFiles, fn ($f) => $f['id'] !== $fileId)

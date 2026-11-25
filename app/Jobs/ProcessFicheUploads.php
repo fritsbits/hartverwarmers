@@ -4,13 +4,14 @@ namespace App\Jobs;
 
 use App\Models\File;
 use App\Services\FicheAiService;
+use App\Services\FicheStorage\FicheStorage;
+use App\Services\FicheStorage\ObjectMissing;
 use App\Services\FileTextExtractor;
 use App\Services\PdfConverter;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class ProcessFicheUploads implements ShouldQueue
 {
@@ -60,6 +61,7 @@ class ProcessFicheUploads implements ShouldQueue
     private function extractText(): void
     {
         $extractor = app(FileTextExtractor::class);
+        $storage = app(FicheStorage::class);
 
         foreach ($this->fileIds as $fileId) {
             $file = File::find($fileId);
@@ -68,8 +70,13 @@ class ProcessFicheUploads implements ShouldQueue
                 continue;
             }
 
-            $storagePath = Storage::disk('public')->path($file->path);
-            $text = $extractor->extract($storagePath, $file->mime_type);
+            try {
+                $text = $storage->withLocalCopy(FicheStorage::FILES, $file->path, fn (string $path) => $extractor->extract($path, $file->mime_type));
+            } catch (ObjectMissing $e) {
+                Log::warning('ProcessFicheUploads: file missing for text extraction', ['file_id' => $file->id]);
+
+                continue;
+            }
 
             if ($text) {
                 $file->update(['extracted_text' => $text]);

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\FicheObserver;
+use App\Services\FicheStorage\FicheStorage;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +14,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
 
 #[ObservedBy([FicheObserver::class])]
 class Fiche extends Model
@@ -180,6 +180,7 @@ class Fiche extends Model
     public function cardPreviewImages(int $limit = 3): array
     {
         $urls = [];
+        $storage = app(FicheStorage::class);
 
         foreach ($this->files as $file) {
             if (! $file->hasPreviewImages()) {
@@ -187,9 +188,7 @@ class Fiche extends Model
             }
             $thumbPaths = $file->thumbnailPaths();
             foreach ($file->preview_images as $index => $path) {
-                $thumbPath = $thumbPaths[$index];
-                $usePath = Storage::disk('public')->exists($thumbPath) ? $thumbPath : $path;
-                $urls[] = Storage::url($usePath);
+                $urls[] = $storage->firstAvailablePreviewUrl([$thumbPaths[$index], $path]);
                 if (count($urls) >= $limit) {
                     return $urls;
                 }

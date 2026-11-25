@@ -3,9 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\File;
+use App\Services\FicheStorage\FicheStorage;
+use App\Services\FicheStorage\ObjectMissing;
 use App\Services\FileTextExtractor;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
 
 class ExtractFileTextCommand extends Command
 {
@@ -15,8 +16,10 @@ class ExtractFileTextCommand extends Command
 
     protected $description = 'Extract text content from uploaded files (PDF, PPTX, DOCX)';
 
-    public function __construct(private FileTextExtractor $extractor)
-    {
+    public function __construct(
+        private FileTextExtractor $extractor,
+        private FicheStorage $storage,
+    ) {
         parent::__construct();
     }
 
@@ -65,14 +68,6 @@ class ExtractFileTextCommand extends Command
     {
         $this->info("Processing: {$file->original_filename} (ID: {$file->id})");
 
-        $storagePath = Storage::disk('public')->path($file->path);
-
-        if (! file_exists($storagePath)) {
-            $this->error("  File not found on disk: {$storagePath}");
-
-            return false;
-        }
-
         $isImage = str_starts_with($file->mime_type, 'image/');
 
         if ($isImage) {
@@ -91,7 +86,13 @@ class ExtractFileTextCommand extends Command
             return false;
         }
 
-        $text = $this->extractor->extract($storagePath, $file->mime_type);
+        try {
+            $text = $this->storage->withLocalCopy(FicheStorage::FILES, $file->path, fn (string $path) => $this->extractor->extract($path, $file->mime_type));
+        } catch (ObjectMissing) {
+            $this->error("  File not found in storage: {$file->path}");
+
+            return false;
+        }
 
         if ($text === null) {
             $this->warn('  No text content found in file.');

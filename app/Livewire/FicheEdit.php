@@ -7,9 +7,9 @@ use App\Models\File;
 use App\Models\Initiative;
 use App\Models\Tag;
 use App\Services\FichePurger;
+use App\Services\FicheStorage\FicheStorage;
 use App\Services\FileTextExtractor;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Pennant\Feature;
 use Livewire\Attributes\Renderless;
 use Livewire\Attributes\Validate;
@@ -113,7 +113,7 @@ class FicheEdit extends Component
         ]);
 
         foreach ($this->newUploads as $upload) {
-            $path = $upload->store('files', 'public');
+            $path = app(FicheStorage::class)->storeUpload($upload);
 
             $file = File::create([
                 'fiche_id' => $this->fiche->id,
@@ -124,9 +124,7 @@ class FicheEdit extends Component
                 'sort_order' => count($this->existingFiles),
             ]);
 
-            $extractor = app(FileTextExtractor::class);
-            $storagePath = Storage::disk('public')->path($path);
-            $text = $extractor->extract($storagePath, $upload->getMimeType());
+            $text = app(FileTextExtractor::class)->extract($upload->getRealPath(), $upload->getMimeType());
 
             if ($text) {
                 $file->update(['extracted_text' => $text]);

@@ -2,20 +2,21 @@
 
 namespace Tests\Feature\Commands;
 
+use App\Jobs\ExtractFileText;
 use App\Models\File;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
+use Tests\Concerns\FakesFicheStorage;
 use Tests\TestCase;
 
 class ExtractFileTextCommandTest extends TestCase
 {
-    use RefreshDatabase;
+    use FakesFicheStorage, RefreshDatabase;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        Storage::fake('public');
+        $this->fakeFicheStorage();
     }
 
     public function test_command_requires_file_or_all_flag(): void
@@ -38,7 +39,7 @@ class ExtractFileTextCommandTest extends TestCase
             'mime_type' => 'image/jpeg',
             'original_filename' => 'photo.jpg',
         ]);
-        Storage::disk('public')->put($file->path, 'fake image content');
+        $this->localFiles()->put($file->path, 'fake image content');
 
         $this->artisan('file:extract-text', ['--file' => $file->id])
             ->expectsOutputToContain('Skipping: images have no extractable text')
@@ -53,7 +54,7 @@ class ExtractFileTextCommandTest extends TestCase
             'mime_type' => 'application/zip',
             'original_filename' => 'archive.zip',
         ]);
-        Storage::disk('public')->put($file->path, 'fake content');
+        $this->localFiles()->put($file->path, 'fake content');
 
         $this->artisan('file:extract-text', ['--file' => $file->id])
             ->expectsOutputToContain('Skipping: unsupported file type')
@@ -68,7 +69,7 @@ class ExtractFileTextCommandTest extends TestCase
         ]);
 
         $pdfContent = file_get_contents(base_path('tests/fixtures/sample.pdf'));
-        Storage::disk('public')->put($file->path, $pdfContent);
+        $this->localFiles()->put($file->path, $pdfContent);
 
         $this->artisan('file:extract-text', ['--file' => $file->id])
             ->assertExitCode(0);
@@ -85,7 +86,7 @@ class ExtractFileTextCommandTest extends TestCase
         ]);
 
         $pptxContent = file_get_contents(base_path('tests/fixtures/sample.pptx'));
-        Storage::disk('public')->put($file->path, $pptxContent);
+        $this->localFiles()->put($file->path, $pptxContent);
 
         $this->artisan('file:extract-text', ['--file' => $file->id])
             ->assertExitCode(0);
@@ -106,7 +107,7 @@ class ExtractFileTextCommandTest extends TestCase
         ]);
 
         $docxContent = file_get_contents(base_path('tests/fixtures/sample.docx'));
-        Storage::disk('public')->put($file->path, $docxContent);
+        $this->localFiles()->put($file->path, $docxContent);
 
         $this->artisan('file:extract-text', ['--file' => $file->id])
             ->assertExitCode(0);
@@ -123,7 +124,7 @@ class ExtractFileTextCommandTest extends TestCase
             'extracted_text' => null,
         ]);
         $pptxContent = file_get_contents(base_path('tests/fixtures/sample.pptx'));
-        Storage::disk('public')->put($pptxFile->path, $pptxContent);
+        $this->localFiles()->put($pptxFile->path, $pptxContent);
 
         $alreadyProcessed = File::factory()->create([
             'extracted_text' => 'Already has text',
@@ -138,5 +139,17 @@ class ExtractFileTextCommandTest extends TestCase
 
         $alreadyProcessed->refresh();
         $this->assertEquals('Already has text', $alreadyProcessed->extracted_text);
+    }
+
+    public function test_job_extracts_text_from_a_remote_only_docx_in_s3_mode(): void
+    {
+        $this->fakeFicheStorage('s3');
+        $file = File::factory()->docx()->create();
+        $this->remoteFiles()->put($file->path, file_get_contents(base_path('tests/fixtures/sample.docx')));
+        $this->localFiles()->assertMissing($file->path);
+
+        ExtractFileText::dispatchSync($file->id);
+
+        $this->assertStringContainsString('Hello DOCX Test', (string) $file->fresh()->extracted_text);
     }
 }

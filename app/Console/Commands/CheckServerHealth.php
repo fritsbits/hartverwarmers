@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Notifications\ServerHealthAlertNotification;
+use App\Services\FicheStorage\BucketHealth;
+use App\Services\FicheStorage\FicheStorage;
 use App\Services\ServerHealth;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
@@ -14,6 +16,13 @@ class CheckServerHealth extends Command
     protected $signature = 'server:health-check';
 
     protected $description = 'Check server health metrics and alert via Telegram if thresholds are exceeded';
+
+    private const BUCKET_METRICS = [
+        FicheStorage::FILES => 'Bucket bestanden',
+        FicheStorage::PREVIEWS => 'Bucket previews',
+    ];
+
+    private const ALERT_METRICS = ['Geheugen', 'Schijf', 'Load (1m)', 'Bucket bestanden', 'Bucket previews'];
 
     public function handle(): int
     {
@@ -96,21 +105,31 @@ class CheckServerHealth extends Command
             }
         }
 
+        $storage = app(FicheStorage::class);
+        if ($storage->mode()->usesRemote() && $storage->remoteConfigured()) {
+            foreach (app(BucketHealth::class)->check() as $role => $result) {
+                if (! $result['ok']) {
+                    $violations[self::BUCKET_METRICS[$role]] = [
+                        'value' => (string) $result['error'],
+                        'threshold' => 'sentinel leesbaar',
+                    ];
+                }
+            }
+        }
+
         return $violations;
     }
 
     private function hasExistingAlerts(): bool
     {
-        return Cache::has('health-alert:Geheugen')
-            || Cache::has('health-alert:Schijf')
-            || Cache::has('health-alert:Load (1m)');
+        return collect(self::ALERT_METRICS)->contains(fn (string $metric) => Cache::has("health-alert:{$metric}"));
     }
 
     private function clearAllAlertKeys(): void
     {
-        Cache::forget('health-alert:Geheugen');
-        Cache::forget('health-alert:Schijf');
-        Cache::forget('health-alert:Load (1m)');
+        foreach (self::ALERT_METRICS as $metric) {
+            Cache::forget("health-alert:{$metric}");
+        }
     }
 
     /** @param  array<string, array{value: string, threshold: string}>  $violations */

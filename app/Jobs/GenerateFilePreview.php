@@ -5,6 +5,7 @@ namespace App\Jobs;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Artisan;
+use RuntimeException;
 
 class GenerateFilePreview implements ShouldQueue
 {
@@ -12,7 +13,7 @@ class GenerateFilePreview implements ShouldQueue
 
     public int $tries = 3;
 
-    public int $timeout = 120;
+    public int $timeout = 300;
 
     /** @var array<int, int> */
     public array $backoff = [10, 60, 300];
@@ -23,6 +24,10 @@ class GenerateFilePreview implements ShouldQueue
 
     public function handle(): void
     {
-        Artisan::call('file:generate-previews', ['--file' => $this->fileId]);
+        $exitCode = Artisan::call('file:generate-previews', ['--file' => $this->fileId]);
+
+        if ($exitCode !== 0) {
+            throw new RuntimeException("Preview generation failed for file {$this->fileId}: ".trim(Artisan::output()));
+        }
     }
 }
